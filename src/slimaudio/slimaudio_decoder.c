@@ -150,7 +150,7 @@ static void *decoder_thread(void *ptr) {
 				}				
 				
 				DEBUGF("decoder_thread stopped\n");
-				slimaudio_stat(audio, "STMd");
+				if (audio->decoder_state == STREAM_PLAYING) slimaudio_stat(audio, "STMd");
 
 			case STREAM_STOP:
 				pthread_mutex_lock(&audio->decoder_mutex);

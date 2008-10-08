@@ -37,7 +37,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.7.5";
+static const char* version = "0.7.5.1-23425";
 
 static int player_type = 8;
 
@@ -48,9 +48,6 @@ static int player_type = 8;
 //   needed (USE_SIGNALS_FOR_RESTART defined).
 // . one that polls the restart flag once in a while: less responsive but
 //   portable  (USE_SIGNALS_FOR_RESTART not defined).
-#ifndef __WIN32__
-#define USE_SIGNALS_FOR_RESTART
-#endif
 
 #ifdef USE_SIGNALS_FOR_RESTART
 
@@ -87,7 +84,7 @@ int main(int argc, char *argv[]) {
 	int output_device_id = -1;
 	bool use_signal_to_exit = false;
 	bool retry_connection = false;
-	bool volume_control = VOLUME_DRIVER;
+	slimaudio_volume_t volume_control = VOLUME_DRIVER;
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
 	unsigned int retry_interval = 3;
