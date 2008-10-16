@@ -60,7 +60,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 		printf("PortAudio error: %s\n", Pa_GetErrorText(err) );	
 		exit(-1);
 	}	
-	DEBUGF("slimaudio_output_init: PortAudio initialised\n");
+	DEBUGF("slimaudio_output_init: PortAudio initialized\n");
 	
 	audio->num_device_names = Pa_CountDevices();
 	audio->device_names = (char **)malloc(sizeof(char *) * audio->num_device_names);
@@ -204,11 +204,11 @@ static void *output_thread(void *ptr) {
 
 	if (audio->px_mixer != NULL) {
 #if !defined(__SUNPRO_C)
-		DEBUGF("PCM volume suppoted: %d.\n", 
+		DEBUGF("PCM volume supported: %d.\n", 
 		       Px_SupportsPCMOutputVolume(audio->px_mixer));
 #endif
 		const int nbVolumes = Px_GetNumOutputVolumes(audio->px_mixer);
-		DEBUGF("Nb volumes suppoted: %d.\n", nbVolumes);
+		DEBUGF("Nb volumes supported: %d.\n", nbVolumes);
 		int volumeIdx;
 		for (volumeIdx=0; volumeIdx<nbVolumes; ++volumeIdx) {
 			DEBUGF("Volume %d: %s\n", volumeIdx, 

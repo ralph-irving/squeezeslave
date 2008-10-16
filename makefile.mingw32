@@ -1,0 +1,37 @@
+CC=gcc
+DLLTOOL=dlltool
+DLLWRAP=dllwrap
+RM=rm
+
+CFLAGS=-Wall -DSLIMPROTO_DEBUG -mno-cygwin -march=i586
+
+INCLUDE=-Ilib/getopt -Ilib/dx/include -Ilib/portaudio/pa_common -Ilib/portaudio/pa_win_ds -Ilib/portmixer/px_common -Ilib/pthread/win32/include -Ilib/libmad/win32 -Ilib/flac/win32/include -Ilib/vorbis/win32/include -Isrc
+
+PORTAUDIOFILES:=lib/portaudio/pa_win_ds/dsound_wrapper.c lib/portaudio/pa_win_ds/pa_dsound.c lib/portaudio/pa_common/pa_lib.c
+
+PORTMIXERFILES:=lib/portmixer/px_win_ds/px_win_ds.c
+
+GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
+
+.c.o:
+	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+.o:
+	${CC} $(LDFLAGS) $*.o -o $* -Lpa_unix_oss -lportaudio $(LIBS)
+
+all : bin/squeezeslave
+
+bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTAUDIOFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(SLIMPROTOFILES:.c=.o) $(GETOPTFILES:.c=.o)
+	${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac/win32/lib/libFLAC.lib  lib/libmad/win32/libmad-intel.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Lbin -lpthreadGC2 -Ldx/lib -lws2_32 -ldsound -lwinmm -lm
+
+clean:
+	-@${RM} $(PORTAUDIOFILES:.c=.o)
+	-@${RM} $(PORTMIXERFILES:.c=.o)
+	-@${RM} $(SLIMPROTOFILES:.c=.o)
+	-@${RM} $(SQUEEZESLAVEFILES:.c=.o)
+	-@${RM} $(GETOPTFILES:.c=.o)
+	-@${RM} bin/squeezeslave.exe

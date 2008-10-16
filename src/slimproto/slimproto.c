@@ -389,6 +389,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 	else if (strncmp((char*)(buf+2), "vers", 4) == 0) {
 		msg->vers.length = unpackN2(buf, 0);
 		memcpy(msg->vers.cmd, buf+2, 4);
+
 		int val =  0;
 		// This assumes the version format is a.b.c, where
 		// a, b, c are numbers of at most 2 digits.

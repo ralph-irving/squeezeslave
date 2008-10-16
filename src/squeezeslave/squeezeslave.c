@@ -37,7 +37,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.7.5.1-23425";
+static const char* version = "0.8-23425";
 
 static int player_type = 8;
 
@@ -80,14 +80,14 @@ static void send_restart_signal() {
 int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
-	char macaddress[6] = { 1, 1, 1, 1, 1, 1 };
+	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
 	int output_device_id = -1;
 	bool use_signal_to_exit = false;
 	bool retry_connection = false;
 	slimaudio_volume_t volume_control = VOLUME_DRIVER;
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
-	unsigned int retry_interval = 3;
+	unsigned int retry_interval = 5;
 	int keepalive_interval = -1;
 	
 	while (true) {
@@ -108,7 +108,11 @@ int main(int argc, char *argv[]) {
 		};
 	
 		const char shortopt =
+#ifdef GETOPT_SUPPORTS_OPTIONAL
 			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:r::sVv:",
+#else
+			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:r:sVv:",
+#endif
 					 long_options, NULL);
 	
 		if (shortopt == -1) {
@@ -170,7 +174,7 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			retry_connection = true;
 			if (optarg != NULL) {
-			  fprintf( stderr, "Got retry opt arg %s\n", optarg );
+				fprintf( stderr, "Got retry opt arg %s\n", optarg );
 				retry_interval = strtoul(optarg, NULL, 0);
 			}
 			break;
@@ -207,12 +211,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (slimproto_init(&slimproto) < 0) {
-		fprintf(stderr, "Failed to initialise slimproto\n");
+		fprintf(stderr, "Failed to initialize slimproto\n");
 		exit(-1);	
 	}
 
 	if (slimaudio_init(&slimaudio, &slimproto) < 0) {
-		fprintf(stderr, "Failed to initialise slimaudio\n");
+		fprintf(stderr, "Failed to initialize slimaudio\n");
 		exit(-1);
 	}
 
@@ -238,8 +242,7 @@ int main(int argc, char *argv[]) {
 				      output_predelay_amplitude);
 
 	if (keepalive_interval >= 0) {
-		slimaudio_set_keepalive_interval(&slimaudio,
-						 keepalive_interval);
+		slimaudio_set_keepalive_interval(&slimaudio, keepalive_interval);
 	}
 
 	if (slimaudio_open(&slimaudio) < 0) {
@@ -358,7 +361,7 @@ static void print_help() {
 "                                keepalive.\n"
 "-m, --mac <mac_address>:        Sets the mac address for this instance.\n"
 "                                Use the colon-separated notation.\n"
-"                                The default is 01:01:01:01:01.\n"
+"                                The default is 00:00:00:00:01.\n"
 "                                SqueezeCenter uses this value to distinguish\n"
 "                                multiple instances, allowing per-player settings.\n"
 "-O, --oldplayer:                Uses an old player-type-id mostly compatible with\n"
@@ -376,7 +379,7 @@ static void print_help() {
 "                                If the connection to SqueezeCenter is lost, the\n"
 "                                program will poll it until it restarts.  The\n"
 "                                optional value specifies the interval between\n"
-"                                retries and defaults to 3s.\n"
+"                                retries and defaults to 5s.\n"
 "-s, --signal:                   Causes the program to wait for SIGTERM to exit.\n"
 "                                The default is to wait for a keyboard entry, which\n"
 "                                prevents the program from running in background.\n"

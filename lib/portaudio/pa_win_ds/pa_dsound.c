@@ -76,7 +76,9 @@ static  gUnderCallbackCounter = 0;
 #endif
 
 /************************************************* Definitions ********/
+#if !defined(__CYGWIN__) && !defined(__MINGW32__)
 typedef struct internalPortAudioStream internalPortAudioStream;
+#endif
 typedef struct internalPortAudioDevice
 {
     GUID                             pad_GUID;
