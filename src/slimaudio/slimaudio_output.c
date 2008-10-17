@@ -232,9 +232,9 @@ static void *output_thread(void *ptr) {
 				// d_slimproto_v tracing services.  Note that Squeezebox3
 			  	// seems to report every 1 second or so, but the server only
 			  	// drops the connection after 15-20 seconds of inactivity.
+
 			  	if (audio->keepalive_interval <= 0) {
-					pthread_cond_wait(&audio->output_cond,
-							  &audio->output_mutex);
+					pthread_cond_wait(&audio->output_cond, &audio->output_mutex);
 				}
 				else {
 					gettimeofday(&now, NULL);

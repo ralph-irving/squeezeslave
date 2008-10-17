@@ -187,7 +187,7 @@ static void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLA
 }
 
 static void flac_error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data) {
-	fprintf(stderr, "flac decoder error %i\n", /*FLAC__StreamDecoderErrorStatusString[status]*/ status);
+	fprintf(stderr, "libflac: decoding error (%i)\n", status);
 }
 
 

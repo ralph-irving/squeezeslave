@@ -20,13 +20,12 @@ SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
 .c.o:
 	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
-.o:
-	${CC} $(LDFLAGS) $*.o -o $* -Lpa_unix_oss -lportaudio $(LIBS)
-
 all : bin/squeezeslave
 
 bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTAUDIOFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(SLIMPROTOFILES:.c=.o) $(GETOPTFILES:.c=.o)
-	${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac/win32/lib/libFLAC.lib  lib/libmad/win32/libmad-intel.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Lbin -lpthreadGC2 -Ldx/lib -lws2_32 -ldsound -lwinmm -lm
+	${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac/win32/lib/libFLAC.lib  lib/libmad/win32/libmad-intel.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a lib/pthread/win32/lib/static-libpthreadGC2.a -Ldx/lib -lws2_32 -ldsound -lwinmm -lm
+
+# ${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac/win32/lib/libFLAC.lib  lib/libmad/win32/libmad-intel.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Llib/pthread/win32/lib -lpthreadGC2 -Ldx/lib -lws2_32 -ldsound -lwinmm -lm
 
 clean:
 	-@${RM} $(PORTAUDIOFILES:.c=.o)
