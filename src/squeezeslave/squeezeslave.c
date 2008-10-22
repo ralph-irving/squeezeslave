@@ -37,7 +37,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-23425-7";
+static const char* version = "0.8-23425-8";
 
 static int player_type = 8;
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 	int output_device_id = -1;
 	bool use_signal_to_exit = false;
 	bool retry_connection = false;
-	slimaudio_volume_t volume_control = VOLUME_DRIVER;
+	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
 	unsigned int retry_interval = 5;
@@ -387,7 +387,7 @@ static void print_help() {
 "-v, --volume <on|sw|off>:       Enables/disables volume changes done by\n"
 "                                SqueezeCenter during its operation, such as when\n"
 "                                changing the volume through the web interface or\n"
-"                                when applying replay gain.  Defaults to on.\n"
+"                                when applying replay gain.  Defaults to sw.\n"
 "                                        on:  volume changes performed on device.\n"
 "                                        sw:  volume changes performed in software.\n"
 "                                        off: volume changes ignored.\n"

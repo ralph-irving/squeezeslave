@@ -80,12 +80,15 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 	char buffer[AUDIO_CHUNK_SIZE];
 	
 	do {
+#ifdef __BIG_ENDIAN__
+		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, 1, 2, 1, &current_bitstream);
+#else /* __LITTLE_ENDIAN__ */
 		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, 0, 2, 1, &current_bitstream);
-
+#endif
 		switch (bytes_read) {
 		case OV_HOLE:
 		case OV_EBADLINK:
-	    	fprintf(stderr, "Error decoding voribs stream\n");
+	    	fprintf(stderr, "Error decoding vorbis stream\n");
 			goto vorbis_error;
 		
 		case 0: // End of file	

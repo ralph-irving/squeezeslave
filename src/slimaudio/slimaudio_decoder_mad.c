@@ -193,10 +193,10 @@ enum mad_flow mad_output(void *data,
 
 	VDEBUGF("decode_output state=%i nchannels=%i nsamples=%i\n", audio->decoder_state, nchannels, nsamples);
 
-	buf = (char *) malloc(nsamples * 2 * 2 /* always stero ouptut */);
+	buf = (char *) malloc(nsamples * 2 * 2 ); /* always stereo output */
 	ptr = buf;
 
-#if __BIG_ENDIAN__
+#ifdef __BIG_ENDIAN__
 	for (i=0; i<nsamples; i++) {
 		signed int sample;
 
