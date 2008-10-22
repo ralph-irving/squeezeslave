@@ -37,7 +37,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-23425-8";
+static const char* version = "0.8-23425-9";
 
 static int player_type = 8;
 
@@ -174,8 +174,13 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			retry_connection = true;
 			if (optarg != NULL) {
-				fprintf( stderr, "Got retry opt arg %s\n", optarg );
+				fprintf( stderr, "Setting retry interval to %s\n", optarg );
 				retry_interval = strtoul(optarg, NULL, 0);
+				if ( retry_interval < 1 )
+				{
+					fprintf( stderr, "Retry interval too low, reset to 5 seconds.\n");
+					retry_interval = 5;
+				}
 			}
 			break;
 		case 's':

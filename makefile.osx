@@ -1,0 +1,44 @@
+CC=gcc
+
+#CFLAGS=-Wall -DSLIMPROTO_DEBUG -D__BIG_ENDIAN__
+CFLAGS=-Wall -DSLIMPROTO_DEBUG
+
+INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
+
+PORTAUDIOFILES:=lib/portaudio/pa_mac_core/pa_mac_core.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
+
+PORTMIXERFILES:=lib/portmixer/px_mac_core/px_mac_core.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
+
+
+.c.o:
+	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+.o:
+	${CC} $*.o -o $* -Lpa_unix_oss -lportaudio $(LIBS)
+
+all : bin/squeezeslave
+
+lib/libportaudio.a: $(PORTAUDIOFILES:.c=.o)
+	ar cru lib/libportaudio.a $^
+	ranlib lib/libportaudio.a
+
+lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
+	ar cru lib/libslimproto.a $^
+	ranlib lib/libslimproto.a
+
+bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
+	${CC} -o bin/squeezeslave $^ -L/usr/local/lib -lmad -lFLAC -lvorbisfile -lvorbis -logg /System/Library/Frameworks/CoreAudio.framework/CoreAudio /System/Library/Frameworks/AudioToolbox.framework/AudioToolbox -lpthread
+
+
+clean:
+	-@rm -f $(PORTAUDIOFILES:.c=.o)
+	-@rm -f $(SLIMPROTOFILES:.c=.o)
+	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
+	-@rm -f lib/libportaudio.a
+	-@rm -f lib/libslimproto.a
+	-@rm -f bin/squeezeslave
+

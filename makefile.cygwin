@@ -1,3 +1,8 @@
+#
+# BROKEN:output_thread spins causing 100% CPU and no audio is output.
+# thread appears to not block on pthread_cond_wait and/or pthread_cond_timedwait.
+# If someone who knows cygwin threads can help, that would be great.
+#
 CC=gcc
 DLLTOOL=dlltool
 DLLWRAP=dllwrap
