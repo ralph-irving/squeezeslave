@@ -28,6 +28,8 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
+#define RETRY_DEFAULT	5
+
 static int connect_callback(slimproto_t *p, bool isConnected, void *user_data);
 static int parse_macaddress(char *macaddress, const char *str);
 static void print_version();
@@ -37,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-23425-9";
+static const char* version = "0.8-23425-10";
 
 static int player_type = 8;
 
@@ -87,7 +89,7 @@ int main(int argc, char *argv[]) {
 	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
-	unsigned int retry_interval = 5;
+	unsigned int retry_interval = RETRY_DEFAULT;
 	int keepalive_interval = -1;
 	
 	while (true) {
@@ -174,12 +176,13 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			retry_connection = true;
 			if (optarg != NULL) {
-				fprintf( stderr, "Setting retry interval to %s\n", optarg );
+				fprintf( stderr, "Setting retry interval to %s seconds.\n", optarg );
 				retry_interval = strtoul(optarg, NULL, 0);
 				if ( retry_interval < 1 )
 				{
-					fprintf( stderr, "Retry interval too low, reset to 5 seconds.\n");
-					retry_interval = 5;
+					fprintf( stderr, "Retry interval too low, reset to %d seconds.\n",
+												RETRY_DEFAULT);
+					retry_interval = RETRY_DEFAULT;
 				}
 			}
 			break;
