@@ -1,13 +1,11 @@
 CC=cc
-CFLAGS=-D__BIG_ENDIAN__ -s -xO5 -fast -w -fsimple -xarch=v8plusa -xthreadvar=no%dynamic
+CFLAGS=-s -xO4 -fast -xpentium -xthreadvar=no%dynamic
 
-INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/flac/s9sparc/include -Ilib/libmad/s9sparc -Ilib/getopt -Ilib/vorbis/s9sparc/include
+INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/flac/solaris/include -Ilib/libmad/solaris -Ilib/getopt -I/usr/sfw/include
 
 PORTAUDIOFILES=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_solaris.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
 
 PORTMIXERFILES=lib/portmixer/px_none/px_none.c
-
-GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
 SLIMPROTOFILES=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
 
@@ -29,21 +27,16 @@ lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
 	ar cru lib/libslimproto.a $^
 	ranlib lib/libslimproto.a
 
-lib/libgetopt.a: $(GETOPTFILES:.c=.o)
-	ar cru lib/libgetopt.a $^
-	ranlib lib/libgetopt.a
-
-bin/squeezeslave: $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a lib/libgetopt.a
-	${CC} -s -o bin/squeezeslave $^ -lpthread -lm -lsocket -lnsl -lrt -Llib/flac/s9sparc/lib lib/libmad/s9sparc/libmad-sparc.a -lFLAC -Llib/vorbis/s9sparc/lib -lvorbisfile -lvorbis -logg /opt/SUNWspro/prod/lib/libsunmath.a
+bin/squeezeslave: $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
+	${CC} -o bin/squeezeslave $^ -lpthread -lm -lsocket -lnsl -lrt -Llib/flac/solaris/lib lib/libmad/solaris/libmad.a -lFLAC lib/vorbis/solaris/lib/libvorbisfile.a lib/vorbis/solaris/lib/libvorbis.a lib/vorbis/solaris/lib/libogg.a /opt/SUNWspro/prod/lib/libsunmath.a
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)
-	-@rm -f $(PORTMIXERFILES:.c=.o)
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
 	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
+	-@rm -f $(PORTMIXERFILES:.c=.o)
 	-@rm -f $(GETOPTFILES:.c=.o)
 	-@rm -f lib/libportaudio.a
 	-@rm -f lib/libslimproto.a
-	-@rm -f lib/libgetopt.a
 	-@rm -f bin/squeezeslave
 

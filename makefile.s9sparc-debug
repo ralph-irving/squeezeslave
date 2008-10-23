@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS=-D__BIG_ENDIAN__ -s -xO5 -fast -w -fsimple -xarch=v8plusa -xthreadvar=no%dynamic
+CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -D_POSIX_PTHREAD_SEMANTICS -g -fast -w -fsimple -xarch=v8plusa -xthreadvar=no%dynamic
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/flac/s9sparc/include -Ilib/libmad/s9sparc -Ilib/getopt -Ilib/vorbis/s9sparc/include
 
@@ -34,7 +34,7 @@ lib/libgetopt.a: $(GETOPTFILES:.c=.o)
 	ranlib lib/libgetopt.a
 
 bin/squeezeslave: $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a lib/libgetopt.a
-	${CC} -s -o bin/squeezeslave $^ -lpthread -lm -lsocket -lnsl -lrt -Llib/flac/s9sparc/lib lib/libmad/s9sparc/libmad-sparc.a -lFLAC -Llib/vorbis/s9sparc/lib -lvorbisfile -lvorbis -logg /opt/SUNWspro/prod/lib/libsunmath.a
+	${CC} -g -o bin/squeezeslave $^ -lpthread -lm -lsocket -lnsl -lrt -Llib/flac/s9sparc/lib lib/libmad/s9sparc/libmad-sparc.a -lFLAC -Llib/vorbis/s9sparc/lib -lvorbisfile -lvorbis -logg /opt/SUNWspro/prod/lib/libsunmath.a
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)
