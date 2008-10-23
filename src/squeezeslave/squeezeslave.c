@@ -39,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-11";
+static const char* version = "0.8-12";
 
 static int player_type = 8;
 

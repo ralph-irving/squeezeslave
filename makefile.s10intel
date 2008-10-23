@@ -28,7 +28,7 @@ lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
 	ranlib lib/libslimproto.a
 
 bin/squeezeslave: $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
-	${CC} -o bin/squeezeslave $^ -lpthread -lm -lsocket -lnsl -lrt -Llib/flac/solaris/lib lib/libmad/solaris/libmad.a -lFLAC lib/vorbis/solaris/lib/libvorbisfile.a lib/vorbis/solaris/lib/libvorbis.a lib/vorbis/solaris/lib/libogg.a /opt/SUNWspro/prod/lib/libsunmath.a
+	${CC} -s -o bin/squeezeslave $^ -lpthread -lm -lsocket -lnsl -lrt -Llib/flac/solaris/lib lib/libmad/solaris/libmad.a -lFLAC lib/vorbis/solaris/lib/libvorbisfile.a lib/vorbis/solaris/lib/libvorbis.a lib/vorbis/solaris/lib/libogg.a /opt/SUNWspro/prod/lib/libsunmath.a
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)

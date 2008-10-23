@@ -1,0 +1,11 @@
+--- squeezeslave-0.7.5.2.orig/SlimProtoLib/src/squeezeslave/squeezeslave.c	2008-04-12 09:19:08.000000000 -0400
++++ squeezeslave-0.7.5.2/SlimProtoLib/src/squeezeslave/squeezeslave.c	2008-04-12 11:37:12.000000000 -0400
+@@ -84,7 +84,7 @@
+ 	slimproto_t slimproto;
+ 	slimaudio_t slimaudio;
+ 	char macaddress[6] = { 1, 1, 1, 1, 1, 1 };
+-	int output_device_id = -1;
++	int output_device_id = 0;
+ 	bool use_signal_to_exit = false;
+ 	bool retry_connection = false;
+ 	bool volume_control = VOLUME_DRIVER;

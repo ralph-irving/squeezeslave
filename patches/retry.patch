@@ -1,0 +1,11 @@
+--- squeezeslave-0.7.5.1.orig/SlimProtoLib/src/squeezeslave/squeezeslave.c
++++ squeezeslave-0.7.5.1/SlimProtoLib/src/squeezeslave/squeezeslave.c
+@@ -111,7 +111,7 @@
+ 		};
+ 	
+ 		const char shortopt =
+-			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:r::sVv:",
++			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:r:sVv:",
+ 					 long_options, NULL);
+ 	
+ 		if (shortopt == -1) {

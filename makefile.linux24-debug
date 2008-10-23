@@ -1,6 +1,6 @@
 CC=gcc
 
-CFLAGS=-Wall -s -march=i686 -O3 -DNDEBUG -fomit-frame-pointer
+CFLAGS=-Wall -DSLIMPROTO_DEBUG -g -march=i686
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 
@@ -26,7 +26,7 @@ lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
 	ranlib lib/libslimproto.a
 
 bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
-	${CC} -s -o bin/squeezeslave $^ /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lpthread -lm
+	${CC} -g -o bin/squeezeslave $^ /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lpthread -lm
 
 clean:
 	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \

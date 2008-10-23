@@ -1,3 +1,44 @@
+2008-10-23 12:36  paddockd
+
+	* ChangeLog, lib/flac/build-flac-solaris10, lib/flac/solaris,
+	  lib/flac/solaris/include, lib/flac/solaris/include/FLAC,
+	  lib/flac/solaris/include/FLAC/all.h,
+	  lib/flac/solaris/include/FLAC/assert.h,
+	  lib/flac/solaris/include/FLAC/callback.h,
+	  lib/flac/solaris/include/FLAC/export.h,
+	  lib/flac/solaris/include/FLAC/format.h,
+	  lib/flac/solaris/include/FLAC/metadata.h,
+	  lib/flac/solaris/include/FLAC/ordinals.h,
+	  lib/flac/solaris/include/FLAC/stream_decoder.h,
+	  lib/flac/solaris/include/FLAC/stream_encoder.h,
+	  lib/flac/solaris/lib, lib/flac/solaris/lib/libFLAC.a,
+	  lib/libmad/build-mad-solaris, lib/libmad/solaris,
+	  lib/libmad/solaris/libmad.a, lib/libmad/solaris/mad.h,
+	  lib/libmad/solaris/stdbool.h, lib/vorbis/build-ogg-solaris,
+	  lib/vorbis/build-vorbis-solaris, lib/vorbis/solaris,
+	  lib/vorbis/solaris/include, lib/vorbis/solaris/include/ogg,
+	  lib/vorbis/solaris/include/ogg/config_types.h,
+	  lib/vorbis/solaris/include/ogg/ogg.h,
+	  lib/vorbis/solaris/include/ogg/os_types.h,
+	  lib/vorbis/solaris/include/vorbis,
+	  lib/vorbis/solaris/include/vorbis/codec.h,
+	  lib/vorbis/solaris/include/vorbis/vorbisenc.h,
+	  lib/vorbis/solaris/include/vorbis/vorbisfile.h,
+	  lib/vorbis/solaris/lib, lib/vorbis/solaris/lib/libogg.a,
+	  lib/vorbis/solaris/lib/libvorbis.a,
+	  lib/vorbis/solaris/lib/libvorbisfile.a, makefile.linux24,
+	  makefile.linux26, makefile.s10intel, makefile.s10intel-debug,
+	  makefile.s9sparc, makefile.s9sparc-debug,
+	  src/squeezeslave/squeezeslave.c: Added Solaris 10 intel build
+	  files.
+	  Increased version to 11.
+	  Added -s -g flags to binary build lines in makefiles.
+
+2008-10-22 13:12  paddockd
+
+	* src/squeezeslave/squeezeslave.c: Used #define for default retry
+	  connection value.
+
 2008-10-22 12:07  paddockd
 
 	* makefile.cygwin, makefile.osx, src/squeezeslave/squeezeslave.c:
