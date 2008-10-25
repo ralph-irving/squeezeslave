@@ -1,0 +1,380 @@
+Index: src/slimaudio/slimaudio_decoder_flac.c
+===================================================================
+--- src/slimaudio/slimaudio_decoder_flac.c	(revision 12513)
++++ src/slimaudio/slimaudio_decoder_flac.c	(working copy)
+@@ -119,7 +119,7 @@
+ 	}
+ 	
+ 	int data_len = *bytes;
+-	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, buffer, &data_len);
++	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, (char*) buffer, &data_len);
+ 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
+ 		audio->decoder_end_of_stream = true;
+ 	}
+Index: src/slimaudio/slimaudio_http.c
+===================================================================
+--- src/slimaudio/slimaudio_http.c	(revision 12513)
++++ src/slimaudio/slimaudio_http.c	(working copy)
+@@ -65,9 +65,16 @@
+ int slimaudio_http_open(slimaudio_t *audio) {
+ 	pthread_mutex_init(&(audio->http_mutex), NULL);
+ 	pthread_cond_init(&(audio->http_cond), NULL);
++	/* 
++	 * We lock the mutex right here, knowing that http_thread will
++	 * release it once it enters pthread_cond_wait inside its STOPPED
++	 * state.
++	 */
++	pthread_mutex_lock(&audio->http_mutex);
+ 
+ 	if (pthread_create( &audio->http_thread, NULL, http_thread, (void*) audio) != 0) {
+ 		fprintf(stderr, "Error creating http thread\n");
++		pthread_mutex_unlock(&audio->http_mutex);
+ 		return -1;
+ 	}
+ 
+@@ -94,8 +101,6 @@
+ 	int last_state;
+ #endif
+ 
+-	pthread_mutex_lock(&audio->http_mutex);
+-
+ 	audio->http_state = STREAM_STOPPED;
+ 	
+ 	while (true) {
+Index: src/slimaudio/slimaudio_output.c
+===================================================================
+--- src/slimaudio/slimaudio_output.c	(revision 12513)
++++ src/slimaudio/slimaudio_output.c	(working copy)
+@@ -172,7 +172,27 @@
+ 		switch (audio->output_state) {
+ 			case STOPPED:
+ 			case PAUSED:
+-				pthread_cond_wait(&audio->output_cond, &audio->output_mutex);
++				/* 
++				 * We report ourselves to the server every 5 seconds
++				 * as a keep-alive.  This is required for slimserver version 
++				 * 6.5.x although technically, "stat" is not a valid event 
++				 * code for the STAT Client->Server message.  This was 
++				 * lifted by observing how a Squeezebox3 reports itself to 
++				 * the server using slimserver's d_slimproto and 
++				 * d_slimproto_v tracing services.  Note that the value of 5 
++				 * seconds was made up: Squeezebox3 seems to report every 1 
++				 * second or so, but the server only drops the connection 
++				 * after 15-20 seconds of inactivity.  So 5 seconds should 
++				 * work fine.
++				 */
++				gettimeofday(&now, NULL);
++				timeout.tv_sec = now.tv_sec + 5;
++				timeout.tv_nsec = now.tv_usec * 1000;				
++				err = pthread_cond_timedwait(&audio->output_cond, &audio->output_mutex, &timeout);
++					
++				if (err == ETIMEDOUT) {
++					slimaudio_stat(audio, "stat");
++				}
+ 				break;
+ 
+ 			case PLAY:
+Index: src/slimaudio/slimaudio_decoder_pcm.c
+===================================================================
+--- src/slimaudio/slimaudio_decoder_pcm.c	(revision 12513)
++++ src/slimaudio/slimaudio_decoder_pcm.c	(working copy)
+@@ -61,7 +61,7 @@
+ 		}			
+ 		
+ 		data_len = AUDIO_CHUNK_SIZE-remainder;
+-		ok = slimaudio_buffer_read(audio->decoder_buffer, data+remainder, &data_len);
++		ok = slimaudio_buffer_read(audio->decoder_buffer, (char*)(data+remainder), &data_len);
+ 		int nsamples = data_len / 2;
+ 
+ 		/* convert buffer into samples */
+@@ -101,7 +101,7 @@
+ 	}
+ #endif
+ 		
+-		slimaudio_buffer_write(audio->output_buffer, data, nsamples * 2);
++		slimaudio_buffer_write(audio->output_buffer, (char*)data, nsamples * 2);
+ 		data_len -= nsamples * 2;
+ 	}
+ 	
+Index: src/slimaudio/slimaudio_decoder.c
+===================================================================
+--- src/slimaudio/slimaudio_decoder.c	(revision 12513)
++++ src/slimaudio/slimaudio_decoder.c	(working copy)
+@@ -62,8 +62,17 @@
+ 	if (slimaudio_decoder_pcm_init(audio) != 0)
+ 		return -1;
+ 	
++	/* 
++	 * Acquire the decoder mutex before the thread is started, to make sure
++	 * no other thread can acquire it before.  This would lead to a deadlock
++	 * as the decoder thread needs to enter its cond-variable wait before
++	 * any other thread starts interacting with it.
++	 */
++	pthread_mutex_lock(&audio->decoder_mutex);
++
+ 	if (pthread_create(&audio->decoder_thread, NULL, decoder_thread, (void*) audio) != 0) {
+ 		fprintf(stderr, "Error creating decoder thread\n");
++		pthread_mutex_unlock(&audio->decoder_mutex);
+ 		return -1;		
+ 	}
+ 	
+@@ -93,12 +102,23 @@
+ 	
+ 	audio->decoder_state = STREAM_STOPPED;
+ 	
++	unsigned char first_time = 1;
++
+ 	while (true) {				
+ 		DEBUGF("decoder_thread state %i\n", audio->decoder_state);
+ 
+ 		switch (audio->decoder_state) {
+ 			case STREAM_STOPPED:
+-				pthread_mutex_lock(&audio->decoder_mutex);
++				if (first_time == 1) {
++					/* 
++					 * The first time in, the mutex has already been
++					 * acquired in the function that starts the thread.
++					 */
++					first_time = 0;
++				}
++				else {
++					pthread_mutex_lock(&audio->decoder_mutex);
++				}
+ 				pthread_cond_wait(&audio->decoder_cond, &audio->decoder_mutex);
+ 				pthread_mutex_unlock(&audio->decoder_mutex);
+ 				break;
+Index: src/slimproto/slimproto.c
+===================================================================
+--- src/slimproto/slimproto.c	(revision 12513)
++++ src/slimproto/slimproto.c	(working copy)
+@@ -64,7 +64,7 @@
+ #define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
+ #define packN2(ptr, off, v) { ptr[off] = (char)(v >> 8) & 0xFF; ptr[off+1] = v & 0xFF; }
+ #define packC(ptr, off, v) { ptr[off] = v & 0xFF; }
+-#define packA4(ptr, off, v) { strncpy(&ptr[off], v, 4); }
++#define packA4(ptr, off, v) { strncpy((char*)(&ptr[off]), v, 4); }
+ 
+ #define unpackN4(ptr, off) ((ptr[off] << 24) | (ptr[off+1] << 16) | (ptr[off+2] << 8) | ptr[off+3])
+ #define unpackN2(ptr, off) ((ptr[off] << 8) | ptr[off+1])
+@@ -218,8 +218,22 @@
+ 	p->state = PROTO_CONNECT;
+ 	pthread_cond_broadcast(&p->slimproto_cond);	
+ 	
++	/* 
++	 * Wait for confirmation that thee connection opens correctly.  This
++	 * will fail, for example, if slimserver is not running when the
++	 * connection attempt happens.
++	 */
++	int return_value = 0; 
++	while (p->state != PROTO_CONNECTED) {
++		pthread_cond_wait(&p->slimproto_cond, &p->slimproto_mutex);
++		if (p->state == PROTO_CLOSED) {
++			return_value = -1;
++			break;
++		}
++	}
++
+ 	pthread_mutex_unlock(&p->slimproto_mutex);
+-	return 0;			
++	return return_value;
+ }	
+ 
+ 
+@@ -257,8 +271,10 @@
+ 	
+ proto_connect_err:
+ 	p->state = PROTO_CLOSED;
++	DEBUGF("proto_connect: broadcast.\n" );
+ 	pthread_cond_broadcast(&p->slimproto_cond);
+ 
++	DEBUGF("proto_connect: unlock.\n" );
+ 	pthread_mutex_unlock(&p->slimproto_mutex);
+ 	return -1;
+ }
+@@ -314,7 +330,7 @@
+ 	
+ 	int i;
+ 	for (i=0; i<p->num_command_callbacks; i++) {
+-		if (strncmp(p->command_callbacks[i].cmd, buf+2, 4) == 0) {
++		if (strncmp(p->command_callbacks[i].cmd, (char*)(buf+2), 4) == 0) {
+ 			int ok = (p->command_callbacks[i].callback)(p, buf, len, p->command_callbacks[i].user_data);
+ 			if (ok < 0) {
+ 				fprintf(stderr, "Error in callback");
+@@ -331,7 +347,7 @@
+ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_msg_t *msg) {
+ 	memset(msg, 0, sizeof(slimproto_msg_t));
+ 	
+-	if (strncmp(buf+2, "strm", 4) == 0) {
++	if (strncmp((char*)(buf+2), "strm", 4) == 0) {
+ 		msg->strm.length = unpackN2(buf, 0);
+ 		memcpy(msg->strm.cmd, buf+2, 4);
+ 		msg->strm.command = unpackC(buf, 6);
+@@ -358,7 +374,7 @@
+ 		}
+ 		*(msg->strm.http_hdr + http_len) = '\0';		
+ 	}
+-	else if (strncmp(buf+2, "audg", 4) == 0) {
++	else if (strncmp((char*)(buf+2), "audg", 4) == 0) {
+ 		msg->audg.length = unpackN2(buf, 0);
+ 		memcpy(msg->audg.cmd, buf+2, 4);
+ 		msg->audg.old_left_gain = unpackN4(buf, 6);
+Index: src/squeezeslave/squeezeslave.c
+===================================================================
+--- src/squeezeslave/squeezeslave.c	(revision 12513)
++++ src/squeezeslave/squeezeslave.c	(working copy)
+@@ -24,6 +24,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <getopt.h>
++#include <signal.h>
+ 
+ #include "slimproto/slimproto.h"
+ #include "slimaudio/slimaudio.h"
+@@ -31,7 +32,11 @@
+ 
+ static int connect_callback(slimproto_t *p, bool isConnected, void *user_data);
+ static int parse_macaddress(char *macaddress, const char *str);
++void print_help(void);
++void signal_handler(int signal_number);
+ 
++volatile unsigned char signal_exit_flag = 0;
++
+ slimproto_t slimproto;
+ slimaudio_t slimaudio;
+ 
+@@ -41,31 +46,32 @@
+ int main(int argc, char *argv[]) {
+ 	char *slimserver_address = "127.0.0.1";
+ 	int output_device_id = -1;
++	unsigned char use_signal_to_exit = 0;
+ 	char c;
+ 	int i;
+ 	
+ 	while (1) {
+ 		static struct option long_options[] = {
+-        	{"help", 	no_argument,       0, 'h'},
+-			{"debug",   required_argument, 0, 'd'},
+-			{"mac",   	required_argument, 0, 'm'},
+-			{"output", 	required_argument, 0, 'o'},
+-	        {0, 0, 0, 0}
+-	    };
++			{"help",     no_argument,       0, 'h'},
++			{"debug",    required_argument, 0, 'd'},
++			{"mac",	     required_argument, 0, 'm'},
++			{"output",   required_argument, 0, 'o'},
++			{"signal",   no_argument,       0, 's'},
++			{0, 0, 0, 0}
++		};
+ 	
+-	    /* getopt_long stores the option index here. */
+-	    int option_index = 0;
++		/* getopt_long stores the option index here. */
++		int option_index = 0;
+      
+-	    c = getopt_long (argc, argv, "hd:m:o:",
+-    	                 long_options, &option_index);
++		c = getopt_long (argc, argv, "shd:m:o:",
++				 long_options, &option_index);
+ 	
+-	
+ 		if (c == -1)
+ 			break;
+ 			
+ 		switch (c) {
+ 		case 'h':
+-			fprintf(stderr, "help ... todo\n");
++			print_help();
+ 			exit(0);	
+ 			
+ 		case 'd':
+@@ -105,6 +111,9 @@
+ 		case 'o':
+ 			output_device_id = strtol(optarg, NULL, 0);
+ 			break;
++		case 's':
++			use_signal_to_exit = 1;
++			break;
+ 		}
+ 	}
+ 
+@@ -129,7 +138,7 @@
+ 	printf("Output devices:\n");	
+ 	for (i=0; i<num_devices; i++) {
+ 		printf("%i: %s\n", i, devices[i]);
+-	}	
++	}
+ 
+ 	if (output_device_id >= 0) {
+ 		slimaudio_set_output_device(&slimaudio, output_device_id);
+@@ -145,8 +154,15 @@
+ 		exit(-1);
+ 	}
+ 
+-	getc(stdin);
+-
++	if (use_signal_to_exit) {
++		signal(SIGTERM, &signal_handler);
++		while (signal_exit_flag == 0) {
++		      pause();
++		}
++	}
++        else {
++		getc(stdin);
++        }
+ #if 0
+ 	int ch = getc(stdin);
+ 	// This does not work on all platforms and I don't have time to sort it out right
+@@ -196,6 +212,40 @@
+ 	return 0;
+ } 
+ 
++void print_help() {
++     fprintf(stdout,
++"-h, --help:               Prints this message.\n"
++"-m, --mac <mac_address>:  Sets the mac address for this instance.\n"
++"                          Use the colon-separated notation.\n"
++"                          The default is 01:01:01:01:01.\n"
++"                          Slimserver uses this value to distinguish\n"
++"                          multiple instances, allowing per-player settings.\n"
++"-o, --output <device_id>: Sets the output device id.\n"
++"                          The default id is 0.\n"
++"                          The output device ids are enumerated at startup.\n"
++"-s, --signal:             Causes the program to wait for SIGTERM to exit.\n"
++"                          The default is to wait for a keyboard entry, which\n"
++"                          prevents the program from running in background.\n"
++"-d, --debug <trace_name>: Turns on debug tracing for the specified level.\n"
++"                          The option can be used multiple times to enable\n"
++"                          multiple levels.\n"
++"                          Available levels:\n"
++"                                  slimproto\n"
++"                                  slimaudio\n"
++"                                  slimaudio_buffer\n"
++"                                  slimaudio_buffer_v\n"
++"                                  slimaudio_decoder\n"
++"                                  slimaudio_decoder_v\n"
++"                                  slimaudio_http\n"
++"                                  slimaudio_http_v\n"
++"                                  slimaudio_output\n");
++}
++
++void signal_handler(int signal_number) {
++	fprintf(stderr,"Got signal.\n");
++	signal_exit_flag = 1;
++}
++
+ static int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
+ 	if (isConnected) {
+ 		if (slimproto_helo(&slimproto, 3, 2, (char *)&macaddress, 1, 0) < 0) {
+Index: makefile.linux
+===================================================================
+--- makefile.linux	(revision 12513)
++++ makefile.linux	(working copy)
+@@ -29,7 +29,7 @@
+ 	ranlib lib/libslimproto.a
+ 
+ bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
+-	${CC} -o bin/squeezeslave $^ /usr/local/lib/libmad.a /usr/local/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lpthread -lm
++	${CC} -o bin/squeezeslave $^ /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lpthread -lm
+ 
+ 
+ clean:

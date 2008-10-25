@@ -1,3 +1,16 @@
+2008-10-23 21:14  paddockd
+
+	* ChangeLog, makefile.linux24, makefile.linux24-debug,
+	  makefile.linux24-i586, makefile.linux26-debug, makefile.s10intel,
+	  patches, patches/flaac.patch, patches/pa19segfault.patch,
+	  patches/portaudiov19.patch, patches/retry.patch,
+	  patches/sc7.patch, patches/version.patch,
+	  src/squeezeslave/squeezeslave.c: Updated version to 12.
+	  Added old patches against svn.slimdevices.com so they don't get
+	  lost.
+	  Added debug makefiles for linux.
+	  Added pentium MMX makefile for linux 2.4.
+
 2008-10-23 12:36  paddockd
 
 	* ChangeLog, lib/flac/build-flac-solaris10, lib/flac/solaris,

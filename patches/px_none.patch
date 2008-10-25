@@ -1,0 +1,11 @@
+--- SlimProtoLib/lib/portmixer/px_none/px_none.c.orig	2006-07-12 09:43:02.000000000 -0400
++++ SlimProtoLib/lib/portmixer/px_none/px_none.c	2006-07-12 09:56:26.000000000 -0400
+@@ -124,7 +124,7 @@
+ {
+    PxInfo *info = (PxInfo *)mixer;
+ 
+-   return NULL;
++   return 0.0;
+ }
+ 
+ void Px_SetOutputVolume( PxMixer *mixer, int i, PxVolume volume )

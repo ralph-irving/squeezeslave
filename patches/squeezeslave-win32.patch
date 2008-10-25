@@ -1,0 +1,241 @@
+--- squeezeslave-0.7.4-17163/SlimProtoLib/src/slimproto/slimproto.c	2008-02-04 10:10:56.000000000 -0500
++++ squeezeslave-0.7.0/SlimProtoLib/src/slimproto/slimproto.c	2008-02-07 13:23:19.000000000 -0500
+@@ -103,10 +103,11 @@
+ 	
+ 	p->state = PROTO_QUIT;
+ 	pthread_cond_broadcast(&p->slimproto_cond);	
+-	
+ 	pthread_mutex_unlock(&p->slimproto_mutex);
+-	
++
++#ifndef __WIN32__
+ 	pthread_join(p->slimproto_thread, NULL);
++#endif	
+ 	
+ #ifdef __WIN32__
+ 	WSACleanup();
+@@ -116,7 +117,6 @@
+ 	
+ 	p->num_connect_callbacks = 0;
+ 	p->num_command_callbacks = 0;
+-	
+ 	pthread_mutex_destroy(&(p->slimproto_mutex));
+ 	pthread_cond_destroy(&(p->slimproto_cond));
+ }
+@@ -228,7 +228,7 @@
+ 	p->state = PROTO_CONNECT;
+ 	pthread_cond_broadcast(&p->slimproto_cond);	
+ 	
+-	// Wait for confirmation that thee connection opens correctly.  This
++	// Wait for confirmation that the connection opens correctly.  This
+ 	// will fail, for example, if SqueezeCenter is not running when the
+ 	// connection attempt happens.
+ 	int return_value = 0; 
+@@ -545,7 +545,7 @@
+ 
+ int slimproto_configure_socket(int fd) {
+ 
+-#if defined(MSG_NOSIGNAL)
++#if defined(MSG_NOSIGNAL) || defined(__WIN32__)
+ 	// This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
+ 	// others).  So we'll let the send() call deal with the SIGPIPE
+ 	// avoidance.
+--- squeezeslave-0.7.4-17163/SlimProtoLib/src/squeezeslave/squeezeslave.c	2008-02-04 10:10:56.000000000 -0500
++++ squeezeslave-0.7.0/SlimProtoLib/src/squeezeslave/squeezeslave.c	2008-02-07 15:12:03.000000000 -0500
+@@ -33,11 +33,13 @@
+ static void print_version();
+ static void print_help();
+ static void exit_handler(int signal_number);
++#ifndef __WIN32__
+ static void restart_handler(int signal_number);
++#endif
+ 
+ static volatile bool signal_exit_flag = false;
+ static volatile bool signal_restart_flag = false;
+-static const char* version = "0.7.4";
++static const char* version = "0.7.4";
+ 
+ static int player_type = 8;
+ 
+@@ -60,7 +62,9 @@
+ 			{"mac",	     required_argument, 0, 'm'},
+ 			{"output",   required_argument, 0, 'o'},
+ 			{"oldplayer",no_argument,       0, 'O'},
++#ifndef __WIN32__
+ 			{"retry",    optional_argument, 0, 'r'},
++#endif
+ 			{"signal",   no_argument,       0, 's'},
+ 			{"version",  no_argument,       0, 'V'},
+ 			{"volume",   required_argument, 0, 'v'},
+@@ -120,12 +124,14 @@
+ 		case 'o':
+ 			output_device_id = strtoul(optarg, NULL, 0);
+ 			break;
++#ifndef __WIN32__
+ 		case 'r':
+ 			retry_connection = true;
+ 			if (optarg != NULL) {
+ 				retry_interval = strtoul(optarg, NULL, 0);
+ 			}
+ 			break;
++#endif
+ 		case 's':
+ 			use_signal_to_exit = true;
+ 			break;
+@@ -153,10 +159,11 @@
+ 	if (use_signal_to_exit) {
+ 		signal(SIGTERM, &exit_handler);
+ 	}
+-
++#ifndef __WIN32__
+ 	if (retry_connection) {
+ 		signal(SIGCHLD, &restart_handler);
+ 	}
++#endif
+ 
+ 	if (slimproto_init(&slimproto) < 0) {
+ 		fprintf(stderr, "Failed to initialise slimproto\n");
+@@ -180,13 +187,11 @@
+ 	for (i=0; i<num_devices; i++) {
+ 		printf("%i: %s\n", i, devices[i]);
+ 	}
+-
++	
+ 	if (output_device_id >= 0) {
+ 		slimaudio_set_output_device(&slimaudio, output_device_id);
+ 	}
+ 
+-	slimaudio_set_volume_control(&slimaudio, volume_control);
+-
+ 	if (keepalive_interval >= 0) {
+ 		slimaudio_set_keepalive_interval(&slimaudio,
+ 						 keepalive_interval);
+@@ -197,6 +202,8 @@
+ 		exit(-1);
+ 	}
+ 
++	slimaudio_set_volume_control(&slimaudio, volume_control);
++
+ 	// When retry_connection is true, retry connecting to the SqueezeCenter 
+ 	// until we succeed, unless the signal handler tells us to give up.
+ 	do {
+@@ -213,14 +220,22 @@
+ 					slimserver_address);
+ 				exit(-1);
+ 			}
+-			fprintf(stderr,"Seeping for %d s.\n", retry_interval);
++			fprintf(stderr,"Sleeping for %d s.\n", retry_interval);
++#ifndef __WIN32__
+ 			sleep(retry_interval);
++#else
++			_sleep(retry_interval);
++#endif
+ 		}
+ 
+ 		if (use_signal_to_exit) {
+ 			signal_restart_flag = false;
+ 			while (!signal_exit_flag && !signal_restart_flag) {
++#ifndef __WIN32__
+ 				pause();
++#else
++				_sleep(5);
++#endif
+ 			}
+ 		}
+ 	} while (signal_restart_flag && !signal_exit_flag);
+@@ -306,6 +321,7 @@
+ "-o, --output <device_id>: Sets the output device id.\n"
+ "                          The default id is 0.\n"
+ "                          The output device ids are enumerated at startup.\n"
++#ifndef __WIN32__
+ "-r, --retry [sec]:        Causes the program to retry connecting to\n"
+ "                          SqueezeCenter until it succeeds or is stopped using\n"
+ "                          SIGTERM or keyboard entry (see -s/--signal).\n"
+@@ -313,6 +329,7 @@
+ "                          program will poll it until it restarts.  The\n"
+ "                          optional value specifies the interval between\n"
+ "                          retries and defaults to 3s.\n"
++#endif
+ "-s, --signal:             Causes the program to wait for SIGTERM to exit.\n"
+ "                          The default is to wait for a keyboard entry, which\n"
+ "                          prevents the program from running in background.\n"
+@@ -345,11 +362,13 @@
+ 	signal_exit_flag = true;
+ }
+ 
++#ifndef __WIN32__
+ // Handles a signal coming from inside this process and that causes a restart
+ // of the SqueezeCenter connection.
+ static void restart_handler(int signal_number) {
+ 	signal_restart_flag = true;
+ }
++#endif
+ 
+ // Called by the library when the connection is either established or broken.
+ static int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
+@@ -359,13 +378,15 @@
+ 			exit(-1);	
+ 		}
+ 	}
++#ifndef __WIN32__
+ 	else {
+ 		// Send the SIGCHLD signal, which calls restart_handler to tell
+ 		// the main thread to go back waiting for SqueezeCenter to be
+ 		// available.
+ 		kill(getpid(), SIGCHLD);
+ 	}
+-	
++#endif
++
+ 	return 0;
+ }
+ 
+--- squeezeslave-0.7.4-17163/SlimProtoLib/makefile.cygwin	2008-02-04 10:10:56.000000000 -0500
++++ squeezeslave-0.7.0/SlimProtoLib/makefile.cygwin	2008-02-07 15:15:13.000000000 -0500
+@@ -1,11 +1,12 @@
+ CC=gcc
+-DLLTOOL=\MinGW\bin\dlltool
+-DLLWRAP=\MinGW\bin\dllwrap
+-RM=del
++DLLTOOL=dlltool
++DLLWRAP=dllwrap
++RM=rm
+ 
+ CFLAGS=-Wall -DSLIMPROTO_DEBUG -mno-cygwin
++#CFLAGS=-Wall -DSLIMPROTO_DEBUG
+ 
+-INCLUDE=-I"C:\Program Files\Microsoft DirectX SDK (December 2005)\Include" -Ilib/portaudio_v18/pa_common -Ilib/portaudio_v18/pa_win_ds -Ilib/portmixer/px_common -Ilib/pthread/win32/include -Ilib/libmad/win32 -Ilib/flac-1.1.2/win32/include -Ilib/vorbis/win32/include -Isrc
++INCLUDE=-Ilib/dx/include -Ilib/portaudio_v18/pa_common -Ilib/portaudio_v18/pa_win_ds -Ilib/portmixer/px_common -Ilib/pthread/win32/include -Ilib/libmad/win32 -Ilib/flac-1.2.1/include -Ilib/vorbis/win32/include -Isrc
+ 
+ PORTAUDIOFILES:=lib/portaudio_v18/pa_win_ds/dsound_wrapper.c lib/portaudio_v18/pa_win_ds/pa_dsound.c lib/portaudio_v18/pa_common/pa_lib.c
+ #PORTAUDIOFILES:=lib/portaudio_v18/pa_win_wmme/pa_win_wmme.c lib/portaudio_v18/pa_common/pa_lib.c
+@@ -15,8 +16,6 @@
+ 
+ SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+ 
+-SLIMPROTOJNIFILES:=src/jni/org_titmuss_slimprotolib_SlimProto.c src/jni/org_titmuss_slimprotolib_SlimAudio.c
+-
+ SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
+ 
+ .c.o:
+@@ -27,18 +26,12 @@
+ 
+ all : bin/squeezeslave
+ 
+-bin/slimprotolib.dll: $(PORTAUDIOFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(SLIMPROTOFILES:.c=.o) $(SLIMPROTOJNIFILES:.c=.o) slimprotolib.def
+-	${CC} -Wall -D_JNI_IMPLEMENTATION_ -Wl,--kill-at -shared -o slimprotolib.dll $^ lib/libjvm.dll.a lib/flac-1.1.2/win32/bin/libFLAC.lib lib/libmad/win32/libmad.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Lbin -lpthreadGC2 -lws2_32 -ldsound -lwinmm -lm
+-	copy /Y slimprotolib.dll bin
+-
+ bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTAUDIOFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(SLIMPROTOFILES:.c=.o)
+-	${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac-1.1.2/win32/bin/libFLAC.lib  lib/libmad/win32/libmad.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Lbin -lpthreadGC2 -lws2_32 -ldsound -lwinmm -lm
++	${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac-1.2.1/lib/libFLAC.lib  lib/libmad/win32/libmad.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Lbin -lpthreadGC2 -Ldx/lib -lws2_32 -ldsound -lwinmm -lm
+ 
+ clean:
+ 	-@${RM} $(PORTAUDIOFILES:.c=.o)
+ 	-@${RM} $(PORTMIXERFILES:.c=.o)
+ 	-@${RM} $(SLIMPROTOFILES:.c=.o)
+-	-@${RM} $(SLIMPROTOJNIFILES:.c=.o)
+ 	-@${RM} $(SQUEEZESLAVEFILES:.c=.o)
+-	-@${RM} bin\slimprotolib.dll
+-	-@${RM} bin\squeezeslave.exe
++	-@${RM} bin/squeezeslave.exe

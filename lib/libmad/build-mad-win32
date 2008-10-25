@@ -1,0 +1,5 @@
+#!/bin/bash
+CFLAGS="-g -O2 -mno-cygwin -march=i586" \
+CPPFLAGS="-g -O2 -mno-cygwin -march=i586" \
+CXXFLAGS="-g -O2 -mno-cygwin -march=i586" \
+./configure --prefix=/usr --enable-fpm=intel

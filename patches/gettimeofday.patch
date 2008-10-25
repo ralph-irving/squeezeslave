@@ -1,0 +1,31 @@
+--- SlimProtoLib/src/slimaudio/slimaudio_output.c.orig	2006-07-12 09:43:02.000000000 -0400
++++ SlimProtoLib/src/slimaudio/slimaudio_output.c	2006-07-12 09:45:29.000000000 -0400
+@@ -194,7 +194,7 @@
+ 				
+ 			case BUFFERING:
+ 			case PLAYING:			
+-				gettimeofday(&now);
++				gettimeofday(&now, NULL);
+ 				timeout.tv_sec = now.tv_sec + 1;
+ 				timeout.tv_nsec = now.tv_usec * 1000;				
+ 				err = pthread_cond_timedwait(&audio->output_cond, &audio->output_mutex, &timeout);
+--- SlimProtoLib/src/slimproto/slimproto.c	2006-07-12 09:47:52.000000000 -0400
++++ SlimProtoLib/src/slimproto/slimproto.c.orig	2006-07-12 09:43:02.000000000 -0400
+@@ -101,7 +101,7 @@
+ 	}
+ #endif
+ 
+-	gettimeofday(&p->epoch);
++	gettimeofday(&p->epoch,NULL);
+ 
+ 	memset(p, 0, sizeof(slimproto_t));	
+ 	pthread_mutex_init(&(p->slimproto_mutex), NULL);
+@@ -458,7 +458,7 @@
+ void slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr) {
+ 	struct timeval tnow;
+ 	
+-	gettimeofday(&tnow);
++	gettimeofday(&tnow,NULL);
+ 	int jiffies;
+ 	jiffies = tnow.tv_sec * 1000 + tnow.tv_usec / 1000;
+ 	jiffies -= p->epoch.tv_sec * 1000 + p->epoch.tv_usec / 1000;
