@@ -1,6 +1,7 @@
 CC=gcc
 
-CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -DGETOPT_SUPPORTS_OPTIONAL -g -march=i686
+#CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -DGETOPT_SUPPORTS_OPTIONAL -g -march=i686
+CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -g -march=i686
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 
@@ -14,9 +15,6 @@ SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
 
 .c.o:
 	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
-
-.o:
-	${CC} $(LDFLAGS) $*.o -o $* -Lpa_unix_oss -lportaudio $(LIBS)
 
 all : bin/squeezeslave
 
