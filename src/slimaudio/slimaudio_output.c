@@ -44,9 +44,16 @@ bool slimaudio_output_debug;
 
 static void *output_thread(void *ptr);
 
+#ifndef PORTAUDIO_ALSA
 static int pa_callback(  void *inputBuffer, void *outputBuffer,
                      unsigned long framesPerBuffer,
                      PaTimestamp outTime, void *userData );
+#else
+static int pa_callback(  const void *inputBuffer, void *outputBuffer,
+		unsigned long framesPerBuffer,
+		const PaStreamCallbackTimeInfo * callbackTime,
+		PaStreamCallbackFlags statusFlags, void *userData );
+#endif
 
 
 static int audg_callback(slimproto_t *p, const unsigned char *buf, int buf_len, void *user_data);
@@ -62,7 +69,11 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	}	
 	DEBUGF("slimaudio_output_init: PortAudio initialized\n");
 	
+#ifndef PORTAUDIO_ALSA
 	audio->num_device_names = Pa_CountDevices();
+#else
+	audio->num_device_names = Pa_GetDeviceCount();
+#endif
 	audio->device_names = (char **)malloc(sizeof(char *) * audio->num_device_names);
 	
 	const PaDeviceInfo *pdi;
@@ -71,7 +82,11 @@ int slimaudio_output_init(slimaudio_t *audio) {
 		audio->device_names[i] = strdup(pdi->name);
 	}
 
+#ifndef PORTAUDIO_ALSA
 	audio->output_device_id = Pa_GetDefaultOutputDeviceID();
+#else
+	audio->output_device_id = Pa_GetDefaultOutputDevice();
+#endif
 	audio->px_mixer = NULL;
 	audio->volume_control = VOLUME_DRIVER;
 	audio->volume = 1.F;
@@ -168,6 +183,7 @@ static void *output_thread(void *ptr) {
 	audio->output_STMu = false;
 	audio->output_STMs = false;
 
+#ifndef PORTAUDIO_ALSA
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
 				paNoDevice,		// input device
 				0,			// input channels
@@ -183,6 +199,33 @@ static void *output_thread(void *ptr) {
 				0,			// stream flags
 				pa_callback,		// callback
 				audio);			// user data
+#else
+	PaStreamParameters outputParameters;
+	const PaDeviceInfo * paDeviceInfo;
+
+	paDeviceInfo = Pa_GetDeviceInfo(audio->output_device_id);
+
+	outputParameters.device = audio->output_device_id;
+	outputParameters.channelCount = paDeviceInfo->maxOutputChannels >=2? 2 : paDeviceInfo->maxOutputChannels;
+	outputParameters.sampleFormat = paInt16;
+	outputParameters.suggestedLatency = paDeviceInfo->defaultLowOutputLatency;
+	outputParameters.hostApiSpecificStreamInfo = NULL;
+
+	DEBUGF("paDeviceInfo->maxOutputChannels %i\n", paDeviceInfo->maxOutputChannels);
+	DEBUGF("paDeviceInfo->defaultHighOutputLatency %i\n", (int) paDeviceInfo->defaultHighOutputLatency);
+	DEBUGF("paDeviceInfo->defaultLowhOutputLatency %i\n", (int) paDeviceInfo->defaultLowOutputLatency);
+	DEBUGF("paDeviceInfo->defaultSampleRate %f\n", paDeviceInfo->defaultSampleRate);
+
+	err = Pa_OpenStream (	&audio->pa_stream,				// stream
+				NULL,						// inputParameters
+				&outputParameters,				// outputParameters
+				44100,						// sample rate
+				0,						// framesPerBuffer
+				paPrimeOutputBuffersUsingStreamCallback,	// streamFlags
+				pa_callback,					// streamCallback
+				audio);						// userData
+#endif
+
 	if (err != paNoError) {
 		printf("output_thread: PortAudio error1: %s\n", Pa_GetErrorText(err) );	
 		exit(-1);
@@ -203,10 +246,9 @@ static void *output_thread(void *ptr) {
 	DEBUGF("Px_mixer = %p\n", audio->px_mixer);
 
 	if (audio->px_mixer != NULL) {
-#if !defined(__SUNPRO_C)
 		DEBUGF("PCM volume supported: %d.\n", 
 		       Px_SupportsPCMOutputVolume(audio->px_mixer));
-#endif
+
 		const int nbVolumes = Px_GetNumOutputVolumes(audio->px_mixer);
 		DEBUGF("Nb volumes supported: %d.\n", nbVolumes);
 		int volumeIdx;
@@ -266,7 +308,11 @@ static void *output_thread(void *ptr) {
 				}
 
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
+#ifndef PORTAUDIO_ALSA
 				audio->pa_streamtime_offset = Pa_StreamTime(audio->pa_stream);
+#else
+				audio->pa_streamtime_offset = Pa_GetStreamTime(audio->pa_stream);
+#endif
 
 				audio->output_state = PLAYING;
 				pthread_cond_broadcast(&audio->output_cond);
@@ -290,32 +336,80 @@ static void *output_thread(void *ptr) {
 					
 				if (audio->output_STMs) {
 					audio->output_STMs = false;
+#ifndef PORTAUDIO_ALSA
 					audio->pa_streamtime_offset = Pa_StreamTime(audio->pa_stream);
+#else
+					audio->pa_streamtime_offset = Pa_GetStreamTime(audio->pa_stream);
+#endif					
 					output_thread_stat(audio, "STMs");
 				}
 
 				break;
 		
 			case STOP:
+#ifndef PORTAUDIO_ALSA
 				err = Pa_AbortStream(audio->pa_stream);
 				if (err != paNoError) {
 					printf("output_thread: PortAudio error3: %s\n", Pa_GetErrorText(err) );	
 					exit(-1);
 				}
-					
+#else
+				if ( (err = Pa_IsStreamActive(audio->pa_stream)) > 0) {
+					err = Pa_AbortStream(audio->pa_stream);
+					if (err != paNoError) {
+						printf("output_thread[STOP]: PortAudio error3: %s\n",
+									Pa_GetErrorText(err) );
+						exit(-1);
+					}
+				} else if ( err != paNoError) {
+					printf("output_thread[STOP ISACTIVE]: PortAudio error3: %s\n",
+									Pa_GetErrorText(err) );
+					exit(-1);
+				}
+#endif
+#ifndef PORTAUDIO_ALSA
 				audio->output_state = STOPPED;
 				pthread_cond_broadcast(&audio->output_cond);
+#else
+				// Shouldn't need to do it twice
+				// if ( audio->output_state != STOPPED ) {
+					audio->output_state = STOPPED;
+					pthread_cond_broadcast(&audio->output_cond);
+				// }
+#endif
 				break;
 				
 			case PAUSE:
+#ifndef PORTAUDIO_ALSA
 				err = Pa_StopStream(audio->pa_stream);
 				if (err != paNoError) {
 					printf("output_thread: PortAudio error3: %s\n", Pa_GetErrorText(err) );	
 					exit(-1);
-				}					
-					
+				}
+#else
+				if ( (err = Pa_IsStreamActive(audio->pa_stream)) > 0) {
+					err = Pa_StopStream(audio->pa_stream);
+					if (err != paNoError) {
+						printf("output_thread[PAUSE]: PortAudio error3: %s\n",
+								Pa_GetErrorText(err) );
+						exit(-1);
+					}
+				} else if ( err != paNoError) {
+					printf("output_thread[PAUSE ISACTIVE]: PortAudio error3: %s\n",
+							Pa_GetErrorText(err) );
+					exit(-1);
+				}
+#endif
+#ifndef PORTAUDIO_ALSA
 				audio->output_state = PAUSED;	
 				pthread_cond_broadcast(&audio->output_cond);
+#else
+				// Shouldn't need to do it twice
+				// if ( audio->output_state != PAUSED ) {
+					audio->output_state = PAUSED;
+					pthread_cond_broadcast(&audio->output_cond);
+				// }
+#endif
 				break;
 
 			case QUIT:
@@ -331,7 +425,11 @@ static void *output_thread(void *ptr) {
 	
 	err = Pa_CloseStream(audio->pa_stream);
 	if (err != paNoError) {
-		printf("output_thread: PortAudio error3: %s\n", Pa_GetErrorText(err) );	
+#ifndef PORTAUDIO_ALSA
+		printf("output_thread: PortAudio error3: %s\n", Pa_GetErrorText(err) );
+#else
+		printf("output_thread[exit]: PortAudio error3: %s\n", Pa_GetErrorText(err) );
+#endif
 		exit(-1);
 	}
 	audio->pa_stream = NULL;
@@ -448,7 +546,11 @@ int slimaudio_output_streamtime(slimaudio_t *audio) {
 	if (audio->output_state != PLAYING)
 		return 0;
 		
+#ifndef PORTAUDIO_ALSA
 	PaTimestamp numSamples = Pa_StreamTime(audio->pa_stream);
+#else
+	PaTime numSamples = Pa_GetStreamTime(audio->pa_stream);
+#endif
 	const int msec =
 		(int)((numSamples - audio->pa_streamtime_offset) / 44.100) +
 		audio->output_predelay_msec;
@@ -546,9 +648,16 @@ static int produce_predelay_frames(slimaudio_t* audio, void* outputBuffer, unsig
 	return predelayBytes;
 }
 
+#ifndef PORTAUDIO_ALSA
 static int pa_callback(void *inputBuffer, void *outputBuffer,
 			unsigned long framesPerBuffer,
 			PaTimestamp outTime, void *userData)
+#else
+static int pa_callback(  const void *inputBuffer, void *outputBuffer,
+		unsigned long framesPerBuffer,
+		const PaStreamCallbackTimeInfo * callbackTime,
+		PaStreamCallbackFlags statusFlags, void *userData )
+#endif
 {
 	slimaudio_t * const audio = (slimaudio_t *) userData;
 

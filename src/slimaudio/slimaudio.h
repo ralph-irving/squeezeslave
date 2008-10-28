@@ -82,7 +82,11 @@ typedef struct {
 	pthread_cond_t output_cond;
 	
 	slimaudio_output_state_t output_state;
+#ifndef PORTAUDIO_ALSA
 	PortAudioStream *pa_stream;
+#else
+	PaStream *pa_stream;
+#endif
 	slimaudio_volume_t volume_control;
 	float volume;
 	float prev_volume;
@@ -90,13 +94,22 @@ typedef struct {
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
 	PxMixer *px_mixer;
+#ifndef PORTAUDIO_ALSA
 	PaTimestamp pa_streamtime_offset;
+#else
+	PaTime pa_streamtime_offset;
+#endif
 	bool output_STMs;
 	bool output_STMu;
 	int keepalive_interval;
 	
+#ifndef PORTAUDIO_ALSA
 	int output_device_id;
 	int num_device_names;
+#else
+	PaDeviceIndex output_device_id;
+	PaDeviceIndex num_device_names;
+#endif
 	char **device_names;	
 	
 	// mad decoder

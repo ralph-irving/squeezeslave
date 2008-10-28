@@ -39,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-16";
+static const char* version = "0.8-17";
 
 static int player_type = 8;
 
@@ -83,7 +83,11 @@ int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
+#ifndef PORTAUDIO_ALSA
 	int output_device_id = -1;
+#else
+	PaDeviceIndex output_device_id = 0;
+#endif
 	bool use_signal_to_exit = false;
 	bool retry_connection = false;
 	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;

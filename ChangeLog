@@ -1,3 +1,32 @@
+2008-10-26 09:10  paddockd
+
+	* makefile.linux26, makefile.linux26-debug,
+	  src/squeezeslave/squeezeslave.c: Removed
+	  -DGETOPT_SUPPORTS_OPTIONAL build option from linux26 makefiles.
+	  Added missing octet in mac address example in help message, only
+	  had 5.
+	  Changed --retry/-r <sec> help message. Interval NOT optional with
+	  -r.
+	  Increased version to 16.
+
+2008-10-25 13:43  paddockd
+
+	* ChangeLog, ReleaseNotes, lib/flac/build-flac-cygwin,
+	  lib/libmad/build-mad-cygwin, lib/libmad/build-mad-win32,
+	  lib/vorbis/build-ogg-cygwin, lib/vorbis/build-vorbis-cygwin,
+	  patches/gettimeofday.patch, patches/portaudioV19_3.patch,
+	  patches/px_none.patch, patches/slimaudio_http_open.patch,
+	  patches/squeezeslave-solaris.patch,
+	  patches/squeezeslave-win32.patch, patches/volumedefaultoff.patch,
+	  sources, sources/dxsdk200512.tar.bz2,
+	  sources/dxsdk200704.tar.bz2, sources/flac-1.2.1-devel-win.zip,
+	  sources/flac-1.2.1.tar.bz2, sources/libmad-0.15.1b.tar.bz2,
+	  sources/libogg-1.1.3.tar.bz2, sources/libvorbis-1.1.2.tar.bz2,
+	  sources/portaudio_v18_1.zip: Added source files for libraries
+	  used.
+	  Added library build scripts.
+	  Added more obsolete patches.
+
 2008-10-23 21:14  paddockd
 
 	* ChangeLog, makefile.linux24, makefile.linux24-debug,

@@ -41,11 +41,6 @@
 #include "portaudio.h"
 #include "portmixer.h"
 
-typedef struct PxInfo
-{
-  int dummy;
-} PxInfo;
-
 int Px_GetNumMixers( void *pa_stream )
 {
    return 0;
@@ -76,14 +71,12 @@ void Px_CloseMixer(PxMixer *mixer)
 
 PxVolume Px_GetMasterVolume( PxMixer *mixer )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return 0.0;
 }
 
 void Px_SetMasterVolume( PxMixer *mixer, PxVolume volume )
 {
-   PxInfo *info = (PxInfo *)mixer;
+   return ;
 }
 
 /*
@@ -92,14 +85,21 @@ void Px_SetMasterVolume( PxMixer *mixer, PxVolume volume )
 
 PxVolume Px_GetPCMOutputVolume( PxMixer *mixer )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return 0.0;
+}
+
+/*
+ *  PCM output volume
+ */
+
+int Px_SupportsPCMOutputVolume( PxMixer* mixer )
+{
+	        return 0 ;
 }
 
 void Px_SetPCMOutputVolume( PxMixer *mixer, PxVolume volume )
 {
-   PxInfo *info = (PxInfo *)mixer;
+   return ;
 }
 
 /*
@@ -108,28 +108,22 @@ void Px_SetPCMOutputVolume( PxMixer *mixer, PxVolume volume )
 
 int Px_GetNumOutputVolumes( PxMixer *mixer )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return 0;
 }
 
 const char *Px_GetOutputVolumeName( PxMixer *mixer, int i )
 {
-   PxInfo *info = (PxInfo *)mixer;
-   
    return NULL;
 }
 
 PxVolume Px_GetOutputVolume( PxMixer *mixer, int i )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return 0.0;
 }
 
 void Px_SetOutputVolume( PxMixer *mixer, int i, PxVolume volume )
 {
-   PxInfo *info = (PxInfo *)mixer;
+   return ;
 }
 
 /*
@@ -138,28 +132,22 @@ void Px_SetOutputVolume( PxMixer *mixer, int i, PxVolume volume )
 
 int Px_GetNumInputSources( PxMixer *mixer )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return 0;
 }
 
 const char *Px_GetInputSourceName( PxMixer *mixer, int i)
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return NULL;
 }
 
 int Px_GetCurrentInputSource( PxMixer *mixer )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return -1; /* none */
 }
 
 void Px_SetCurrentInputSource( PxMixer *mixer, int i )
 {
-   PxInfo *info = (PxInfo *)mixer;
+   return ;
 }
 
 /*
@@ -168,14 +156,12 @@ void Px_SetCurrentInputSource( PxMixer *mixer, int i )
 
 PxVolume Px_GetInputVolume( PxMixer *mixer )
 {
-   PxInfo *info = (PxInfo *)mixer;
-
    return 0.0;
 }
 
 void Px_SetInputVolume( PxMixer *mixer, PxVolume volume )
 {
-   PxInfo *info = (PxInfo *)mixer;
+   return ;
 }
 
 /*
