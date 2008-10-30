@@ -367,16 +367,8 @@ static void *output_thread(void *ptr) {
 					exit(-1);
 				}
 #endif
-#ifndef PORTAUDIO_ALSA
 				audio->output_state = STOPPED;
 				pthread_cond_broadcast(&audio->output_cond);
-#else
-				// Shouldn't need to do it twice
-				// if ( audio->output_state != STOPPED ) {
-					audio->output_state = STOPPED;
-					pthread_cond_broadcast(&audio->output_cond);
-				// }
-#endif
 				break;
 				
 			case PAUSE:
@@ -400,16 +392,8 @@ static void *output_thread(void *ptr) {
 					exit(-1);
 				}
 #endif
-#ifndef PORTAUDIO_ALSA
 				audio->output_state = PAUSED;	
 				pthread_cond_broadcast(&audio->output_cond);
-#else
-				// Shouldn't need to do it twice
-				// if ( audio->output_state != PAUSED ) {
-					audio->output_state = PAUSED;
-					pthread_cond_broadcast(&audio->output_cond);
-				// }
-#endif
 				break;
 
 			case QUIT:

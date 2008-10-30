@@ -39,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-17";
+static const char* version = "0.8-18";
 
 static int player_type = 8;
 
@@ -95,7 +95,8 @@ int main(int argc, char *argv[]) {
 	unsigned int output_predelay_amplitude = 0;
 	unsigned int retry_interval = RETRY_DEFAULT;
 	int keepalive_interval = -1;
-	
+	opterr = 1;
+
 	while (true) {
 		static struct option long_options[] = {
 			{"predelay_amplitude", required_argument, 0, 'a'},
@@ -106,7 +107,8 @@ int main(int argc, char *argv[]) {
 			{"output",             required_argument, 0, 'o'},
 			{"oldplayer",          no_argument,       0, 'O'},
 			{"predelay",           required_argument, 0, 'p'},
-			{"retry",              optional_argument, 0, 'r'},
+			{"retry",              no_argument,       0, 'R'},
+			{"altretry",           required_argument, 0, 'r'},
 			{"signal",             no_argument,       0, 's'},
 			{"version",            no_argument,       0, 'V'},
 			{"volume",             required_argument, 0, 'v'},
@@ -114,17 +116,13 @@ int main(int argc, char *argv[]) {
 		};
 	
 		const char shortopt =
-#ifdef GETOPT_SUPPORTS_OPTIONAL
-			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:r::sVv:",
-#else
-			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:r:sVv:",
-#endif
+			getopt_long_only(argc, argv, "a:d:hk:m:Oo:p:Rr:sVv:",
 					 long_options, NULL);
-	
+
 		if (shortopt == -1) {
 			break;
 		}
-			
+
 		switch (shortopt) {
 		case 'a':
 			output_predelay_amplitude = strtoul(optarg, NULL, 0);
@@ -177,17 +175,17 @@ int main(int argc, char *argv[]) {
 		case 'p':
 			output_predelay = strtoul(optarg, NULL, 0);
 			break;
+		case 'R':
+			retry_connection = true;
+			break;
 		case 'r':
 			retry_connection = true;
-			if (optarg != NULL) {
-				fprintf( stderr, "Setting retry interval to %s seconds.\n", optarg );
-				retry_interval = strtoul(optarg, NULL, 0);
-				if ( retry_interval < 1 )
-				{
-					fprintf( stderr, "Retry interval too low, reset to %d seconds.\n",
-												RETRY_DEFAULT);
-					retry_interval = RETRY_DEFAULT;
-				}
+			retry_interval = strtoul(optarg, NULL, 0);
+			if ( ( retry_interval < 1 ) || ( retry_interval > 1000 ))
+			{
+				fprintf( stderr, "Retry interval out of range (1-1000), reset to %d seconds.\n",
+										RETRY_DEFAULT);
+				retry_interval = RETRY_DEFAULT;
 			}
 			break;
 		case 's':
@@ -219,6 +217,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (retry_connection) {
+		printf( "Setting retry interval to %d seconds.\n", retry_interval );
 		install_restart_handler();
 	}
 
@@ -238,11 +237,15 @@ int main(int argc, char *argv[]) {
 	int num_devices;
 	char **devices;
 	slimaudio_get_output_devices(&slimaudio, &devices, &num_devices);
-	
+
+
 	printf("Output devices:\n");	
 	int i;
 	for (i=0; i<num_devices; i++) {
-		printf("%i: %s\n", i, devices[i]);
+		if ( i == output_device_id  )
+			printf("*%2d: %s\n", i, devices[i]);
+		else
+			printf(" %2d: %s\n", i, devices[i]);
 	}
 
 	if (output_device_id >= 0) {
@@ -278,7 +281,7 @@ int main(int argc, char *argv[]) {
 					slimserver_address);
 				exit(-1);
 			}
-			fprintf(stderr,"Sleeping for %d s.\n", retry_interval);
+			fprintf(stderr,"Sleeping for %d seconds.\n", retry_interval);
 			Pa_Sleep(1000 * retry_interval);
 		}
 

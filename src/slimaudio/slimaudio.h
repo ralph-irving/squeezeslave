@@ -35,9 +35,13 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio_buffer.h"
 
-
+#ifndef PORTAUDIO_ALSA
 #define DECODER_BUFFER_SIZE 1048576
 #define OUTPUT_BUFFER_SIZE 10*2*44100*4
+#else
+#define DECODER_BUFFER_SIZE  2097152 /* was 1572864 */
+#define OUTPUT_BUFFER_SIZE 14*2*44100*4
+#endif
 
 #define AUDIO_CHUNK_SIZE 8192
 
