@@ -2,9 +2,11 @@ CC=gcc
 
 CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_ALSA -g -march=i686
 
-INCLUDE=-Ilib/libportaudio/linux26/include -Ilib/portmixer/px_common -Isrc
+INCLUDE=-Ilib/libportaudio/linux26/include -Ilib/portmixer/px_common -Ilib/getopt -Isrc
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
+
+GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
 
@@ -19,7 +21,11 @@ lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
 	ar cru lib/libslimproto.a $^
 	ranlib lib/libslimproto.a
 
-bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a
+lib/libgetopt.a: $(GETOPTFILES:.c=.o)
+	ar cru lib/libgetopt.a $^
+	ranlib lib/libgetopt.a
+
+bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libgetopt.a
 	${CC} -g -o bin/squeezeslave $^ lib/libportaudio/linux26/lib/libportaudio.a /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lasound -lrt -lpthread -lm
 
 clean:
@@ -27,8 +33,10 @@ clean:
 	               $(SLIMPROTOFILES:.c=.o) \
 	               $(PORTMIXERFILES:.c=.o) \
 	               $(SQUEEZESLAVEFILES:.c=.o) \
+	               $(GETOPTFILES:.c=.o) \
 	               lib/libportaudio.a \
 	               lib/libslimproto.a \
+	               lib/libgetopt.a \
 	               bin/squeezeslave; do \
 	  test -e $$FILE && echo $$FILE || true; \
 	  test -e $$FILE && $(RM) $$FILE 2>/dev/null || true; \

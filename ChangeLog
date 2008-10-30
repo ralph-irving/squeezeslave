@@ -1,3 +1,36 @@
+2008-10-30 01:25  paddockd
+
+	* makefile.linux26-alsa, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Increased both the decoder and
+	  audio buffer sizes for portaudio v19.
+	  Flac, Ogg and Pcm appear to be working.
+	  getopt functionality is still broken.
+
+2008-10-28 11:31  paddockd
+
+	* ChangeLog, lib/libportaudio, lib/libportaudio/linux24,
+	  lib/libportaudio/linux24/include,
+	  lib/libportaudio/linux24/include/portaudio.h,
+	  lib/libportaudio/linux24/lib,
+	  lib/libportaudio/linux24/lib/libportaudio.a,
+	  lib/libportaudio/linux26,
+	  lib/libportaudio/linux26/build-portaudio-lnx26-alsa,
+	  lib/libportaudio/linux26/include,
+	  lib/libportaudio/linux26/include/portaudio.h,
+	  lib/libportaudio/linux26/lib,
+	  lib/libportaudio/linux26/lib/libportaudio.a,
+	  lib/portmixer/px_none/px_none.c, makefile.linux24-alsa,
+	  makefile.linux26-alsa, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: First cut of alsa support for
+	  linux using portaudio v19 snapshot 20080513.
+	  Added linux 2.4 and 2.6 static libraries and new makefiles.
+	  mp3 playback works, all other formats transition from play to
+	  stop.
+	  Appears to be related to buffering. Investigating.
+	  Revision 17.
+
 2008-10-26 09:10  paddockd
 
 	* makefile.linux26, makefile.linux26-debug,

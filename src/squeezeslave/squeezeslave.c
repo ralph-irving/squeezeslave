@@ -39,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-18";
+static const char* version = "0.8-19";
 
 static int player_type = 8;
 
@@ -95,7 +95,6 @@ int main(int argc, char *argv[]) {
 	unsigned int output_predelay_amplitude = 0;
 	unsigned int retry_interval = RETRY_DEFAULT;
 	int keepalive_interval = -1;
-	opterr = 1;
 
 	while (true) {
 		static struct option long_options[] = {
@@ -108,7 +107,7 @@ int main(int argc, char *argv[]) {
 			{"oldplayer",          no_argument,       0, 'O'},
 			{"predelay",           required_argument, 0, 'p'},
 			{"retry",              no_argument,       0, 'R'},
-			{"altretry",           required_argument, 0, 'r'},
+			{"intretry",           required_argument, 0, 'r'},
 			{"signal",             no_argument,       0, 's'},
 			{"version",            no_argument,       0, 'V'},
 			{"volume",             required_argument, 0, 'v'},
@@ -181,11 +180,10 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			retry_connection = true;
 			retry_interval = strtoul(optarg, NULL, 0);
-			if ( ( retry_interval < 1 ) || ( retry_interval > 1000 ))
+			if ( retry_interval < 1 )
 			{
-				fprintf( stderr, "Retry interval out of range (1-1000), reset to %d seconds.\n",
-										RETRY_DEFAULT);
-				retry_interval = RETRY_DEFAULT;
+				fprintf (stderr, "Retry option requires value in seconds.\n");
+				exit(-1);
 			}
 			break;
 		case 's':
@@ -205,6 +203,10 @@ int main(int argc, char *argv[]) {
 			else if (strcmp(optarg, "off") == 0 ) {
 				volume_control = VOLUME_NONE;
 			}
+		case '?':
+			fprintf( stderr, "Unknown option.\n" );
+			exit(-1);
+			break;
 		}
 	}
 
