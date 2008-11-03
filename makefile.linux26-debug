@@ -1,6 +1,5 @@
 CC=gcc
 
-#CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -DGETOPT_SUPPORTS_OPTIONAL -g -march=i686
 CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -g -march=i686
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc

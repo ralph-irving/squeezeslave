@@ -1,3 +1,11 @@
+2008-10-30 20:20  paddockd
+
+	* ChangeLog, makefile.linux26-alsa,
+	  src/squeezeslave/squeezeslave.c: Fixed retry option command line
+	  parsing.
+	  Added use of local getopt library.
+	  Increased version to 19.
+
 2008-10-30 01:25  paddockd
 
 	* makefile.linux26-alsa, src/slimaudio/slimaudio.h,

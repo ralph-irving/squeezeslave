@@ -39,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-19";
+static const char* version = "0.8-20";
 
 static int player_type = 8;
 
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 				volume_control = VOLUME_NONE;
 			}
 		case '?':
-			fprintf( stderr, "Unknown option.\n" );
+			fprintf( stderr, "Unknown option: %s.\n", argv[optind] );
 			exit(-1);
 			break;
 		}
@@ -390,15 +390,16 @@ static void print_help() {
 "                            is useful if the DAC used for output is slow to\n"
 "                            wake-up/lock, causing the first few samples to be\n"
 "                            dropped.\n"
-"-r <sec>, --retry           Causes the program to retry connecting to\n"
+"--retry                     Causes the program to retry connecting to\n"
 "                            SqueezeCenter until it succeeds or is stopped using\n"
 "                            SIGTERM or keyboard entry (see -s/--signal).\n"
 "                            If the connection to SqueezeCenter is lost, the\n"
 "                            program will poll it until it restarts.  --retry\n"
-"                            enables retry with a 5 second delay between\n"
+"                            enables retry with a %d second delay between\n"
 "                            attempts.\n"
-"                            For a different retry interval use -r a space\n"
-"                            and the desired interval in seconds. (ie. -r 10)\n"
+"-r <sec>                    For a different retry interval use -r and the\n"
+"                            desired interval in seconds. (ie. -r10)\n"
+"                            A value is required for this option.\n"
 "-s, --signal:               Causes the program to wait for SIGTERM to exit.\n"
 "                            The default is to wait for a keyboard entry, which\n"
 "                            prevents the program from running in background.\n"
@@ -425,7 +426,8 @@ static void print_help() {
 "                                    slimaudio_decoder_v\n"
 "                                    slimaudio_http\n"
 "                                    slimaudio_http_v\n"
-"                                    slimaudio_output\n");
+"                                    slimaudio_output\n",
+RETRY_DEFAULT);
 }
 
 // Handles a signal coming from outside this process and that is meant to 
