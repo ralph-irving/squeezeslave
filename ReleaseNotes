@@ -1,3 +1,4 @@
+
 A new Squeezeslave 0.8 release is now available at
 
 https://sourceforge.net/project/showfiles.php?group_id=105169&package_id=176494
@@ -156,3 +157,18 @@ lib/dx
 Based on svn.slimdevices.com release r23425.
 
 For details, read the Changelog in the source tarball.
+
+Updated for interactive support (Linux Only):
+ *   Modified 18 November 2008 by Graham Chapman
+ *   Changes:
+ *      - Supportvariable size text display and/or LCDd display
+ *      - Support keyboard control and/or lircd control
+ *      - Use signal to exit default (option removed)
+ *        In curses mode (--display) Esc and Q also quit
+ *      - USR2 signal can be used to toggle LCDd/lircd support on and off
+ *        while squeezeslave is running.
+ *        Useful to continue music while display/ir is used for something else.
+ *      - Audio device list is now available as a command line option (--list)
+ *      - Command line options have changed to support the above, see --help
+ *      - Fixup USR1 handler to allow graceful quit if retry is not enabled
+

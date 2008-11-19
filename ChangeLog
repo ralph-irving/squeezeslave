@@ -1,3 +1,38 @@
+2008-11-19 12:55  graham
+
+	* ChangeLog, makefile.linux26-alsa-display, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c, config/.lircrc:
+	  Avoid recv error reading closed connection (in slimproto.c)
+	  Fixup USR1 handler to allow graceful quit if retry is not enabled
+	  Use signal to exit default (option removed)
+	  Supportvariable size text display and/or LCDd display
+	  Support keyboard control and/or lircd control
+	  In curses mode (--display) Esc and Q also quit
+	  USR2 signal can be used to toggle LCDd/lircd support on and off
+ 	  while squeezeslave is running.
+	  Useful to continue music while display/ir is used for something else.
+	  Audio device list is now available as a command line option (--list)
+	  Command line options have changed to support the above, see --help
+	  Increased version to 22.
+
+2008-11-19 12:17  paddockd
+
+	* ChangeLog, lib/popt, lib/popt/build-popt-linux24,
+	  lib/popt/build-popt-s9, lib/popt/linux24,
+	  lib/popt/linux24/include, lib/popt/linux24/include/popt.h,
+	  lib/popt/linux24/lib, lib/popt/linux24/lib/libpopt.a,
+	  lib/popt/s9sparc, lib/popt/s9sparc/include,
+	  lib/popt/s9sparc/include/popt.h, lib/popt/s9sparc/lib,
+	  lib/popt/s9sparc/lib/libpopt.a, makefile.linux24,
+	  makefile.linux24-alsa, sources/pa_snapshot.tar.gz,
+	  sources/popt-1.14.tar.gz, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Initial setup for popt command
+	  line processing. Library build testing only.
+	  Changed portaudio v19 latency from low to high for alsa version
+	  only.
+	  Removed unknown option case '?' from args process. Made it worse.
+	  Increased version to 21.
+
 2008-11-03 12:49  paddockd
 
 	* ChangeLog, makefile.linux26-alsa, makefile.linux26-debug,

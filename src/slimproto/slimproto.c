@@ -309,13 +309,19 @@ static int proto_recv(slimproto_t *p) {
 	short len;
 	unsigned char buf[BUF_LENGTH];
 	int r, n;		
-		
+
+        // Fix receive error on quitting
+	if (p->state != PROTO_CONNECTED) return -1;
+
 	n = recv(p->sockfd, buf, 2, 0);
 	if (n <= 0) {
 		perror("Error in recv 1");
 		return -1;	
 	}
 	len = ntohs(*((u16_t *)buf)) + 2;
+
+        // Fix receive error on quitting
+	if (p->state != PROTO_CONNECTED) return -1;
 
 	r = 2;
 	while (r < len) {
@@ -329,7 +335,8 @@ static int proto_recv(slimproto_t *p) {
 	}
 	
 	DEBUGF("slimproto_recv cmd=%4.4s len=%i\n", buf+2, len);
-	
+
+	buf[len]=0;
 	int i;
 	for (i=0; i<p->num_command_callbacks; i++) {
 		if (strncmp(p->command_callbacks[i].cmd, (char*)(buf+2), 4) == 0) {
