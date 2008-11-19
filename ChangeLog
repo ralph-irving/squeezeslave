@@ -1,3 +1,12 @@
+2008-11-03 12:49  paddockd
+
+	* ChangeLog, makefile.linux26-alsa, makefile.linux26-debug,
+	  src/slimaudio/slimaudio.h, src/squeezeslave/squeezeslave.c:
+	  Increased decoder and audio buffers by ~50%.
+	  Help message updates.
+	  First beta linux alsa version.
+	  Increased version to 20.
+
 2008-10-30 20:20  paddockd
 
 	* ChangeLog, makefile.linux26-alsa,

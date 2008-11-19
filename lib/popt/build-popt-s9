@@ -1,0 +1,10 @@
+#!/bin/ksh
+CC=cc \
+CXX=CC \
+CFLAGS="-s -xO4 -fast -w -fsimple -native -xarch=v8plusa" \
+CXXFLAGS="$CFLAGS" \
+./configure --prefix=/usr --disable-nls --disable-shared --disable-rpath --without-iconv
+
+gsed -i 's|#define HAVE_ICONV 1||g' config.h
+gsed -i 's|#define HAVE_LIBINTL_H 1||g' config.h
+gsed -i 's|"/usr/etc"|"./"|g' config.h

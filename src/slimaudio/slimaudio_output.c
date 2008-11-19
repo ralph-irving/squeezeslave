@@ -208,7 +208,7 @@ static void *output_thread(void *ptr) {
 	outputParameters.device = audio->output_device_id;
 	outputParameters.channelCount = paDeviceInfo->maxOutputChannels >=2? 2 : paDeviceInfo->maxOutputChannels;
 	outputParameters.sampleFormat = paInt16;
-	outputParameters.suggestedLatency = paDeviceInfo->defaultLowOutputLatency;
+	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 
 	DEBUGF("paDeviceInfo->maxOutputChannels %i\n", paDeviceInfo->maxOutputChannels);

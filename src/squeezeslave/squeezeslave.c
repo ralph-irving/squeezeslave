@@ -39,7 +39,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-20";
+static const char* version = "0.8-21";
 
 static int player_type = 8;
 
@@ -203,10 +203,12 @@ int main(int argc, char *argv[]) {
 			else if (strcmp(optarg, "off") == 0 ) {
 				volume_control = VOLUME_NONE;
 			}
+#if 0			
 		case '?':
 			fprintf( stderr, "Unknown option: %s.\n", argv[optind] );
 			exit(-1);
 			break;
+#endif
 		}
 	}
 
