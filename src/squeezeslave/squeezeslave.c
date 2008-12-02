@@ -74,7 +74,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-22";
+static const char* version = "0.8-23";
 
 static int player_type = 8;
 
@@ -376,7 +376,9 @@ unsigned long getircode(int key) {
     case KEY_UP: ir = 0x7689e01f; break; /* arrow_up */
     case 0x05: ir = 0x7689e01f; break; /* arrow_up IR*/
     case '<': ir = 0x7689c03f; break; /* rew */
+    case ',': ir = 0x7689c03f; break; /* rew */
     case '>': ir = 0x7689a05f; break; /* fwd */
+    case '.': ir = 0x7689a05f; break; /* fwd */
     case KEY_HOME: ir = 0x768922DD; break; /* home */
     case 0x06: ir = 0x768922DD; break; /* home IR*/
     case KEY_END: ir = 0x76897887; break; /* now_playing */
@@ -988,7 +990,7 @@ void show_display_buffer(char *ddram) {
     }
 }
 
-// Check if char is prinable, or a valid symbol
+// Check if char is printable, or a valid symbol
 bool charisok(unsigned char c) {
 
    switch (c) {

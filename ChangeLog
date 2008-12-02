@@ -1,19 +1,11 @@
-2008-11-19 12:55  graham
+2008-11-19 13:28  paddockd
 
-	* ChangeLog, makefile.linux26-alsa-display, src/slimproto/slimproto.c,
-	  src/squeezeslave/squeezeslave.c, config/.lircrc:
-	  Avoid recv error reading closed connection (in slimproto.c)
-	  Fixup USR1 handler to allow graceful quit if retry is not enabled
-	  Use signal to exit default (option removed)
-	  Supportvariable size text display and/or LCDd display
-	  Support keyboard control and/or lircd control
-	  In curses mode (--display) Esc and Q also quit
-	  USR2 signal can be used to toggle LCDd/lircd support on and off
- 	  while squeezeslave is running.
-	  Useful to continue music while display/ir is used for something else.
-	  Audio device list is now available as a command line option (--list)
-	  Command line options have changed to support the above, see --help
-	  Increased version to 22.
+	* .lircrc, ChangeLog, ReleaseNotes, config, config/.lircrc,
+	  makefile.linux26-alsa-display,
+	  patches/squeezecenter_var_size_display.patch,
+	  patches/squeezeslave-display.patch, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Added Graham's display changes
+	  to repository.
 
 2008-11-19 12:17  paddockd
 
