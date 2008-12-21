@@ -1,6 +1,6 @@
 CC=gcc
 
-CFLAGS=-Wall -s -march=i686 -O3 -DNDEBUG -DUSE_SIGNALS_FOR_RESTART -DINTERACTIVE -fomit-frame-pointer
+CFLAGS=-Wall -s -march=i686 -O3 -DNDEBUG -DINTERACTIVE -fomit-frame-pointer
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 

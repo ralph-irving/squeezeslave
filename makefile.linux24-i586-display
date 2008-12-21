@@ -1,6 +1,6 @@
 CC=gcc
 
-CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DNDEBUG -DUSE_SIGNALS_FOR_RESTART -DINTERACTIVE -fomit-frame-pointer
+CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DNDEBUG -DINTERACTIVE -fomit-frame-pointer
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 

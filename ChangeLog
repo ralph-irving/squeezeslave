@@ -1,3 +1,12 @@
+2008-12-02 12:11  paddockd
+
+	* ChangeLog, makefile.linux24-display,
+	  makefile.linux24-i586-display, src/squeezeslave/squeezeslave.c:
+	  Added , key for rewind.
+	  Added . key for forward to remove need for shift key use.
+	  Added linux24 display makefile without alsa.
+	  Increased version to 23.
+
 2008-11-19 13:28  paddockd
 
 	* .lircrc, ChangeLog, ReleaseNotes, config, config/.lircrc,

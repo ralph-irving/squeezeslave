@@ -1,8 +1,8 @@
 CC=gcc
 
-CFLAGS=-Wall -DSLIMPROTO_DEBUG -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_ALSA -g -march=i686
+CFLAGS=-Wall -DSLIMPROTO_DEBUG -DPORTAUDIO_ALSA -g -march=i686
 
-INCLUDE=-Ilib/libportaudio/linux24/include -Ilib/portmixer/px_common -Ilib/popt/include -Isrc
+INCLUDE=-Ilib/libportaudio/linux24/include -Ilib/portmixer/px_common -Isrc
 
 PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
 
@@ -20,7 +20,7 @@ lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
 	ranlib lib/libslimproto.a
 
 bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a
-	${CC} -g -o bin/squeezeslave $^ lib/libportaudio/linux24/lib/libportaudio.a lib/popt/linux24/lib/libpopt.a /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a /usr/lib/libpopt.a -lasound -lpthread -lm
+	${CC} -g -o bin/squeezeslave $^ lib/libportaudio/linux24/lib/libportaudio.a /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lasound -lpthread -lm
 
 clean:
 	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \

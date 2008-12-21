@@ -74,7 +74,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-23";
+static const char* version = "0.8-24";
 
 static int player_type = 8;
 
@@ -453,6 +453,8 @@ int main(int argc, char *argv[]) {
         unsigned long ir = 0;
 	int maxfd = 0;
 	char * home;
+	struct timeval timeout;
+	timeout.tv_usec = 0;
 
         // default lircrc file ($HOME/.lircrc)
 	home = getenv("HOME");
@@ -612,11 +614,11 @@ int main(int argc, char *argv[]) {
 	char *slimserver_address = "127.0.0.1";
 	if (optind < argc)
 		slimserver_address = argv[optind];
-	
+#if 0	
 	if (retry_connection) {
-		printf( "Setting retry interval to %d seconds.\n", retry_interval );
+		fprintf( stderr, "Setting retry interval to %d seconds.\n", retry_interval );
 	}
-
+#endif
 	signal(SIGTERM, &exit_handler);
 	install_restart_handler();
 #ifdef INTERACTIVE
@@ -728,7 +730,8 @@ int main(int argc, char *argv[]) {
                          if (lirc_fd > maxfd) 
 		            maxfd = lirc_fd;
                       }
-                      if(select(maxfd + 1, &read_fds, NULL, NULL, NULL) == -1) {
+		      timeout.tv_sec = 5;
+                      if(select(maxfd + 1, &read_fds, NULL, NULL, &timeout) == -1) {
     	                 if (errno != EINTR) {
 		           fprintf(stderr,"Select Error\n");
    	                   abort();

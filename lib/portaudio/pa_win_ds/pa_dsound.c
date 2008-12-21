@@ -640,7 +640,7 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
     pahsc->pahsc_FramesPerDSBuffer = past->past_FramesPerUserBuffer * past->past_NumUserBuffers;
     {
         int msecLatency = (int) ((pahsc->pahsc_FramesPerDSBuffer * 1000) / past->past_SampleRate);
-        PRINT(("PortAudio on DirectSound - Latency = %d frames, %d msec\n", pahsc->pahsc_FramesPerDSBuffer, msecLatency ));
+//        PRINT(("PortAudio on DirectSound - Latency = %d frames, %d msec\n", pahsc->pahsc_FramesPerDSBuffer, msecLatency ));
     }
     /* ------------------ OUTPUT */
     if( (past->past_OutputDeviceID >= 0) && (past->past_NumOutputChannels > 0) )
