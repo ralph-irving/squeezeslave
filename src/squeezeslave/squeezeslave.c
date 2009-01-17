@@ -74,7 +74,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-24";
+static const char* version = "0.8-25";
 
 static int player_type = 8;
 
@@ -878,6 +878,7 @@ static void print_help() {
 "-r <sec>                    For a different retry interval use -r and the\n"
 "                            desired interval in seconds. (ie. -r10)\n"
 "                            A value is required for this option.\n"
+"-s, --signal:               Ignored. Always uses SIGTERM to exit.\n"
 "-V, --version:              Prints the squeezeslave version.\n"
 "-v, --volume <on|sw|off>:   Enables/disables volume changes done by\n"
 "                            SqueezeCenter during its operation, such as when\n"

@@ -346,13 +346,13 @@ PaTimestamp Pa_StreamTime( PortAudioStream *stream )
     if( pahsc->pahsc_NativeOutputBuffer )
     {
        ioctl(pahsc->pahsc_OutputHandle, SNDCTL_DSP_GETOPTR, &info);
-       delta = (info.bytes - pahsc->pahsc_LastPosPtr) & 0x000FFFFF;
+       delta = (info.bytes - pahsc->pahsc_LastPosPtr);
        return (pahsc->pahsc_LastStreamBytes + delta) / (past->past_NumOutputChannels * sizeof(short));
     }
     else
     {
        ioctl(pahsc->pahsc_InputHandle, SNDCTL_DSP_GETIPTR, &info);
-       delta = (info.bytes - pahsc->pahsc_LastPosPtr) & 0x000FFFFF;
+       delta = (info.bytes - pahsc->pahsc_LastPosPtr);
        return (pahsc->pahsc_LastStreamBytes + delta) / (past->past_NumInputChannels * sizeof(short));
     }
 }
@@ -372,7 +372,7 @@ void Pa_UpdateStreamTime(PaHostSoundControl *pahsc)
   {
     ioctl(pahsc->pahsc_InputHandle, SNDCTL_DSP_GETIPTR, &info);
   }
-  delta = (info.bytes - pahsc->pahsc_LastPosPtr) & 0x000FFFFF;
+  delta = (info.bytes - pahsc->pahsc_LastPosPtr);
   pahsc->pahsc_LastStreamBytes += delta;
   pahsc->pahsc_LastPosPtr = info.bytes;
 }

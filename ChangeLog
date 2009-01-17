@@ -1,3 +1,18 @@
+2008-12-21 15:18  paddockd
+
+	* ChangeLog, lib/libportaudio/linux24/lib/libportaudio-debug.a,
+	  lib/portaudio/pa_win_ds/pa_dsound.c, makefile.linux24-alsa,
+	  makefile.linux24-display, makefile.linux24-i586-display,
+	  src/squeezeslave/squeezeslave.c: Removed
+	  -DUSE_SIGNALS_FOR_RESTART from linux24 makefiles.
+	  Redirected more messages to stderr.
+	  Added 5 second timeout to INTERACTIVE select to fix retry logic
+	  stall until a key was pressed.
+	  Removed PortAudio message output for pa_dsound.c.
+	  Removed libpopt references in makefiles.
+	  Added debug version of libportaudio for linux24 alsa builds.
+	  Increased version to 24.
+
 2008-12-02 12:11  paddockd
 
 	* ChangeLog, makefile.linux24-display,

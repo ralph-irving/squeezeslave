@@ -532,12 +532,17 @@ int slimaudio_output_streamtime(slimaudio_t *audio) {
 		
 #ifndef PORTAUDIO_ALSA
 	PaTimestamp numSamples = Pa_StreamTime(audio->pa_stream);
-#else
-	PaTime numSamples = Pa_GetStreamTime(audio->pa_stream);
-#endif
 	const int msec =
-		(int)((numSamples - audio->pa_streamtime_offset) / 44.100) +
-		audio->output_predelay_msec;
+		(int)((numSamples - audio->pa_streamtime_offset) / 44.100) + audio->output_predelay_msec;
+	DEBUGF("slimaudio_output_streamtime: streamtime=(%f - %f) / 44.100 + %d = %d\n",
+		numSamples, audio->pa_streamtime_offset, audio->output_predelay_msec, msec);
+#else
+	PaTime timeProgressed = Pa_GetStreamTime(audio->pa_stream);
+	const int msec =
+		(int)((timeProgressed - audio->pa_streamtime_offset) * 1000) + audio->output_predelay_msec;
+	DEBUGF("slimaudio_output_streamtime: streamtime=(%f - %f) * 1000 + %d = %d\n",
+		timeProgressed, audio->pa_streamtime_offset, audio->output_predelay_msec, msec);
+#endif
 
 	return msec < 0 ? 0 : msec;
 }
