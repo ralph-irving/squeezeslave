@@ -74,7 +74,7 @@ static void restart_handler(int signal_number);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-25";
+static const char* version = "0.8-26";
 
 static int player_type = 8;
 
@@ -474,6 +474,7 @@ int main(int argc, char *argv[]) {
 			{"mac",	               required_argument, 0, 'm'},
 			{"oldplayer",          no_argument,       0, 'O'},
 			{"output",             required_argument, 0, 'o'},
+			{"playerid",           required_argument, 0, 'e'},
 			{"predelay",           required_argument, 0, 'p'},
 			{"retry",              no_argument,       0, 'R'},
 			{"intretry",           required_argument, 0, 'r'},
@@ -491,11 +492,11 @@ int main(int argc, char *argv[]) {
 	
 #ifdef INTERACTIVE
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
+			getopt_long_only(argc, argv, "a:d:e:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
 					 long_options, NULL);
 #else
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:hk:Lm:Oo:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:e:hk:Lm:Oo:p:Rr:Vv:",
 					 long_options, NULL);
 
 #endif
@@ -533,6 +534,45 @@ int main(int argc, char *argv[]) {
 #else
 				fprintf(stderr, "%s: Recompile with -DSLIMPROTO_DEBUG to enable debugging.\n", argv[0]);
 #endif
+			break;
+
+// From server/Slim/Networking/Slimproto.pm from 7.4r24879
+// squeezebox(2)
+// softsqueeze(3)
+// squeezebox2(4)
+// transporter(5)
+// softsqueeze3(6)
+// receiver(7)
+// squeezeslave(8)
+// controller(9)
+// boom(10)
+// softboom(11)
+// squeezeplay(12)
+
+		case 'e':
+			if (strcmp(optarg, "softsqueeze") == 0)
+				player_type = 3;
+			else if (strcmp(optarg, "squeezebox2") == 0)
+				player_type = 4;
+			else if (strcmp(optarg, "transporter") == 0)
+				player_type = 5;
+			else if (strcmp(optarg, "softsqueeze3") == 0)
+				player_type = 6;
+			else if (strcmp(optarg, "receiver") == 0)
+				player_type = 7;
+			else if (strcmp(optarg, "controller") == 0)
+				player_type = 9;
+			else if (strcmp(optarg, "boom") == 0)
+				player_type = 10;
+			else if (strcmp(optarg, "softboom") == 0)
+				player_type = 11;
+			else if (strcmp(optarg, "squeezeplay") == 0)
+				player_type = 12;
+			else
+			{
+				fprintf(stderr, "%s: Unknown player type %s\n", argv[0], optarg);
+				player_type = 8;
+			}
 			break;
 		case 'h':
 			print_help();
@@ -823,7 +863,7 @@ static void print_help() {
 "                            need this to avoid dropping the player's\n"
 "                            connection.  By default, the implementation\n"
 "                            chooses the right value: 10s for a >=6.5.x server\n"
-"                            and 0s for a <6.5.xserver, which means no\n"
+"                            and 0s for a <6.5.x server, which means no\n"
 "                            keepalive.\n"
 #ifdef INTERACTIVE
 "-l, --lcd                   Enable LCDd (lcdproc) text display.\n"
@@ -859,8 +899,19 @@ static void print_help() {
 "                            The default is 00:00:00:00:00:01.\n"
 "                            SqueezeCenter uses this value to distinguish\n"
 "                            multiple instances, allowing per-player settings.\n"
-"-O, --oldplayer:            Uses an old player-type-id mostly compatible with\n"
-"                            pre-7.0 SqueezeCenter\n"
+"-e, --playerid:             Pretend to be the player-type-id specified.  Some\n"
+"                            types may require -m00:04:20:00:00:01 as well.\n"
+"                                softsqueeze\n"
+"                                squeezebox2\n"
+"                                transporter\n"
+"                                softsqueeze3\n"
+"                                receiver\n"
+"                                controller\n"
+"                                boom\n"
+"                                softboom\n"
+"                                squeezeplay\n"
+"-O, --oldplayer:            Emulate the player-type-id softsqueeze for use with\n"
+"                            SqueezeCenter versions older than 7.0.\n"
 "-o, --output <device_id>:   Sets the output device id.\n"
 "                            The default id is 0.\n"
 "                            The output device ids can be listed with -L.\n"

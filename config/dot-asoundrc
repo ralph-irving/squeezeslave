@@ -1,0 +1,48 @@
+defaults.pcm.rate_converter "samplerate"
+defaults.pcm.dmix.rate 44100
+
+
+# dmix must attach to the hw device :(
+pcm.dmix-digital-hw {
+        type dmix
+        ipc_key 1235
+        slave {
+                pcm "hw:0,1"
+                period_time 0
+                period_size 1024
+                buffer_size 8192
+                rate 44100
+        }
+}
+
+# Allow for 6 channel ac3 output !
+
+pcm.ac3out {
+        type a52
+        slavepcm "dmix-digital-hw"
+        rate 44100
+}
+
+pcm.upmix51 {
+        type upmix
+        slave.pcm "ac3out"
+        channels 6
+}
+
+pcm.rate441 {
+        type rate
+        slave {
+                pcm  "upmix51"
+                rate 48000
+        }
+}
+
+pcm.rate480 {
+        type rate
+        slave {
+                pcm  "upmix51"
+                rate 44100
+        }
+}
+
+

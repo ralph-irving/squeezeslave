@@ -1,3 +1,13 @@
+2009-01-17 12:44  paddockd
+
+	* ChangeLog, lib/portaudio/pa_unix_oss/pa_unix_oss.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added fix from ivy for portaudio
+	  v19 (alsa) Pa_GetStreamTime.
+	  Added fix for Pa_StreamTime for portaudio v18.1 (unix_oss).
+	  Added obsolete comment to help for SIGNAL option.
+	  Increased version to 25.
+
 2008-12-21 15:18  paddockd
 
 	* ChangeLog, lib/libportaudio/linux24/lib/libportaudio-debug.a,

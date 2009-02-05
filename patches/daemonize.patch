@@ -1,0 +1,511 @@
+--- src/squeezeslave/squeezeslave.c.orig	2009-01-17 07:44:22.000000000 -0500
++++ src/squeezeslave/squeezeslave.c	2009-01-18 17:59:01.000000000 -0500
+@@ -17,6 +17,9 @@
+  *   along with SlimProtoLib; if not, write to the Free Software
+  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  *
++ *   Modified 18 Januari 2009 by Ivor Bosloper
++ *      - Added support to startup as a daemon (--daemonize)
++ *
+  *   Modified 18 November 2008 by Graham Chapman
+  *   Changes:
+  *      - Supportvariable size text display and/or LCDd display
+@@ -38,18 +41,25 @@
+ #include <getopt.h>
+ #include <signal.h>
+ 
++#ifndef INTERACTIVE
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <syslog.h>
++#endif
++
++#include <errno.h>
++
+ #ifdef INTERACTIVE
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <sys/time.h>
+-#include <errno.h>
+ #include <unistd.h>
+ #include <locale.h>
+ #include <ctype.h>
+ #include <curses.h>
+ #include <fcntl.h>
+ #include <lirc/lirc_client.h>
+-#include <netinet/tcp.h> 
++#include <netinet/tcp.h>
+ #endif
+ 
+ #include "slimproto/slimproto.h"
+@@ -71,6 +81,8 @@
+ static void print_help();
+ static void exit_handler(int signal_number);
+ static void restart_handler(int signal_number);
++static void init_daemonize();
++static void daemonize();
+ 
+ static volatile bool signal_exit_flag = false;
+ static volatile bool signal_restart_flag = false;
+@@ -85,9 +97,9 @@
+ #endif
+ 
+ // There is not enough support in Windows+mingw to use signals in the
+-// implementation of the 'restart' feature.  So we support two 
++// implementation of the 'restart' feature.  So we support two
+ // implementations:
+-// . one that is based on signals and is more responsive when a restart is 
++// . one that is based on signals and is more responsive when a restart is
+ //   needed (USE_SIGNALS_FOR_RESTART defined).
+ // . one that polls the restart flag once in a while: less responsive but
+ //   portable  (USE_SIGNALS_FOR_RESTART not defined).
+@@ -141,7 +153,7 @@
+ 
+ int using_curses = 0;
+ // For LCDd support
+-int lcd_fd = 0; 
++int lcd_fd = 0;
+ struct sockaddr_in *lcd_addr;
+ bool use_lcdd_menu = false;
+ 
+@@ -175,7 +187,7 @@
+     if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
+        flags = 0;
+     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+-} 
++}
+ 
+ // Read response from LCDd and update our line length is one is supplied
+ static bool read_lcd() {
+@@ -240,7 +252,7 @@
+         lcd_addr->sin_family = AF_INET;
+ 	if (inet_pton(AF_INET, "127.0.0.1", (void *)(&(lcd_addr->sin_addr.s_addr))) >0) {
+ 	   lcd_addr->sin_port = htons(13666);
+-           if (connect(lcd_fd, (struct sockaddr *)lcd_addr, sizeof(struct sockaddr)) >= 0){ 
++           if (connect(lcd_fd, (struct sockaddr *)lcd_addr, sizeof(struct sockaddr)) >= 0){
+               int flag = 1;
+               if (setsockopt(lcd_fd, IPPROTO_TCP, TCP_NODELAY, (void*)&flag, sizeof(flag) ) == 0)   {
+                  fprintf(stderr,"Connected to LCDd!\n");
+@@ -257,7 +269,7 @@
+ 	         setNonblocking(lcd_fd);
+ 	      }
+ 	   }
+-	} 
++	}
+      }
+      // If connect failed
+      if (!use_lcdd_menu) {
+@@ -353,7 +365,7 @@
+ // to squeezecener IR codes
+ unsigned long getircode(int key) {
+     unsigned long ir = 0;
+-    
++
+     switch(key) {
+     case '0': ir = 0x76899867; break;
+     case '1': ir = 0x7689f00f; break;
+@@ -420,7 +432,7 @@
+ 	slimaudio_get_output_devices(slimaudio, &devices, &num_devices);
+ 
+ 
+-	printf("Output devices:\n");	
++	printf("Output devices:\n");
+ 	int i;
+ 	for (i=0; i<num_devices; i++) {
+ 		if ( i == output_device_id  )
+@@ -445,6 +457,7 @@
+ 	unsigned int retry_interval = RETRY_DEFAULT;
+ 	int keepalive_interval = -1;
+ 	bool listdevs = false;
++	bool should_daemonize = false;
+ 
+ #ifdef INTERACTIVE
+         fd_set read_fds;
+@@ -472,6 +485,9 @@
+ 			{"keepalive",          required_argument, 0, 'k'},
+ 			{"list",               no_argument,       0, 'L'},
+ 			{"mac",	               required_argument, 0, 'm'},
++#ifndef INTERACTIVE
++			{"daemonize",          no_argument,       0, 'M'},
++#endif
+ 			{"oldplayer",          no_argument,       0, 'O'},
+ 			{"output",             required_argument, 0, 'o'},
+ 			{"predelay",           required_argument, 0, 'p'},
+@@ -488,14 +504,14 @@
+ #endif
+ 			{0, 0, 0, 0}
+ 		};
+-	
++
+ #ifdef INTERACTIVE
+ 		const char shortopt =
+ 			getopt_long_only(argc, argv, "a:d:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
+ 					 long_options, NULL);
+ #else
+ 		const char shortopt =
+-			getopt_long_only(argc, argv, "a:d:hk:Lm:Oo:p:Rr:Vv:",
++			getopt_long_only(argc, argv, "a:d:hk:Lm:MOo:p:Rr:Vv:",
+ 					 long_options, NULL);
+ 
+ #endif
+@@ -509,7 +525,7 @@
+ 			output_predelay_amplitude = strtoul(optarg, NULL, 0);
+ 			break;
+ 		case 'd':
+-#ifdef SLIMPROTO_DEBUG        
++#ifdef SLIMPROTO_DEBUG
+ 			if (strcmp(optarg, "slimproto") == 0)
+ 				slimproto_debug = true;
+ 			else if (strcmp(optarg, "slimaudio") == 0)
+@@ -536,16 +552,19 @@
+ 			break;
+ 		case 'h':
+ 			print_help();
+-			exit(0);	
++			exit(0);
+ 		case 'k':
+ 			keepalive_interval = strtoul(optarg, NULL, 0);
+ 			break;
+ 		case 'm':
+ 			if (parse_macaddress(macaddress, optarg) != 0) {
+ 				fprintf(stderr, "%s: Cannot parse mac address %s\n", argv[0], optarg);
+-				exit(-1);	
++				exit(-1);
+ 			}
+ 			break;
++		case 'M':
++			should_daemonize = true;
++			break;
+ 		case 'O':
+ 			player_type = 3;
+ 			break;
+@@ -602,7 +621,8 @@
+ 			else if (strcmp(optarg, "off") == 0 ) {
+ 				volume_control = VOLUME_NONE;
+ 			}
+-#if 0			
++		 	break;
++#if 0
+ 		case '?':
+ 			fprintf( stderr, "Unknown option: %s.\n", argv[optind] );
+ 			exit(-1);
+@@ -611,10 +631,16 @@
+ 		}
+ 	}
+ 
++#ifndef INTERACTIVE
++	if ( should_daemonize ) {
++		init_daemonize();
++	}
++#endif
++
+ 	char *slimserver_address = "127.0.0.1";
+ 	if (optind < argc)
+ 		slimserver_address = argv[optind];
+-#if 0	
++#if 0
+ 	if (retry_connection) {
+ 		fprintf( stderr, "Setting retry interval to %d seconds.\n", retry_interval );
+ 	}
+@@ -626,7 +652,7 @@
+ #endif
+ 	if (slimproto_init(&slimproto) < 0) {
+ 		fprintf(stderr, "Failed to initialize slimproto\n");
+-		exit(-1);	
++		exit(-1);
+ 	}
+ 
+ 	if (slimaudio_init(&slimaudio, &slimproto) < 0) {
+@@ -639,11 +665,11 @@
+ 	   exit(1);
+ 	}
+ 
+-	slimproto_add_connect_callback(&slimproto, connect_callback, 
++	slimproto_add_connect_callback(&slimproto, connect_callback,
+ 					macaddress);
+ #ifdef INTERACTIVE
+ 	// Process VFD (display) commands
+- 	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, 
++ 	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback,
+ 					macaddress);
+ #endif
+ 
+@@ -678,7 +704,13 @@
+ 	initcurses();
+ #endif
+ 
+-	// When retry_connection is true, retry connecting to the SqueezeCenter 
++#ifndef INTERACTIVE
++	if ( should_daemonize ) {
++		daemonize();
++	}
++#endif
++
++	// When retry_connection is true, retry connecting to the SqueezeCenter
+ 	// until we succeed, unless the signal handler tells us to give up.
+ 	do {
+ 		while (slimproto_connect(
+@@ -699,7 +731,7 @@
+ 				close_lirc();
+ 				close_lcd();
+ #endif
+-				fprintf(stderr, 
++				fprintf(stderr,
+ 					"Connection to SqueezeCenter %s failed.\n",
+ 					slimserver_address);
+ 				exit(-1);
+@@ -722,12 +754,12 @@
+ 		      if (using_curses == 1)
+      	                 FD_SET(0, &read_fds); /* watch stdin */
+    	              if (use_lcdd_menu) {
+-		         FD_SET(lcd_fd, &read_fds); 
++		         FD_SET(lcd_fd, &read_fds);
+ 		         maxfd = lcd_fd;
+ 		      }
+    	              if (using_lirc) {
+-		         FD_SET(lirc_fd, &read_fds); 
+-                         if (lirc_fd > maxfd) 
++		         FD_SET(lirc_fd, &read_fds);
++                         if (lirc_fd > maxfd)
+ 		            maxfd = lirc_fd;
+                       }
+ 		      timeout.tv_sec = 5;
+@@ -735,7 +767,7 @@
+     	                 if (errno != EINTR) {
+ 		           fprintf(stderr,"Select Error\n");
+    	                   abort();
+-	                 } 
++	                 }
+                       }
+ 		      if (FD_ISSET(0, &read_fds)) {
+                          while ((key = getch()) != ERR) {
+@@ -746,19 +778,19 @@
+ 			       if (ir != 0) slimproto_ir(&slimproto, 1, 1, ir);
+ 			    }
+ 		         }
+-		      } 
++		      }
+ 		      if (using_lirc && FD_ISSET(lirc_fd, &read_fds)) {
+-                         while((key = read_lirc()) != 0 ) { 
++                         while((key = read_lirc()) != 0 ) {
+                             ir = getircode(key);
+-	                    if (ir == 0x01) { 
++	                    if (ir == 0x01) {
+   		               signal_exit_flag = 1;
+                             } else {
+ 			       if (ir != 0) slimproto_ir(&slimproto, 1, 1, ir);
+ 			    }
+ 		         }
+-		      } 
++		      }
+ 		      if (use_lcdd_menu && FD_ISSET(lcd_fd, &read_fds)) {
+-                         while(read_lcd()); 
++                         while(read_lcd());
+ 		      }
+ 		   } else {
+                       wait_for_restart_signal();
+@@ -771,7 +803,7 @@
+                 FD_ZERO(&read_fds);
+                 FD_ZERO(&write_fds);
+ #endif
+-		if (signal_restart_flag) { 
++		if (signal_restart_flag) {
+ #ifdef INTERACTIVE
+ 			exitcurses();
+ #endif
+@@ -795,14 +827,14 @@
+ 	slimaudio_destroy(&slimaudio);
+ 	slimproto_destroy(&slimproto);
+ 	return 0;
+-} 
++}
+ 
+ static void print_version() {
+ 	fprintf(stdout, "squeezeslave %s\n", version);
+ }
+ 
+ static void print_help() {
+-	print_version();      
++	print_version();
+ 	fprintf(stdout,
+ "squeezeslave [options] [<squeezecenter address>]\n"
+ "The SqueezeCenter address defaults to 127.0.0.1.\n"
+@@ -842,8 +874,8 @@
+ "                                  End              Now Playing\n"
+ "                                  Space or P       Pause\n"
+ "                                  Enter            Play\n"
+-"                                  R                Repeat\n" 
+-"                                  S                Shuffle\n" 
++"                                  R                Repeat\n"
++"                                  S                Shuffle\n"
+ "                                  ?                Search\n"
+ "                                  B                Browse\n"
+ "                                  F                Favourites\n"
+@@ -878,7 +910,6 @@
+ "-r <sec>                    For a different retry interval use -r and the\n"
+ "                            desired interval in seconds. (ie. -r10)\n"
+ "                            A value is required for this option.\n"
+-"-s, --signal:               Ignored. Always uses SIGTERM to exit.\n"
+ "-V, --version:              Prints the squeezeslave version.\n"
+ "-v, --volume <on|sw|off>:   Enables/disables volume changes done by\n"
+ "                            SqueezeCenter during its operation, such as when\n"
+@@ -906,7 +937,7 @@
+ RETRY_DEFAULT);
+ }
+ 
+-// Handles a signal coming from outside this process and that is meant to 
++// Handles a signal coming from outside this process and that is meant to
+ // terminate the program cleanly.
+ static void exit_handler(int signal_number) {
+ 	signal_exit_flag = true;
+@@ -928,7 +959,7 @@
+ void set_lcd_line(int lineid, char *text, int len) {
+    int total = 27 + len;
+    char cmd[total];
+-   
++
+    if (lineid == 1)
+       memcpy(cmd,"widget_set main one 1 1 {",25);
+    else
+@@ -965,7 +996,7 @@
+ void makeprintable(unsigned char * line) {
+     int n;
+ 
+-    for (n=0;n<linelen;n++) 
++    for (n=0;n<linelen;n++)
+        line[n]=printable(line[n]);
+ }
+ 
+@@ -975,7 +1006,7 @@
+     char *line2;
+ 
+     memset(line1, 0, linelen+1);
+-    strncpy(line1, ddram, linelen);   
++    strncpy(line1, ddram, linelen);
+     line2 = &(ddram[linelen]);
+     line2[linelen] = '\0';
+ 
+@@ -1055,7 +1086,7 @@
+ // Called by the library when a vfd command is received.
+ static int vfd_callback(slimproto_t *p, const unsigned char * buf, int len , void *user_data) {
+         unsigned short disp[len+1];
+-	
++
+ 	if (p->state == PROTO_CONNECTED) {
+            memcpy(disp, buf, len);
+ 	   receive_display_data (disp, len);
+@@ -1094,22 +1125,109 @@
+ 		if (!signal_exit_flag)
+ 		    send_restart_signal();
+ 	}
+-	
++
+ 	return 0;
+ }
+ 
+ static int parse_macaddress(char *macaddress, const char *str) {
+ 	char *ptr;
+ 	int i;
+-	
+-	for (i=0; i<6; i++) {		
++
++	for (i=0; i<6; i++) {
+ 		macaddress[i] = (char) strtol (str, &ptr, 16);
+ 		if (i == 5 && *ptr == '\0')
+ 			return 0;
+ 		if (*ptr != ':')
+ 			return -1;
+-			
++
+ 		str = ptr+1;
+-	}	
++	}
+ 	return -1;
+ }
++
++#ifndef INTERACTIVE
++static void fork_child_handler(int signum)
++{
++    switch(signum) {
++    case SIGALRM: exit(EXIT_FAILURE); break;
++    case SIGUSR1: exit(EXIT_SUCCESS); break;
++    case SIGCHLD: exit(EXIT_FAILURE); break;
++    }
++}
++
++pid_t parent;
++static void init_daemonize()
++{
++    pid_t pid, sid;
++
++    /* already a daemon */
++    if ( getppid() == 1 ) return;
++
++    /* Trap signals that we expect to recieve */
++    signal(SIGCHLD,fork_child_handler);
++    signal(SIGUSR1,fork_child_handler);
++    signal(SIGALRM,fork_child_handler);
++
++    /* Fork off the parent process */
++    pid = fork();
++    if (pid < 0) {
++    	syslog( LOG_ERR, "unable to fork daemon, code=%d (%s)",
++    			errno, strerror(errno) );
++    	exit(EXIT_FAILURE);
++    }
++
++    /* If we got a good PID, then we can exit the parent process. */
++    if (pid > 0) {
++
++        /* Wait for confirmation from the child via SIGTERM or SIGCHLD, or
++           for two seconds to elapse (SIGALRM).  pause() should not return. */
++        alarm(2);
++        pause();
++
++        exit(EXIT_FAILURE);
++    }
++
++    /* At this point we are executing as the child process */
++    parent = getppid();
++
++    /* Cancel certain signals */
++    signal(SIGCHLD,SIG_DFL); /* A child process dies */
++    signal(SIGTSTP,SIG_IGN); /* Various TTY signals */
++    signal(SIGTTOU,SIG_IGN);
++    signal(SIGTTIN,SIG_IGN);
++    signal(SIGHUP, SIG_IGN); /* Ignore hangup signal */
++    signal(SIGTERM,SIG_DFL); /* Die on SIGTERM */
++
++    /* Change the file mode mask */
++    umask(0);
++
++    /* Create a new SID for the child process */
++    sid = setsid();
++    if (sid < 0) {
++        syslog( LOG_ERR, "unable to create a new session, code %d (%s)",
++                errno, strerror(errno) );
++        exit(EXIT_FAILURE);
++    }
++
++    /* Change the current working directory.  This prevents the current
++       directory from being locked; hence not being able to remove it. */
++    if ((chdir("/")) < 0) {
++        syslog( LOG_ERR, "unable to change directory to %s, code %d (%s)",
++                "/", errno, strerror(errno) );
++        exit(EXIT_FAILURE);
++    }
++}
++
++static void daemonize() {
++    /* Redirect standard files to /dev/null */
++    freopen( "/dev/null", "r", stdin);
++    if ( freopen( "/var/log/squeezeslave", "a", stdout) < 0 ) {
++        freopen( "/dev/null", "w", stdout);
++    }
++    fclose(stderr);
++    stderr=stdout;
++
++    /* Tell the parent process that we are A-okay */
++    kill( parent, SIGUSR1 );
++}
++#endif

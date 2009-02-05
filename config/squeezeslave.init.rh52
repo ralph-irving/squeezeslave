@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+#	/etc/init.d/squeezeslave
+#
+# Starts the squeezeslave daemon
+#
+# chkconfig: - 65 35
+# description: Squeezeslave Client
+# processname: squeezeslave
+# Source function library.
+. /etc/init.d/functions
+
+test -x /usr/bin/squeezeslave || exit 0
+
+RETVAL=0
+prog="Squeezeslave Client"
+
+start() {
+        echo -n $"Starting $prog: "
+	daemon '/usr/bin/squeezeslave -o5 -r15 -m00:00:00:00:00:03 schostname > /dev/null 2>&1 &'
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/squeezeslave
+	echo
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+	killproc /usr/bin/squeezeslave
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/squeezeslave
+	echo
+}
+
+#
+#	See how we were called.
+#
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  reload|restart)
+	stop
+	start
+	RETVAL=$?
+	;;
+  condrestart)
+	if [ -f /var/lock/subsys/squeezeslave ]; then
+	    stop
+	    start
+	fi
+	;;
+  status)
+	status /usr/bin/squeezeslave
+	RETVAL=$?
+	;;
+  *)
+	echo $"Usage: $0 {condrestart|start|stop|restart|reload|status}"
+	exit 1
+esac
+
+exit $RETVAL
