@@ -17,6 +17,9 @@
  *   along with SlimProtoLib; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ *   Modified 18 January 2009 by Ivor Bosloper
+ *      - Added support to startup as a daemon (--daemonize)
+ *
  *   Modified 18 November 2008 by Graham Chapman
  *   Changes:
  *      - Supportvariable size text display and/or LCDd display
@@ -32,17 +35,32 @@
  *
  */
 
+#if defined(DAEMONIZE) && defined(INTERACTIVE)
+#error "DAEMONIZE and INTERACTIVE cannot be defined at the same time."
+#endif
+
+#if defined(DAEMONIZE) && defined(__WIN32__)
+#error "DAEMONIZE not supported on WIN32 version of squeezeslave."
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
 #include <signal.h>
 
+#ifdef DAEMONIZE
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <syslog.h>
+#endif
+
+#include <errno.h>
+
 #ifdef INTERACTIVE
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <errno.h>
 #include <unistd.h>
 #include <locale.h>
 #include <ctype.h>
@@ -72,9 +90,14 @@ static void print_help();
 static void exit_handler(int signal_number);
 static void restart_handler(int signal_number);
 
+#ifdef DAEMONIZE
+static void init_daemonize();
+static void daemonize();
+#endif
+
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-26";
+static const char* version = "0.8-28";
 
 static int player_type = 8;
 
@@ -85,19 +108,17 @@ static int vfd_callback(slimproto_t *p, const unsigned char * buf, int len , voi
 #endif
 
 // There is not enough support in Windows+mingw to use signals in the
-// implementation of the 'restart' feature.  So we support two 
-// implementations:
-// . one that is based on signals and is more responsive when a restart is 
-//   needed (USE_SIGNALS_FOR_RESTART defined).
-// . one that polls the restart flag once in a while: less responsive but
-//   portable  (USE_SIGNALS_FOR_RESTART not defined).
+// implementation of the 'restart' feature.  So we support two implementations:
+// One that is based on signals and is more responsive when a restart is 
+// needed (USE_SIGNALS_FOR_RESTART defined).
+// One that polls the restart flag once in a while: less responsive but
+// portable (USE_SIGNALS_FOR_RESTART not defined).
 
 #ifdef USE_SIGNALS_FOR_RESTART
 
 static void install_restart_handler() {
 	signal(SIGUSR1, &restart_handler);
 }
-
 
 static void wait_for_restart_signal() {
 	pause();
@@ -124,8 +145,8 @@ static void send_restart_signal() {
 // For retry support
 bool retry_connection = false;
 
-struct timeval uptime; /* time we started */
-
+// Time we started
+struct timeval uptime;
 
 #ifdef INTERACTIVE
 // For curses display
@@ -445,6 +466,9 @@ int main(int argc, char *argv[]) {
 	unsigned int retry_interval = RETRY_DEFAULT;
 	int keepalive_interval = -1;
 	bool listdevs = false;
+#ifdef DAEMONIZE
+	bool should_daemonize = false;
+#endif
 
 #ifdef INTERACTIVE
         fd_set read_fds;
@@ -472,6 +496,9 @@ int main(int argc, char *argv[]) {
 			{"keepalive",          required_argument, 0, 'k'},
 			{"list",               no_argument,       0, 'L'},
 			{"mac",	               required_argument, 0, 'm'},
+#ifdef DAEMONIZE
+			{"daemonize",          no_argument,       0, 'M'},
+#endif
 			{"oldplayer",          no_argument,       0, 'O'},
 			{"output",             required_argument, 0, 'o'},
 			{"playerid",           required_argument, 0, 'e'},
@@ -490,7 +517,11 @@ int main(int argc, char *argv[]) {
 			{0, 0, 0, 0}
 		};
 	
-#ifdef INTERACTIVE
+#if defined(DAEMONIZE)	
+		const char shortopt =
+			getopt_long_only(argc, argv, "a:d:e:hk:Lm:MOo:p:Rr:Vv:",
+					 long_options, NULL);
+#elif defined(INTERACTIVE)
 		const char shortopt =
 			getopt_long_only(argc, argv, "a:d:e:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
 					 long_options, NULL);
@@ -498,7 +529,6 @@ int main(int argc, char *argv[]) {
 		const char shortopt =
 			getopt_long_only(argc, argv, "a:d:e:hk:Lm:Oo:p:Rr:Vv:",
 					 long_options, NULL);
-
 #endif
 
 		if (shortopt == -1) {
@@ -586,6 +616,11 @@ int main(int argc, char *argv[]) {
 				exit(-1);	
 			}
 			break;
+#ifdef DAEMONIZE
+		case 'M':
+			should_daemonize = true;
+			break;
+#endif
 		case 'O':
 			player_type = 3;
 			break;
@@ -642,25 +677,30 @@ int main(int argc, char *argv[]) {
 			else if (strcmp(optarg, "off") == 0 ) {
 				volume_control = VOLUME_NONE;
 			}
-#if 0			
-		case '?':
-			fprintf( stderr, "Unknown option: %s.\n", argv[optind] );
-			exit(-1);
 			break;
-#endif
+		default:
+			break;
 		}
 	}
+
+#ifdef DAEMONIZE
+	if ( should_daemonize ) {
+		init_daemonize();
+	}
+#endif
 
 	char *slimserver_address = "127.0.0.1";
 	if (optind < argc)
 		slimserver_address = argv[optind];
-#if 0	
+
+#ifdef SLIMPROTO_DEBUG	
 	if (retry_connection) {
 		fprintf( stderr, "Setting retry interval to %d seconds.\n", retry_interval );
 	}
 #endif
 	signal(SIGTERM, &exit_handler);
 	install_restart_handler();
+
 #ifdef INTERACTIVE
 	install_toggle_handler();  //SIGUSR2 to toggle IR/LCD on and off
 #endif
@@ -679,12 +719,11 @@ int main(int argc, char *argv[]) {
 	   exit(1);
 	}
 
-	slimproto_add_connect_callback(&slimproto, connect_callback, 
-					macaddress);
+	slimproto_add_connect_callback(&slimproto, connect_callback, macaddress);
+
 #ifdef INTERACTIVE
 	// Process VFD (display) commands
- 	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, 
-					macaddress);
+ 	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
 
 	if (output_device_id >= 0) {
@@ -692,8 +731,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	slimaudio_set_volume_control(&slimaudio, volume_control);
-	slimaudio_set_output_predelay(&slimaudio, output_predelay,
-				      output_predelay_amplitude);
+	slimaudio_set_output_predelay(&slimaudio, output_predelay, output_predelay_amplitude);
 
 	if (keepalive_interval >= 0) {
 		slimaudio_set_keepalive_interval(&slimaudio, keepalive_interval);
@@ -717,8 +755,12 @@ int main(int argc, char *argv[]) {
 	setlocale(LC_ALL, "");
 	initcurses();
 #endif
-
-	// When retry_connection is true, retry connecting to the SqueezeCenter 
+#ifdef DAEMONIZE
+	if ( should_daemonize ) {
+		daemonize();
+	}
+#endif
+	// When retry_connection is true, retry connecting to SqueezeCenter 
 	// until we succeed, unless the signal handler tells us to give up.
 	do {
 		while (slimproto_connect(
@@ -890,8 +932,12 @@ static void print_help() {
 "                                  %%                Size\n"
 "                                  Z                Sleep\n"
 "                                  +,-              Vol up,down\n"
-"-w. --width <chars>         Set the display width to <chars> characters\n"
+"-w, --width <chars>         Set the display width to <chars> characters\n"
 "                            If using LCDd, width is detected.\n"
+#endif
+#ifdef DAEMONIZE
+"-M, --daemonize             Run squeezeslave as a daemon.\n"
+"                            Messages written to /var/log/squeezeslave.log\n"
 #endif
 "-L, --list                  List available audio devices and exit.\n"
 "-m, --mac <mac_address>:    Sets the mac address for this instance.\n"
@@ -1164,3 +1210,90 @@ static int parse_macaddress(char *macaddress, const char *str) {
 	}	
 	return -1;
 }
+
+#ifdef DAEMONIZE
+static void fork_child_handler(int signum)
+{
+	switch(signum) {
+	case SIGALRM: exit(EXIT_FAILURE); break;
+	case SIGUSR1: exit(EXIT_SUCCESS); break;
+	case SIGCHLD: exit(EXIT_FAILURE); break;
+	}
+}
+
+pid_t parent;
+static void init_daemonize()
+{
+	pid_t pid, sid;
+
+	/* already a daemon */
+	if ( getppid() == 1 ) return;
+
+	/* Trap signals that we expect to recieve */
+	signal(SIGCHLD,fork_child_handler);
+	signal(SIGUSR1,fork_child_handler);
+	signal(SIGALRM,fork_child_handler);
+
+	/* Fork off the parent process */
+	pid = fork();
+	if (pid < 0) {
+		syslog( LOG_ERR, "unable to fork daemon, code=%d (%s)",
+				errno, strerror(errno) );
+		exit(EXIT_FAILURE);
+	}
+
+	/* If we got a good PID, then we can exit the parent process. */
+	if (pid > 0) {
+
+		/* Wait for confirmation from the child via SIGTERM or SIGCHLD, or
+		   for two seconds to elapse (SIGALRM).  pause() should not return. */
+		alarm(2);
+		pause();
+
+		exit(EXIT_FAILURE);
+	}
+
+	/* At this point we are executing as the child process */
+	parent = getppid();
+
+	/* Cancel certain signals */
+	signal(SIGCHLD,SIG_DFL); /* A child process dies */
+	signal(SIGTSTP,SIG_IGN); /* Various TTY signals */
+	signal(SIGTTOU,SIG_IGN);
+	signal(SIGTTIN,SIG_IGN);
+	signal(SIGHUP, SIG_IGN); /* Ignore hangup signal */
+	signal(SIGTERM,SIG_DFL); /* Die on SIGTERM */
+
+	/* Change the file mode mask */
+	umask(0);
+
+	/* Create a new SID for the child process */
+	sid = setsid();
+	if (sid < 0) {
+		syslog( LOG_ERR, "unable to create a new session, code %d (%s)",
+				errno, strerror(errno) );
+		exit(EXIT_FAILURE);
+	}
+
+	/* Change the current working directory.  This prevents the current
+	   directory from being locked; hence not being able to remove it. */
+	if ((chdir("/")) < 0) {
+		syslog( LOG_ERR, "unable to change directory to %s, code %d (%s)",
+				"/", errno, strerror(errno) );
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void daemonize() {
+	/* Redirect standard files to /dev/null */
+	freopen( "/dev/null", "r", stdin);
+	if ( freopen( "/var/log/squeezeslave.log", "a", stdout) < 0 ) {
+		freopen( "/dev/null", "w", stdout);
+	}
+	fclose(stderr);
+	stderr=stdout;
+
+	/* Tell the parent process that we are A-okay */
+	kill( parent, SIGUSR1 );
+}
+#endif

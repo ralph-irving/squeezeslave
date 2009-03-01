@@ -1,3 +1,11 @@
+2009-02-05 18:47  paddockd
+
+	* .lircrc, ChangeLog, ReleaseNotes, config/.lircrc,
+	  config/dot-asoundrc, config/dot-lircrc,
+	  config/squeezeslave.init.rh52, patches/daemonize.patch,
+	  src/squeezeslave/squeezeslave.c: Added -e/--playerid options.
+	  Daemonize patch NOT applied.
+
 2009-01-17 12:44  paddockd
 
 	* ChangeLog, lib/portaudio/pa_unix_oss/pa_unix_oss.c,

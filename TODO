@@ -1,0 +1,65 @@
+Marsden theatre christmas special ~300MB ogg
+
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error in ov_open_callbacks -132
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+Error decoding vorbis stream
+
+---
+
+This has been my reasoning as well, I have been adding debuging
+information through squeezeslave to watch the buffers and they seem
+okay the http-> decoder-> output.  I have tried increasing them to no
+avail.
+
+The place it blocks is writing to the decoder buffer (just read off
+http and trying to write to decoders buffer.
+
+I have let portaudio ask for the number of frames to transfer on its
+call back and it seems to default to 1024 (it was hard coded as 256
+before), I have tried placing this back again to no avail, there is
+more buffer interaction, but the waits are still in the same place.
+
+---
+
+Stream position not reported correctly by portaudio.  Causes track
+progress bar to reset to start after pausing the stream.
+
+---
+http://forums.slimdevices.com/member.php?u=10044
+
+I've just started to use SS (and find it great to use as a virtual Squeezebox on a PC, espec combined with Moose as a front-end) - however I spotted a few of these errors on the cmd window:
+
+libmad: (mp3) decoding error (0x0101)
+libmad: (mp3) decoding error (0x0101)
+libmad: (mp3) decoding error (0x0238)
+
+I'm running SS 0.8-25 on Vista/32. I'm afraid I've no idea though which tracks the errors correlate to since the SS window is minimised and I don't recall any major issues - possibly some minor sound glitches.
+
+Any ideas what specifically I should be looking out for WRT mp3 files?
+
+The 0x0101 (lost synchronization) error is returned by libmad when it fails to find the requisite sync word at the expected location in the bitstream. It usually indicates either (1) a corrupt bitstream, or (2) stream buffer mismanagement in your code. Since the error is fully recoverable, in the case of (1) the solution is simply to continue decoding.
+
+In the case of (2), the most common problem is a failure to copy the unconsumed portion of the bitstream to the beginning of the new buffer after receiving MAD_ERROR_BUFLEN. However, madplay does this correctly, so if you are actually running madplay under ARM unmodified, this should not be a problem.
+
+If the error occurs with any MP3 file, especially at the same frame index (at the same bitrate), then buffer management is definitely a likely culprit.
+
+The 0x0238 error is a Huffman data overrun error. It happens when the actual big_values section of the bitstream occupies more space than was declared by the bitstream for it. This can happen because the Huffman code words are variable length and the actual length is learned implicitly during decoding.
+
+Most often this is an indication of an error made by an encoder, but it's also possible to happen if there is an error in MAD's Huffman code tables or the process of reading them. As the Huffman table union initialization macros are subject to portability issues, this is a possible source of the problem if you get a lot of these errors.
+
+---
+
+Fix getopt_long_only options string handling removing multiple #if defines.
+
+---
