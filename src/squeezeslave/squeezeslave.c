@@ -92,12 +92,12 @@ static void restart_handler(int signal_number);
 
 #ifdef DAEMONIZE
 static void init_daemonize();
-static void daemonize();
+static void daemonize(char *);
 #endif
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-28";
+static const char* version = "0.8-29";
 
 static int player_type = 8;
 
@@ -468,6 +468,7 @@ int main(int argc, char *argv[]) {
 	bool listdevs = false;
 #ifdef DAEMONIZE
 	bool should_daemonize = false;
+	char *logfile;
 #endif
 
 #ifdef INTERACTIVE
@@ -497,7 +498,7 @@ int main(int argc, char *argv[]) {
 			{"list",               no_argument,       0, 'L'},
 			{"mac",	               required_argument, 0, 'm'},
 #ifdef DAEMONIZE
-			{"daemonize",          no_argument,       0, 'M'},
+			{"daemonize",          required_argument, 0, 'M'},
 #endif
 			{"oldplayer",          no_argument,       0, 'O'},
 			{"output",             required_argument, 0, 'o'},
@@ -519,7 +520,7 @@ int main(int argc, char *argv[]) {
 	
 #if defined(DAEMONIZE)	
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:e:hk:Lm:MOo:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:e:hk:Lm:M:Oo:p:Rr:Vv:",
 					 long_options, NULL);
 #elif defined(INTERACTIVE)
 		const char shortopt =
@@ -618,6 +619,14 @@ int main(int argc, char *argv[]) {
 			break;
 #ifdef DAEMONIZE
 		case 'M':
+			if ( optarg == NULL )
+			{
+				fprintf(stderr, "%s: Cannot parse log filename %s\n", argv[0], optarg);
+				exit(-1);	
+			} else
+			{
+				logfile = optarg;
+			}
 			should_daemonize = true;
 			break;
 #endif
@@ -693,11 +702,6 @@ int main(int argc, char *argv[]) {
 	if (optind < argc)
 		slimserver_address = argv[optind];
 
-#ifdef SLIMPROTO_DEBUG	
-	if (retry_connection) {
-		fprintf( stderr, "Setting retry interval to %d seconds.\n", retry_interval );
-	}
-#endif
 	signal(SIGTERM, &exit_handler);
 	install_restart_handler();
 
@@ -757,7 +761,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef DAEMONIZE
 	if ( should_daemonize ) {
-		daemonize();
+		daemonize(logfile);
 	}
 #endif
 	// When retry_connection is true, retry connecting to SqueezeCenter 
@@ -936,8 +940,8 @@ static void print_help() {
 "                            If using LCDd, width is detected.\n"
 #endif
 #ifdef DAEMONIZE
-"-M, --daemonize             Run squeezeslave as a daemon.\n"
-"                            Messages written to /var/log/squeezeslave.log\n"
+"-M, --daemonize <logfile>   Run squeezeslave as a daemon.\n"
+"                            Messages written to specified file.\n"
 #endif
 "-L, --list                  List available audio devices and exit.\n"
 "-m, --mac <mac_address>:    Sets the mac address for this instance.\n"
@@ -1284,14 +1288,15 @@ static void init_daemonize()
 	}
 }
 
-static void daemonize() {
+static void daemonize( char *logfile ) {
 	/* Redirect standard files to /dev/null */
 	freopen( "/dev/null", "r", stdin);
-	if ( freopen( "/var/log/squeezeslave.log", "a", stdout) < 0 ) {
+	if ( freopen( logfile, "a", stdout) < 0 ) {
 		freopen( "/dev/null", "w", stdout);
 	}
-	fclose(stderr);
-	stderr=stdout;
+	if ( freopen( logfile, "a", stderr) < 0 ) {
+		freopen( "/dev/null", "w", stderr);
+	}
 
 	/* Tell the parent process that we are A-okay */
 	kill( parent, SIGUSR1 );

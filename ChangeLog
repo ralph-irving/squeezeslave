@@ -1,3 +1,17 @@
+2009-03-01 13:30  paddockd
+
+	* ChangeLog, ReleaseNotes, TODO, config/squeezeslave.plist,
+	  makefile.osx, makefile.osxintel, src/squeezeslave/squeezeslave.c:
+	  Integrated Ivor Bosloper's support to startup as a daemon by
+	  defining DAEMONIZE at compile time.
+	  Added compile time checks to fail if DAEMONIZE is defined with
+	  INTERACTIVE or __WIN32__.
+	  Added makefile.osxintel with build comments inline. Thanks to
+	  Luke Redpath.
+	  Added squeezeslave.plist for OSX to install squeezeslave as a
+	  service at startup. Thanks to Luke Redpath.
+	  Added TODO list containing outstanding issues to be addressed.
+
 2009-02-05 18:47  paddockd
 
 	* .lircrc, ChangeLog, ReleaseNotes, config/.lircrc,

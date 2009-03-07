@@ -7,11 +7,12 @@ What's new in Squeezeslave 0.8
 
 Works with squeezecenter versions 6.3.1 through 7.4
 
-Binaries available for Windows, Linux and Solaris both Sparc and Intel.
+Binaries available for Windows, Linux, Solaris both Sparc and Intel and OSX Intel.
 
 Win32 version uses Direct X.
 Linux versions work with OSS and Alsa audio drivers.
-Solaris versions use native solaris mixer interface.
+Solaris versions use native solaris mixer interface and has been extensively testing with Sun Ray appliances.
+Thanks to Luke Redpath for the OSX Intel binary.
 
 A Pentium MMX binary is also available for linux. Works great on an old Pentium MMX laptop at 133Mhz with 48MB of memory.
 
