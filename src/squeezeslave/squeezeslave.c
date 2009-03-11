@@ -97,7 +97,7 @@ static void daemonize(char *);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-29";
+static const char* version = "0.8-32";
 
 static int player_type = 8;
 

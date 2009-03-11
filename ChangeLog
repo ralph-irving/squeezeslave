@@ -1,3 +1,12 @@
+2009-03-07 22:06  paddockd
+
+	* ChangeLog, ReleaseNotes, makefile.linux24-debug,
+	  makefile.s9sparc-debug, src/squeezeslave/squeezeslave.c: Updated
+	  damonize feature to pass logfile on command line. No longer
+	  writes to /var/log by default. Changed to allow non-root users to
+	  run in daemon mode.
+	  Fixed Solaris compile of daemonize option.
+
 2009-03-01 13:30  paddockd
 
 	* ChangeLog, ReleaseNotes, TODO, config/squeezeslave.plist,
