@@ -1,0 +1,2202 @@
+Index: Slim/Display/Lib/Text16VFD.pm
+===================================================================
+--- Slim/Display/Lib/Text16VFD.pm	(revision 31)
++++ Slim/Display/Lib/Text16VFD.pm	(working copy)
+@@ -0,0 +1,1141 @@
++package Slim::Display::Lib::Text16VFD;
++
++# SqueezeCenter Copyright 2001-2007 Logitech.
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License, 
++# version 2.
++#
++# $Id: Text16VFD.pm 15258 2007-12-13 15:29:14Z mherger $
++#
++
++=head1 NAME
++
++Slim::Display::Lib::Text16VFD
++
++=head1 DESCRIPTION
++
++L<Slim::Display::Lib::Text16VFD>
++ Library functions for text based displays
++
++=cut
++
++use strict;
++
++use Slim::Utils::Log;
++use Slim::Utils::Unicode;
++use Slim::Utils::Prefs;
++
++my $log = logger('player.text');
++
++our $MAXBRIGHTNESS = 4;
++
++my %vfdCommand = ();
++
++# these codes identify the operation to 
++# perform on each byte of data sent.
++my $vfdCodeCmd  = pack 'B8', '00000010';       
++my $vfdCodeChar = pack 'B8', '00000011'; 
++
++# vfd.pl initiliazion:  Builds %vfdCommand, an associative array containing the 
++# packed codes for all the noritake VFD commands
++$vfdCommand{"CFF"}		= pack 'B8', "00001100";
++$vfdCommand{"CUR"}		= pack 'B8', "00001110";
++
++$vfdCommand{"HOME"} 	= pack 'B8', "00000010";
++$vfdCommand{"HOME2"} 	= pack 'B8', "11000000";
++
++$vfdCommand{"INCSC"} 	= pack 'B8', "00000110";
++
++my @vfdBright = ( (pack 'B8', "00000011"), # 0%
++				  (pack 'B8', "00000011"), # 25%
++				  (pack 'B8', "00000010"), # 50%
++				  (pack 'B8', "00000001"), # 75%
++				  (pack 'B8', "00000000")); # 100%
++
++my @vfdBrightFutaba = ( (pack 'B8', "00111011"), # 0%
++				   (pack 'B8', "00111011"), # 25%
++				   (pack 'B8', "00111010"), # 50%
++				   (pack 'B8', "00111001"), # 75%
++				   (pack 'B8', "00111000")); # 100%
++
++my $noritakeBrightPrelude = 
++			   $vfdCodeCmd .  (pack 'B8', "00110011") . 
++			   $vfdCodeCmd .  (pack 'B8', "00000000") .
++			   $vfdCodeCmd .  (pack 'B8', "00110000") .
++			   $vfdCodeChar;
++
++my $vfdReset = $vfdCodeCmd . $vfdCommand{"INCSC"} . $vfdCodeCmd . $vfdCommand{"HOME"};
++
++
++my %symbolmap = (
++	'katakana' => {
++		'notesymbol' => chr(0x0e),
++		'rightarrow' => chr(0x0f),
++		'leftvbar' => chr(0x10),
++		'rightvbar' => chr(0x18),
++		'hardspace' => chr(0x20),
++		'solidblock' => chr(0x1f),
++	},
++	'latin1' => {
++		'rightarrow' => chr(0x1a),
++		'hardspace' => chr(0x20),
++		'solidblock' => chr(0x1f),
++	},
++	'european' => {
++		'rightarrow' => chr(0x7e),
++		'hardspace' => chr(0x20),
++		'solidblock' => chr(0x1f),
++	},	
++	'squeezeslave' => {  # These are from an Imon VFD, but squeezeslave can remap for other types
++		'rightarrow' => chr(0x10),
++		'hardspace'  => chr(0x20),
++		'solidblock' => chr(0x0B),
++		'notesymbol' => chr(0x91),
++		'bell'       => chr(0x98),
++	}
++);
++
++
++#
++# Given the address of the character to edit, followed by an array of eight numbers specifying
++# the bitmask of the character, caches the codes needed to create the specified character.
++#
++my %vfdcustomchars;
++
++sub setCustomChar {
++	my($charname, @rows)=@_;
++	
++	die unless ((@rows) == 8); 
++	$vfdcustomchars{$charname} = \@rows;
++}
++
++sub isCustomChar {
++	my $charname = shift;
++
++	return exists($vfdcustomchars{$charname});
++}
++
++my %customChars;
++
++# Map of alternatives if custom character space exhaused
++my %gracefulmap = (
++    'slash'      => '/',
++	'backslash'  => '\\',
++	'islash'     => '\\',
++	'ibackslash' => '/',
++	'Ztop'       => chr(0x1f),
++	'Zbottom'    => '/',
++	'leftvbar'   => '|',
++	'rightvbar'  => '|',
++	'rightprogress0'  => ']',
++	'rightprogress1'  => ']',
++	'rightprogress2'  => ']',
++	'rightprogress3'  => ']',
++	'rightprogress4'  => ']',
++	'leftprogress0'  => '[',
++	'leftprogress1'  => '[',
++	'leftprogress2'  => '[',
++	'leftprogress3'  => '[',
++	'leftprogress4'  => '[',
++	'middleprogress0'  => ' ',
++	'middleprogress1'  => '.',
++	'middleprogress2'  => ':',
++	'middleprogress3'  => '!',
++	'middleprogress4'  => '|',
++);
++
++sub vfdUpdate {
++	my $client = shift;
++	my $line1  = shift; 
++	my $line2  = shift;
++
++	my %customUsed;
++	my %newCustom;
++	my $cur = -1;
++	my $pos;
++
++        my $displaywidth = $client->display->displayWidth; # Get display width (replaces originally hard coded values below)
++	my $spaces = ' ' x $displaywidth;
++
++	# convert to the VFD char set
++	my $lang = $client->vfdmodel;
++	if (!$lang) { 
++		$lang = 'katakana';
++	} else {
++		$lang =~ s/[^-]*-(.*)/$1/;
++	}
++
++	$log->debug("vfdUpdate $lang\nline1: $line1\nline2: $line2\n");
++	
++	my $brightness = $client->brightness();
++
++	if (!defined($line1)) { $line1 = $spaces };
++	if (!defined($line2)) { $line2 = $spaces };
++
++	if (defined($brightness) && ($brightness == 0)) {
++		$line1 = $spaces;
++		$line2 = $spaces;
++	} 
++	
++	my $line;
++
++	my $cursorchar = $Slim::Display::Text16::commandmap{'cursorpos'};
++
++	my $i = 0;
++
++	foreach my $curline ($line1, $line2) {
++		my $linepos = 0;
++
++		# Always force the character displays into latin1
++		# XXX - does this work for the european and katakana VFDs?
++		#
++		# If this isn't here - selecting a song with non-latin1 chars
++		# will cause the server to crash.
++
++		# Fix for bug 1294 - Windows "smart" apostrophe to a normal one.
++		# For whatever reason, utf8toLatin1() doesn't convert this to
++		# a ' - \x{2019}, so do it manually. Otherwise the server will crash. 
++		if (!Slim::Utils::Unicode::looks_like_latin1($curline)) {
++
++			$curline = Slim::Utils::Unicode::utf8toLatin1Transliterate($curline);
++		}
++
++		while (1) {
++			# if we're done with the line, break;
++			if ($linepos >= length($curline)) {
++				last;
++			}
++
++			# get the next character
++			my $scan = substr($curline, $linepos);
++
++			# if this is a cursor position token, remember the location and go on
++			if ($scan =~ /^$cursorchar/) {
++				$cur = $i;
++				$linepos += length($cursorchar);
++				redo;
++			# if this is a custom character, process it
++			} elsif ($scan =~ /^\x1F([^\x1F]+)\x1F/) {
++				$linepos += length("\x1F". $1 . "\x1F");
++				# is it one of our existing symbols?
++				if ($symbolmap{$lang} && $symbolmap{$lang}{$1}) {
++					$line .= $symbolmap{$lang}{$1};
++				} else {
++					# must be a custom character, check if we have it already mapped
++					if (exists($customChars{$client}{$1})) {
++						my $cchar = $customChars{$client}{$1};
++						$line .= $cchar;
++						$customUsed{$cchar} = $1;
++					# remember the new custom character and use temporary
++					} else {
++						$line .= "\x1F" . $1 . "\x1F";
++						$newCustom{$1} = 1;
++					}
++				}
++				$i++;
++			# it must just be a regular character, whew...
++			} else {
++				$line .= substr($scan, 0, 1);
++				$linepos++;
++				$i++
++			}	
++		}
++	}
++	# Find out which custom chars we need to add, and which we can discard
++	my $usedCustom = scalar keys(%customUsed);
++	my $nextChr = chr(0);
++
++	foreach my $custom (keys %newCustom) {
++
++		my $encodedCustom = "\x1F" . $custom . "\x1F";
++		my $maxcustom = $lang eq "squeezeslave" ? 0:8; # squeezeslave doesn't allow any custom character definitions
++
++		if ($usedCustom < $maxcustom) { # Room to add this one
++
++			while(defined $customUsed{$nextChr}) {
++
++				$nextChr = chr(ord($nextChr)+1);
++			}
++
++			# Insert code into line, replacing temporaries
++			$line =~ s/$encodedCustom/$nextChr/g;
++
++			# Forget previous custom at this code
++			foreach my $prevCustom (keys(%{$customChars{$client}})) {
++				delete $customChars{$client}{$prevCustom} if($customChars{$client}{$prevCustom} eq $nextChr);
++			}
++
++			# Record new custom and code
++			$customChars{$client}{$custom} = $nextChr;
++			$customUsed{$nextChr} = $custom;
++			$usedCustom++;
++			$nextChr = chr(ord($nextChr)+1);
++
++		} else { # No space left; use a space
++
++			$log->debug("no space left: [$custom]");
++
++			if ($gracefulmap{$custom}) {
++
++				$log->debug("graceful: $custom -> $gracefulmap{$custom}");
++
++				$line =~ s/$encodedCustom/$gracefulmap{$custom}/g;
++
++			} else {
++
++				$log->debug("ungraceful");
++
++				$line =~ s/$encodedCustom/ /g;
++			}
++
++			delete $newCustom{$custom};
++		}
++	}
++	if ($lang eq 'european') {
++		# why can't we all just get along?
++		$line =~ tr{\x1f\x92\xa1\xa2\xa3\xa4\xa5\xa6\xa8\xa9\xab\xad\xaf \xbb\xbf \xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf \xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf \xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef \xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff}
++				   {\xff\x27\x21\x63\x4c\x6f\x59\x7c\x22\x63\x22\x2d\x2d \x22\xeb \xb4\xb3\xd3\xb2\xf1\xf3\xce\xc9\xb8\xb7\xd6\xf7\xf0\xb0\xd0\xb1 \xcb\xde\xaf\xbf\xdf\xcf\xef\x78\x30\xb6\xb5\xf4\xd4\x59\xfb\xe2 \xa4\xa3\xc3\xa2\xe1\xc3\xbe\xc9\xa8\xa7\xc6\xe7\xe0\xa0\xc0\xa1 \xab\xee\xaf\xbf\xdf\xcf\xef\x2f\xbd\xa6\xa5\xe4\xf5\xac\xfb\xcc};
++	} elsif ($lang eq 'katakana'){
++		# translate iso8859-1 to vfd charset
++		$line =~ tr{\x1f\x92\x0e\x0f\x5c\x70\x7e\x7f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff}
++				   {\xff\x27\x19\x7e\x8c\xf0\x8e\x8f\x20\x98\xec\x92\xeb\x5c\x98\x8f\xde\x63\x61\x3c\xa3\x2d\x72\xb0\xdf\xb7\x32\x33\x60\xe4\xf1\x94\x2c\x31\xdf\x3e\x25\x25\x25\x3f\x81\x81\x82\x82\x80\x81\x90\x99\x45\x45\x45\x45\x49\x49\x49\x49\x44\xee\x4f\x4f\x4f\x4f\x86\x78\x30\x55\x55\x55\x8a\x59\x70\xe2\x84\x83\x84\x84\xe1\x84\x91\x99\x65\x65\x65\x65\x69\x69\x69\x69\x95\xee\x6f\x6f\x6f\x6f\xef\xfd\x88\x75\x75\x75\xf5\x79\xf0\x79};	
++	} elsif (($lang eq 'latin1') || ($lang eq 'squeezeslave')) {
++		# golly, the latin1 character map _is_ latin1.  Also, translate funky windows apostrophes to legal ones.
++		# squeezeslave uses latin1 too
++		$line =~ tr{\x92}
++				   {\x26};
++	};
++	
++	# start calculating the control strings
++	
++	my $vfddata = '';
++	my $vfdmodel = $client->vfdmodel();
++
++	# force the display out of 4 bit mode if it got there somehow, then set the brightness
++	# not used for Squeezeslave
++	if ( $vfdmodel =~ 'futaba') {
++		$vfddata .= $vfdCodeCmd .  $vfdBrightFutaba[$brightness];
++	} elsif ( ! ($vfdmodel =~ 'squeezeslave')) { 
++		$vfddata .= $noritakeBrightPrelude . $vfdBright[$brightness];
++	}
++
++	# define required custom characters
++	while((my $custc,my $ncustom) = each %customUsed) {
++
++		my $bitmapref = $vfdcustomchars{$ncustom};
++		my $bitmap = pack ('C8', @$bitmapref);
++		$bitmap =~ s/(.)/$vfdCodeChar$1/gos;
++		$vfddata .= $vfdCodeCmd . pack('C',0b01000000 + (ord($custc) * 8)) . $bitmap;
++	}	
++
++	# put us in incrementing mode and move the cursor home
++	$vfddata .= $vfdReset;
++	$vfddata .= $vfdCodeCmd . $vfdCommand{"CFF"};
++
++	# include our actual character data
++	$line =~ s/(.)/$vfdCodeChar$1/gos;
++
++	# split the line in two and move the cursor to the second line
++	$line = substr($line, 0, 2 * $displaywidth) . $vfdCodeCmd . $vfdCommand{"HOME2"} . substr($line, 2 * $displaywidth);
++
++	$vfddata .= $line;
++	
++	# set the cursor
++	if ($cur >= 0) {
++
++		if ($cur < $displaywidth) {
++			$vfddata .= $vfdCodeCmd.(pack 'C', (0b10000000 + $cur));
++		} else {
++			$vfddata .= $vfdCodeCmd.(pack 'C', (0b11000000 + $cur - $displaywidth));
++		}
++
++		# turn on  the cursor			
++		$vfddata .= $vfdCodeCmd. $vfdCommand{'CUR'};
++	}
++
++
++	$client->vfd($vfddata);
++	
++	my $len = length($vfddata);
++
++	$log->logdie("Odd vfddata: $vfddata") if ($len % 2);
++	$log->logdie("VFDData too long: $len bytes: $vfddata") if ($len > 500);
++}
++
++# the following are the custom character definitions for the new progress/level bar...
++
++setCustomChar('notesymbol',
++				 ( 0b00000100, 
++				   0b00000110, 
++				   0b00000101, 
++				   0b00000101, 
++				   0b00001101, 
++				   0b00011100, 
++				   0b00011000, 
++				   0b00000000 ));
++
++setCustomChar('leftprogress0',
++				 ( 0b00000111, 
++				   0b00001000, 
++				   0b00010000, 
++				   0b00010000, 
++				   0b00010000, 
++				   0b00001000, 
++				   0b00000111, 
++				   0b00000000 ));
++
++setCustomChar('leftprogress1',
++				 ( 0b00000111, 
++				   0b00001000, 
++				   0b00011000, 
++				   0b00011000, 
++				   0b00011000, 
++				   0b00001000, 
++				   0b00000111, 
++				   0b00000000 ));
++
++setCustomChar('leftprogress2',
++				 ( 0b00000111, 
++				   0b00001100, 
++				   0b00011100, 
++				   0b00011100, 
++				   0b00011100, 
++				   0b00001100, 
++				   0b00000111, 
++				   0b00000000 ));
++
++setCustomChar('leftprogress3',
++				 ( 0b00000111, 
++				   0b00001110, 
++				   0b00011110, 
++				   0b00011110, 
++				   0b00011110, 
++				   0b00001110, 
++				   0b00000111, 
++				   0b00000000 ));
++
++setCustomChar('leftprogress4',
++				 ( 0b00000111, 
++				   0b00001111, 
++				   0b00011111, 
++				   0b00011111, 
++				   0b00011111, 
++				   0b00001111, 
++				   0b00000111, 
++				   0b00000000 ));
++
++setCustomChar('middleprogress0',
++				 ( 0b01111111, 
++				   0b00000000, 
++				   0b00000000, 
++				   0b00000000, 
++				   0b00000000, 
++				   0b00000000, 
++				   0b01111111, 
++				   0b00000000 ));
++
++setCustomChar('middleprogress1',
++				 ( 0b01111111, 
++				   0b01110000, 
++				   0b01110000, 
++				   0b01110000, 
++				   0b01110000, 
++				   0b01110000, 
++				   0b01111111, 
++				   0b00000000 ));
++
++setCustomChar('middleprogress2',
++				 ( 0b01111111, 
++				   0b01111000, 
++				   0b01111000, 
++				   0b01111000, 
++				   0b01111000, 
++				   0b01111000, 
++				   0b01111111, 
++				   0b00000000 ));
++
++setCustomChar('middleprogress3',
++				 ( 0b01111111, 
++				   0b01111100, 
++				   0b01111100, 
++				   0b01111100, 
++				   0b01111100, 
++				   0b01111100, 
++				   0b01111111, 
++				   0b00000000 ));
++
++setCustomChar('middleprogress4',
++				 ( 0b01111111, 
++				   0b01111110, 
++				   0b01111110, 
++				   0b01111110, 
++				   0b01111110, 
++				   0b01111110, 
++				   0b01111111, 
++				   0b00000000 ));
++
++setCustomChar('rightprogress0',
++				 ( 0b01111100, 
++				   0b00000010, 
++				   0b00000001, 
++				   0b00000001, 
++				   0b00000001, 
++				   0b00000010, 
++				   0b01111100, 
++				   0b00000000 ));
++
++setCustomChar('rightprogress1',
++				 ( 0b01111100, 
++				   0b01110010, 
++				   0b01110001, 
++				   0b01110001, 
++				   0b01110001, 
++				   0b01110010, 
++				   0b01111100, 
++				   0b00000000 ));
++
++setCustomChar('rightprogress2',
++				 ( 0b01111100, 
++				   0b01111010, 
++				   0b01111001, 
++				   0b01111001, 
++				   0b01111001, 
++				   0b01111010, 
++				   0b01111100, 
++				   0b00000000 ));
++
++setCustomChar('rightprogress3',
++				 ( 0b01111100, 
++				   0b01111110, 
++				   0b01111101, 
++				   0b01111101, 
++				   0b01111101, 
++				   0b01111110, 
++				   0b01111100, 
++				   0b00000000 ));
++
++setCustomChar('rightprogress4',
++				 ( 0b01111100, 
++				   0b01111110, 
++				   0b01111111, 
++				   0b01111111, 
++				   0b01111111, 
++				   0b01111110, 
++				   0b01111100, 
++				   0b00000000 ));
++				   
++setCustomChar('mixable', (
++					0b00011111,
++					0b00000000,
++					0b00011010,
++					0b00010101,
++					0b00010101,
++					0b00000000,
++					0b00011111,
++					0b00000000   ));
++
++setCustomChar('bell', (
++					0b00000100,
++					0b00001010,
++					0b00001010,
++					0b00011011,
++					0b00010001,
++					0b00011111,
++					0b00000100,
++					0b00000000   ));
++					
++# replaces ~ in format string
++# setup the special characters
++setCustomChar( 'toplinechar',	
++					(	0b01111111, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000	 ));
++
++# replaces = in format string
++setCustomChar( 'doublelinechar', 
++					(	0b01111111, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b01111111, 
++						0b00000000	 ));
++
++setCustomChar( 'doublelinecharM',  # alternate used by Modern Font
++					(	0b00011111, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00000000, 
++						0b00011111	 ));
++
++# replaces ? in format string.  Used in Z, ?, 7
++setCustomChar( 'Ztop', 		
++			(      		0b01111111,
++						0b00000001,
++						0b00000001,
++						0b00000010,
++						0b00000100,
++						0b00001000,
++						0b00010000,
++						0b00100000   ));
++                  
++# replaces < in format string.  Used in Z, 2, 6
++setCustomChar( 'Zbottom', 		
++			(   		0b00000001,
++						0b00000010,
++						0b00000100,
++						0b00001000,
++						0b00010000,
++						0b00010000,
++						0b00011111,
++						0b00000000   ));
++                  
++# replaces / in format string.
++setCustomChar( 'slash', 	
++			 (     		0b00000001,
++						0b00000001,
++						0b00000010,
++						0b00000100,
++						0b00001000,
++						0b00010000,
++						0b00010000,
++						0b00000000   ));
++
++setCustomChar( 'slashM',  # alternate used by Modern Font
++				(     	0b00000011,
++						0b00000100,
++						0b00001000,
++						0b00001000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00000000   ));
++                  
++setCustomChar( 'backslash', 	
++				( 		0b00010000,
++						0b00010000,
++						0b00001000,
++						0b00000100,
++						0b00000010,
++						0b00000001,
++						0b00000001,
++						0b00000000   ));
++
++setCustomChar( 'backslashM', # alternate used by Modern Font
++				( 		0b00011000,
++						0b00000100,
++						0b00000010,
++ 						0b00000010,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000000   ));
++
++setCustomChar( 'islash', 	
++				(     	0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00001000,
++						0b00001000,
++						0b00000100,
++						0b00000011,
++						0b00000000   ));
++                   
++setCustomChar( 'ibackslash', 	
++				( 		0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000010,
++						0b00000010,
++						0b00000100,
++						0b00011000,
++						0b00000000   ));
++
++setCustomChar( 'filledcircle',		
++					 ( 	0b00000001,
++						0b00001111,
++						0b00011111,
++						0b00011111,
++						0b00011111,
++						0b00001110,
++						0b00000000,
++						0b00000000   ));	
++
++setCustomChar( 'leftvbar',		
++					 ( 	0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00000000   ));	
++
++setCustomChar( 'rightvbar',		
++					 ( 	0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000000   ));	
++
++setCustomChar('leftmark',
++ 					(   0b00011111,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00000001,
++						0b00011111,
++						0b00000000   ));
++                  
++setCustomChar('rightmark',
++					( 	0b00011111,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00010000,
++						0b00011111,
++						0b00000000   ));
++                  
++
++my $leftvbar        = "\x1f" . "leftvbar"    . "\x1f";
++my $rightvbar       = "\x1f" . "rightvbar"   . "\x1f";
++my $slash           = "\x1f" . "slash"       . "\x1f";
++my $backslash       = "\x1f" . "backslash"   . "\x1f";
++my $slashM          = "\x1f" . "slashM"      . "\x1f";
++my $backslashM      = "\x1f" . "backslashM"  . "\x1f";
++my $islash          = "\x1f" . "islash"      . "\x1f";
++my $ibackslash      = "\x1f" . "ibackslash"  . "\x1f";
++my $toplinechar     = "\x1f" . "toplinechar" . "\x1f";
++my $doublelinechar  = "\x1f" . "doublelinechar" . "\x1f";
++my $doublelinecharM = "\x1f" . "doublelinecharM". "\x1f";
++my $Zbottom         = "\x1f" . "Zbottom"     . "\x1f";
++my $Ztop            = "\x1f" . "Ztop"        . "\x1f";
++my $notesymbol      = "\x1f" . "notesymbol"  . "\x1f"; 
++my $filledcircle    = "\x1f" . "filledcircle". "\x1f";
++my $rightarrow      = "\x1f" . "rightarrow"  . "\x1f";
++my $cursorpos       = "\x1f" . "cursorpos"   . "\x1f";
++my $hardspace       = "\x1f" . "hardspace"   . "\x1f";
++my $centerchar      = "\x1f" . "center"      . "\x1f";
++
++# double sized characters - Classic Font
++my $doubleClassic = {
++	
++	"(" => [ $slash,
++			 $backslash ],
++	
++	")" => [ $hardspace . $backslash,
++			 $hardspace . $slash ],
++	
++	"[" => [ $rightvbar . $toplinechar,
++			 $rightvbar . '_' ],
++	
++	"]" => [ $toplinechar . $leftvbar,
++			 '_' . $leftvbar],
++	
++	"<" => [ '/',
++			 $backslash ],
++	
++	">" => [ $backslash,
++			 '/' ],
++	
++	"{" => [ '(',
++			 '(' ],
++	
++	"}" => [ ')',
++			 ')' ],
++	
++	'"' => [ '\'\'',
++			 $hardspace . $hardspace],
++	"%" => [ 'o/', '/o'],
++	"&" => [ '_' . 'L', $backslash . $leftvbar],
++	"^" => [ $slash . $backslash, $hardspace . $hardspace],
++	" " => [ $hardspace . $hardspace, $hardspace . $hardspace ],
++	"'" => [ '|', $hardspace ],
++	"!" => [ '|', '.' ],
++	":" => [ '.', '.' ],
++	"." => [ $hardspace, '.' ],
++	";" => [ '.', ',' ],
++	"," => [ $hardspace, '/' ],
++	"`" => [ $backslash, $hardspace ],
++	
++	"_" => [ $hardspace . $hardspace, '_' . '_' ],
++	
++	"+" => [ '_' . 'L', $hardspace . $leftvbar],
++	
++	"*" => [ '**', '**'],
++	
++	'~' => [ $slash . $toplinechar, $hardspace . $hardspace ],
++	
++	"@" => [ $slash . 'd',
++			 $backslash . '_' ],
++	
++	"#" => [ '_' . $Zbottom . $Zbottom, $Ztop . $Ztop . $toplinechar ],
++	
++	'$' => [ '$$', '$$' ],
++	
++	"|" => [ '|',
++			 '|' ],
++	
++	"-" => [ '_' . '_',
++			 $hardspace . $hardspace ],
++	
++	"/" => [ $hardspace . $slash,
++			 $slash . $hardspace ],
++	
++	"\\" => [ $backslash . $hardspace,
++			  $hardspace . $backslash ],
++	
++	"=" => ['--'
++		   ,'--'],
++	
++	'?' => [$toplinechar . $Ztop,
++		,' .'],
++
++	$cursorpos => ['',''],
++		
++	$notesymbol => [ $leftvbar . $backslash , $filledcircle . " "],
++
++	$rightarrow => [ ' _' . $backslash , $hardspace . $toplinechar . '/'],
++
++	$hardspace => [ $hardspace, $hardspace],
++	
++	$centerchar => [$centerchar,$centerchar]
++	,'0' => [$slash . $toplinechar . $backslash, $backslash . '_' . $slash]
++	,'1' => [$hardspace . $slash . $leftvbar , $hardspace . $hardspace . $leftvbar]
++	,'2' => [$hardspace . $toplinechar . ')' , $hardspace . $Zbottom . '_']
++	,'3' => [$hardspace . $doublelinechar . ')' , ' _)']
++	,'4' => [$rightvbar . '_' . $leftvbar , $hardspace . $hardspace . $leftvbar]
++	,'5' => [$rightvbar . $doublelinechar . $toplinechar , ' _)']
++	,'6' => [$hardspace . $Zbottom . $hardspace , '(_)']
++	,'7' => [$hardspace . $toplinechar . $Ztop , $hardspace . $slash . $hardspace]
++	,'8' => ['(' . $doublelinechar . ')' , '(_)']
++	,'9' => ['(' . $doublelinechar . ')' , $hardspace . $slash . $hardspace]
++	,'A' => [$hardspace . $slash . $backslash . $hardspace , $rightvbar . $toplinechar . $toplinechar . $leftvbar]
++	,'B' => [$rightvbar . $doublelinechar . ')' , $rightvbar . '_)']
++	,'C' => [$slash . $toplinechar , $backslash . '_']
++	,'D' => [$rightvbar . $toplinechar . $backslash , $rightvbar . '_' . $slash]
++	,'E' => [$rightvbar . $doublelinechar , $rightvbar . '_']
++	,'F' => [$rightvbar . $doublelinechar , $rightvbar . $hardspace]
++	,'G' => [$slash . $toplinechar . $hardspace , $backslash . $doublelinechar . $leftvbar]
++	,'H' => [$rightvbar . '_' . $leftvbar , $rightvbar . $hardspace . $leftvbar]
++	,'I' => [$hardspace . $leftvbar , $hardspace . $leftvbar]
++	,'J' => [$hardspace . $hardspace . $leftvbar , $rightvbar . '_' . $leftvbar]
++	,'K' => [$rightvbar . $slash , $rightvbar . $backslash]
++	,'L' => [$rightvbar . $hardspace , $rightvbar . '_']
++	,'M' => [$rightvbar . $backslash . $slash . $leftvbar , $rightvbar . $hardspace . $hardspace . $leftvbar]
++	,'N' => [$rightvbar . $backslash . $leftvbar , $rightvbar . $hardspace . $leftvbar]
++	,'O' => [$slash . $toplinechar . $backslash , $backslash . '_' . $slash]
++	,'P' => [$rightvbar . $doublelinechar .')' , $rightvbar . $hardspace . $hardspace]
++	,'Q' => [$slash . $toplinechar . $backslash , $backslash . '_X']
++	,'R' => [$rightvbar . $doublelinechar . ')' , $rightvbar . $hardspace . $backslash]
++	,'S' => ['(' . $toplinechar , '_)']
++	,'T' => [$toplinechar . '|' . $toplinechar , ' | ']
++	,'U' => [$rightvbar . $hardspace . $leftvbar , $rightvbar . '_' . $leftvbar]
++	,'V' => [$leftvbar . $rightvbar , $backslash . $slash]
++	,'W' => [$leftvbar . $hardspace . $hardspace . $rightvbar , $backslash . $slash . $backslash . $slash]
++	,'X' => [$backslash . $slash , $slash . $backslash]
++	,'Y' => [$backslash . $slash , $hardspace . $leftvbar]
++	,'Z' => [$toplinechar . $Ztop , $Zbottom . '_']
++	,'Æ' => [$hardspace . $slash . $backslash . $doublelinechar , $rightvbar . $toplinechar . $toplinechar . 'L']
++	,'Ø' => [$slash . $toplinechar . 'X', $backslash . $Zbottom . $slash]
++	,'Ð' => [$rightvbar . $doublelinechar . $backslash , $rightvbar . '_'  . $slash]
++};
++
++# double sized characters - Modern Font
++my $doubleModern = {
++	
++	"(" => [ $slashM,
++			 $islash ],
++	
++	")" => [ $backslashM,
++			 $ibackslash ],
++	
++	"[" => [ $rightvbar . $toplinechar,
++			 $rightvbar . '_' ],
++	
++	"]" => [ $toplinechar . $leftvbar,
++			 '_' . $leftvbar],
++	
++	"<" => [ '/',
++			 '\\' ],
++	
++	">" => [ '\\',
++			 '/' ],
++	
++	"{" => [ '(',
++			 '(' ],
++	
++	"}" => [ ')',
++			 ')' ],
++	
++	'"' => [ '\'\'',
++			 $hardspace . $hardspace],
++	"%" => [ 'o/', '/o'],
++	"&" => [ '_' . 'L', $backslashM . $leftvbar],
++	"^" => [ $slashM . $backslashM, $hardspace . $hardspace],
++	" " => [ $hardspace . $hardspace, $hardspace . $hardspace ],
++	"'" => [ '|', $hardspace ],
++	"!" => [ '|', '.' ],
++	":" => [ '.', '.' ],
++	"." => [ $hardspace, '.' ],
++	";" => [ '.', ',' ],
++	"," => [ $hardspace, '/' ],
++	"`" => [ $backslashM, $hardspace ],
++	
++	"_" => [ $hardspace . $hardspace, '_' . '_' ],
++	
++	"+" => [ '_' . 'L', $hardspace . $leftvbar],
++	
++	"*" => [ '**', '**'],
++	
++	'~' => [ $slashM . $toplinechar, $hardspace . $hardspace ],
++	
++	"@" => [ $slashM . 'd',
++			 $backslashM . '_' ],
++	
++	"#" => [ '_' . $Zbottom . $Zbottom, $Ztop . $Ztop . $toplinechar ],
++	
++	'$' => [ '$$', '$$' ],
++	
++	"|" => [ '|',
++			 '|' ],
++	
++	"-" => [ '_' . '_',
++			 $hardspace . $hardspace ],
++	
++	"/" => [ $hardspace . $slashM,
++			 $slashM . $hardspace ],
++	
++	"\\" => [ $backslashM . $hardspace,
++			  $hardspace . $backslashM ],
++	
++	"=" => ['--'
++		   ,'--'],
++	
++	'?' => [$toplinechar . $Ztop,
++		,' .'],
++
++	$cursorpos => ['',''],
++		
++	$notesymbol => [ $leftvbar . $backslash , $filledcircle . " "],
++
++	$rightarrow => [ ' _' . $backslashM , $hardspace . $toplinechar . '/'],
++
++	$hardspace => [ $hardspace, $hardspace],
++	
++	$centerchar => [$centerchar,$centerchar]
++	,'0' => [$hardspace . $slashM . $backslashM, $hardspace . $islash . $ibackslash]
++	,'1' => [$hardspace . '\'' . $leftvbar , $hardspace . '_' . 'L']
++	,'2' => [$hardspace . $toplinechar . ')' , $hardspace . $slashM . '_']
++	,'3' => [$hardspace . $doublelinecharM . ')' , ' _)']
++	,'4' => [$rightvbar . '_' . $leftvbar , $hardspace . $hardspace . $leftvbar]
++	,'5' => [$rightvbar . $doublelinecharM . $toplinechar , ' _)']
++	,'6' => [$hardspace . '/' . $hardspace , '(' . $doublelinecharM . ')']
++    ,'7' => [$toplinechar . $toplinechar . '/' , $hardspace . $slashM . $hardspace]
++	,'8' => ['(' . $doublelinecharM . ')' , '(_)']
++	,'9' => ['(' . $doublelinecharM . ')' , $hardspace . $slashM . $hardspace]
++	,'A' => [$hardspace . $slashM . $backslashM . $hardspace , $rightvbar . $toplinechar . $toplinechar . $leftvbar]
++	,'B' => [$rightvbar . $doublelinecharM . ')' , $rightvbar . '_)']
++	,'C' => [$slashM . $toplinechar , $islash . '_']
++	,'D' => [$rightvbar . $toplinechar . $backslashM , $rightvbar . '_' . $ibackslash]
++	,'E' => [$rightvbar . $doublelinecharM , $rightvbar . '_']
++	,'F' => [$rightvbar . $doublelinecharM , $rightvbar . $hardspace]
++	,'G' => [$slashM . $doublelinecharM . $hardspace , $islash . '_' . $leftvbar]
++	,'H' => [$rightvbar . '_' . $leftvbar , $rightvbar . $hardspace . $leftvbar]
++	,'I' => [$hardspace . $leftvbar , $hardspace . $leftvbar]
++	,'J' => [$hardspace . $rightvbar, $islash . $ibackslash]
++	,'K' => [$rightvbar . $ibackslash , $rightvbar . $backslashM]
++	,'L' => [$rightvbar . $hardspace , $rightvbar . '_']
++	,'M' => [$rightvbar . $islash . $ibackslash . $leftvbar , $rightvbar . $hardspace . $hardspace . $leftvbar]
++	,'N' => [$rightvbar . '\\' . $leftvbar , $rightvbar . $hardspace . $leftvbar]
++	,'O' => [$slashM . $backslashM , $islash . $ibackslash]
++	,'P' => [$rightvbar . $doublelinecharM .')' , $rightvbar . $hardspace . $hardspace]
++	,'Q' => [$slashM . $backslash , $islash . 'X']
++	,'R' => [$rightvbar . $doublelinecharM . ')' , $rightvbar . $hardspace . $backslashM]
++	,'S' => ['(' . $toplinechar , '_)']
++	,'T' => [$toplinechar . 'T' . $toplinechar , ' | ']
++	,'U' => [$leftvbar . $rightvbar , $islash . $ibackslash]
++	,'V' => [$leftvbar . $rightvbar , $backslashM . $slashM]
++	,'W' => [$leftvbar . $hardspace . $hardspace . $rightvbar , $islash . $ibackslash . $islash . $ibackslash]
++	,'X' => [$islash . $ibackslash , $slashM . $backslashM]
++	,'Y' => [$islash . $ibackslash, $rightvbar . $leftvbar]
++	,'Z' => [$toplinechar . '/' , '/' . '_']
++	,'Æ' => [$hardspace . $slashM . $backslashM . $doublelinecharM , 
++             $rightvbar . $toplinechar . $toplinechar . 'L']
++	,'Ø' => [$slashM . $toplinechar . 'X', $backslashM . $Zbottom . $slashM]
++	,'Ð' => [$rightvbar . $doublelinecharM . $backslashM , $rightvbar . '_'  . $slashM]
++};
++
++sub addDoubleChar {
++	my ($char,$doublechar) = @_;
++
++	if (!exists $doubleClassic->{$char} && ref($doublechar) eq 'ARRAY' 
++		&& Slim::Display::Text16::lineLength($doublechar->[0]) == Slim::Display::Text16::lineLength($doublechar->[1])) {
++
++		$doubleClassic->{$char} = $doublechar;
++		$doubleModern->{$char}  = $doublechar;
++
++	} else {
++
++		if (exists $doubleClassic->{$char}) {
++
++			$log->warn("Could not add character $char, it already exists.");
++		}
++
++		if (ref($doublechar) ne 'ARRAY') {
++
++			$log->warn("Could not add character $char, doublechar is not array reference.");
++		}
++
++		if (Slim::Display::Text16::lineLength($doublechar->[0]) !=
++		    Slim::Display::Text16::lineLength($doublechar->[1])) {
++
++			$log->warn("Could not add character $char, lines of doublechar have unequal lengths.");
++		}
++	}
++}
++
++sub updateDoubleChar {
++	my ($char,$doublechar) = @_;
++
++	if (ref($doublechar) eq 'ARRAY' 
++		&& Slim::Display::Text16::lineLength($doublechar->[0]) == 
++		   Slim::Display::Text16::lineLength($doublechar->[1])) {
++
++		$doubleClassic->{$char} = $doublechar;
++		$doubleModern->{$char}  = $doublechar;
++
++	} else {
++
++		if (ref($doublechar) ne 'ARRAY') {
++
++			$log->warn("Could not add character $char, doublechar is not array reference.");
++		}
++
++		if (Slim::Display::Text16::lineLength($doublechar->[0]) !=
++		    Slim::Display::Text16::lineLength($doublechar->[1])) {
++
++			$log->warn("Could not add character $char, lines of doublechar have unequal lengths.");
++		}
++
++	}
++}
++
++# the font format string
++#my $double = 
++	# all digits are 3 chars wide
++#	'0/~\01 /[12 ~)23 =)34]_[45]=~56 < 67 ~?78(=)89(=)9' .
++#	'0\_/01  [12 <_23 _)34  [45 _)56(_)67 / 78(_)89 / 9' .
++#	# kerning is custom so exclude blanks here except for 'I'
++#	'A /\ AB]=)BC/~CD]~\DE]=EF]=FG/~ GH]_[HI [IJ  [J' .
++#	'A]~~[AB]_)BC\_CD]_/DE]_EF] FG\=[GH] [HI [IJ]_[J' .
++#	'K]/KL] LM]\/[MN]\[NO/~\OP]=)PQ/~\QR]=)RS(~S' .
++#	'K]\KL]_LM]  [MN] [NO\_/OP]  PQ\_xQR] \RS_)S' .
++#	'T~|~TU] [UV[]VW[  ]WX\/XY\/YZ~?Z' .
++#	'T | TU]_[UV\/VW\/\/WX/\XY [YZ<_Z';
++	
++#my $kernL = '\~\]\?\_\<\=';
++#my $kernR = '\~\[\<\_\\\\/';
++
++my $kernL = qr/(?:$toplinechar|$rightvbar|$Ztop|_|$Zbottom|$doublelinechar)$/o;
++my $kernR = qr/^(?:$toplinechar|$leftvbar|$Zbottom|_|$backslash|$slash)/o;
++
++#
++# double the height and width of a string to display in doubled mode
++#
++sub doubleSize {
++	my $client = shift;
++	my $undoubled = shift;
++
++	my ($newline1, $newline2) = ("", "");
++	my $line2 = $undoubled;
++
++	my $doublechars = preferences('server')->client($client)->get('largeTextFont') ? $doubleModern : $doubleClassic;
++	
++	$line2 =~ s/$cursorpos//g;
++	$line2 =~ s/^(\s*)(.*)/$2/;
++	
++	$log->info("doubling: $line2");
++
++	$line2 =~ tr/\x{00E6}\x{00F8}\x{00F0}/\x{00C6}\x{00D8}\x{00D0}/;
++	$line2 =~ tr/\x{00C5}\x{00E5}/AA/;
++
++	my $lastch1 = "";
++	my $lastch2 = "";
++   
++	my $lastchar = "";
++	
++	my $split = Slim::Display::Text16::splitString($line2);
++	
++	foreach my $char (@$split) {
++
++		if (exists($doublechars->{$char}) || exists($doublechars->{Slim::Utils::Text16::matchCase($char)})) {
++
++			my ($char1,$char2);
++
++			if (!exists($doublechars->{$char})) {
++				$char = Slim::Utils::Text16::matchCase($char);
++			}
++
++			($char1,$char2)=  @{$doublechars->{$char}};
++
++			if ($char =~ /[A-Z]/ && $lastchar ne ' ' && $lastchar !~ /\d/) {
++
++				if (($lastch1 =~ $kernL && $char1 =~ $kernR) || ($lastch2 =~ $kernL && $char2 =~ $kernR)) {
++					
++					if ($lastchar =~ /[CGLSTZ]/ && $char =~ /[COQ]/) {
++
++						# Special cases to exclude kerning between
++
++					} else {
++
++						$newline1 .= ' ';
++						$newline2 .= ' ';
++					}
++				}
++			}
++
++			$lastch1 = $char1;
++			$lastch2 = $char2;
++			$newline1 .= $char1;
++			$newline2 .= $char2;
++
++		} else {
++
++			$log->warn("Character $char has no double");
++
++			next;
++		}
++
++		$lastchar = $char;
++	}
++	
++	return ($newline1, $newline2);
++}
++
++=head1 SEE ALSO
++
++=cut
++
++1;
++
++__END__
++
++# Local Variables:
++# tab-width:4
++# indent-tabs-mode:t
++# End:
+Index: Slim/Display/Text16.pm
+===================================================================
+--- Slim/Display/Text16.pm	(revision 31)
++++ Slim/Display/Text16.pm	(working copy)
+@@ -0,0 +1,950 @@
++package Slim::Display::Text16;
++
++# SqueezeCenter Copyright 2001-2007 Logitech.
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License,
++# version 2.
++
++# $Id: Text16.pm 22999 2008-09-02 09:42:30Z mherger $
++
++=head1 NAME
++
++Slim::Display::Text
++
++=head1 DESCRIPTION
++
++L<Slim::Display::Text>
++ Display code for text (character) based displays: Slimp3, SB1, squeezeslave
++  - 40 (or client controlled) character x 2 lines
++  - server side animation
++
++=cut
++
++use strict;
++
++use base qw(Slim::Display::Display);
++
++use Slim::Display::Lib::Text16VFD;
++use Slim::Utils::Prefs;
++use Slim::Utils::Log;
++
++my $prefs = preferences('server');
++
++my $scroll_pad_scroll = 6; # chars of padding between scrolling text
++my $scroll_pad_ticker = 8; # chars of padding in ticker mode
++
++my $defaultwidth = 40;     # default character width of display (unless client tells us otherwise)
++
++our $defaultPrefs = {
++	'doublesize'          => 0,
++	'offDisplaySize'      => 0,
++	'powerOffBrightness'  => 1,
++	'idleBrightness'      => 2,
++	'powerOnBrightness'   => 4,
++	'largeTextFont'       => 1,
++	'playingDisplayMode'  => 0,
++	'playingDisplayModes' => [0..5]
++};
++
++
++sub initPrefs {
++	my $display = shift;
++
++	if (!$prefs->get('loadFontsText')) {
++		$prefs->set('loadFontsText', 1);
++	}
++
++        $display->widthOverride(1,$defaultwidth);      # Set the display width
++	$prefs->client($display->client)->init($defaultPrefs);
++
++	$display->SUPER::initPrefs();
++}
++
++sub resetDisplay {
++	my $display = shift;
++
++	my $cache = $display->renderCache();
++	$cache->{'screens'} = 1;
++	$cache->{'maxLine'} = 1;
++	$cache->{'screen1'} = { 'ssize' => 0 };
++
++	$display->killAnimation();
++}	
++
++sub linesPerScreen {
++	my $display = shift;
++	return $display->textSize() ? 1 : 2;	
++}
++
++sub displayWidth {
++        my $width =  shift->widthOverride(@_);   # Get the width
++	return $width || $defaultwidth;          # If not set (huh, we set it above!) return the default.
++}
++
++sub vfdmodel {
++	my $display = shift;
++	my $client = $display->client;
++
++	if ($client->isa('Slim::Player::SLIMP3')) {
++		if ($client->revision >= 2.2) {
++			my $mac = $client->macaddress();
++			if ($mac eq '00:04:20:03:04:e0') {
++				return 'futaba-latin1';
++			} elsif ($mac eq '00:04:20:02:07:6e' ||
++					 $mac =~ /^00:04:20:04:1/ ||
++					 $mac =~ /^00:04:20:00:/	) {
++				return 'noritake-european';
++			} else {
++				return 'noritake-katakana';
++			}
++		} else {
++			return 'noritake-katakana';
++		}
++        } elsif ($client->isa('Slim::Player::SqueezeSlave')) {  
++		return 'squeezeslave';  # New vfdmodel for squeezeslave, with different char map
++	} else {
++		# Squeezebox 1
++		return 'noritake-european';
++	}
++}
++
++# Render function for character displays
++sub render {
++	my $display = shift;
++	my $parts = shift;
++	my $scroll = shift || 0; # 0 = no scroll, 1 = wrapped scroll if line too long, 2 = non wrapped scroll
++	my $client = $display->client;
++
++	my $double;
++	my $displayoverlays;
++
++	if ((ref($parts) ne 'HASH')) {
++
++		logError("bad lines function - non hash based display formats are depreciated");
++		$parts = {};
++
++	} elsif (!exists($parts->{screen1}) &&
++		(exists($parts->{line1}) || exists($parts->{line2}) || exists($parts->{center1}) || exists($parts->{center2})) ) {
++		# Backwards compatibility with 6.2 display hash
++		$parts->{screen1}->{line}    = [ $parts->{line1}, $parts->{line2} ];
++		$parts->{screen1}->{overlay} = [ $parts->{overlay1}, $parts->{overlay2} ];
++		$parts->{screen1}->{center}  = [ $parts->{center1}, $parts->{center2} ];
++	}
++
++	my $cache = $display->renderCache();
++
++	# Per screen components of render cache
++	#  line            - array of cached lines
++	#  overlay         - array of cached overlays
++	#  center          - array of cached centers
++	#  linetext        - array of text for cached lines
++	#  overlaytext     - array of text for cached overlays
++	#  centertext      - array of text for cached centers
++	#  linefinish      - array of lengths of cached line bitmaps (where the line finishes)
++	#  overlaystart    - array of screensize - lengths of cached overlay bitmaps (where the overlay start)
++	#  textref         - array of refs for static result of render
++
++	# Per screen scrolling data
++	#  scroll          - scrolling state of render: 
++	#                    0 = no scroll, 1 = normal scroll, 2 = ticker scroll - update, 3 = ticker - no update
++	#  scrollline      - line which is scrolling [undef if no scrolling]
++	#  scrollref       - array of refs for scrolling component of render result
++	#  scrollstart     - start offset of scroll
++	#  scrollend       - end offset of scroll
++	#  scrolldir       - direction to scroll: always 1 as character displays don't scroll r->l
++	#  [nb only scroll and scrollline are cleared when scrolling stops, others can contain stale data]
++
++	# Per screen flags
++	#  present         - this screen is present in the last display hash send to render
++	#  changed         - this screen changed in the last render
++	#  newscroll       - new scrollable text produced by this render - scrolling should restart
++
++	my $screen;                     # screen definition to render
++	my $sc = $cache->{screen1};     # screen cache for this screen
++        my $newdisplaysize = 0;		# Used to force re-render when line length changes
++
++	if (!exists($parts->{screen1}) && 
++		(exists($parts->{line}) || exists($parts->{center}) || exists($parts->{overlay}) || 
++		 exists($parts->{ticker}) || exists($parts->{bits}))){ 
++		$screen = $parts;           # components allowed at top level of display hash
++	} else {
++		$screen = $parts->{screen1};
++	}
++
++	# reset flags per render
++	$sc->{changed} = 0;
++	$sc->{newscroll} = 0;
++	$sc->{present} = 1;
++
++	# force initialisation of cache if size = 0 (used to init cache)
++	if ($sc->{ssize} != $display->displayWidth) {
++		$sc->{double} = 0;
++		$sc->{changed} = 1;
++        	
++		# Size has changed
++           	if ($sc->{ssize} >0) {
++			$newdisplaysize = 1;
++		}
++		$sc->{ssize} = $display->displayWidth;
++	}
++
++	# check display hash for text size definitions
++	if (defined($screen->{fonts}) && defined($parts->{fonts}->{text})) {
++		my $text = $screen->{fonts}->{text};
++		if (ref($text) eq 'HASH') {
++			if (defined($text->{lines})) {
++				if     ($text->{lines} == 1) { $double = 1; }
++				elsif ($text->{lines} == 2) { $double = 0; }
++			}
++			$displayoverlays = $text->{displayoverlays} if exists $text->{displayoverlays};
++		} else {
++			if    ($text == 1) { $double = 1; } 
++			elsif ($text == 2) { $double = 0; }
++		}
++	} 
++	if (defined($screen->{double})) {
++		$double = $screen->{double};
++	}
++	if (!defined($double)) { $double = $display->textSize() ? 1 : 0; }
++
++	if ($double != $sc->{double}) {
++		$sc->{double} = $double;
++		$sc->{changed} = 1;
++	}
++
++	if ($sc->{changed}) {
++		foreach my $l (0..1) {
++			$sc->{line}[$l] = undef if (!$newdisplaysize); $sc->{linetext}[$l] = ''; $sc->{linefinish}[$l] = 0;
++			$sc->{overlay}[$l] = undef if (!$newdisplaysize); $sc->{overlaytext}[$l] = ''; $sc->{overlaystart}[$l] = $display->displayWidth;
++			$sc->{center}[$l] = undef if (!$newdisplaysize); $sc->{centertext}[$l] = '';
++		}
++		$sc->{scroll} = 0;
++		$sc->{scrollline} = undef;
++	}
++
++	if (!$scroll) { 
++		$sc->{scroll} = 0;
++		$sc->{scrollline} = undef;
++	}
++
++	# if doubled and nothing on line[1], copy line[0]
++	if ($double && (!$screen->{line}[1] || $screen->{line}[1] eq '')) {
++		$screen->{line}[1] = $screen->{line}[0];
++	}
++
++	# lines - render if changed 
++	foreach my $l (0..1) {
++		if (defined($screen->{line}[$l]) && 
++			($newdisplaysize || !defined($sc->{line}[$l]) || ($screen->{line}[$l] ne $sc->{line}[$l]))) {
++			$sc->{line}[$l] = $screen->{line}[$l];
++			next if ($double && $l == 0);
++			if (!$double) {
++				if (Slim::Utils::Unicode::encodingFromString($screen->{line}[$l]) eq 'raw') {
++					# SliMP3 / Pre-G can't handle wide characters outside the latin1 range - turn off the utf8 flag.
++					$sc->{linetext}[$l] = Slim::Utils::Unicode::utf8off($sc->{line}[$l]);
++				} else {
++					$sc->{linetext}[$l] = $sc->{line}[$l];
++				}
++				$sc->{linefinish}[$l] = lineLength($sc->{linetext}[$l]);
++			} else {
++				($sc->{linetext}[0], $sc->{linetext}[1]) =
++					Slim::Display::Lib::Text16VFD::doubleSize($client,$sc->{line}[1]);
++				$sc->{linefinish}[0] = lineLength($sc->{linetext}[0]);
++				$sc->{linefinish}[1] = lineLength($sc->{linetext}[1]);
++			}
++			if ($sc->{scroll} && ($sc->{scrollline} == $l || $double)) {
++				$sc->{scroll} = 0; $sc->{scrollline} = undef;
++			}
++			$sc->{changed} = 1;
++		} elsif (!defined($screen->{line}[$l]) && defined($sc->{line}[$l])) {
++			$sc->{line}[$l] = undef;
++			next if ($double && $l == 0);
++			$sc->{linetext}[$l] = '';
++			$sc->{linefinish}[$l] = 0;
++			if ($double) {
++				$sc->{linetext}[0] = '';
++				$sc->{linefinish}[0] = 0;
++			}
++			if ($sc->{scroll} && ($sc->{scrollline} == $l) || $double) {
++				$sc->{scroll} = 0; $sc->{scrollline} = undef;
++			}
++			$sc->{changed} = 1;
++		}
++	}
++
++	# overlays - render if changed
++	foreach my $l (0..1) {
++		if (defined($screen->{overlay}[$l]) && 
++			($newdisplaysize || !defined($sc->{overlay}[$l]) || ($screen->{overlay}[$l] ne $sc->{overlay}[$l]))) {
++			$sc->{overlay}[$l] = $screen->{overlay}[$l];
++			if (!$double || $displayoverlays) {
++				$sc->{overlaytext}[$l] = $sc->{overlay}[$l];
++			} else {
++				$sc->{overlaytext}[$l] = '';
++			}
++			if (lineLength($sc->{overlaytext}[$l]) > $display->displayWidth ) {
++				$sc->{overlaytext}[$l] = subString($sc->{overlaytext}[$l], 0, $display->displayWidth);
++				$sc->{overlaystart}[$l] = $display->displayWidth;
++			} else {
++				$sc->{overlaystart}[$l] = $display->displayWidth - lineLength($sc->{overlaytext}[$l]);
++			}
++			$sc->{changed} = 1;
++		} elsif (!defined($screen->{overlay}[$l]) && defined($sc->{overlay}[$l])) {
++			$sc->{overlay}[$l] = undef;
++			$sc->{overlaytext}[$l] = '';
++			$sc->{overlaystart}[$l] = $display->displayWidth;
++			$sc->{changed} = 1;
++		}
++	}
++
++	# centered lines - render if changed
++	foreach my $l (0..1) {
++		if (defined($screen->{center}[$l]) &&
++			($newdisplaysize || (!defined($sc->{center}[$l]) || ($screen->{center}[$l] ne $sc->{center}[$l])))) {
++			$sc->{center}[$l] = $screen->{center}[$l];
++			next if ($double && $l == 0);
++			if (!$double) {
++				my $len = lineLength($sc->{center}[$l]); 
++				if ($len < $display->displayWidth-1) {
++					$sc->{centertext}[$l] = ' ' x (($display->displayWidth - $len)/2) . $sc->{center}[$l] . 
++						' ' x ($display->displayWidth - $len - int(($display->displayWidth - $len)/2));
++				} else {
++					$sc->{centertext}[$l] = subString($sc->{center}[$l] . ' ', 0 ,$display->displayWidth);
++				}
++			} else {
++				my ($center1, $center2) = Slim::Display::Lib::Text16VFD::doubleSize($client,$sc->{center}[1]);
++				my $len = lineLength($center1);
++				if ($len < $display->displayWidth-1) {
++					$sc->{centertext}[0] = ' ' x (($display->displayWidth - $len)/2) . $center1 . ' ' x ($display->displayWidth - $len - int(($display->displayWidth - $len)/2));
++					$sc->{centertext}[1] = ' ' x (($display->displayWidth - $len)/2) . $center2 . ' ' x ($display->displayWidth - $len - int(($display->displayWidth - $len)/2));
++				} else {
++					$sc->{centertext}[0] = subString($center1 . ' ', 0 ,$display->displayWidth);
++					$sc->{centertext}[1] = subString($center2 . ' ', 0 ,$display->displayWidth);
++				}
++			}
++			$sc->{changed} = 1;
++		} elsif (!defined($screen->{center}[$l]) && defined($sc->{center}[$l])) {
++			$sc->{center}[$l] = undef;
++			next if ($double && $l == 0);
++			$sc->{centertext}[$l] = '';
++			$sc->{centertext}[0] = '' if ($double);
++			$sc->{changed} = 1;
++		}
++	}
++
++	# ticker component - convert directly to new scrolling state
++	if (exists($screen->{ticker})) {
++		my @ticker = ('', '');
++		$sc->{scrollline} = -1;                               # dummy line if no ticker text
++		$sc->{newscroll} = 1 if ($sc->{scroll} < 2);          # switching scroll mode
++		my $len = 0;
++
++		foreach my $l (0..1) {
++			next if ($double && $l == 0);
++			if (exists($screen->{ticker}[$l]) && defined($screen->{ticker}[$l])) {
++				$sc->{scrollline} = $l;
++				if (!$double) {
++					$ticker[$l] = $screen->{ticker}[$l];
++					$len = lineLength($ticker[$l]);
++				} else {
++					($ticker[0], $ticker[1]) = Slim::Display::Lib::Text16VFD::doubleSize($client,$screen->{ticker}[$l]);
++					$len = lineLength($ticker[$l]);
++				}
++				last;
++			}
++		}
++		if ($len > 0 || $sc->{scroll} < 2) {
++			$ticker[$sc->{scrollline}] .= ' ' x $scroll_pad_ticker;
++			$ticker[0] .= ' ' x $scroll_pad_ticker if ($double);
++			$sc->{scrollend} = $len;
++			$sc->{scroll} = 2;
++		} else {
++			$sc->{scrollend} = 0;
++			$sc->{scroll} = 3;
++		}
++		$sc->{scrollref}[0] = \$ticker[0];
++		$sc->{scrollref}[1] = \$ticker[1];
++
++		$sc->{scrolldir} = 1;
++		$sc->{scrollstart} = 0;
++		$sc->{changed} = 1;
++
++	} elsif ($sc->{scroll} >= 2) {
++		$sc->{scroll} = 0;
++		$sc->{scrollline} = undef;
++	}
++
++	# Assemble components
++
++	# Potentially scrollable lines + overlays + centered text
++	for (my $l = 1; $l >= 0; $l--) { # do in reverse order as prefer to scroll lower lines
++
++		my $line;
++
++		if ($sc->{centertext}[$l]) {
++			# centered text takes precedence
++			$line = subString($sc->{centertext}[$l], 0, $sc->{overlaystart}[$l]). 
++				$sc->{overlaytext}[$l];
++		} elsif ($sc->{linefinish}[$l] <= $sc->{overlaystart}[$l] ) {
++			# no need to scroll - assemble line + pad + overlay
++			$line = $sc->{linetext}[$l] . ' ' x ($sc->{overlaystart}[$l] - $sc->{linefinish}[$l]) . 
++				$sc->{overlaytext}[$l];
++		} elsif (!$scroll || ($sc->{scroll} && $sc->{scrollline} != $l) ) {
++			# scrolling not enabled or already scrolling for another line - truncate line
++			$line = subString($sc->{linetext}[$l], 0, $sc->{overlaystart}[$l]) .
++				$sc->{overlaytext}[$l];
++		} elsif ($sc->{scroll} && $sc->{scrollline} == $l) {
++			# scrolling already on this line - add overlay only
++			$line = ' ' x $sc->{overlaystart}[$l] . $sc->{overlaytext}[$l];
++		} else {
++			# scrolling allowed and not currently scrolling - create scrolling state
++
++			$sc->{scrolldir} = 1; # Character players only support left -> right scrolling
++
++			my $scrolltext = $sc->{linetext}[$l];
++
++			$sc->{scrollstart} = 0;
++			if ($scroll == 1) {
++				# normal wrapped text scrolling
++				$scrolltext .= ' ' x $scroll_pad_scroll . subString($scrolltext, 0, $display->displayWidth);
++				$sc->{scrollend} = $sc->{linefinish}[$l] + $scroll_pad_scroll;
++			} else {
++				# don't wrap text - scroll to end only
++				$sc->{scrollend} = $sc->{linefinish}[$l] - $display->displayWidth;
++			}
++
++			if (!$double || $l == 0) {
++				# if doubled only set scroll state on second pass - $l = 0
++				$sc->{scroll} = 1;
++				$sc->{scrollline} = $l; 
++				$sc->{newscroll} = 1;
++			}
++
++			$sc->{scrollref}[$l] = \$scrolltext;
++			
++			# add overlay only to static bitmap
++			$line = ' ' x $sc->{overlaystart}[$l] . $sc->{overlaytext}[$l];
++		}
++		$sc->{lineref}[$l] = \$line;
++	}
++
++	return $cache;
++}
++
++sub updateScreen {
++	my $display = shift;
++	my $screen = shift;
++	Slim::Display::Lib::Text16VFD::vfdUpdate($display->client, ${$screen->{lineref}[0]}, ${$screen->{lineref}[1]});
++}
++
++sub pushLeft {
++	my $display = shift;
++	my $start = shift || $display->renderCache();
++	my $end = shift || $display->client->curLines({ trans => 'pushLeft' });
++
++	my $renderstart = $display->render($start);
++	my ($line1start, $line2start) = ($renderstart->{screen1}->{lineref}[0], $renderstart->{screen1}->{lineref}[1]);
++	my $renderend = $display->render($end);
++	my ($line1end, $line2end) = ($renderend->{screen1}->{lineref}[0], $renderend->{screen1}->{lineref}[1]);
++
++	my $line1 = $$line1start . $$line1end;
++	my $line2 = $$line2start . $$line2end;
++
++	$display->killAnimation();
++	$display->pushUpdate([\$line1, \$line2, 0, 4, $display->displayWidth,  0.02]);
++}
++
++sub pushRight {
++	my $display = shift;
++	my $start = shift || $display->renderCache();
++	my $end = shift || $display->client->curLines({ trans => 'pushRight' });
++
++	my $renderstart = $display->render($start);
++	my ($line1start, $line2start) = ($renderstart->{screen1}->{lineref}[0], $renderstart->{screen1}->{lineref}[1]);
++	my $renderend = $display->render($end);
++	my ($line1end, $line2end) = ($renderend->{screen1}->{lineref}[0], $renderend->{screen1}->{lineref}[1]);
++
++	my $line1 = $$line1end . $$line1start;
++	my $line2 = $$line2end . $$line2start;
++
++	$display->killAnimation();
++	$display->pushUpdate([\$line1, \$line2, $display->displayWidth, -4, 0,  0.02]);
++}
++
++sub pushUp {
++	my $display = shift;
++
++	$display->killAnimation();
++	$display->update($display->curLines({ trans => 'pushUp' }));
++	$display->simulateANIC;
++}
++
++sub pushDown {
++	my $display = shift;
++
++	$display->killAnimation();
++	$display->update($display->curLines({ trans => 'pushDown' }));
++	$display->simulateANIC;
++}
++
++sub bumpRight {
++	my $display = shift;
++
++	my $render = $display->render($display->renderCache());
++	my $line1 = ${$render->{screen1}->{lineref}[0]} . $display->symbols('hardspace');
++	my $line2 = ${$render->{screen1}->{lineref}[1]} . $display->symbols('hardspace');
++
++	$display->killAnimation();
++	$display->pushUpdate([\$line1, \$line2, 2, -1, 0, 0.125]);	
++}
++
++sub bumpLeft {
++	my $display = shift;
++
++	my $render = $display->render($display->renderCache());
++	my $line1 = $display->symbols('hardspace') . ${$render->{screen1}->{lineref}[0]};
++	my $line2 = $display->symbols('hardspace') . ${$render->{screen1}->{lineref}[1]};
++
++	$display->killAnimation();
++	$display->pushUpdate([\$line1, \$line2, -1, 1, 1, 0.125]);	
++}
++
++sub pushUpdate {
++	my $display = shift;
++	my $params = shift;
++	my ($line1, $line2, $offset, $delta, $end, $deltatime) = @$params;
++	
++	$offset += $delta;
++	# With custom widths, offset may not be a factor of the width, so fix up to avoid problems!
++	$offset=$end if ($delta > 0 && $offset > $end); 
++	$offset=$end if ($delta < 0 && $offset < $end);
++
++	my $screenline1 = subString($$line1, $offset, $display->displayWidth);
++	my $screenline2 = subString($$line2, $offset, $display->displayWidth);
++
++	Slim::Display::Lib::Text16VFD::vfdUpdate($display->client, $screenline1, $screenline2);		
++
++	if ($offset != $end) {
++		$display->updateMode(1);
++		$display->animateState(3);
++		Slim::Utils::Timers::setHighTimer($display,Time::HiRes::time() + $deltatime,\&pushUpdate,[$line1,$line2,$offset,$delta,$end,$deltatime]);
++	} else {
++		$display->simulateANIC;
++	}
++}
++
++sub bumpDown {
++	my $display = shift;
++
++	my $render = $display->render($display->renderCache());
++	my $line1 = ${$render->{screen1}->{lineref}[1]};
++	my $line2 = ' ' x $display->displayWidth;
++
++	Slim::Display::Lib::Text16VFD::vfdUpdate($display->client, $line1, $line2);		
++
++	$display->updateMode(1);
++	$display->animateState(4);
++	Slim::Utils::Timers::setHighTimer($display,Time::HiRes::time() + 0.125, \&endAnimation);
++}
++
++sub bumpUp {
++	my $display = shift;
++
++	my $render = $display->render($display->renderCache());
++	my $line1 = ' ' x $display->displayWidth;
++	my $line2 = ${$render->{screen1}->{lineref}[0]};
++
++	Slim::Display::Lib::Text16VFD::vfdUpdate($display->client, $line1, $line2);		
++
++	$display->updateMode(1);
++	$display->animateState(4);
++	Slim::Utils::Timers::setHighTimer($display,Time::HiRes::time() + 0.125, \&endAnimation);
++}
++
++sub brightness {
++	my $display = shift;
++	my $delta = shift;
++
++	my $brightness = $display->SUPER::brightness($delta);
++	$display->update($display->renderCache()) if ($delta);
++
++	return $brightness;
++}
++
++sub maxBrightness {
++	return $Slim::Display::Lib::Text16VFD::MAXBRIGHTNESS;
++}
++
++sub brightnessMap {
++	return (0 .. maxBrightness());
++}
++
++sub modes {
++   my $display = shift;
++   # Display Modes
++
++   my @modes = (
++	# mode 0
++	{ desc => ['BLANK'],
++	  bar => 0, secs => 0,  width => $display->displayWidth, },
++	# mode 1
++	{ desc => ['ELAPSED'],
++	  bar => 0, secs => 1,  width => $display->displayWidth, },
++	# mode 2
++	{ desc => ['REMAINING'],
++	  bar => 0, secs => -1, width => $display->displayWidth, },
++	# mode 3
++	{ desc => ['PROGRESS_BAR'],
++	  bar => 1, secs => 0,  width => $display->displayWidth, },
++	# mode 4
++	{ desc => ['ELAPSED', 'AND', 'PROGRESS_BAR'],
++	  bar => 1, secs => 1,  width => $display->displayWidth, },
++	# mode 5
++	{ desc => ['REMAINING', 'AND', 'PROGRESS_BAR'],
++	  bar => 1, secs => -1, width => $display->displayWidth, },
++	# mode 6
++	{ desc => ['SETUP_SHOWBUFFERFULLNESS'],
++	  bar => 1, secs => 0,  width => $display->displayWidth, fullness => 1, },
++   );
++
++   return \@modes;
++}
++
++sub nmodes {
++   my $display = shift;
++
++   my @modes = @{$display->modes};
++   my $nmodes = $#modes;
++   warn ("nmodes = $nmodes\n");
++   return $nmodes;
++}
++
++sub scrollUpdateDisplay {
++	# update scrolling for character display
++	my $display = shift;
++	my $scroll = shift;
++
++	my ($line1, $line2);
++	
++	my $padlen = $scroll->{overlaystart} - ($scroll->{scrollend} - $scroll->{offset});
++	$padlen = 0 if ($padlen < 0);
++	my $pad = ' ' x $padlen;
++
++	if (!$scroll->{double}) {
++		if ($scroll->{scrollline} == 0) {
++			# top line scrolling
++			$line2 = ${$scroll->{line2ref}};
++			if ($padlen) {
++				$line1 = subString(${$scroll->{scrollline1ref}} . $pad, $scroll->{offset}, $scroll->{overlaystart}) . $scroll->{overlay1text};
++			} else {
++				$line1 = subString(${$scroll->{scrollline1ref}}, $scroll->{offset}, $scroll->{overlaystart}) . $scroll->{overlay1text};
++			}
++		} else {
++			# bottom line scrolling
++			$line1 = ${$scroll->{line1ref}};
++			if ($padlen) {
++				$line2 = subString(${$scroll->{scrollline2ref}} . $pad, $scroll->{offset}, $scroll->{overlaystart}) . $scroll->{overlay2text};
++			} else {
++				$line2 = subString(${$scroll->{scrollline2ref}}, $scroll->{offset}, $scroll->{overlaystart}) . $scroll->{overlay2text};
++			}
++		}
++	} else {
++		# both lines scrolling
++		if ($padlen) {
++			$line1 = subString(${$scroll->{scrollline1ref}} . $pad, $scroll->{offset}, $display->displayWidth);
++			$line2 = subString(${$scroll->{scrollline2ref}} . $pad, $scroll->{offset}, $display->displayWidth);
++		} else {
++			$line1 = subString(${$scroll->{scrollline1ref}}, $scroll->{offset}, $display->displayWidth);
++			$line2 = subString(${$scroll->{scrollline2ref}}, $scroll->{offset}, $display->displayWidth);
++		}
++	}
++
++	Slim::Display::Lib::Text16VFD::vfdUpdate($display->client, $line1, $line2);
++}
++
++sub scrollUpdateTicker {
++	my $display = shift;
++	my $screen = shift;
++
++	my $scroll = $display->scrollData();
++	my $double = $scroll->{double};
++	my $scrollline = $screen->{scrollline};
++
++	my $len = $scroll->{scrollend} - $scroll->{offset};
++	my $padChar = $scroll_pad_ticker;
++
++	my $pad = 0;
++	if ($screen->{overlaystart}[$scrollline] > ($len + $padChar)) {
++		$pad = $screen->{overlaystart}[$scrollline] - $len - $padChar;
++	}
++
++	if ($double || $scrollline == 0) {
++		my $line1 = subString(${$scroll->{scrollline1ref}}, $scroll->{offset});
++		$line1 .= ' ' x $pad;
++		$line1 .= ${$screen->{scrollref}[0]};
++		$scroll->{scrollline1ref} = \$line1;
++	}
++	if ($double || $scrollline == 1) {
++		my $line2 = subString(${$scroll->{scrollline2ref}}, $scroll->{offset});
++		$line2 .= ' ' x $pad;
++		$line2 .= ${$screen->{scrollref}[1]};
++		$scroll->{scrollline2ref} = \$line2;
++	}
++
++	$scroll->{scrollend} = $len + $padChar + $pad + $screen->{scrollend};
++	$scroll->{offset} = 0;
++	$scroll->{scrollline} = $scrollline;
++}
++
++sub simulateANIC {
++	my $display = shift;
++
++	$display->animateState(2);
++	Slim::Utils::Timers::setHighTimer($display, Time::HiRes::time() + 1.5, \&Slim::Display::Display::update);
++}
++
++sub endAnimation {
++	shift->SUPER::endAnimation(@_);
++}
++
++sub killAnimation {
++	# kill all server side animation in progress and clear state
++	my $display = shift;
++	my $exceptScroll = shift; # all but scrolling to be killed
++
++	my $animate = $display->animateState();
++
++	Slim::Utils::Timers::killHighTimers($display, \&Slim::Display::Display::update) if ($animate == 2);
++	Slim::Utils::Timers::killHighTimers($display, \&pushUpdate) if ($animate == 3);	
++	Slim::Utils::Timers::killHighTimers($display, \&endAnimation) if ($animate == 4);
++	Slim::Utils::Timers::killTimers($display, \&Slim::Display::Display::endAnimation) if ($animate >= 5);
++
++	$display->scrollStop() if (($display->scrollState() > 0) && !$exceptScroll) ;
++	$display->animateState(0);
++	$display->updateMode(0);
++	$display->endShowBriefly() if ($animate == 5);
++}
++
++sub textSize {
++	# textSize = 1 for LARGE text, 0 for small.
++	my $display = shift;
++	my $newsize = shift;
++	my $client = $display->client;
++
++	my $prefname = ($client->power()) ? "doublesize" : "offDisplaySize";
++	
++	if (defined($newsize)) {
++		return	$prefs->client($client)->set($prefname, $newsize);
++	} else {
++		return	$prefs->client($client)->get($prefname);
++	}
++}
++
++sub maxTextSize {
++	return 1;
++}
++
++sub measureText {
++	my $display = shift;
++	my $text = shift;
++	return lineLength($text);
++}
++
++# Draws a slider bar, bidirectional or single direction is possible.
++# $value should be pre-processed to be from 0-100
++# $midpoint specifies the position of the divider from 0-100 (use 0 for progressBar)
++sub sliderBar {
++	my ($display, $width, $value, $midpoint, $fullstep) = @_;
++
++	$midpoint = 0 unless defined $midpoint;
++	if ($width == 0) {
++		return "";
++	}
++	
++	my $charwidth = 5;
++
++	if ($value < 0) {
++		$value = 0;
++	}
++	
++	if ($value > 100) {
++		$value = 100;
++	}
++	
++	my $chart = "";
++	
++	my $totaldots = $charwidth + ($width - 2) * $charwidth + $charwidth;
++
++	# felix mueller discovered some rounding errors that were causing the
++	# calculations to be off.  Doing it 1000 times up seems to be better.  
++	# go figure.
++	my $dots = int( ( ( $value * 10 ) * $totaldots) / 1000);
++	my $divider = ($midpoint/100) * ($width-2);
++
++	my $val = $value/100 * $width;
++	$width = $width - 1 if $midpoint;
++	
++	if ($dots < 0) { $dots = 0 };
++	
++	if ($dots < $charwidth) {
++		$chart = $midpoint ? $display->symbols('leftprogress4') : $display->symbols('leftprogress'.$dots);
++	} else {
++		$chart = $midpoint ? $display->symbols('leftprogress0') : $display->symbols('leftprogress4');
++	}
++	
++	$dots -= $charwidth;
++			
++	if ($midpoint) {
++		for (my $i = 1; $i < $divider; $i++) {
++			if ($dots <= 0) {
++				$chart .= $display->symbols('solidblock');
++			} else {
++				$chart .= $display->symbols('middleprogress0');
++			}
++			$dots -= $charwidth;
++		}
++		if ($value < $midpoint) {
++			$chart .= $display->symbols('solidblock');
++			$dots -= $charwidth;
++		} else {
++			$chart .= $display->symbols('leftmark');
++			$dots -= $charwidth;
++		}
++	}
++	for (my $i = $divider + 1; $i < ($width - 1); $i++) {
++		if ($midpoint && $i == $divider + 1) {
++			if ($value > $midpoint) {
++				$chart .= $display->symbols('solidblock');
++			} else {
++				$chart .= $display->symbols('rightmark');
++			}
++			$dots -= $charwidth;
++		}
++		if ($dots <= 0) {
++			$chart .= $display->symbols('middleprogress0');
++		} elsif ($dots < $charwidth && !$fullstep) {
++			$chart .= $display->symbols('middleprogress'.$dots);
++		} else {
++			$chart .= $display->symbols('solidblock');
++		}
++		$dots -= $charwidth;
++	}
++		
++	if ($dots <= 0) {
++		$chart .= $display->symbols('rightprogress0');
++	} elsif ($dots < $charwidth && !$fullstep) {
++		$chart .= $display->symbols('rightprogress'.$dots);
++	} else {
++		$chart .= $display->symbols('rightprogress4');
++	}
++	
++	return $chart;
++}
++
++sub string {
++	my $display = shift;
++	return Slim::Utils::Unicode::utf8toLatin1($display->SUPER::string(@_));
++}
++
++sub doubleString {
++	my $display = shift;
++	return Slim::Utils::Unicode::utf8toLatin1($display->SUPER::doubleString(@_));
++}
++
++our %Symbols = (
++	'notesymbol' => "\x1Fnotesymbol\x1F",
++	'rightarrow' => "\x1Frightarrow\x1F",
++	'solidblock' => "\x1Fsolidblock\x1F",
++	'mixable'    => "\x1Fmixable\x1F",
++	'bell'	     => "\x1Fbell\x1F",
++	'hardspace'  => "\x1Fhardspace\x1F"
++);
++
++our %commandmap = (
++	'center'     => "\x1ecenter\x1e",
++	'cursorpos'  => "\x1ecursorpos\x1e",
++	'framebuf'   => "\x1eframebuf\x1e",
++	'/framebuf'  => "\x1e/framebuf\x1e",
++	'linebreak'  => "\x1elinebreak\x1e",
++	'repeat'     => "\x1erepeat\x1e", 
++	'right'      => "\x1eright\x1e",
++	'scroll'     => "\x1escroll\x1e",
++	'/scroll'    => "\x1e/scroll\x1e", 
++);
++
++sub symbols {
++	my $display = shift;
++	my $line = shift || return undef;
++
++	return $Symbols{$line} if exists $Symbols{$line};
++	return $commandmap{$line} if exists $commandmap{$line};
++	return "\x1F$line\x1F" if Slim::Display::Lib::Text16VFD::isCustomChar($line);
++
++	return $line;
++}
++
++
++# register text custom characters - not called as a method of display
++sub setCustomChar {
++	Slim::Display::Lib::Text16VFD::setCustomChar(@_);
++}
++
++# utility functions to manipulate strings including text display control characters
++
++sub lineLength {
++	my $line = shift;
++	return 0 if (!defined($line) || !length($line));
++
++	$line =~ s/\x1f[^\x1f]+\x1f/x/g;
++	$line =~ s/(\x1eframebuf\x1e.*\x1e\/framebuf\x1e|\n|\xe1[^\x1e]\x1e)//gs;
++	return length($line);
++}
++
++sub splitString {
++	my $string = shift;
++	my @result = ();
++	$string =~ s/(\x1f[^\x1f]+\x1f|\x1eframebuf\x1e.*\x1e\/framebuf\x1e|\x1e[^\x1e]+\x1e|.)/push @result, $1;/esg;
++	return \@result;
++}
++
++sub subString {
++	my ($string,$start,$length,$replace) = @_;
++	$string =~ s/\x1eframebuf\x1e.*\x1e\/framebuf\x1e//s if ($string);
++
++	my $newstring = '';
++	my $oldstring = '';
++
++	if ($start && $length && ($start > 32765 || ($length || 0) > 32765)) {
++
++		logBacktrace("substr on string with start or length greater than 32k, returning empty string.");
++
++		return '';
++	}
++
++	if ($string && $string =~ s/^(((?:(\x1e[^\x1e]+\x1e)|)(?:[^\x1e\x1f]|\x1f[^\x1f]+\x1f)){0,$start})//) {
++		$oldstring = $1;
++	}
++
++	if (defined($length)) {
++		if ($string =~ s/^(((?:(\x1e[^\x1e]+\x1e)|)([^\x1e\x1f]|\x1f[^\x1f]+\x1f)){0,$length})//) {
++			$newstring = $1;
++		}
++
++		if (defined($replace)) {
++			$_[0] = $oldstring . $replace . $string;
++		}
++	} else {
++		$newstring = $string;
++	}
++	return $newstring;
++}
++
++=head1 SEE ALSO
++
++L<Slim::Display::Display>
++
++L<Slim::Display::Lib::Text16VFD>
++
++=cut
++
++1;
+Index: Slim/Networking/Slimproto.pm
+===================================================================
+--- Slim/Networking/Slimproto.pm	(revision 31)
++++ Slim/Networking/Slimproto.pm	(working copy)
+@@ -1078,7 +1078,7 @@
+ 	} elsif ($deviceids[$deviceid] eq 'squeezeslave') {
+ 
+ 		$client_class = 'Slim::Player::SqueezeSlave';
+-		$display_class = 'Slim::Display::NoDisplay';
++		$display_class = 'Slim::Display::Text16';
+ 
+ 	} elsif ($deviceids[$deviceid] eq 'squeezeplay' || $deviceids[$deviceid] eq 'controller') {
+ 
+Index: Slim/Player/SqueezeSlave.pm
+===================================================================
+--- Slim/Player/SqueezeSlave.pm	(revision 31)
++++ Slim/Player/SqueezeSlave.pm	(working copy)
+@@ -1,6 +1,6 @@
+ package Slim::Player::SqueezeSlave;
+ 
+-# $Id: Squeezebox2.pm 12808 2007-08-31 04:08:54Z andy $
++# $Id: SqueezeSlave.pm 12808 2007-08-31 04:08:54Z andy $
+ 
+ # SqueezeCenter Copyright 2001-2007 Logitech.
+ # This program is free software; you can redistribute it and/or
+@@ -30,18 +30,19 @@
+ use Slim::Utils::Misc;
+ use Slim::Utils::Unicode;
+ use Slim::Utils::Prefs;
++use Slim::Display::Text16; # For text display support
+ 
+ my $prefs = preferences('server');
+ 
+ our $defaultPrefs = {
+ 	'replayGainMode'     => 0,
+ 	'minSyncAdjust'      => 30,	# ms
++	'maxBitrate'         => 0,
+ };
+ 
+ # Keep track of direct stream redirects
+ our $redirects = {};
+ 
+-
+ sub new {
+ 	my $class = shift;
+ 
+@@ -74,7 +75,7 @@
+ 
+ sub modelName { 'Squeezeslave' }
+ 
+-sub hasIR { return 0; }
++sub hasIR { return 1; }
+ 
+ # in order of preference based on whether we're connected via wired or wireless...
+ sub formats {
+@@ -130,6 +131,17 @@
+ 	}
+ }
+ 
++sub canDoReplayGain {
++	my $client = shift;
++	my $replay_gain = shift;
++
++	if (defined($replay_gain)) {
++		return $client->dBToFixed($replay_gain);
++	}
++
++	return 0;
++}
++
+ sub volume {
+ 	my $client = shift;
+ 	my $newvolume = shift;
+@@ -304,4 +316,27 @@
+ }
+ 
+ 
++# We need to implement this to allow us to receive SETD commands
++# and we need SETD to support custom display widths
++sub directBodyFrame { 
++  return 1;
++}
++
++# Allow the player to define it's display width
++sub playerSettingsFrame {
++	my $client   = shift;
++	my $data_ref = shift;
++	
++        my $value;
++        my $id = unpack('C', $$data_ref);
++        
++	# New SETD command 0xfe for display width
++        if ($id == 0xfe) { 
++        	$value = (unpack('CC', $$data_ref))[1];
++                if ($value > 10 && $value < 200) {
++		   $client->display->widthOverride(1, $value);
++                } 
++	}
++}
++
+ 1;

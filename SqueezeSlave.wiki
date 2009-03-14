@@ -1,0 +1,223 @@
+[[SqueezeSlave]] is a software music player that allows you to play music streamed from [[SqueezeCenter]] (formerly known as [[SlimServer]]) and [[SqueezeNetwork]].
+
+[[SqueezeSlave]] is an alternative to [[SoftSqueeze]].  The main difference is that SqueezeSlave has no graphical interface (GUI), but rather is run from a command line.  This makes SqueezeSlave useful as a player for "headless" applications (e.g., server computer without display).  It's also useful as a background player where a display is not required, or as a player which uses the least computing resources.
+
+[[SqueezeSlave]] was written by Richard Titmuss with contributions from Duane Paddock, Dominique Leroux, Graham Chapman, Ivor Bosloper Jason Melvin, Sam Gupta and Luke Redpath.
+
+[[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
+
+Executable versions for Windows, Linux, OSX and Solaris SPARC/Intel can be downloaded from SourceForge.net at: https://sourceforge.net/project/showfiles.php?group_id=105169&package_id=176494
+
+The linux version as of January 18, 2009 supports alsa, IR remotes, USB displays and an on screen text mode display.
+The additional display features requires the Squeezecenter patch: squeezecenter_squeezeslave_player2-7.3.patch which is available at the SourceForge.net link above.  This patch supercedes squeezecenter_var_size_display.patch and has been submitted as http://bugs.slimdevices.com/show_bug.cgi?id=11330 for inclusion in SqueezeCenter.  
+
+Command Line Switches (options) available (this list available by using the -h switch)
+
+== squeezeslave 0.8-33 (Windows) ==
+:squeezeslave [options] [<squeezecenter address>]
+:
+:The SqueezeCenter address defaults to 127.0.0.1.
+:
+:Options:
+::-h, --help:                 Prints this message.
+::-a,--predelay_amplitude <val>:
+:::                            Sets the amplitude of a high-frequency tone
+:::                            The frequency is set at the source's sampling
+:::                            rate/2 and the amplitude is in absolute value.
+:::                            For 16-bit sources, the max is 32767, but values
+:::                            below 10 are likely to work.  The goal is to
+:::                            produce an inaudible signal that will cause DACs
+:::                            to wake-up and lock before actual samples are
+:::                            played out.  If the DAC locks using only silence,
+:::                            do not use this option (it will default to 0).
+::-k, --keepalive <sec>:      Controls how frequently squeezeslave sends a
+:::                            alive signal to SqueezeCenter.  6.5.x servers
+:::                            need this to avoid dropping the player's
+:::                            connection.  By default, the implementation
+:::                            chooses the right value: 10s for a >=6.5.x server
+:::                            and 0s for a <6.5.xserver, which means no
+:::                            keepalive.
+::-L, --list                  List available audio devices and exit.
+::-m, --mac <mac_address>:    Sets the mac address for this instance.
+:::                            Use the colon-separated notation.
+:::                            The default is 00:00:00:00:00:01.
+:::                            SqueezeCenter uses this value to distinguish
+:::                            multiple instances, allowing per-player settings.
+::-e, --playerid:             Pretend to be the player-type-id specified.  Some
+:::                            types may require -m00:04:20:00:00:01 as well.
+:::                                softsqueeze
+:::                                squeezebox2
+:::                                transporter
+:::                                softsqueeze3
+:::                                receiver
+:::                                controller
+:::                                boom
+:::                                softboom
+:::                                squeezeplay
+::-O, --oldplayer:            Emulate the player-type-id softsqueeze for use with
+:::                            SqueezeCenter versions older than 7.0.
+::-o, --output <device_id>:   Sets the output device id.
+:::                            The default id is 0.
+:::                            The output device ids can be listed with -L.
+::-p, --predelay <msec>:      Sets a delay before any playback is started.  This
+:::                            is useful if the DAC used for output is slow to
+:::                            wake-up/lock, causing the first few samples to be
+:::                            dropped.
+::--retry                     Causes the program to retry connecting to
+:::                            SqueezeCenter until it succeeds or is stopped using
+:::                            SIGTERM or keyboard entry (see -s/--signal).
+:::                            If the connection to SqueezeCenter is lost, the
+:::                            program will poll it until it restarts.  --retry
+:::                            enables retry with a 5 second delay between
+:::                            attempts.
+::-r <sec>                    For a different retry interval use -r and the
+:::                            desired interval in seconds. (ie. -r10)
+:::                            A value is required for this option.
+::-s, --signal:               Ignored. Always uses SIGTERM to exit.
+::-V, --version:              Prints the squeezeslave version.
+::-v, --volume <on|sw|off>:   Enables/disables volume changes done by
+:::                            SqueezeCenter during its operation, such as when
+:::                            changing the volume through the web interface or
+:::                            when applying replay gain.  Defaults to sw.
+::::                                    on:  volume changes performed on device.
+::::                                    sw:  volume changes performed in software.
+::::                                    off: volume changes ignored.
+::-d, --debug <trace_name>:   Turns on debug tracing for the specified level.
+:::                            The option can be used multiple times to enable
+:::                            multiple levels.
+:::                            Available levels:
+::::                                    slimproto
+::::                                    slimaudio
+::::                                    slimaudio_buffer
+::::                                    slimaudio_buffer_v
+::::                                    slimaudio_decoder
+::::                                    slimaudio_decoder_v
+::::                                    slimaudio_http
+::::                                    slimaudio_http_v
+::::                                    slimaudio_output
+
+== squeezeslave 0.8-33 (Linux) ==
+
+:squeezeslave [options] [<squeezecenter address>]
+:The SqueezeCenter address defaults to 127.0.0.1.
+:
+:Options:
+:
+::-h, --help:                 Prints this message.
+::-a,--predelay_amplitude <val>:
+:::                            Sets the amplitude of a high-frequency tone
+:::                            produced during the predelay (see --predelay).
+:::                            The frequency is set at the source's sampling
+:::                            rate/2 and the amplitude is in absolute value.
+:::                            For 16-bit sources, the max is 32767, but values
+:::                            below 10 are likely to work.  The goal is to
+:::                            produce an inaudible signal that will cause DACs
+:::                            to wake-up and lock before actual samples are
+:::                            played out.  If the DAC locks using only silence,
+:::                            do not use this option (it will default to 0).
+::-k, --keepalive <sec>:      Controls how frequently squeezeslave sends a
+:::                            alive signal to SqueezeCenter.  6.5.x servers
+:::                            need this to avoid dropping the player's
+:::                            connection.  By default, the implementation
+:::                            chooses the right value: 10s for a >=6.5.x server
+:::                            and 0s for a <6.5.xserver, which means no
+:::                            keepalive.
+::-l, --lcd                   Enable LCDd (lcdproc) text display.
+:::                            Requires LCDd running on local host.
+::-i, --lirc                  Enable lirc remote control support.
+:::                            Requires lirc running on local host.
+::-c, --lircrc <filename>:    Location of lirc client configuration file.
+:::                            Default: ~/.lircrc
+::-D, --display               Enable slimp3 style text display and
+:::                            keyboard input.
+:::                            Keys: 0-9:             0-9
+::::                                  Insert           Add
+::::                                  Cursor Keys      Arrows
+::::                                  >,<              Fwd,Rew
+::::                                  Home             Home
+::::                                  End              Now Playing
+::::                                  Space or P       Pause
+::::                                  Enter            Play
+::::                                  R                Repeat
+::::                                  S                Shuffle
+::::                                  ?                Search
+::::                                  B                Browse
+::::                                  F                Favourites
+::::                                  %                Size
+::::                                  Z                Sleep
+::::                                  +,-              Vol up,down
+::-w. --width <chars>         Set the display width to <chars> characters
+:::                            If using LCDd, width is detected.
+::-M, --daemonize <logfile>   Run squeezeslave as a daemon.
+:::                            Messages written to specified file.
+::-L, --list                  List available audio devices and exit.
+::-m, --mac <mac_address>:    Sets the mac address for this instance.
+:::                            Use the colon-separated notation.
+:::                            The default is 00:00:00:00:00:01.
+:::                            SqueezeCenter uses this value to distinguish
+:::                            multiple instances, allowing per-player settings.
+::-e, --playerid:             Pretend to be the player-type-id specified.  Some
+:::                            types may require -m00:04:20:00:00:01 as well.
+:::                                softsqueeze
+:::                                squeezebox2
+:::                                transporter
+:::                                softsqueeze3
+:::                                receiver
+:::                                controller
+:::                                boom
+:::                                softboom
+:::                                squeezeplay
+::-O, --oldplayer:            Emulate the player-type-id softsqueeze for use with
+:::                            SqueezeCenter versions older than 7.0.
+::-o, --output <device_id>:   Sets the output device id.
+:::                            The default id is 0.
+:::                            The output device ids can be listed with -L.
+::-p, --predelay <msec>:      Sets a delay before any playback is started.  This
+:::                            is useful if the DAC used for output is slow to
+:::                            wake-up/lock, causing the first few samples to be
+:::                            dropped.
+::--retry                     Causes the program to retry connecting to
+:::                            SqueezeCenter until it succeeds or is stopped using
+:::                            SIGTERM or keyboard entry (see -s/--signal).
+:::                            If the connection to SqueezeCenter is lost, the
+:::                            program will poll it until it restarts.  --retry
+:::                            enables retry with a 5 second delay between
+:::                            attempts.
+::-r <sec>                    For a different retry interval use -r and the
+:::                            desired interval in seconds. (ie. -r10)
+:::                            A value is required for this option.
+::-s, --signal:               Ignored. Always uses SIGTERM to exit.
+::-V, --version:              Prints the squeezeslave version.
+::-v, --volume <on|sw|off>:   Enables/disables volume changes done by
+:::                            SqueezeCenter during its operation, such as when
+:::                            changing the volume through the web interface or
+:::                            when applying replay gain.  Defaults to sw.
+::::                                    on:  volume changes performed on device.
+::::                                    sw:  volume changes performed in software.
+::::                                    off: volume changes ignored.
+::-d, --debug <trace_name>:   Turns on debug tracing for the specified level.
+:::                            The option can be used multiple times to enable
+:::                            multiple levels.
+:::                            Available levels:
+::::                                    slimproto
+::::                                    slimaudio
+::::                                    slimaudio_buffer
+::::                                    slimaudio_buffer_v
+::::                                    slimaudio_decoder
+::::                                    slimaudio_decoder_v
+::::                                    slimaudio_http
+::::                                    slimaudio_http_v
+::::                                    slimaudio_output
+
+== Build instructions (incomplete) ==
+
+The original source for squeezeslave is available via the slimdevices svn server.  This source only includes protocol fixes required for squeezeslave to continue to work with newer versions of Squeezecenter.  This is the source up to version 0.7.5.
+
+svn co http://svn.slimdevices.com/repos/slim/7.3/trunk/softsqueeze/SlimProtoLib
+
+Starting with squeezeslave version 0.8 the source is available as a tarball at SourceForge.net: https://sourceforge.net/project/showfiles.php?group_id=105169&package_id=176494
+
+make -f <makefile of your os flavor>
+
+Prebuilt versions of squeezeslave for most platforms are available on SourceForge.net.
+
