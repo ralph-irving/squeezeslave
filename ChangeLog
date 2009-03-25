@@ -1,3 +1,14 @@
+2009-03-14 11:14  paddockd
+
+	* ChangeLog, SqueezeSlave.wiki, makefile.linux26-display,
+	  patches/squeezecenter_squeezeslave_player-7.3.patch,
+	  patches/squeezecenter_squeezeslave_player2-7.3.patch,
+	  src/squeezeslave/squeezeslave.c: New linux26 OSS and display
+	  makefile.
+	  Added Slim Devices Wiki content for SqueezeSlave.
+	  Added patches submitted with BUG-11330 to support player changes;
+	  display, bit rate limit bug and replay gain fix.
+
 2009-03-11 11:57  paddockd
 
 	* ChangeLog, src/squeezeslave/squeezeslave.c: Bring squeezeslave

@@ -63,3 +63,7 @@ Most often this is an indication of an error made by an encoder, but it's also p
 Fix getopt_long_only options string handling removing multiple #if defines.
 
 ---
+
+Fix playing of left over buffer after stopping play and changing songs.
+
+---

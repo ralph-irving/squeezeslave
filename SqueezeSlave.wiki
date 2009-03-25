@@ -2,14 +2,14 @@
 
 [[SqueezeSlave]] is an alternative to [[SoftSqueeze]].  The main difference is that SqueezeSlave has no graphical interface (GUI), but rather is run from a command line.  This makes SqueezeSlave useful as a player for "headless" applications (e.g., server computer without display).  It's also useful as a background player where a display is not required, or as a player which uses the least computing resources.
 
-[[SqueezeSlave]] was written by Richard Titmuss with contributions from Duane Paddock, Dominique Leroux, Graham Chapman, Ivor Bosloper Jason Melvin, Sam Gupta and Luke Redpath.
+[[SqueezeSlave]] was written by Richard Titmuss with contributions from Duane Paddock, Dominique Leroux, Graham Chapman, Ivor Bosloper, Jason Melvin, Sam Gupta and Luke Redpath.
 
 [[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
 
 Executable versions for Windows, Linux, OSX and Solaris SPARC/Intel can be downloaded from SourceForge.net at: https://sourceforge.net/project/showfiles.php?group_id=105169&package_id=176494
 
 The linux version as of January 18, 2009 supports alsa, IR remotes, USB displays and an on screen text mode display.
-The additional display features requires the Squeezecenter patch: squeezecenter_squeezeslave_player2-7.3.patch which is available at the SourceForge.net link above.  This patch supercedes squeezecenter_var_size_display.patch and has been submitted as http://bugs.slimdevices.com/show_bug.cgi?id=11330 for inclusion in SqueezeCenter.  
+The additional display features requires the Squeezecenter patch: squeezecenter_squeezeslave_player2-7.3.patch which is available at the SourceForge.net link above.  This patch supercedes squeezecenter_var_size_display.patch and has been submitted as http://bugs.slimdevices.com/show_bug.cgi?id=11330 for inclusion in SqueezeCenter and applies cleanly to 7.3.3 and 7.4 r25453 sources as of March 14, 2009.
 
 Command Line Switches (options) available (this list available by using the -h switch)
 
