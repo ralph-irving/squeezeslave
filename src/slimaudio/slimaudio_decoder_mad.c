@@ -29,7 +29,6 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
-
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
@@ -188,8 +187,8 @@ enum mad_flow mad_output(void *data,
 	/* pcm->samplerate contains the sampling frequency */
 	nchannels = pcm->channels;
 	nsamples  = pcm->length;
-    left_ch   = pcm->samples[0];
-    right_ch  = pcm->samples[1];
+	left_ch   = pcm->samples[0];
+	right_ch  = pcm->samples[1];
 
 	VDEBUGF("decode_output state=%i nchannels=%i nsamples=%i\n", audio->decoder_state, nchannels, nsamples);
 
@@ -234,7 +233,8 @@ enum mad_flow mad_output(void *data,
         }
 #endif
 
-	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * 2 /* always stero output */);
+	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * 2 /* always stereo output */);
+
 	free(buf);
 	
 	return MAD_FLOW_CONTINUE;

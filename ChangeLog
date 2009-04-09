@@ -1,3 +1,12 @@
+2009-03-25 12:24  paddockd
+
+	* ChangeLog, SqueezeSlave.wiki, TODO,
+	  patches/squeezecenter_squeezeslave_player2-7.2.patch,
+	  src/squeezeslave/squeezeslave.c: Added 7.2 version of
+	  squeezecenter player patch.
+	  Updates to slimdevices wiki.
+	  Increased version to 41.
+
 2009-03-14 11:14  paddockd
 
 	* ChangeLog, SqueezeSlave.wiki, makefile.linux26-display,

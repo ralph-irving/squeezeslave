@@ -1,6 +1,6 @@
 CC=gcc
 
-CFLAGS=-Wall -s -march=i686 -O3 -DNDEBUG -DINTERACTIVE -fomit-frame-pointer
+CFLAGS=-Wall -g -march=i686 -O2 -DDEBUG -DINTERACTIVE
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 

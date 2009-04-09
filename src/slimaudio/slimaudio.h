@@ -113,7 +113,9 @@ typedef struct {
 	PaDeviceIndex output_device_id;
 	PaDeviceIndex num_device_names;
 #endif
-	char **device_names;	
+	char **device_names;
+
+	u32_t decode_num_tracks_started;
 	
 	// mad decoder
 	struct mad_decoder mad_decoder;
@@ -126,7 +128,7 @@ typedef struct {
 	OggVorbis_File oggvorbis_file;
 	
 	// WMA decoder
-//	IWMReader*  wma_reader;
+	// IWMReader*  wma_reader;
 } slimaudio_t;
 
 extern bool slimaudio_debug;
@@ -183,6 +185,7 @@ void slimaudio_output_connect(slimaudio_t *a, slimproto_msg_t *msg);
 int slimaudio_output_disconnect(slimaudio_t *a);
 void slimaudio_output_pause(slimaudio_t *audio);
 void slimaudio_output_unpause(slimaudio_t *audio);
+/* Returns milliseconds since track began playing */
 int slimaudio_output_streamtime(slimaudio_t *audio);
 
 

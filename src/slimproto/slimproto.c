@@ -472,12 +472,12 @@ int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode) {
 	return slimproto_send(p, msg);
 }
 
-int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, int decoder_buffer_fullness, long bytes_rx, int output_buffer_size, int output_buffer_fullness, int elapsed_milliseconds) {
+int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, int decoder_buffer_fullness, long bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_milliseconds, u32_t tracks_started) {
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
-	int elapsed_seconds = elapsed_milliseconds/1000;
+	u32_t elapsed_seconds = elapsed_milliseconds/1000;
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
 	
-	DEBUGF("slimproto_stat\n\tcode=%4.4s\n\tdecoder_buffer_size=%i\n\tdecoder_buffer_fullness=%i\n\tbytes_rx=%li\n\toutput_buffer_size=%i\n\toutput_buffer_fullness=%i\n\telapsed_seconds=%i\n\telapsed_milliseconds=%i\n", code, decoder_buffer_size, decoder_buffer_fullness, bytes_rx, output_buffer_size, output_buffer_fullness, elapsed_seconds, elapsed_milliseconds);
+	DEBUGF("slimproto_stat\n\tcode=%4.4s\n\tdecoder_buffer_size=%i\n\tdecoder_buffer_fullness=%i\n\tbytes_rx=%li\n\toutput_buffer_size=%i\n\toutput_buffer_fullness=%i\n\telapsed_seconds=%i\n\telapsed_milliseconds=%i\n\ttracks_started=%i\n", code, decoder_buffer_size, decoder_buffer_fullness, bytes_rx, output_buffer_size, output_buffer_fullness, elapsed_seconds, elapsed_milliseconds, tracks_started);
 
 	packA4(msg, 0, "STAT");
 	packN4(msg, 4, 47);
@@ -489,13 +489,14 @@ int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, in
 	packN4(msg, 19, decoder_buffer_fullness);
 	packN4(msg, 23, (bytes_rx >> 0) & 0xFFFFFFFF ); // FIXME value wrong?
 	packN4(msg, 27, 0); // FIXME (bytes_rx >> 32) & 0xFFFFFFFF );
-	packN2(msg, 31, 0); // signal strength
+	packN2(msg, 31, 101); // signal strength
 	slimproto_set_jiffies(p, msg, 33);
 	packN4(msg, 37, output_buffer_size);
 	packN4(msg, 41, output_buffer_fullness);
 	packN4(msg, 45, elapsed_seconds);
 	packN2(msg, 49, 0); // voltage
 	packN4(msg, 51, elapsed_milliseconds);
+	packN4(msg, 55, tracks_started);
 
 	return slimproto_send(p, msg);	
 }

@@ -156,7 +156,7 @@ int slimproto_dsco(slimproto_t *p, int status);
 
 int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 
-int slimproto_stat(slimproto_t *p, const char *code, int rptr, int wptr, long bytes_rx, int output_buffer_size, int output_buffer_fullness, int elapsed_seconds);
+int slimproto_stat(slimproto_t *p, const char *code, int rptr, int wptr, long bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_seconds, u32_t tracks_started);
 
 
 // This function configures the socket whose fd is passed in, in order
