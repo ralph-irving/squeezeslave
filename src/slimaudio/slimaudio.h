@@ -64,8 +64,8 @@ typedef struct {
 	
 	slimaudio_stream_state_t http_state;
 	int streamfd;
-	long long http_total_bytes;
-	int http_stream_bytes;
+	u64_t http_total_bytes;
+	u32_t http_stream_bytes;
 	bool autostart;
 	int autostart_threshold;
 

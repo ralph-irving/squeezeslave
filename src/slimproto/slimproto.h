@@ -38,12 +38,10 @@
   #include <sys/time.h>
 #endif
 
-
-typedef char u8_t;
-typedef short u16_t;
-typedef int u32_t;
-
-
+typedef unsigned char u8_t;
+typedef unsigned short u16_t;
+typedef unsigned int u32_t;
+typedef unsigned long long u64_t;
 	
 typedef union {	
 	struct {
@@ -145,7 +143,7 @@ int slimproto_send(slimproto_t *p, unsigned char *msg);
 
 void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_msg_t *msg);
 
-void slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr);
+u32_t slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr);
 
 /*
  * The following functions are used to send slimproto messages
@@ -156,7 +154,7 @@ int slimproto_dsco(slimproto_t *p, int status);
 
 int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 
-int slimproto_stat(slimproto_t *p, const char *code, int rptr, int wptr, long bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_seconds, u32_t tracks_started);
+int slimproto_stat(slimproto_t *p, const char *code, int rptr, int wptr, u64_t bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_seconds);
 
 
 // This function configures the socket whose fd is passed in, in order

@@ -158,8 +158,7 @@ int slimaudio_stat(slimaudio_t *audio, const char *code) {
 						audio->http_total_bytes,
 						OUTPUT_BUFFER_SIZE,
 						output_available,
-						slimaudio_output_streamtime(audio),
-						audio->decode_num_tracks_started
+						slimaudio_output_streamtime(audio)
 						);
 }
 

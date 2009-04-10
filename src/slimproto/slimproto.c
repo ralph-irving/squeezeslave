@@ -472,45 +472,76 @@ int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode) {
 	return slimproto_send(p, msg);
 }
 
-int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, int decoder_buffer_fullness, long bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_milliseconds, u32_t tracks_started) {
+int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, int decoder_buffer_fullness, u64_t bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_milliseconds)
+{
+	u32_t server_timestamp;
+	u32_t rbytes_low, rbytes_high;
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
-	u32_t elapsed_seconds = elapsed_milliseconds/1000;
-	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
-	
-	DEBUGF("slimproto_stat\n\tcode=%4.4s\n\tdecoder_buffer_size=%i\n\tdecoder_buffer_fullness=%i\n\tbytes_rx=%li\n\toutput_buffer_size=%i\n\toutput_buffer_fullness=%i\n\telapsed_seconds=%i\n\telapsed_milliseconds=%i\n\ttracks_started=%i\n", code, decoder_buffer_size, decoder_buffer_fullness, bytes_rx, output_buffer_size, output_buffer_fullness, elapsed_seconds, elapsed_milliseconds, tracks_started);
 
+	u32_t elapsed_seconds = elapsed_milliseconds/1000;
+	rbytes_high = (u32_t) (bytes_rx >> 32);
+	rbytes_low = (u32_t) bytes_rx;
+
+	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
+
+/* STAT structure from 7.4r25910
+struct status_struct {
+u32_t event;
+u8_t num_crlf;          number of consecutive cr|lf received while parsing headers
+u8_t mas_initialized;   'm' or 'p'
+u8_t mas_mode;          serdes mode
+u32_t rptr;
+u32_t wptr;
+u64_t bytes_received;
+u16_t signal_strength;
+u32_t jiffies;
+u32_t output_buffer_size;
+u32_t output_buffer_fullness;
+u32_t elapsed_seconds;
+u16_t voltage;
+u32_t elapsed_milliseconds;
+u32_t server_timestamp;
+u16_t error_code;
+}
+*/
 	packA4(msg, 0, "STAT");
-	packN4(msg, 4, 47);
+	packN4(msg, 4, 55);
 	packA4(msg, 8, code);
 	packC(msg, 12, 0);
 	packC(msg, 13, 0);
 	packC(msg, 14, 0);
 	packN4(msg, 15, decoder_buffer_size);
 	packN4(msg, 19, decoder_buffer_fullness);
-	packN4(msg, 23, (bytes_rx >> 0) & 0xFFFFFFFF ); // FIXME value wrong?
-	packN4(msg, 27, 0); // FIXME (bytes_rx >> 32) & 0xFFFFFFFF );
-	packN2(msg, 31, 101); // signal strength
-	slimproto_set_jiffies(p, msg, 33);
+	packN4(msg, 23, rbytes_high );
+	packN4(msg, 27, rbytes_low );
+	packN2(msg, 31, 65534); // signal strength
+	server_timestamp = slimproto_set_jiffies(p, msg, 33); // Keep both values close
 	packN4(msg, 37, output_buffer_size);
 	packN4(msg, 41, output_buffer_fullness);
 	packN4(msg, 45, elapsed_seconds);
 	packN2(msg, 49, 0); // voltage
 	packN4(msg, 51, elapsed_milliseconds);
-	packN4(msg, 55, tracks_started);
+	packN4(msg, 55, server_timestamp);
+	packN2(msg, 59, 0); // error code
+
+	DEBUGF("slimproto_stat\n\tcode=%4.4s\n\tdecoder_buffer_size=%i\n\tdecoder_buffer_fullness=%i\n\trbytes_high=%i\n\trbytes_low=%i\n\toutput_buffer_size=%i\n\toutput_buffer_fullness=%i\n\telapsed_seconds=%i\n\telapsed_milliseconds=%i\n\tserver_timestamp=%i\n", code, decoder_buffer_size, decoder_buffer_fullness, rbytes_high, rbytes_low, output_buffer_size, output_buffer_fullness, elapsed_seconds, elapsed_milliseconds, server_timestamp);
 
 	return slimproto_send(p, msg);	
 }
 
-void slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr) {
+u32_t slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr) {
 	struct timeval tnow;
-	
+	u32_t jiffies;
+	u32_t timestamp;
+
 	gettimeofday(&tnow, NULL);
 
-	int jiffies;
-	jiffies = tnow.tv_sec * 1000 + tnow.tv_usec / 1000;
-	jiffies -= p->epoch.tv_sec * 1000 + p->epoch.tv_usec / 1000;
-	
-	packN4(buf, jiffies_ptr, jiffies);	
+	timestamp = tnow.tv_sec * 1000 + tnow.tv_usec / 1000;
+	jiffies = timestamp- p->epoch.tv_sec * 1000 + p->epoch.tv_usec / 1000;
+
+	packN4(buf, jiffies_ptr, jiffies);
+
+	return timestamp;
 }
 
 int slimproto_send(slimproto_t *p, unsigned char *msg) {
