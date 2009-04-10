@@ -123,7 +123,7 @@ static BOOL CALLBACK Pa_CountDevProc(LPGUID lpGUID,
                                      LPCTSTR lpszDesc,
                                      LPCTSTR lpszDrvName,
                                      LPVOID lpContext );
-static Pa_QueryDevices( void );
+static PaError Pa_QueryDevices( void );
 static void CALLBACK Pa_TimerCallback(UINT uID, UINT uMsg,
                                       DWORD dwUser, DWORD dw1, DWORD dw2);
 
@@ -493,7 +493,7 @@ static PaError Pa_TimeSlice( internalPortAudioStream   *past )
                 hresult = DSW_ReadBlock( &pahsc->pahsc_DSoundWrapper, (char *) nativeBufPtr, pahsc->pahsc_BytesPerBuffer );
                 if( hresult < 0 )
                 {
-                    ERR_RPT(("DirectSound ReadBlock failed, hresult = 0x%x\n",hresult));
+                    ERR_RPT(("DirectSound ReadBlock failed, hresult = 0x%x\n", (unsigned int) hresult));
                     sPaHostError = hresult;
                     break;
                 }
@@ -506,12 +506,12 @@ static PaError Pa_TimeSlice( internalPortAudioStream   *past )
             if( past->past_NumOutputChannels > 0 )
             {
                 /* static short DEBUGHACK = 0;
-                 DEBUGHACK += 0x0049;
-                 nativeBufPtr[0] = DEBUGHACK; /* Make buzz to see if DirectSound still running. */
+                DEBUGHACK += 0x0049;
+                nativeBufPtr[0] = DEBUGHACK; Make buzz to see if DirectSound still running. */
                 hresult = DSW_WriteBlock( &pahsc->pahsc_DSoundWrapper, (char *) nativeBufPtr, pahsc->pahsc_BytesPerBuffer );
                 if( hresult < 0 )
                 {
-                    ERR_RPT(("DirectSound WriteBlock failed, result = 0x%x\n",hresult));
+                    ERR_RPT(("DirectSound WriteBlock failed, result = 0x%x\n", (unsigned int) hresult));
                     sPaHostError = hresult;
                     break;
                 }
@@ -639,7 +639,7 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
     }
     pahsc->pahsc_FramesPerDSBuffer = past->past_FramesPerUserBuffer * past->past_NumUserBuffers;
     {
-        int msecLatency = (int) ((pahsc->pahsc_FramesPerDSBuffer * 1000) / past->past_SampleRate);
+//        int msecLatency = (int) ((pahsc->pahsc_FramesPerDSBuffer * 1000) / past->past_SampleRate);
 //        PRINT(("PortAudio on DirectSound - Latency = %d frames, %d msec\n", pahsc->pahsc_FramesPerDSBuffer, msecLatency ));
     }
     /* ------------------ OUTPUT */
@@ -724,7 +724,7 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
         DBUG(("DSW_InitInputBuffer() returns %x\n", hr));
         if( hr != DS_OK )
         {
-            ERR_RPT(("PortAudio: DSW_InitInputBuffer() returns %x\n", hr));
+            ERR_RPT(("PortAudio: DSW_InitInputBuffer() returns %x\n", (unsigned int)hr));
             result = paHostError;
             sPaHostError = hr;
             goto error;

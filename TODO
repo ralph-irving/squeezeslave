@@ -32,15 +32,7 @@ more buffer interaction, but the waits are still in the same place.
 
 ---
 
-Stream position not reported correctly by portaudio.  Causes track
-progress bar to reset to start after pausing the stream.
-
-Need to track samples written and report in stat message.  Updating decode_elapsed_samples in each decoders to extern defined in slimaudio_output.c
-
 Need to look at supporting skip in calculations as well.
-
-see /var/abs/local/network/jive/jive-0.7.4/src/squeezeplay/src/audio/decode files for example.
-
 
 ---
 http://forums.slimdevices.com/member.php?u=10044
@@ -72,5 +64,9 @@ Fix getopt_long_only options string handling removing multiple #if defines.
 ---
 
 Fix playing of left over buffer after stopping play and changing songs.
+
+---
+
+Fix last.fm only scrobbling first song played.
 
 ---

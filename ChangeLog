@@ -1,3 +1,27 @@
+2009-04-10 19:56  paddockd
+
+	* makefile.linux24-display, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h: Fixed high/low received bytes counters
+	  for STAT.
+	  Added server_timestamp reporting to STAT.
+	  Modified slimproto_set_jiffies to return timestamp.
+
+2009-04-09 19:54  paddockd
+
+	* ChangeLog, TODO, makefile.linux24-display,
+	  patches/squeezecenter_squeezeslave_player3-7.4.patch,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_output.c, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/squeezeslave.c:
+	  Initial fix for controller/website play bar status resettings if
+	  stream paused/unpaused.
+	  Initial fix for squeezeslave not stopping at end of last track.
+	  Needs more testing.
+	  Added decoder tracks played to status message. Need to test if
+	  this fixes scrobbling with lastfm only submitting first track.
+
 2009-03-25 12:24  paddockd
 
 	* ChangeLog, SqueezeSlave.wiki, TODO,

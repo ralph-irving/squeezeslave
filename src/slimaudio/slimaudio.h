@@ -186,7 +186,7 @@ int slimaudio_output_disconnect(slimaudio_t *a);
 void slimaudio_output_pause(slimaudio_t *audio);
 void slimaudio_output_unpause(slimaudio_t *audio);
 /* Returns milliseconds since track began playing */
-int slimaudio_output_streamtime(slimaudio_t *audio);
+u32_t slimaudio_output_streamtime(slimaudio_t *audio);
 
 
 int slimaudio_decoder_mad_init(slimaudio_t *audio);

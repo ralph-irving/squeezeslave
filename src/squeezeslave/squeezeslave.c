@@ -97,7 +97,7 @@ static void daemonize(char *);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-45";
+static const char* version = "0.8-47";
 
 static int player_type = 8;
 
@@ -451,8 +451,6 @@ void listAudioDevices(slimaudio_t * slimaudio, int output_device_id) {
 	}
 }
 
-FILE *lfile;
-
 int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
@@ -720,7 +718,6 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
-	lfile = fopen ("ssdebug.log", "a");
 	if (listdevs) {
 	   listAudioDevices(&slimaudio, output_device_id);
 	   exit(1);
@@ -872,7 +869,6 @@ int main(int argc, char *argv[]) {
 		}
         } while (signal_restart_flag && !signal_exit_flag);
 
-	fclose (lfile);
 #ifdef INTERACTIVE
 	close_lirc();
 #endif

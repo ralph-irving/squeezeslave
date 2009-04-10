@@ -49,7 +49,6 @@
 #define DEBUGF(...)
 #endif
 
-extern FILE* lfile;
 bool slimaudio_debug;
 
 static int strm_callback(slimproto_t *p, const unsigned char *buf, int buf_len, void *user_data);
@@ -172,7 +171,6 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimproto_parse_command(buf, buf_len, &msg);
 
 	DEBUGF("strm cmd %c\n", msg.strm.command);
-	fprintf(lfile, "strm cmd %c\n", msg.strm.command);
 
 	switch (msg.strm.command) {
 		case 's': /* start */
