@@ -152,7 +152,8 @@ int slimaudio_stat(slimaudio_t *audio, const char *code) {
 	int decoder_available = slimaudio_buffer_available(audio->decoder_buffer);
 	int output_available = slimaudio_buffer_available(audio->output_buffer);
 	
-	DEBUGF("slimaudio_stat %4.4s %i %i\n", code, decoder_available, output_available);
+	DEBUGF("slimaudio_stat code:%4.4s decoder_available:%i output_available:%i\n", code, decoder_available, output_available);
+	DEBUGL("slimaudio_stat code:%4.4s decoder_available:%i output_available:%i\n", code, decoder_available, output_available);
 
 	return slimproto_stat(audio->proto,
 						code,

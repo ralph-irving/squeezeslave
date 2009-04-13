@@ -698,17 +698,19 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				// track.
 				audio->output_STMu = true;
 
+				DEBUGL("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
+
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
 			}
-			DEBUGL("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
 		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_START) {
 			pthread_mutex_lock(&audio->output_mutex);
-				
+
 			// Send track start to SqueezeCenter. During normal play
 			// this advances the playlist.
 			audio->output_STMs = true;
+
 			DEBUGL("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
 
 			pthread_cond_broadcast(&audio->output_cond);

@@ -36,11 +36,11 @@
 #include "slimaudio/slimaudio_buffer.h"
 
 #ifndef PORTAUDIO_ALSA
-#define DECODER_BUFFER_SIZE 1048576
-#define OUTPUT_BUFFER_SIZE 10*2*44100*4
+#define DECODER_BUFFER_SIZE	(3072*1024)
+#define OUTPUT_BUFFER_SIZE	(10*2*44100*4)
 #else
-#define DECODER_BUFFER_SIZE  1572864
-#define OUTPUT_BUFFER_SIZE 16*2*44100*4
+#define DECODER_BUFFER_SIZE	(3072*1024)
+#define OUTPUT_BUFFER_SIZE	(10*2*44100*4)
 #endif
 
 #define AUDIO_CHUNK_SIZE 8192
@@ -52,7 +52,7 @@ typedef enum { QUIT=0, PLAY, BUFFERING, PLAYING, PAUSE, PAUSED, STOP, STOPPED } 
 typedef enum { VOLUME_NONE, VOLUME_SOFTWARE, VOLUME_DRIVER } slimaudio_volume_t;
 
 typedef struct {
-	slimproto_t *proto;						// slimproto connection
+	slimproto_t *proto;				// slimproto connection
 	
 	slimaudio_buffer_t *decoder_buffer;		// decoder buffer
 	slimaudio_buffer_t *output_buffer;		// output buffer

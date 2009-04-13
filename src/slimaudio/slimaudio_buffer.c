@@ -238,7 +238,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		}
 		
 		DEBUGF("slimaudio_buffer_read %p waiting available=%i\n", buf, buf->total_available);
-		DEBUGL("buffer_read now %p available=%i write_ptr=%p read_ptr=%p read_stream=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr, buf->read_stream);
+//		DEBUGL("buffer_read now %p available=%i write_ptr=%p read_ptr=%p read_stream=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr, buf->read_stream);
 #ifdef SLIMPROTO_DEBUG
 	        fflush (debuglog);
 #endif	
@@ -247,7 +247,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	}
 
 	VDEBUGF("buffer_read now %p available=%i write_ptr=%p read_ptr=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr);
-	DEBUGL("buffer_read now %p available=%i write_ptr=%p read_ptr=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr);
+//	DEBUGL("buffer_read now %p available=%i write_ptr=%p read_ptr=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr);
 
 	/* when the stream is complete, move on */
 	while (buf->read_stream->available == 0) {
