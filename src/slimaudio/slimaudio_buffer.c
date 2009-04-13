@@ -31,17 +31,19 @@
 
 
 #ifdef SLIMPROTO_DEBUG
+  extern FILE *debuglog;
   #define DEBUGF(...) if (slimaudio_buffer_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_buffer_debug_v) fprintf(stderr, __VA_ARGS__)
+  #define DEBUGL(...) if (debug_logfile) fprintf(debuglog, __VA_ARGS__)
 #else
   #define DEBUGF(...)
   #define VDEBUGF(...)
+  #define DEBUGL(...)
 #endif
-
 
 bool slimaudio_buffer_debug;
 bool slimaudio_buffer_debug_v;
-
+extern bool debug_logfile;
 
 slimaudio_buffer_t *slimaudio_buffer_init(int size) {
 	slimaudio_buffer_t *buf = (slimaudio_buffer_t *) malloc(sizeof(slimaudio_buffer_t));
@@ -109,6 +111,7 @@ void slimaudio_buffer_flush(slimaudio_buffer_t *buf) {
 	assert(buf);
 	
 	DEBUGF("slimaudio_buffer_flush buf=%p\n", buf);
+	DEBUGL("slimaudio_buffer_flush buf=%p\n", buf);
 	
 	struct buffer_stream *stream, *next_stream;
 	
@@ -165,6 +168,7 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
 	/* Buffer full; block until we have enough space */
 	while (free < len) {
 		VDEBUGF("buffer_write waiting (need %i bytes) ..\n", len);
+		DEBUGL("buffer_write waiting (need %i bytes) ..\n", len);
 
 		buf->writer_blocked = true;
 		pthread_cond_wait(&buf->read_cond, &buf->buffer_mutex);
@@ -172,6 +176,7 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
 		if (buf->write_stream == NULL || buf->write_stream->eof) {
 			pthread_mutex_unlock(&buf->buffer_mutex);
 			DEBUGF("buffer_write closed/flushed %p\n", buf);
+			DEBUGL("buffer_write closed/flushed %p\n", buf);
 			return;
 		}
 		
@@ -218,25 +223,31 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	while (buf->total_available == 0) {
 		if ( (buf->read_opt & BUFFER_NONBLOCKING) > 0) {
 			pthread_mutex_unlock(&buf->buffer_mutex);
+			DEBUGL("total_available:0 BUFFER_NONBLOCKING:%i\n",(buf->read_opt & BUFFER_NONBLOCKING));
 
 			*data_len = 0;
 			return SLIMAUDIO_BUFFER_STREAM_CONTINUE;
 		}
-		
+
 		if (buf->read_stream == NULL) {
 			pthread_mutex_unlock(&buf->buffer_mutex);
+			DEBUGL("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
 
 			*data_len = 0;
 			return SLIMAUDIO_BUFFER_STREAM_END;			
 		}
 		
 		DEBUGF("slimaudio_buffer_read %p waiting available=%i\n", buf, buf->total_available);
-		
+		DEBUGL("buffer_read now %p available=%i write_ptr=%p read_ptr=%p read_stream=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr, buf->read_stream);
+#ifdef SLIMPROTO_DEBUG
+	        fflush (debuglog);
+#endif	
 		buf->reader_blocked = true;
 		pthread_cond_wait(&buf->write_cond, &buf->buffer_mutex);
 	}
 
 	VDEBUGF("buffer_read now %p available=%i write_ptr=%p read_ptr=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr);
+	DEBUGL("buffer_read now %p available=%i write_ptr=%p read_ptr=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr);
 
 	/* when the stream is complete, move on */
 	while (buf->read_stream->available == 0) {
@@ -288,6 +299,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 
 	if (buf->read_stream->available == 0 && buf->read_stream->eof) {
 		DEBUGF("slimaudio_buffer_read EOF\n");
+		DEBUGL("slimaudio_buffer_read EOF\n");
 		status = SLIMAUDIO_BUFFER_STREAM_END;
 	}
 	

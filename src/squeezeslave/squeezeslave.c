@@ -82,7 +82,10 @@
 #define packA4(ptr, off, v) { strncpy((char*)(&ptr[off]), v, 4); }
 struct lirc_config *lircconfig;
 #endif
-
+#ifdef SLIMPROTO_DEBUG
+FILE *debuglog = NULL;
+bool debug_logfile = false;
+#endif
 static int connect_callback(slimproto_t *p, bool isConnected, void *user_data);
 static int parse_macaddress(char *macaddress, const char *str);
 static void print_version();
@@ -97,7 +100,7 @@ static void daemonize(char *);
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-static const char* version = "0.8-47";
+static const char* version = "0.8-48";
 
 static int player_type = 8;
 
@@ -451,6 +454,7 @@ void listAudioDevices(slimaudio_t * slimaudio, int output_device_id) {
 	}
 }
 
+
 int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
@@ -493,6 +497,7 @@ int main(int argc, char *argv[]) {
 		static struct option long_options[] = {
 			{"predelay_amplitude", required_argument, 0, 'a'},
 			{"debug",              required_argument, 0, 'd'},
+			{"debuglog",           required_argument, 0, 'Y'},
 			{"help",               no_argument,       0, 'h'},
 			{"keepalive",          required_argument, 0, 'k'},
 			{"list",               no_argument,       0, 'L'},
@@ -520,15 +525,15 @@ int main(int argc, char *argv[]) {
 	
 #if defined(DAEMONIZE)	
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:e:hk:Lm:M:Oo:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:M:Oo:p:Rr:Vv:",
 					 long_options, NULL);
 #elif defined(INTERACTIVE)
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:e:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
+			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
 					 long_options, NULL);
 #else
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:e:hk:Lm:Oo:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:Oo:p:Rr:Vv:",
 					 long_options, NULL);
 #endif
 
@@ -564,6 +569,21 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "%s: Unknown debug option %s\n", argv[0], optarg);
 #else
 				fprintf(stderr, "%s: Recompile with -DSLIMPROTO_DEBUG to enable debugging.\n", argv[0]);
+#endif
+			break;
+		case 'Y':
+#ifdef SLIMPROTO_DEBUG
+                        if ( optarg == NULL )
+                        {
+                                fprintf(stderr, "%s: Cannot parse debug log filename %s\n", argv[0], optarg);
+                                exit(-1);
+                        } else
+                        {
+				debuglog = fopen (optarg, "a");
+				if ( debuglog )
+                        		debug_logfile = true;
+                        }
+
 #endif
 			break;
 
@@ -878,6 +898,10 @@ int main(int argc, char *argv[]) {
         exitcurses();
         close_lcd();
 #endif
+	if (debug_logfile)
+	{
+		fclose (debuglog);
+	}
 	slimaudio_destroy(&slimaudio);
 	slimproto_destroy(&slimproto);
 	return 0;

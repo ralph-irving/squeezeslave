@@ -23,13 +23,11 @@
 #ifndef _SLIMAUDIO_BUFFER_H_
 #define _SLIMAUDIO_BUFFER_H_
 
-
 #include <stdbool.h>
 #include <pthread.h>
 
-
+#define BUFFER_BLOCKING 0
 #define BUFFER_NONBLOCKING 1
-
 
 struct buffer_stream {
 	int available;							/* bytes available in stream */

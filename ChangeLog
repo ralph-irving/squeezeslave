@@ -1,3 +1,13 @@
+2009-04-10 21:20  paddockd
+
+	* ChangeLog, TODO, lib/getopt/getopt.c,
+	  lib/portaudio/pa_win_ds/pa_dsound.c, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Removed STAT debugging code.
+	  Fixed several compiler warnings for WIN32.
+	  Changed returned msec in slimaudio_output_streamtime from int to
+	  u32_t.
+
 2009-04-10 19:56  paddockd
 
 	* makefile.linux24-display, src/slimaudio/slimaudio.c,
