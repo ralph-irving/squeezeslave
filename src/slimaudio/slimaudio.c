@@ -44,12 +44,9 @@
 
 
 #ifdef SLIMPROTO_DEBUG
-extern FILE *debuglog;
 #define DEBUGF(...) if (slimaudio_debug) fprintf(stderr, __VA_ARGS__)
-#define DEBUGL(...) if (debug_logfile) fprintf(debuglog, __VA_ARGS__)
 #else
 #define DEBUGF(...)
-#define DEBUGL(...)
 #endif
 
 bool slimaudio_debug;
@@ -152,8 +149,7 @@ int slimaudio_stat(slimaudio_t *audio, const char *code) {
 	int decoder_available = slimaudio_buffer_available(audio->decoder_buffer);
 	int output_available = slimaudio_buffer_available(audio->output_buffer);
 	
-	DEBUGF("slimaudio_stat code:%4.4s decoder_available:%i output_available:%i\n", code, decoder_available, output_available);
-	DEBUGL("slimaudio_stat code:%4.4s decoder_available:%i output_available:%i\n", code, decoder_available, output_available);
+	DEBUGF("slimaudio_stat code:%4.4s decoder_available:%i read_available:%i\n", code, decoder_available, output_available);
 
 	return slimproto_stat(audio->proto,
 						code,
@@ -176,7 +172,6 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimproto_parse_command(buf, buf_len, &msg);
 
 	DEBUGF("strm cmd %c\n", msg.strm.command);
-	DEBUGL("strm cmd %c\n", msg.strm.command);
 
 	switch (msg.strm.command) {
 		case 's': /* start */

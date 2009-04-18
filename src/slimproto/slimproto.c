@@ -48,12 +48,9 @@
 #define BUF_LENGTH 4096
 
 #ifdef SLIMPROTO_DEBUG
-extern FILE *debuglog;
 #define DEBUGF(...) if (slimproto_debug) fprintf(stderr, __VA_ARGS__)
-#define DEBUGL(...) if (debug_logfile) fprintf(debuglog, __VA_ARGS__)
 #else
 #define DEBUGF(...)
-#define DEBUGL(...)
 #endif
 
 #define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
@@ -134,7 +131,6 @@ static void *proto_thread(void *ptr) {
 
 	while (p->state != PROTO_QUIT) {
 		DEBUGF("proto state=%i\n", p->state);
-		DEBUGL("proto state=%i\n", p->state);
 		
 		switch (p->state) {
 			case PROTO_CONNECT:

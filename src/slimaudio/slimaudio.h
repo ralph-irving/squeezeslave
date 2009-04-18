@@ -104,6 +104,7 @@ typedef struct {
 #endif
 	bool output_STMs;
 	bool output_STMu;
+	bool output_STMo;
 	int keepalive_interval;
 	
 #ifndef PORTAUDIO_ALSA

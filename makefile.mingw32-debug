@@ -3,7 +3,7 @@ DLLTOOL=dlltool
 DLLWRAP=dllwrap
 RM=rm
 
-CFLAGS=-Wall -mno-cygwin -march=i586
+CFLAGS=-Wall -DSLIMPROTO_DEBUG -mno-cygwin -march=i586
 
 INCLUDE=-Ilib/getopt -Ilib/dx/include -Ilib/portaudio/pa_common -Ilib/portaudio/pa_win_ds -Ilib/portmixer/px_common -Ilib/pthread/win32/include -Ilib/libmad/win32 -Ilib/flac/win32/include -Ilib/vorbis/win32/include -Isrc
 

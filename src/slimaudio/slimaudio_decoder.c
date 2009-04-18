@@ -32,14 +32,11 @@
 
 
 #ifdef SLIMPROTO_DEBUG
-  extern FILE *debuglog;
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
-  #define DEBUGL(...) if (debug_logfile) fprintf(debuglog, __VA_ARGS__)
 #else
   #define DEBUGF(...)
   #define VDEBUGF(...)
-  #define DEBUGL(...)
 #endif
 
 
@@ -112,7 +109,6 @@ static void *decoder_thread(void *ptr) {
 
 	while (true) {				
 		DEBUGF("decoder_thread state %i\n", audio->decoder_state);
-		DEBUGL("decoder_thread state %i\n", audio->decoder_state);
 
 		switch (audio->decoder_state) {
 			case STREAM_STOPPED:

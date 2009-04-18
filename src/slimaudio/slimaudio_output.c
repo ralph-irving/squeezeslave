@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -34,12 +33,9 @@
 
 
 #ifdef SLIMPROTO_DEBUG
-  extern FILE *debuglog;
   #define DEBUGF(...) if (slimaudio_output_debug) fprintf(stderr, __VA_ARGS__)
-  #define DEBUGL(...) if (debug_logfile) fprintf(debuglog, __VA_ARGS__)
 #else
   #define DEBUGF(...)
-  #define DEBUGL(...)
 #endif
 
 bool slimaudio_output_debug;
@@ -185,6 +181,7 @@ static void *output_thread(void *ptr) {
 	slimaudio_t *audio = (slimaudio_t *) ptr;
 	audio->output_STMu = false;
 	audio->output_STMs = false;
+	audio->output_STMo = false;
 
 #ifndef PORTAUDIO_ALSA
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
@@ -274,7 +271,7 @@ static void *output_thread(void *ptr) {
 				audio->pa_streamtime_offset = Pa_GetStreamTime(audio->pa_stream);
 #endif
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_BLOCKING);
-				DEBUGL("STOPPED: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread STOPPED: %f\n",audio->pa_streamtime_offset);
 			case PAUSED:
 				// We report ourselves to the server every few seconds
 				// as a keep-alive.  This is required for SqueezeCenter version 
@@ -296,13 +293,14 @@ static void *output_thread(void *ptr) {
 					err = pthread_cond_timedwait(&audio->output_cond,
 								     &audio->output_mutex, &timeout);
 					if (err == ETIMEDOUT) {
-						DEBUGF("Sending keepalive.  Interval=%d s.\n",
-						       audio->keepalive_interval);
+						DEBUGF("Sending keepalive.  Interval=%d s.\n", audio->keepalive_interval);
 						output_thread_stat(audio, "stat");
 					}
 				}
+
+				DEBUGF("output_thread PAUSED: %f\n",audio->pa_streamtime_offset);
+
 				break;
-				DEBUGL("PAUSED: %f\n",audio->pa_streamtime_offset);
 
 			case PLAY:
 /*
@@ -321,13 +319,14 @@ static void *output_thread(void *ptr) {
 
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
-				DEBUGL("PLAY: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread PLAY: %f\n",audio->pa_streamtime_offset);
+
 				audio->output_state = PLAYING;
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
 
 			case BUFFERING:
-				DEBUGL("BUFFERING: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread BUFFERING: %f\n",audio->pa_streamtime_offset);
 			case PLAYING:			
 				gettimeofday(&now, NULL);
 				timeout.tv_sec = now.tv_sec + 1;
@@ -335,14 +334,21 @@ static void *output_thread(void *ptr) {
 				err = pthread_cond_timedwait(&audio->output_cond, &audio->output_mutex, &timeout);
 
 				if (err == ETIMEDOUT) {
-					DEBUGL("STMt-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMt-PLAYING: %f\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMt");
+				}
+					
+				if (audio->output_STMo) {
+					audio->output_STMo = false;
+
+					DEBUGF("output_thread STMo-PLAYING: %f\n",audio->pa_streamtime_offset);
+					output_thread_stat(audio, "STMo");
 				}
 					
 				if (audio->output_STMu) {
 					audio->output_STMu = false;
 
-					DEBUGL("STMu-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMu-PLAYING: %f\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
 				}
 					
@@ -353,7 +359,7 @@ static void *output_thread(void *ptr) {
 #else
 					audio->pa_streamtime_offset = Pa_GetStreamTime(audio->pa_stream);
 #endif					
-					DEBUGL("STMs-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMs-PLAYING: %f\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMs");
 				}
 
@@ -382,7 +388,7 @@ static void *output_thread(void *ptr) {
 #endif
 				audio->output_state = STOPPED;
 
-				DEBUGL("STOP: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread STOP: %f\n",audio->pa_streamtime_offset);
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
 				
@@ -407,7 +413,7 @@ static void *output_thread(void *ptr) {
 					exit(-1);
 				}
 #endif
-				DEBUGL("PAUSE: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread PAUSE: %f\n",audio->pa_streamtime_offset);
 				audio->output_state = PAUSED;	
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
@@ -548,20 +554,16 @@ u32_t slimaudio_output_streamtime(slimaudio_t *audio) {
 	PaTimestamp numSamples = Pa_StreamTime(audio->pa_stream);
 	u32_t msec =
 		(u32_t)((numSamples - audio->pa_streamtime_offset) / 44.100) + audio->output_predelay_msec;
-	DEBUGF("slimaudio_output_streamtime: streamtime=(%f - %f) / 44.100 + %d = %d\n",
-		numSamples, audio->pa_streamtime_offset, audio->output_predelay_msec, msec);
+	DEBUGF("outputstate:%d streamsamples:%f st_offset:%f tplayed:%u predelay_msec:%u msec:%u\n",
+		audio->output_state, numSamples, audio->pa_streamtime_offset, audio->decode_num_tracks_started,
+		audio->output_predelay_msec, msec);
 #else
 	PaTime timeProgressed = Pa_GetStreamTime(audio->pa_stream);
 	u32_t msec =
 		(u32_t)((timeProgressed - audio->pa_streamtime_offset) * 1000.0) + audio->output_predelay_msec;
-	DEBUGF("slimaudio_output_streamtime: streamtime=(%f - %f) * 1000 + %d = %d\n",
-		timeProgressed, audio->pa_streamtime_offset, audio->output_predelay_msec, msec);
-#endif
-	DEBUGL("outputstate:%d streamtime:%f st_offset:%f tplayed:%u predelay_msec:%u msec:%u\n",
-		audio->output_state, numSamples, audio->pa_streamtime_offset, audio->decode_num_tracks_started,
+	DEBUGF("outputstate:%d streamtime:%f st_offset:%f tplayed:%u predelay_msec:%u msec:%u\n",
+		audio->output_state, timeProgressed, audio->pa_streamtime_offset, audio->decode_num_tracks_started,
 		audio->output_predelay_msec, msec);
-#ifdef SLIMPROTO_DEBUG
-	fflush (debuglog);
 #endif
 
 	return msec < 0 ? 0 : msec;
@@ -698,7 +700,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				// track.
 				audio->output_STMu = true;
 
-				DEBUGL("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
+				DEBUGF("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
 
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
@@ -711,11 +713,24 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			// this advances the playlist.
 			audio->output_STMs = true;
 
-			DEBUGL("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
+			DEBUGF("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
 
 			pthread_cond_broadcast(&audio->output_cond);
 			pthread_mutex_unlock(&audio->output_mutex);
 
+		}
+		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
+			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
+				pthread_mutex_lock(&audio->output_mutex);
+
+				// output buffer underrun
+				audio->output_STMo = true;
+
+				DEBUGF("pa_callback: STREAM_END:output_STMo:%i\n",audio->output_STMo);
+
+				pthread_cond_broadcast(&audio->output_cond);
+				pthread_mutex_unlock(&audio->output_mutex);
+			}
 		}
 		off += data_len;
 
@@ -738,7 +753,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	}
 
 	DEBUGF("pa_callback complete framePerBuffer=%lu\n", framesPerBuffer);
-	DEBUGL("pa_callback complete framePerBuffer=%lu\n", framesPerBuffer);
 
 	return 0;
 }

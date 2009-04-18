@@ -45,14 +45,11 @@
 
 
 #ifdef SLIMPROTO_DEBUG
-  extern FILE *debuglog;
   #define DEBUGF(...) if (slimaudio_http_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_http_debug_v) fprintf(stderr, __VA_ARGS__)
-  #define DEBUGL(...) if (debug_logfile) fprintf(debuglog, __VA_ARGS__)
 #else
   #define DEBUGF(...)
   #define VDEBUGF(...)
-  #define DEBUGL(...)
 #endif
 
 
@@ -114,7 +111,6 @@ static void *http_thread(void *ptr) {
 #ifdef SLIMPROTO_DEBUG				
 		if (last_state == audio->http_state) {
 			VDEBUGF("http_thread state %i\n", audio->http_state);
-			DEBUGL("http_thread state %i\n", audio->http_state);
 		}
 		else {
 			DEBUGF("http_thread state %i\n", audio->http_state);
@@ -168,8 +164,6 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	
 	DEBUGF("slimaudio_http_connect: http connect %s:%i\n", 
 	       inet_ntoa(serv_addr.sin_addr), msg->strm.server_port);
-	DEBUGL("slimaudio_http_connect: http connect %s:%i\n", 
-	       inet_ntoa(serv_addr.sin_addr), msg->strm.server_port);
 	
 	const int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 0) {
@@ -193,7 +187,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	/* send http request to server */
 	DEBUGF("slimaudio_http_connect: http request %s\n", msg->strm.http_hdr);
-	DEBUGL("slimaudio_http_connect: http request %s\n", msg->strm.http_hdr);
+
 	int n = send(fd, msg->strm.http_hdr, strlen(msg->strm.http_hdr), 
 		     slimproto_get_socketsendflags());
 	if (n < 0) {
@@ -244,7 +238,6 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	http_hdr[pos+1] = '\0';
 		
 	DEBUGF("slimaudio_http_connect: http connected hdr %s\n", http_hdr);
-	DEBUGL("slimaudio_http_connect: http connected hdr %s\n", http_hdr);
 	
 	pthread_mutex_lock(&audio->http_mutex);
 
@@ -258,8 +251,6 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	
 	DEBUGF("slimaudio_http_connect: autostart=%i autostart_threshold=%i\n",
 	       audio->autostart, audio->autostart_threshold);
-	DEBUGL("slimaudio_http_connect: autostart=%i autostart_threshold=%i\n",
-	       audio->autostart, audio->autostart_threshold);
 	
 	audio->http_state = STREAM_PLAYING;
 	pthread_cond_broadcast(&audio->http_cond);
@@ -272,7 +263,6 @@ void slimaudio_http_disconnect(slimaudio_t *audio) {
 
 	if (audio->http_state == STREAM_PLAYING) {
 		DEBUGF("slimaudio_http_disconnect: state=%i\n", audio->http_state);
-		DEBUGL("slimaudio_http_disconnect: state=%i\n", audio->http_state);
 
 		audio->http_state = STREAM_STOP;
 		pthread_cond_broadcast(&audio->http_cond);
@@ -295,7 +285,6 @@ static void http_recv(slimaudio_t *audio) {
 
 	if (n == 0) {
 		DEBUGF("http_recv: http eof\n");
-		DEBUGL("http_recv: http eof\n");
 		http_close(audio);
 		return;	
 	}
@@ -307,7 +296,6 @@ static void http_recv(slimaudio_t *audio) {
 	}
 
 	VDEBUGF("http_recv: audio n=%i\n", n);
-	DEBUGL("http_recv: audio n=%i\n", n);
 	slimaudio_buffer_write(audio->decoder_buffer, buf, n);
 	
 	pthread_mutex_lock(&audio->http_mutex);
@@ -317,7 +305,6 @@ static void http_recv(slimaudio_t *audio) {
 	
 	if (audio->autostart && audio->http_stream_bytes > audio->autostart_threshold) {
 		DEBUGF("http_recv: AUTOSTART at %i\n", audio->http_stream_bytes);
-		DEBUGL("http_recv: AUTOSTART at %i\n", audio->http_stream_bytes);
 		audio->autostart = false;
 		pthread_mutex_unlock(&audio->http_mutex);
 		

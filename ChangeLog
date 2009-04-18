@@ -1,3 +1,23 @@
+2009-04-13 20:39  paddockd
+
+	* src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Increased decoder buffer size
+	  from 1M to 3M.
+	  Changed various DEBUGL statements for better debug info.
+
+2009-04-13 12:07  paddockd
+
+	* ChangeLog, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_buffer.h,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c: Added
+	  logging to file instead of stderr -Y option.
+	  Added BUFFER_BLOCKING to audio output thread STOPPED state.
+
 2009-04-10 21:20  paddockd
 
 	* ChangeLog, TODO, lib/getopt/getopt.c,

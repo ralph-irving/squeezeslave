@@ -1,6 +1,7 @@
 CC=gcc
 
 CFLAGS=-Wall -g -march=i686 -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE
+#CFLAGS=-Wall -g -march=i686 -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 
@@ -12,7 +13,7 @@ GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
 
-SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
 
 .c.o:
 	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
