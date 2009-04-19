@@ -1,3 +1,36 @@
+2009-04-18 22:00  paddockd
+
+	* ChangeLog, makefile.cygwin, makefile.linux24,
+	  makefile.linux24-alsa, makefile.linux24-debug,
+	  makefile.linux24-display, makefile.linux24-i586,
+	  makefile.linux24-i586-display, makefile.linux26,
+	  makefile.linux26-alsa, makefile.linux26-alsa-display,
+	  makefile.linux26-debug, makefile.linux26-display,
+	  makefile.mingw32, makefile.mingw32-debug, makefile.osx,
+	  makefile.osxintel, makefile.s10intel, makefile.s10intel-debug,
+	  makefile.s9sparc, makefile.s9sparc-debug,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/daemonize.c,
+	  src/squeezeslave/help.c, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Refactored DEBUGL into DEBUGF. -Y option now redirects stderr to
+	  filename specified.
+	  Moved Daemonize code into separate file
+	  src/squeezeslave/daemonize.c
+	  Moved Interactive code into separate file
+	  src/squeezeslave/interactive.c
+	  Moved support functions into src/squeezeslave/help.c
+	  Added STMo output buffer underflow status.
+	  Removed previous fix for audio buffer flush leaving a bit behind.
+	  Progress bar status reset to zero after pause fixed. This applies
+	  to squeezeslave on screen and lcd display as well. The
+	  squeezecenter_squeezeslave_player3-7.4.patch code changes have
+	  been applied to svn 7.4r25816. Please test if you have an
+	  external LCD display and the on screen as well.
+
 2009-04-13 20:39  paddockd
 
 	* src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,

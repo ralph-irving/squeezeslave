@@ -39,9 +39,10 @@
 
 // For retry support
 bool retry_connection = false;
+
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "0.8-50b3";
+const char* version = "0.8-51";
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG

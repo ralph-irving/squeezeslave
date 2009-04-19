@@ -63,12 +63,6 @@
 #define RETRY_DEFAULT	5
 #define LINE_COUNT 2
 
-#ifdef INTERACTIVE
-#define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
-#define packC(ptr, off, v) { ptr[off] = v & 0xFF; }
-#define packA4(ptr, off, v) { strncpy((char*)(&ptr[off]), v, 4); }
-#endif
-
 int connect_callback(slimproto_t *, bool, void *);
 void listAudioDevices(slimaudio_t *, int);
 int parse_macaddress(char *, const char *);
@@ -83,6 +77,9 @@ void daemonize(char *);
 #endif
 
 #ifdef INTERACTIVE
+#define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
+#define packC(ptr, off, v) { ptr[off] = v & 0xFF; }
+#define packA4(ptr, off, v) { strncpy((char*)(&ptr[off]), v, 4); }
 void toggle_handler(int);
 int vfd_callback(slimproto_t *, const unsigned char *, int, void *);
 void receive_display_data(unsigned short *, int);
