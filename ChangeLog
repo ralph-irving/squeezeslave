@@ -1,3 +1,22 @@
+2009-04-19 22:26  paddockd
+
+	* ChangeLog, lib/libportaudio/linux24/build-portaudio-lnx24-alsa,
+	  lib/libportaudio/linux24/include/portaudio-old.h,
+	  lib/libportaudio/linux24/lib/libportaudio-debug-old.a,
+	  lib/libportaudio/linux24/lib/libportaudio-debug.a,
+	  lib/libportaudio/linux24/lib/libportaudio-old.a,
+	  lib/libportaudio/linux24/lib/libportaudio.a,
+	  makefile.linux24-alsa-display,
+	  sources/pa_snapshot-20081026.tar.gz,
+	  sources/pa_snapshot-20090419.tar.gz, sources/pa_snapshot.tar.gz,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Updated libportaudio to 20090419 snapshot for linux 2.4.
+	  Added linux24-alsa-display makefile.
+	  ALSA libportaudio Pa_GetStreamTime timeProgressed continues to
+	  increment when paused. This in turn causes the stream time
+	  counter to increment when paused. Only affects ALSA versions.
+	  Windows, OSX and OSS work as expected. Investigating.
+
 2009-04-18 22:00  paddockd
 
 	* ChangeLog, makefile.cygwin, makefile.linux24,

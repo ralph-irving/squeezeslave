@@ -140,6 +140,7 @@ extern bool slimaudio_decoder_debug_v;
 extern bool slimaudio_http_debug;
 extern bool slimaudio_http_debug_v;
 extern bool slimaudio_output_debug;
+extern bool slimaudio_output_debug_v;
 
 int slimaudio_init(slimaudio_t *audio, slimproto_t *proto);
 void slimaudio_destroy(slimaudio_t *audio);

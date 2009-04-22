@@ -19,11 +19,9 @@
  *
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
-
 
 #ifdef __WIN32__
   #include <winsock.h>
@@ -38,13 +36,13 @@
   #define CLOSESOCKET(s) close(s)
 #endif
 
-
 #include "slimaudio/slimaudio.h"
 
 #define HTTP_HEADER_LENGTH 1024
 
-
 #ifdef SLIMPROTO_DEBUG
+  bool slimaudio_http_debug;
+  bool slimaudio_http_debug_v;
   #define DEBUGF(...) if (slimaudio_http_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_http_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
@@ -52,15 +50,9 @@
   #define VDEBUGF(...)
 #endif
 
-
-bool slimaudio_http_debug;
-bool slimaudio_http_debug_v;
-extern bool debug_logfile;
-
 static void *http_thread(void *ptr);
 static void http_recv(slimaudio_t *a);
 static void http_close(slimaudio_t *a);
-
 
 int slimaudio_http_open(slimaudio_t *audio) {
 	pthread_mutex_init(&(audio->http_mutex), NULL);

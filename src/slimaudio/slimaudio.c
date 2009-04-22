@@ -44,13 +44,11 @@
 
 
 #ifdef SLIMPROTO_DEBUG
-#define DEBUGF(...) if (slimaudio_debug) fprintf(stderr, __VA_ARGS__)
+  bool slimaudio_debug;
+  #define DEBUGF(...) if (slimaudio_debug) fprintf(stderr, __VA_ARGS__)
 #else
-#define DEBUGF(...)
+  #define DEBUGF(...)
 #endif
-
-bool slimaudio_debug;
-extern bool debug_logfile;
 
 static int strm_callback(slimproto_t *p, const unsigned char *buf, int buf_len, void *user_data);
 static int vers_callback(slimproto_t *p, const unsigned char *buf, int buf_len, void *user_data);

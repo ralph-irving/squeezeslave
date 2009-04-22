@@ -103,6 +103,7 @@ HRESULT DSW_InitOutputBuffer( DSoundWrapper *dsw, unsigned long nFrameRate, int 
     dsw->dsw_OutputSize = bytesPerBuffer;
     dsw->dsw_OutputRunning = FALSE;
     dsw->dsw_OutputUnderflows = 0;
+    dsw->dsw_FramesPlayed = 0;
     dsw->dsw_FramesWritten = 0;
     dsw->dsw_BytesPerFrame = nChannels * sizeof(short);
     // We were using getForegroundWindow() but sometimes the ForegroundWindow may not be the
@@ -185,7 +186,7 @@ HRESULT DSW_StartOutput( DSoundWrapper *dsw )
     HRESULT        hr;
     QueryPerformanceCounter( &dsw->dsw_LastPlayTime );
     dsw->dsw_LastPlayCursor = 0;
-    dsw->dsw_FramesPlayed = 0;
+//  dsw->dsw_FramesPlayed = 0;
     hr = IDirectSoundBuffer_SetCurrentPosition( dsw->dsw_OutputBuffer, 0 );
     if( hr != DS_OK )
     {

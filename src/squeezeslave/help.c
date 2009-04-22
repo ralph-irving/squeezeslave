@@ -179,7 +179,8 @@ void print_help(void) {
 "                                    slimaudio_decoder_v\n"
 "                                    slimaudio_http\n"
 "                                    slimaudio_http_v\n"
-"                                    slimaudio_output\n",
+"                                    slimaudio_output\n"
+"                                    slimaudio_output_v\n",
 RETRY_DEFAULT);
 }
 

@@ -48,9 +48,10 @@
 #define BUF_LENGTH 4096
 
 #ifdef SLIMPROTO_DEBUG
-#define DEBUGF(...) if (slimproto_debug) fprintf(stderr, __VA_ARGS__)
+  bool slimproto_debug;
+  #define DEBUGF(...) if (slimproto_debug) fprintf(stderr, __VA_ARGS__)
 #else
-#define DEBUGF(...)
+  #define DEBUGF(...)
 #endif
 
 #define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
@@ -65,11 +66,6 @@
 static void *proto_thread(void *ptr);
 static int proto_connect(slimproto_t *p);
 static int proto_recv(slimproto_t *p);
-
-#ifdef SLIMPROTO_DEBUG
-extern bool debug_logfile;
-bool slimproto_debug;
-#endif
 
 int slimproto_init(slimproto_t *p) {
 	memset(p, 0, sizeof(slimproto_t));

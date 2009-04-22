@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,10 +26,8 @@
 
 #include <vorbis/vorbisfile.h>
 
-
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
-
 
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
@@ -39,7 +36,6 @@
   #define DEBUGF(...)
   #define VDEBUGF(...)
 #endif
-
 
 static size_t vorbis_read_func(void *ptr, size_t size, size_t nmemb, void *datasource);
 static int vorbis_seek_func(void *datasource, ogg_int64_t offset, int whence);

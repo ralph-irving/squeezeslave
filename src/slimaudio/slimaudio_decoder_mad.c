@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +35,6 @@
   #define DEBUGF(...)
   #define VDEBUGF(...)
 #endif
-
 
 static enum mad_flow mad_input(void *data, struct mad_stream *stream);
 static enum mad_flow mad_output(void *data, struct mad_header const *header, struct mad_pcm *pcm);

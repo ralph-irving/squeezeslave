@@ -27,7 +27,6 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
-
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
@@ -35,7 +34,6 @@
   #define DEBUGF(...)
   #define VDEBUGF(...)
 #endif
-
 
 int slimaudio_decoder_pcm_init(slimaudio_t *audio) {
 	return 0;

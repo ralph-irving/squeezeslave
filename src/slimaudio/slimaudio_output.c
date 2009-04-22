@@ -31,15 +31,14 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
-
 #ifdef SLIMPROTO_DEBUG
+  bool slimaudio_output_debug;
+  bool slimaudio_output_debug_v;
   #define DEBUGF(...) if (slimaudio_output_debug) fprintf(stderr, __VA_ARGS__)
+  #define VDEBUGF(...) if (slimaudio_output_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
 #endif
-
-bool slimaudio_output_debug;
-extern bool debug_logfile;
 
 static void *output_thread(void *ptr);
 
@@ -724,9 +723,11 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				pthread_mutex_lock(&audio->output_mutex);
 
 				// output buffer underrun
-				audio->output_STMo = true;
+				// audio->output_STMo = true;
+				audio->output_STMs = true;
 
-				DEBUGF("pa_callback: STREAM_END:output_STMo:%i\n",audio->output_STMo);
+				// DEBUGF("pa_callback: STREAM_CONTINUE:output_STMo:%i\n",audio->output_STMo);
+				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMs:%i\n",audio->output_STMs);
 
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
@@ -752,7 +753,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		apply_software_volume(audio, outputBuffer, framesPerBuffer);
 	}
 
-	DEBUGF("pa_callback complete framePerBuffer=%lu\n", framesPerBuffer);
+	VDEBUGF("pa_callback complete framePerBuffer=%lu\n", framesPerBuffer);
 
 	return 0;
 }

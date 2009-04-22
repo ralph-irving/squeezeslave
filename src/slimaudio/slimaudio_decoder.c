@@ -32,6 +32,8 @@
 
 
 #ifdef SLIMPROTO_DEBUG
+  bool slimaudio_decoder_debug;
+  bool slimaudio_decoder_debug_v;
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
@@ -39,15 +41,7 @@
   #define VDEBUGF(...)
 #endif
 
-
-#ifdef SLIMPROTO_DEBUG
-extern bool debug_logfile;
-bool slimaudio_decoder_debug;
-bool slimaudio_decoder_debug_v;
-#endif
-
 static void *decoder_thread(void *ptr);
-
 
 int slimaudio_decoder_open(slimaudio_t *audio) {
 	pthread_mutex_init(&(audio->decoder_mutex), NULL);

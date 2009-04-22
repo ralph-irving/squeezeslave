@@ -29,18 +29,15 @@
 
 #include "slimaudio/slimaudio_buffer.h"
 
-
 #ifdef SLIMPROTO_DEBUG
+  bool slimaudio_buffer_debug;
+  bool slimaudio_buffer_debug_v;
   #define DEBUGF(...) if (slimaudio_buffer_debug) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_buffer_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
   #define VDEBUGF(...)
 #endif
-
-bool slimaudio_buffer_debug;
-bool slimaudio_buffer_debug_v;
-extern bool debug_logfile;
 
 slimaudio_buffer_t *slimaudio_buffer_init(int size) {
 	slimaudio_buffer_t *buf = (slimaudio_buffer_t *) malloc(sizeof(slimaudio_buffer_t));

@@ -42,7 +42,7 @@ bool retry_connection = false;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "0.8-51";
+const char* version = "0.8-52";
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -265,6 +265,8 @@ int main(int argc, char *argv[]) {
 				slimaudio_http_debug_v = true;
 			else if (strcmp(optarg, "slimaudio_output") == 0)
 				slimaudio_output_debug = true;
+			else if (strcmp(optarg, "slimaudio_output_v") == 0)
+				slimaudio_output_debug_v = true;
 			else
 				fprintf(stderr, "%s: Unknown debug option %s\n", argv[0], optarg);
 #else
