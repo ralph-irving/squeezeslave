@@ -1,3 +1,18 @@
+2009-04-23 21:14  paddockd
+
+	* ChangeLog, src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/squeezeslave.c: Added output_threshold to audio
+	  structure and bytes calculation to slimaudio_http.c. Not
+	  currently used in decoder start.
+	  Commented out strm flush routines. Need more information on
+	  expected behaviour.
+	  Fixed missing VDEBUGF definition in slimaudio_output.c.
+	  Disabled SLIMAUDIO_BUFFER_STREAM_CONTINUE handling in pa_callback
+	  until I can determine how to rebuffer in http.
+	  Increased version to 53a.
+
 2009-04-22 11:52  paddockd
 
 	* ChangeLog, lib/libportaudio/linux26/lib/libportaudio.a,
