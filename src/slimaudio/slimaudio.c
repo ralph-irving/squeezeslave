@@ -192,13 +192,14 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 			break;	
 		
 		case 'f': /* flush */
+			/* slimaudio_buffer_flush(audio->output_buffer); */
+			/* slimaudio_buffer_flush(audio->decoder_buffer); */
 			break;			
 
 		case 't': /* status */
+			slimaudio_stat(audio, (char *)&msg.strm.cmd);
 			break;			
 	}
-	
-	slimaudio_stat(audio, (char *)&msg.strm.cmd);
 	
 	DEBUGF("DONE strm cmd %c\n", msg.strm.command);
 	return 0;

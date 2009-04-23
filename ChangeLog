@@ -1,3 +1,24 @@
+2009-04-22 11:52  paddockd
+
+	* ChangeLog, lib/libportaudio/linux26/lib/libportaudio.a,
+	  lib/portaudio/pa_win_ds/dsound_wrapper.c, makefile.mingw32,
+	  makefile.mingw32-debug, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Moved debug variabled
+	  definitions inside SLIMPROTO_DEBUG definition.
+	  Fixed dsw_FramesPlayed being reset to 0 on StartOutput in
+	  lib/portaudio/pa_win_ds/dsound_wrapper.c by moving initialization
+	  into InitOutputBuffer. Status bar should track correctly now.
+	  Added slimaudio_output_v debugging flag.
+	  Increased version to 0.8-52.
+
 2009-04-19 22:26  paddockd
 
 	* ChangeLog, lib/libportaudio/linux24/build-portaudio-lnx24-alsa,

@@ -68,6 +68,7 @@ typedef struct {
 	u32_t http_stream_bytes;
 	bool autostart;
 	int autostart_threshold;
+	int output_threshold;
 
 	// decode state
 	pthread_t decoder_thread;

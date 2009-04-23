@@ -38,6 +38,7 @@
   #define VDEBUGF(...) if (slimaudio_output_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
+  #define VDEBUGF(...)
 #endif
 
 static void *output_thread(void *ptr);
@@ -336,21 +337,26 @@ static void *output_thread(void *ptr) {
 					DEBUGF("output_thread STMt-PLAYING: %f\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMt");
 				}
-					
+
+				/* Output buffer underflow */
+				/* XXX FIXME Do not implement rebuffering, just informs SC */
 				if (audio->output_STMo) {
 					audio->output_STMo = false;
 
 					DEBUGF("output_thread STMo-PLAYING: %f\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMo");
 				}
-					
+
+				/* Data underrun */
+				/* on buffer underrun causes the server to switch to the next track */
 				if (audio->output_STMu) {
 					audio->output_STMu = false;
 
 					DEBUGF("output_thread STMu-PLAYING: %f\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
 				}
-					
+
+				/* Track started */				
 				if (audio->output_STMs) {
 					audio->output_STMs = false;
 #ifndef PORTAUDIO_ALSA
@@ -718,21 +724,21 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			pthread_mutex_unlock(&audio->output_mutex);
 
 		}
+#if 0
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
 
-				// output buffer underrun
-				// audio->output_STMo = true;
-				audio->output_STMs = true;
+				/* output buffer underrun */
+				audio->output_STMo = true;
 
-				// DEBUGF("pa_callback: STREAM_CONTINUE:output_STMo:%i\n",audio->output_STMo);
-				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMs:%i\n",audio->output_STMs);
+				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMo:%i\n",audio->output_STMo);
 
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
 			}
 		}
+#endif
 		off += data_len;
 
 		/* if we have underrun fill remaining buffer with silence */

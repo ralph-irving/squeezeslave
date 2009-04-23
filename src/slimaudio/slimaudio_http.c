@@ -240,9 +240,13 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	audio->autostart = 
 		msg->strm.autostart == '1' || msg->strm.autostart == '3';
 	audio->autostart_threshold = (msg->strm.threshold & 0xFF) * 1024;
+
+	/* XXX FIXME Hard coded sample rate calculation */
+	/* (Sample Rate * Sample Size * Channels / 8 bits/byte) / tenths of a second) */
+	audio->output_threshold = (((44100*16*2)/8)/10) * msg->strm.output_threshold; /* Stored in bytes */
 	
-	DEBUGF("slimaudio_http_connect: autostart=%i autostart_threshold=%i\n",
-	       audio->autostart, audio->autostart_threshold);
+	DEBUGF("slimaudio_http_connect: autostart=%i autostart_threshold=%i output_threshold=%i\n",
+	       audio->autostart, audio->autostart_threshold, audio->output_threshold);
 	
 	audio->http_state = STREAM_PLAYING;
 	pthread_cond_broadcast(&audio->http_cond);

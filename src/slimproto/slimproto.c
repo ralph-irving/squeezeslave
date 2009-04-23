@@ -370,7 +370,8 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 		msg->strm.transition_period = unpackC(buf, 15);
 		msg->strm.transition_type = unpackC(buf, 16);
 		msg->strm.flags = unpackC(buf, 17);
-		msg->strm.reserved = unpackC(buf, 18);
+		msg->strm.output_threshold = unpackC(buf, 18);
+		msg->strm.reserved = unpackC(buf, 19);
 		msg->strm.replay_gain = unpackN4(buf, 20);
 		msg->strm.server_port = unpackN2(buf, 24);
 		msg->strm.server_ip = unpackN4(buf, 26);

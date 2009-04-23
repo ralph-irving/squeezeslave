@@ -58,8 +58,9 @@ typedef union {
 		u8_t spdif_enable;		// [1]  '0' = auto, '1' = on, '2' = off
 		u8_t transition_period;	// [1]	seconds over which transition should happen
 		u8_t transition_type;	// [1]	'0' = none, '1' = crossfade, '2' = fade in, '3' = fade out, '4' fade in & fade out
-		u8_t flags;				// [1]	0x80 - loop infinitely, 0x40 - stream without restarting decoder
-		u16_t reserved;			// [2]	reserved
+		u8_t flags;		// [1]	0x80 - loop infinitely, 0x40 - stream without restarting decoder, 0x01 - polarity inversion left. 0x02 - polarity inversion right 
+		u8_t output_threshold;		// [1]	amount of output buffer data before playback starts, in tenths of second
+		u8_t reserved;			// [1]	reserved
 		u32_t replay_gain;		// [4]	replay gain in 16.16 fixed point, 0 means none
 		u16_t server_port;		// [2]	server's port
 		u32_t server_ip;		// [4]	server's IP		
