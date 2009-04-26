@@ -58,6 +58,40 @@ int parse_macaddress(char *macaddress, const char *str) {
 
 void print_version(void) {
 	fprintf(stdout, "squeezeslave %s\n", version);
+	fprintf(stdout, "compile flags: ");
+#if defined(__APPLE__) && defined(__MACH__)
+	fprintf(stdout, "osx ");
+#elif defined(__WIN32__)
+	fprintf(stdout, "win32 ");
+#elif defined(__SUNPRO_C)
+	fprintf(stdout, "solaris ");
+#else
+	fprintf(stdout, "linux ");
+#endif
+#ifndef PORTAUDIO_ALSA
+	fprintf(stdout, "portaudio:1810 ");
+#else
+	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
+#endif
+#ifdef SLIMPROTO_DEBUG
+	fprintf(stdout, "debug ");
+#endif
+#ifdef USE_SIGNALS_FOR_RESTART
+	fprintf(stdout, "signals ");
+#endif
+#ifdef GETOPT_SUPPORTS_OPTIONAL
+	fprintf(stdout, "getopt ");
+#endif
+#ifdef INTERACTIVE
+	fprintf(stdout, "curses lirc ");
+#endif
+#ifdef DAEMONIZE
+	fprintf(stdout, "daemon ");
+#endif
+#ifdef __BIG_ENDIAN__
+	fprintf(stdout, "bigendian ");
+#endif
+	fprintf(stdout, "\n");
 }
 
 void print_help(void) {
