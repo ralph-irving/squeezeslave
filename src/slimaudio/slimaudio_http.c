@@ -246,7 +246,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	const float replaygain = (float) (msg->strm.replay_gain) / 65536.0;
 
-	if ( replaygain == 0.0 || replaygain > 1.0 )
+	if ( replaygain <= 0.0 || replaygain > 1.0 )
 		audio->replay_gain = 1.0;
 	else
 		audio->replay_gain = replaygain;

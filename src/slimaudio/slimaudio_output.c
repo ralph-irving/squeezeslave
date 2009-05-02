@@ -95,6 +95,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	audio->output_predelay_amplitude = 0;
 	audio->keepalive_interval = -1;
 	audio->decode_num_tracks_started = 0L;	
+	audio->stream_samples = 0UL;	
 	slimproto_add_command_callback(audio->proto, "audg", &audg_callback, audio);
 	
 	pthread_mutex_init(&(audio->output_mutex), NULL);
@@ -254,24 +255,18 @@ static void *output_thread(void *ptr) {
 		int volumeIdx;
 		for (volumeIdx=0; volumeIdx<nbVolumes; ++volumeIdx) {
 			DEBUGF("Volume %d: %s\n", volumeIdx, 
-				Px_GetOutputVolumeName(audio->px_mixer, 
-						       volumeIdx));
+				Px_GetOutputVolumeName(audio->px_mixer, volumeIdx));
 		}
 	}
 
-	while (audio->output_state != QUIT) {				
-		DEBUGF("output_thread: state %i\n", audio->output_state);
+	while (audio->output_state != QUIT) {
 
 		switch (audio->output_state) {
 			case STOPPED:
 				audio->decode_num_tracks_started = 0L;
-#ifndef PORTAUDIO_ALSA
-				audio->pa_streamtime_offset = Pa_StreamTime(audio->pa_stream);
-#else
-				audio->pa_streamtime_offset = Pa_GetStreamTime(audio->pa_stream);
-#endif
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_BLOCKING);
-				DEBUGF("output_thread STOPPED: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread STOPPED: %llu\n",audio->pa_streamtime_offset);
+
 			case PAUSED:
 				// We report ourselves to the server every few seconds
 				// as a keep-alive.  This is required for SqueezeCenter version 
@@ -283,6 +278,8 @@ static void *output_thread(void *ptr) {
 			  	// seems to report every 1 second or so, but the server only
 			  	// drops the connection after 15-20 seconds of inactivity.
 
+				DEBUGF("output_thread PAUSED: %llu\n",audio->pa_streamtime_offset);
+
 			  	if (audio->keepalive_interval <= 0) {
 					pthread_cond_wait(&audio->output_cond, &audio->output_mutex);
 				}
@@ -293,12 +290,10 @@ static void *output_thread(void *ptr) {
 					err = pthread_cond_timedwait(&audio->output_cond,
 								     &audio->output_mutex, &timeout);
 					if (err == ETIMEDOUT) {
-						DEBUGF("Sending keepalive.  Interval=%d s.\n", audio->keepalive_interval);
+						DEBUGF("Sending keepalive. Interval=%ds.\n", audio->keepalive_interval);
 						output_thread_stat(audio, "stat");
 					}
 				}
-
-				DEBUGF("output_thread PAUSED: %f\n",audio->pa_streamtime_offset);
 
 				break;
 
@@ -309,8 +304,7 @@ static void *output_thread(void *ptr) {
  * BUFFERING then pause/unpause breaks.
  */
 		   
-				audio->output_predelay_frames = 
-					audio->output_predelay_msec * 44.1;
+				audio->output_predelay_frames = audio->output_predelay_msec * 44.100;
 				err = Pa_StartStream(audio->pa_stream);
 				if (err != paNoError) {
 					printf("output_thread: PortAudio error2: %s\n", Pa_GetErrorText(err) );	
@@ -319,14 +313,14 @@ static void *output_thread(void *ptr) {
 
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
-				DEBUGF("output_thread PLAY: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread PLAY: %llu\n",audio->pa_streamtime_offset);
 
 				audio->output_state = PLAYING;
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
 
 			case BUFFERING:
-				DEBUGF("output_thread BUFFERING: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
 			case PLAYING:			
 				gettimeofday(&now, NULL);
 				timeout.tv_sec = now.tv_sec + 1;
@@ -334,7 +328,7 @@ static void *output_thread(void *ptr) {
 				err = pthread_cond_timedwait(&audio->output_cond, &audio->output_mutex, &timeout);
 
 				if (err == ETIMEDOUT) {
-					DEBUGF("output_thread STMt-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMt-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMt");
 				}
 
@@ -343,7 +337,7 @@ static void *output_thread(void *ptr) {
 				if (audio->output_STMo) {
 					audio->output_STMo = false;
 
-					DEBUGF("output_thread STMo-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMo-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMo");
 				}
 
@@ -352,19 +346,14 @@ static void *output_thread(void *ptr) {
 				if (audio->output_STMu) {
 					audio->output_STMu = false;
 
-					DEBUGF("output_thread STMu-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
 				}
 
 				/* Track started */				
 				if (audio->output_STMs) {
 					audio->output_STMs = false;
-#ifndef PORTAUDIO_ALSA
-					audio->pa_streamtime_offset = Pa_StreamTime(audio->pa_stream);
-#else
-					audio->pa_streamtime_offset = Pa_GetStreamTime(audio->pa_stream);
-#endif					
-					DEBUGF("output_thread STMs-PLAYING: %f\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMs-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMs");
 				}
 
@@ -393,7 +382,7 @@ static void *output_thread(void *ptr) {
 #endif
 				audio->output_state = STOPPED;
 
-				DEBUGF("output_thread STOP: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread STOP: %llu\n",audio->pa_streamtime_offset);
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
 				
@@ -418,12 +407,13 @@ static void *output_thread(void *ptr) {
 					exit(-1);
 				}
 #endif
-				DEBUGF("output_thread PAUSE: %f\n",audio->pa_streamtime_offset);
+				DEBUGF("output_thread PAUSE: %llu\n",audio->pa_streamtime_offset);
 				audio->output_state = PAUSED;	
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
 
 			case QUIT:
+				DEBUGF("output_thread QUIT: %llu\n",audio->pa_streamtime_offset);
 				break;
 
 		}		
@@ -437,11 +427,7 @@ static void *output_thread(void *ptr) {
 	
 	err = Pa_CloseStream(audio->pa_stream);
 	if (err != paNoError) {
-#ifndef PORTAUDIO_ALSA
-		printf("output_thread: PortAudio error3: %s\n", Pa_GetErrorText(err) );
-#else
 		printf("output_thread[exit]: PortAudio error3: %s\n", Pa_GetErrorText(err) );
-#endif
 		exit(-1);
 	}
 	audio->pa_stream = NULL;
@@ -462,7 +448,7 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	const float vol_adjust = (float) ((msg.audg.left_gain + msg.audg.right_gain)/2) / 65536.0;
 	audio->volume = vol_adjust > 1.0 ? 1.0 : vol_adjust;
 
-	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain: %u",
+	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain:%u",
 			msg.audg.left_gain, msg.audg.right_gain, audio->volume,
 			msg.audg.old_left_gain, msg.audg.old_right_gain);
 	VDEBUGF(" preamp:%hhu digital_volume_control:%hhu", msg.audg.preamp, msg.audg.digital_volume_control);
@@ -554,21 +540,11 @@ void slimaudio_output_unpause(slimaudio_t *audio) {
 
 u32_t slimaudio_output_streamtime(slimaudio_t *audio) {
 
-#ifndef PORTAUDIO_ALSA
-	PaTimestamp numSamples = Pa_StreamTime(audio->pa_stream);
 	u32_t msec =
-		(u32_t)((numSamples - audio->pa_streamtime_offset) / 44.100) + audio->output_predelay_msec;
-	DEBUGF("outputstate:%d streamsamples:%f st_offset:%f tplayed:%u predelay_msec:%u msec:%u\n",
-		audio->output_state, numSamples, audio->pa_streamtime_offset, audio->decode_num_tracks_started,
-		audio->output_predelay_msec, msec);
-#else
-	PaTime timeProgressed = Pa_GetStreamTime(audio->pa_stream);
-	u32_t msec =
-		(u32_t)((timeProgressed - audio->pa_streamtime_offset) * 1000.0) + audio->output_predelay_msec;
-	DEBUGF("outputstate:%d streamtime:%f st_offset:%f tplayed:%u predelay_msec:%u msec:%u\n",
-		audio->output_state, timeProgressed, audio->pa_streamtime_offset, audio->decode_num_tracks_started,
-		audio->output_predelay_msec, msec);
-#endif
+		(u32_t) ((audio->stream_samples - audio->pa_streamtime_offset) / 44.100) +audio->output_predelay_msec;
+	DEBUGF("outputstate:%d streamsamples:%llu st_offset:%llu tplayed:%u predelay_msec:%u msec:%u\n",
+		audio->output_state, audio->stream_samples, audio->pa_streamtime_offset,
+		audio->decode_num_tracks_started, audio->output_predelay_msec, msec);
 
 	return msec < 0 ? 0 : msec;
 }
@@ -706,11 +682,9 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				audio, (char*)outputBuffer + off, len - off);
 			continue;
 		}
-		int data_len = len-off;
+		int data_len = len - off;
 		const slimaudio_buffer_status ok = 
-			slimaudio_buffer_read(
-				audio->output_buffer, 
-				(char *) outputBuffer+off, &data_len);
+			slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
 
 		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 			/* stream closed */
@@ -735,6 +709,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			// Send track start to SqueezeCenter. During normal play
 			// this advances the playlist.
 			audio->output_STMs = true;
+			audio->decode_num_tracks_started++;
+			audio->pa_streamtime_offset = audio->stream_samples;
 
 			DEBUGF("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
 
@@ -757,6 +733,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			}
 		}
 #endif
+		audio->stream_samples += framesPerBuffer;
+
 		off += data_len;
 
 		/* if we have underrun fill remaining buffer with silence */

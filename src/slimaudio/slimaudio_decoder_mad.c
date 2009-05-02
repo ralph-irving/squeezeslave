@@ -230,8 +230,9 @@ enum mad_flow mad_output(void *data,
                 *ptr++ = (sample >> 8) & 0xff;
         }
 #endif
-	apply_replaygain(audio->replay_gain, buf, nsamples * 2 * nchannels);
-	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
+	const u32_t nbytes = nsamples * 2 * nchannels;
+	apply_replaygain(audio->replay_gain, buf, nbytes);
+	slimaudio_buffer_write(audio->output_buffer, buf, nbytes);
 
 	free(buf);
 	

@@ -99,11 +99,10 @@ typedef struct {
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
 	PxMixer *px_mixer;
-#ifndef PORTAUDIO_ALSA
-	PaTimestamp pa_streamtime_offset;
-#else
-	PaTime pa_streamtime_offset;
-#endif
+
+	u64_t pa_streamtime_offset;
+	u64_t stream_samples;
+
 	bool output_STMs;
 	bool output_STMu;
 	bool output_STMo;
@@ -119,7 +118,7 @@ typedef struct {
 	char **device_names;
 
 	u32_t decode_num_tracks_started;
-	
+
 	// mad decoder
 	struct mad_decoder mad_decoder;
 	char *decoder_data;

@@ -98,8 +98,10 @@ int slimaudio_decoder_pcm_process(slimaudio_t *audio) {
 		*ptr++ = (sample >> 8) & 0xff;
 	}
 #endif
-		apply_replaygain(audio->replay_gain, (char*)data, nsamples * 2);
-		slimaudio_buffer_write(audio->output_buffer, (char*)data, nsamples * 2);
+		const u32_t nbytes = nsamples * 2;
+		apply_replaygain(audio->replay_gain, (char*)data, nbytes);
+		slimaudio_buffer_write(audio->output_buffer, (char*)data, nbytes);
+
 		data_len -= nsamples * 2;
 	}
 	

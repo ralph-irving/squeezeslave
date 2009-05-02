@@ -176,7 +176,6 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 			slimaudio_http_connect(audio, &msg);
 			slimaudio_decoder_connect(audio, &msg);
 			slimaudio_output_connect(audio, &msg);
-			audio->decode_num_tracks_started++;
 			break;
 			
 		case 'p': /* pause */

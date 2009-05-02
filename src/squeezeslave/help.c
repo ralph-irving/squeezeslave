@@ -91,21 +91,21 @@ void print_version(void) {
 #ifdef __BIG_ENDIAN__
 	fprintf(stdout, "bigendian ");
 #endif
-	fprintf(stdout, "\n\n");
+	fprintf(stdout, "\n");
+
+	fprintf(stdout, "Copyright (c) 2004-2007 Richard Titmuss,\n");
+	fprintf(stdout, "              2008-2009 Duane Paddock.\n\n");
 
 	fprintf (stdout,
 	"This program is licensed free of charge, there is no warranty for\n"
 	"the program, to the extent permitted by applicable law. This program\n"
-	"is provided  \"as is\" without warranty of any kind, either expressed\n"
+	"is provided \"as is\" without warranty of any kind, either expressed\n"
 	"or implied, including, but not limited to, the implied warranties of\n"
 	"merchantability and fitness for a particular purpose.  The entire risk as\n"
 	"to the quality and performance of the program is with you.  Should the\n"
 	"program prove defective, you assume the cost of all necessary servicing,\n"
-	"repair or correction.\n\n"
-);
-	fprintf(stdout, "Copyright (c) 2004-2007 Richard Titmuss,\n");
-	fprintf(stdout, "              2008-2009 Duane Paddock.\n");
-
+	"repair or correction.\n"
+	);
 }
 
 void print_help(void) {
