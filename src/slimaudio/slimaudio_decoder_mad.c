@@ -190,7 +190,7 @@ enum mad_flow mad_output(void *data,
 
 	VDEBUGF("decode_output state=%i nchannels=%i nsamples=%i\n", audio->decoder_state, nchannels, nsamples);
 
-	buf = (char *) malloc(nsamples * 2 * 2 ); /* always stereo output */
+	buf = (char *) malloc(nsamples * 2 * nchannels ); /* always stereo output */
 	ptr = buf;
 
 #ifdef __BIG_ENDIAN__
@@ -230,8 +230,8 @@ enum mad_flow mad_output(void *data,
                 *ptr++ = (sample >> 8) & 0xff;
         }
 #endif
-
-	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * 2 /* always stereo output */);
+	apply_replaygain(audio->replay_gain, buf, nsamples * 2 * nchannels);
+	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
 
 	free(buf);
 	

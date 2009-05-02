@@ -69,6 +69,7 @@ typedef struct {
 	bool autostart;
 	int autostart_threshold;
 	int output_threshold;
+	float replay_gain;
 
 	// decode state
 	pthread_t decoder_thread;
@@ -211,4 +212,5 @@ int slimaudio_decoder_pcm_init(slimaudio_t *audio);
 void slimaudio_decoder_pcm_free(slimaudio_t *audio);
 int slimaudio_decoder_pcm_process(slimaudio_t *audio);
 
+void apply_replaygain (float, void*,int);
 #endif //_SLIMAUDIO_H_

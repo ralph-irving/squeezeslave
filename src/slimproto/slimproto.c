@@ -67,6 +67,12 @@ static void *proto_thread(void *ptr);
 static int proto_connect(slimproto_t *p);
 static int proto_recv(slimproto_t *p);
 
+float unpackFixedPoint(const unsigned char *buf, int pos) {
+	int v = unpackN4(buf, pos);
+	return ((v & 0xFFFF0000) >> 16) + ((v & 0xFFFF) / (float)0xFFFF);
+}
+
+
 int slimproto_init(slimproto_t *p) {
 	memset(p, 0, sizeof(slimproto_t));
 #ifdef __WIN32__

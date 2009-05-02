@@ -459,15 +459,14 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimaudio_t* const audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
 
-	const float vol = (float)msg.audg.left_gain / (float)0x10000;
-	audio->volume = vol > 1.F ? 1.F : vol;
-	DEBUGF("audg cmd %04x %f\n", msg.audg.left_gain, audio->volume);
-	DEBUGF("old_left_gain:  %u\n", msg.audg.old_left_gain);
-	DEBUGF("old_right_gain: %u\n", msg.audg.old_right_gain);
-	DEBUGF("left_gain:      %u\n", msg.audg.left_gain);
-	DEBUGF("right_gain:     %u\n", msg.audg.right_gain);
-	DEBUGF("digital_volume_control: %hhu\n", msg.audg.digital_volume_control);
-	DEBUGF("preamp:                 %hhu\n", msg.audg.preamp);
+	const float vol_adjust = (float) ((msg.audg.left_gain + msg.audg.right_gain)/2) / 65536.0;
+	audio->volume = vol_adjust > 1.0 ? 1.0 : vol_adjust;
+
+	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain: %u",
+			msg.audg.left_gain, msg.audg.right_gain, audio->volume,
+			msg.audg.old_left_gain, msg.audg.old_right_gain);
+	VDEBUGF(" preamp:%hhu digital_volume_control:%hhu", msg.audg.preamp, msg.audg.digital_volume_control);
+	DEBUGF("\n");
 
 	if (audio->px_mixer != NULL) {
 		Px_SetPCMOutputVolume(audio->px_mixer, (PxVolume)audio->volume);
@@ -615,6 +614,25 @@ static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer,
 		samples[i]     = ((float)samples[i])     * curVolume;
 		samples[i + 1] = ((float)samples[i + 1]) * curVolume;
 	}
+
+	VDEBUGF("volume: %f applied\n",newVolume);
+}
+
+void apply_replaygain (float replayGain, void* outputBuffer, int nbSamples) {
+
+	// No replaygain to apply
+	if (replayGain >= 1.0)
+		return;
+
+	short* const samples = (short*)outputBuffer;
+	int i;
+	for (i = 0; i < nbSamples; i += 2)
+	{
+		samples[i]     = ((float)samples[i])     * replayGain;
+		samples[i + 1] = ((float)samples[i + 1]) * replayGain;
+	}
+
+	DEBUGF("replaygain: %f applied\n", replayGain);
 }
 
 // Writes pre-delay sample-frames into the output buffer passed in.

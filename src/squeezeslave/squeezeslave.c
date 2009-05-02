@@ -42,7 +42,7 @@ bool retry_connection = false;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "0.8-55";
+const char* version = "0.8-56a";
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -205,7 +205,6 @@ int main(int argc, char *argv[]) {
 #ifdef DAEMONIZE
 			{"daemonize",          required_argument, 0, 'M'},
 #endif
-			{"oldplayer",          no_argument,       0, 'O'},
 			{"output",             required_argument, 0, 'o'},
 			{"playerid",           required_argument, 0, 'e'},
 			{"predelay",           required_argument, 0, 'p'},
@@ -225,15 +224,15 @@ int main(int argc, char *argv[]) {
 	
 #if defined(DAEMONIZE)	
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:M:Oo:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:M:o:p:Rr:Vv:",
 					 long_options, NULL);
 #elif defined(INTERACTIVE)
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:Oo:p:Rr:Vv:c:Dilw:",
+			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:o:p:Rr:Vv:c:Dilw:",
 					 long_options, NULL);
 #else
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:Oo:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:o:p:Rr:Vv:",
 					 long_options, NULL);
 #endif
 
@@ -353,9 +352,6 @@ int main(int argc, char *argv[]) {
 			should_daemonize = true;
 			break;
 #endif
-		case 'O':
-			player_type = 3;
-			break;
 		case 'o':
 			output_device_id = strtoul(optarg, NULL, 0);
 			break;

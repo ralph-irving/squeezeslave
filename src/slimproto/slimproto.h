@@ -157,6 +157,7 @@ int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 
 int slimproto_stat(slimproto_t *p, const char *code, int rptr, int wptr, u64_t bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_seconds);
 
+float unpackFixedPoint(const unsigned char *buf, int pos);
 
 // This function configures the socket whose fd is passed in, in order
 // to disable the raise of SIGPIPE when writing to a closed socket.
