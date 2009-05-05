@@ -244,15 +244,8 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	/* (Sample Rate * Sample Size * Channels / 8 bits/byte) / tenths of a second) */
 	audio->output_threshold = (((44100*16*2)/8)/10) * msg->strm.output_threshold; /* Stored in bytes */
 
-	const float replaygain = (float) (msg->strm.replay_gain) / 65536.0;
-
-	if ( replaygain <= 0.0 || replaygain > 1.0 )
-		audio->replay_gain = 1.0;
-	else
-		audio->replay_gain = replaygain;
-
 	DEBUGF("slimaudio_http_connect: autostart=%i autostart_threshold=%i output_threshold=%i replay_gain=%f\n",
-	       audio->autostart, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);
+		audio->autostart, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);
 	
 	audio->http_state = STREAM_PLAYING;
 	pthread_cond_broadcast(&audio->http_cond);
@@ -305,7 +298,7 @@ static void http_recv(slimaudio_t *audio) {
 	audio->http_total_bytes += n;
 	audio->http_stream_bytes += n;
 	
-	if (audio->autostart && audio->http_stream_bytes > audio->autostart_threshold) {
+	if (audio->autostart && (audio->http_stream_bytes > audio->autostart_threshold)) {
 		DEBUGF("http_recv: AUTOSTART at %i\n", audio->http_stream_bytes);
 		audio->autostart = false;
 		pthread_mutex_unlock(&audio->http_mutex);

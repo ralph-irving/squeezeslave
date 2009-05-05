@@ -102,10 +102,10 @@ static void *decoder_thread(void *ptr) {
 	unsigned char first_time = 1;
 
 	while (true) {				
-		DEBUGF("decoder_thread state %i\n", audio->decoder_state);
-
 		switch (audio->decoder_state) {
 			case STREAM_STOPPED:
+				DEBUGF("decoder_thread: STREAM_STOPPED first_time:%d\n", first_time);
+
 				if (first_time == 1) {
 					/* 
 					 * The first time in, the mutex has already been
@@ -121,7 +121,8 @@ static void *decoder_thread(void *ptr) {
 				break;
 				
 			case STREAM_PLAYING:
-				DEBUGF("decoder_thread playing type %c\n", audio->decoder_mode);
+				DEBUGF("decoder_thread: STREAM_PLAYING type %c\n", audio->decoder_mode);
+
 				switch (audio->decoder_mode) {
 				case 'm': // mp3
 					slimaudio_decoder_mad_process(audio);
@@ -143,12 +144,20 @@ static void *decoder_thread(void *ptr) {
 					fprintf(stderr, "Cannot decode unknown format: %c\n", audio->decoder_mode);
 					slimaudio_stat(audio, "STMn"); // decoder does not support format
 					break;
-				}				
+				}
 
-				DEBUGF("decoder_thread stopped\n");
-				if (audio->decoder_state == STREAM_PLAYING) slimaudio_stat(audio, "STMd");
+				DEBUGF("decoder_thread: STREAM_PLAY (before STMd) previous state: %i\n",
+						audio->decoder_state);
+
+				if ( audio->decoder_state == STREAM_PLAYING )
+				{
+					slimaudio_stat(audio, "STMd");
+					DEBUGF("decoder_thread: STREAM_PLAY (after STMd) previous state: %i\n",
+							audio->decoder_state);
+				}
 
 			case STREAM_STOP:
+				DEBUGF("decoder_thread: STREAM_STOP previous state: %i\n", audio->decoder_state);
 				pthread_mutex_lock(&audio->decoder_mutex);
 				
 				audio->decoder_state = STREAM_STOPPED;
@@ -160,6 +169,7 @@ static void *decoder_thread(void *ptr) {
 				break;
 			
 			case STREAM_QUIT:
+				DEBUGF("decoder_thread: STREAM_QUIT\n");
 				return 0;
 		}		
 	}
@@ -178,6 +188,7 @@ void slimaudio_decoder_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	slimaudio_buffer_open(audio->output_buffer, NULL);
 
 	audio->decoder_state = STREAM_PLAYING;
+
 	pthread_cond_broadcast(&audio->decoder_cond);
 
 	pthread_mutex_unlock(&audio->decoder_mutex);

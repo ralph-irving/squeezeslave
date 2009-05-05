@@ -88,14 +88,16 @@ int slimaudio_output_init(slimaudio_t *audio) {
 #endif
 	audio->px_mixer = NULL;
 	audio->volume_control = VOLUME_DRIVER;
-	audio->volume = 1.F;
-	audio->prev_volume = -1.F; // Signals prev = volume.
+	audio->volume = 1.0;
+	audio->prev_volume = -1.0; // Signals prev = volume.
 	audio->output_predelay_msec = 0;
 	audio->output_predelay_frames = 0;
 	audio->output_predelay_amplitude = 0;
 	audio->keepalive_interval = -1;
 	audio->decode_num_tracks_started = 0L;	
 	audio->stream_samples = 0UL;	
+	audio->replay_gain = 0.0;  // none to start
+
 	slimproto_add_command_callback(audio->proto, "audg", &audg_callback, audio);
 	
 	pthread_mutex_init(&(audio->output_mutex), NULL);
@@ -140,7 +142,7 @@ int slimaudio_output_open(slimaudio_t *audio) {
 	 */
 	pthread_mutex_lock(&audio->output_mutex);
 
-	audio->output_state = STOPPED;	
+	audio->output_state = STOPPED;
 
 	if (pthread_create( &audio->output_thread, NULL, output_thread, (void*) audio) != 0) {
 		fprintf(stderr, "Error creating output thread\n");
@@ -180,9 +182,11 @@ static void *output_thread(void *ptr) {
 	struct timespec timeout;
 	
 	slimaudio_t *audio = (slimaudio_t *) ptr;
-	audio->output_STMu = false;
-	audio->output_STMs = false;
+	audio->output_STMd = false;
 	audio->output_STMo = false;
+	audio->output_STMs = false;
+	audio->output_STMu = false;
+	audio->output_EoS  = false;
 
 #ifndef PORTAUDIO_ALSA
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
@@ -263,9 +267,10 @@ static void *output_thread(void *ptr) {
 
 		switch (audio->output_state) {
 			case STOPPED:
+				DEBUGF("output_thread STOPPED: %llu\n",audio->pa_streamtime_offset);
+
 				audio->decode_num_tracks_started = 0L;
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_BLOCKING);
-				DEBUGF("output_thread STOPPED: %llu\n",audio->pa_streamtime_offset);
 
 			case PAUSED:
 				// We report ourselves to the server every few seconds
@@ -311,9 +316,9 @@ static void *output_thread(void *ptr) {
 					exit(-1);
 				}
 
-				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
-
 				DEBUGF("output_thread PLAY: %llu\n",audio->pa_streamtime_offset);
+
+				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
 				audio->output_state = PLAYING;
 				pthread_cond_broadcast(&audio->output_cond);
@@ -332,13 +337,12 @@ static void *output_thread(void *ptr) {
 					output_thread_stat(audio, "STMt");
 				}
 
-				/* Output buffer underflow */
-				/* XXX FIXME Do not implement rebuffering, just informs SC */
-				if (audio->output_STMo) {
-					audio->output_STMo = false;
+				/* Track started */				
+				if (audio->output_STMs) {
+					audio->output_STMs = false;
 
-					DEBUGF("output_thread STMo-PLAYING: %llu\n",audio->pa_streamtime_offset);
-					output_thread_stat(audio, "STMo");
+					DEBUGF("output_thread STMs-PLAYING: %llu\n",audio->pa_streamtime_offset);
+					output_thread_stat(audio, "STMs");
 				}
 
 				/* Data underrun */
@@ -350,11 +354,13 @@ static void *output_thread(void *ptr) {
 					output_thread_stat(audio, "STMu");
 				}
 
-				/* Track started */				
-				if (audio->output_STMs) {
-					audio->output_STMs = false;
-					DEBUGF("output_thread STMs-PLAYING: %llu\n",audio->pa_streamtime_offset);
-					output_thread_stat(audio, "STMs");
+				/* Output buffer underflow */
+				/* XXX FIXME Does not implement rebuffering, disabled notification. */
+				if (audio->output_STMo) {
+					audio->output_STMo = false;
+
+					DEBUGF("output_thread STMo-PLAYING FIXME: %llu\n",audio->pa_streamtime_offset);
+					// output_thread_stat(audio, "STMo");
 				}
 
 				break;
@@ -594,22 +600,23 @@ static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer,
 	VDEBUGF("volume: %f applied\n",newVolume);
 }
 
-void apply_replaygain (float replayGain, void* outputBuffer, int nbSamples) {
+#ifndef apply_replaygain
+void apply_replaygain (float replayGain, void* Buffer, int nbSamples) {
+	VDEBUGF("replaygain: %f applied\n", replayGain);
 
 	// No replaygain to apply
-	if (replayGain >= 1.0)
+	if (replayGain == 0.0)
 		return;
 
-	short* const samples = (short*)outputBuffer;
+	short* const samples = (short*)Buffer;
 	int i;
 	for (i = 0; i < nbSamples; i += 2)
 	{
 		samples[i]     = ((float)samples[i])     * replayGain;
 		samples[i + 1] = ((float)samples[i + 1]) * replayGain;
 	}
-
-	DEBUGF("replaygain: %f applied\n", replayGain);
 }
+#endif
 
 // Writes pre-delay sample-frames into the output buffer passed in.
 // Pre-delay will most often be silence but can also be a tone at
@@ -718,7 +725,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			pthread_mutex_unlock(&audio->output_mutex);
 
 		}
-#if 0
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
@@ -732,7 +738,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				pthread_mutex_unlock(&audio->output_mutex);
 			}
 		}
-#endif
+
 		audio->stream_samples += framesPerBuffer;
 
 		off += data_len;

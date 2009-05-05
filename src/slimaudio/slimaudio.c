@@ -25,7 +25,6 @@
 #include <strings.h>
 #include <sys/types.h>
 
-
 #ifdef __WIN32__
   #include <winsock.h>
 #else
@@ -168,7 +167,10 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	
 	slimaudio_t *audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
-
+#if 0
+        audio->replay_gain = (float) (msg.strm.replay_gain);
+	float dB = (float) (log(audio->replay_gain) / log(10.0) * 20.0);
+#endif
 	DEBUGF("strm cmd %c\n", msg.strm.command);
 
 	switch (msg.strm.command) {
@@ -180,10 +182,12 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 			
 		case 'p': /* pause */
 			slimaudio_output_pause(audio);
+			slimaudio_stat(audio, "STMp"); /* pause */
 			break;	
 		
 		case 'u': /* unpause */
 			slimaudio_output_unpause(audio);
+			slimaudio_stat(audio, "STMr"); /* resume */
 			break;	
 		
 		case 'q': /* stop */
@@ -191,10 +195,11 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 			break;	
 		
 		case 'f': /* flush */
-			/* slimaudio_buffer_flush(audio->output_buffer); */
-			/* slimaudio_buffer_flush(audio->decoder_buffer); */
+			slimaudio_buffer_flush(audio->decoder_buffer);
+			slimaudio_buffer_flush(audio->output_buffer);
 			break;			
 
+		case 'a': /* skip ahead */
 		case 't': /* status */
 			slimaudio_stat(audio, (char *)&msg.strm.cmd);
 			break;			

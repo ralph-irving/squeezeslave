@@ -378,7 +378,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 		msg->strm.flags = unpackC(buf, 17);
 		msg->strm.output_threshold = unpackC(buf, 18);
 		msg->strm.reserved = unpackC(buf, 19);
-		msg->strm.replay_gain = unpackN4(buf, 20);
+		msg->strm.replay_gain = unpackFixedPoint(buf, 20);
 		msg->strm.server_port = unpackN2(buf, 24);
 		msg->strm.server_ip = unpackN4(buf, 26);
 		int http_len = msg->strm.length-28;
@@ -387,7 +387,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 			assert(http_len+1 < sizeof(msg->strm.http_hdr));
 			memcpy(msg->strm.http_hdr, buf+30, http_len);
 		}
-		*(msg->strm.http_hdr + http_len) = '\0';		
+		*(msg->strm.http_hdr + http_len) = '\0';
 	}
 	else if (strncmp((char*)(buf+2), "audg", 4) == 0) {
 		msg->audg.length = unpackN2(buf, 0);

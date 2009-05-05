@@ -170,9 +170,8 @@ static FLAC__StreamDecoderWriteStatus flac_write_callback(const FLAC__StreamDeco
             *ptr++ = (sample >> 8) & 0xff;
         }
 #endif
-	const u32_t nbytes = nsamples * 2 * nchannels;
-	apply_replaygain(audio->replay_gain, buf, nbytes);
-	slimaudio_buffer_write(audio->output_buffer, buf, nbytes);
+	apply_replaygain(audio->replay_gain, buf, nsamples);
+	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
 
 	free(buf);
 	

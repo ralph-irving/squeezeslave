@@ -297,6 +297,7 @@ unsigned long getircode(int key) {
     case 'Z': ir = 0x7689b847; break; /* sleep */
     case '-': ir = 0x768900ff; break; /* voldown */
     case '+': ir = 0x7689807f; break; /* volup */
+    case '=': ir = 0x7689807f; break; /* volup */
     /* non-IR key actions */
     case '\f': wrefresh(curscr); break; /* repaint screen */
     case 'q': ir=0x01 ;/* quit */

@@ -1,3 +1,54 @@
+2009-05-02 14:44  paddockd
+
+	* src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Removed
+	  stream time calculation dependency on libportaudio.
+	  Added copyright notice to version display.
+	  Added set replaygain = 1.0 if replaygain <= 0.0.
+	  Increased version to 57.
+
+2009-05-02 11:20  paddockd
+
+	* makefile.linux24-display, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  first cut of replaygain handling.
+	  Limited keepalive generation to >= 6.5.0 and < 7.2.0.
+	  Modified volume gain to include right channel.
+	  Removed --oldplayer/-O option.
+
+2009-04-26 16:32  paddockd
+
+	* bin, lib/libportaudio/linux26/lib/libportaudio-debug.a,
+	  lib/libportaudio/linux26/lib/libportaudio-old.a,
+	  lib/libportaudio/win32, lib/libportaudio/win32/build,
+	  lib/libportaudio/win32/include,
+	  lib/libportaudio/win32/include/portaudio.h,
+	  lib/libportaudio/win32/lib,
+	  lib/libportaudio/win32/lib/libportaudio.a,
+	  makefile.mingw32pav19-debug, patches/build-portaudio.patch,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  compile flags display to version flag -V.
+	  Added libportaudio v19 makefile for mingw (win32).
+	  Increased version to 55.
+
+2009-04-23 21:19  paddockd
+
+	* ChangeLog, src/squeezeslave/squeezeslave.c: Increased version to
+	  54.
+	  Updated ChangeLog with final changes before beta release.
+
 2009-04-23 21:14  paddockd
 
 	* ChangeLog, src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,

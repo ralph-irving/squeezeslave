@@ -90,7 +90,7 @@ void slimaudio_buffer_close(slimaudio_buffer_t *buf) {
 	
 	if (buf->write_stream != NULL)
 		buf->write_stream->eof = true;
-
+	
 	if (buf->writer_blocked) {
 		buf->writer_blocked = false;
 		pthread_cond_signal(&buf->read_cond);
@@ -208,10 +208,18 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	
 	assert(buf);
 	assert(data);
-	
+
 	int len = *data_len;
 	
 	while (buf->total_available == 0) {
+		if (buf->read_stream == NULL) {
+			pthread_mutex_unlock(&buf->buffer_mutex);
+			DEBUGF("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
+
+			*data_len = 0;
+			return SLIMAUDIO_BUFFER_STREAM_END;			
+		}
+
 		if ( (buf->read_opt & BUFFER_NONBLOCKING) > 0) {
 			pthread_mutex_unlock(&buf->buffer_mutex);
 
@@ -221,21 +229,18 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 			return SLIMAUDIO_BUFFER_STREAM_CONTINUE;
 		}
 
-		if (buf->read_stream == NULL) {
-			pthread_mutex_unlock(&buf->buffer_mutex);
-			DEBUGF("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
-
-			*data_len = 0;
-			return SLIMAUDIO_BUFFER_STREAM_END;			
-		}
-		
-		DEBUGF("buf->read_stream->available: %i reader_blocked: TRUE\n", buf->read_stream->available);
-
 		buf->reader_blocked = true;
+
+		DEBUGF("buffer_read  %p write_ptr=%p read_ptr=%p available=%i reader_blocked=%i writer_blocked=%i\n",
+			buf, buf->write_ptr, buf->read_ptr, buf->read_stream->available, buf->reader_blocked,
+			buf->writer_blocked);
+
 		pthread_cond_wait(&buf->write_cond, &buf->buffer_mutex);
 	}
 
-	VDEBUGF("buffer_read now %p available=%i write_ptr=%p read_ptr=%p\n", buf, buf->read_stream->available, buf->write_ptr, buf->read_ptr);
+	VDEBUGF("buffer_read  %p write_ptr=%p read_ptr=%p available=%i reader_blocked=%i writer_blocked=%i\n",
+		buf, buf->write_ptr, buf->read_ptr, buf->read_stream->available, buf->reader_blocked,
+		buf->writer_blocked);
 
 	/* when the stream is complete, move on */
 	while (buf->read_stream->available == 0) {
@@ -285,7 +290,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	buf->read_stream->read_count += len;
 	*data_len = len;
 
-	if (buf->read_stream->available == 0 && buf->read_stream->eof) {
+	if ( (buf->read_stream->available == 0) && buf->read_stream->eof) {
 		DEBUGF("slimaudio_buffer_read EOF\n");
 		status = SLIMAUDIO_BUFFER_STREAM_END;
 	}

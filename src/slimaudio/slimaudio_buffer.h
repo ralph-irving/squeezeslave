@@ -32,7 +32,7 @@
 struct buffer_stream {
 	int available;							/* bytes available in stream */
 	int read_count;							/* number of bytes read from stream */
-	bool eof;								/* true when eof */
+	bool eof;							/* true when eof */
 	void *user_data;
 
 	struct buffer_stream *next;
@@ -57,8 +57,7 @@ typedef struct {
 	bool reader_blocked;
 } slimaudio_buffer_t;
 
-typedef enum { SLIMAUDIO_BUFFER_STREAM_START=0, SLIMAUDIO_BUFFER_STREAM_CONTINUE, SLIMAUDIO_BUFFER_STREAM_END } slimaudio_buffer_status;
-
+typedef enum { SLIMAUDIO_BUFFER_STREAM_START=0, SLIMAUDIO_BUFFER_STREAM_CONTINUE, SLIMAUDIO_BUFFER_STREAM_END, SLIMAUDIO_BUFFER_STREAM_UNDERRUN } slimaudio_buffer_status;
 
 slimaudio_buffer_t *slimaudio_buffer_init(int size);
 
@@ -77,6 +76,5 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len);
 slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *data, int *data_len);
 
 int slimaudio_buffer_available(slimaudio_buffer_t *buf);
-
 
 #endif //_SLIMAUDIO_BUFFER_H_

@@ -42,7 +42,7 @@ bool retry_connection = false;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "0.8-57";
+const char* version = "0.8-58a";
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -246,7 +246,20 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'd':
 #ifdef SLIMPROTO_DEBUG
-			if (strcmp(optarg, "slimproto") == 0)
+			if (strcmp(optarg, "all") == 0)
+			{
+				slimproto_debug = true;
+				slimaudio_debug = true;
+				slimaudio_buffer_debug = true;
+				slimaudio_buffer_debug_v = true;
+				slimaudio_decoder_debug = true;
+				slimaudio_decoder_debug_v = true;
+				slimaudio_http_debug = true;
+				slimaudio_http_debug_v = true;
+				slimaudio_output_debug = true;
+				slimaudio_output_debug_v = true;
+			}
+			else if (strcmp(optarg, "slimproto") == 0)
 				slimproto_debug = true;
 			else if (strcmp(optarg, "slimaudio") == 0)
 				slimaudio_debug = true;

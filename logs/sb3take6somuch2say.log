@@ -1,0 +1,2172 @@
+[09-05-03 12:36:40.9504] Slim::Utils::Misc::msg (1136) Warning: [12:36:40.9478] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:36:40.9588] Slim::Utils::Misc::msg (1136) Warning: [12:36:40.9562] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:36:46.2310] Slim::Utils::Misc::msg (1136) Warning: [12:36:46.2284] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:36:46.4785] Slim::Utils::Misc::msg (1136) Warning: [12:36:46.4760] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:36:50.2983] Slim::Utils::Misc::msg (1136) Warning: [12:36:50.2958] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:36:50.3027] Slim::Utils::Misc::msg (1136) Warning: [12:36:50.3003] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:37:16.5672] Slim::Utils::Misc::msg (1136) Warning: [12:37:16.5646] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:37:16.7656] Slim::Utils::Misc::msg (1136) Warning: [12:37:16.7631] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:37:46.8434] Slim::Utils::Misc::msg (1136) Warning: [12:37:46.8409] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:37:47.0443] Slim::Utils::Misc::msg (1136) Warning: [12:37:47.0418] dirsFor: Didn't find a match request: [updates]
+[09-05-03 12:38:38.1752] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:38:38.1788] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:38:38.1818] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:38:38.1847] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:38:38.1948] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:38.1987] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 8)
+[09-05-03 12:38:38.2027] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:38.2060] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         44760
+	voltage:         0
+[09-05-03 12:38:38.2089] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:38.2117] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123169925
+[09-05-03 12:38:38.2157] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:38.2202] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:38.2235] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         44761
+	voltage:         0
+[09-05-03 12:38:38.2264] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:38.2292] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:38:43.0049] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:38:43.0079] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:38:43.0109] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:38:43.0147] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:38:43.0207] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:43.0245] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 8, 6.5)
+[09-05-03 12:38:43.0288] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:43.0320] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         49591
+	voltage:         0
+[09-05-03 12:38:43.0350] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:43.0378] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123174754
+[09-05-03 12:38:43.0408] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:43.0454] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:43.0487] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         49591
+	voltage:         0
+[09-05-03 12:38:43.0515] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:43.0544] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:38:48.0053] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:38:48.0082] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:38:48.0112] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:38:48.0150] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:38:48.0207] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:48.0246] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 8, 6.5, 6.5)
+[09-05-03 12:38:48.0286] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:48.0318] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         54590
+	voltage:         0
+[09-05-03 12:38:48.0348] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:48.0376] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123179754
+[09-05-03 12:38:48.0407] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:48.0453] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:48.0486] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         54591
+	voltage:         0
+[09-05-03 12:38:48.0515] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:48.0543] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:38:53.0056] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:38:53.0089] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:38:53.0119] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:38:53.0157] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:38:53.0225] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:53.0263] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 8, 6.5, 6.5, 7)
+[09-05-03 12:38:53.0303] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:53.0336] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         59592
+	voltage:         0
+[09-05-03 12:38:53.0366] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:53.0394] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123184755
+[09-05-03 12:38:53.0437] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:53.0483] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:53.0515] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         59593
+	voltage:         0
+[09-05-03 12:38:53.0546] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:53.0574] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:38:58.0060] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:38:58.0090] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:38:58.0119] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:38:58.0157] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:38:58.0214] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:58.0252] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 1.5, 1.5, 8, 6.5, 6.5, 7, 6)
+[09-05-03 12:38:58.0292] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:58.0324] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         64591
+	voltage:         0
+[09-05-03 12:38:58.0354] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:58.0382] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123189755
+[09-05-03 12:38:58.0425] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:38:58.0470] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:38:58.0502] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         64592
+	voltage:         0
+[09-05-03 12:38:58.0534] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:38:58.0563] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:03.0063] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:03.0093] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:03.0123] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:03.0162] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:03.0220] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:03.0259] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 1.5, 8, 6.5, 6.5, 7, 6, 6.5)
+[09-05-03 12:39:03.0298] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:03.0330] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 84
+	jiffies:         69592
+	voltage:         0
+[09-05-03 12:39:03.0360] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:03.0388] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123194755
+[09-05-03 12:39:03.0419] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:03.0464] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:03.0496] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 84
+	jiffies:         69592
+	voltage:         0
+[09-05-03 12:39:03.0525] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:03.0554] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:06.8195] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:06.8277] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfb, length: 2
+[09-05-03 12:39:06.8416] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: visu, length: 26
+[09-05-03 12:39:06.8451] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:06.9275] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:07.2469] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:08.0066] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:08.0096] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:08.0125] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:08.0164] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:08.0235] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:08.0274] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 1.5, 8, 6.5, 6.5, 7, 6, 6.5, 7)
+[09-05-03 12:39:08.0315] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:08.0350] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         74593
+	voltage:         0
+[09-05-03 12:39:08.0379] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:08.0408] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123199756
+[09-05-03 12:39:08.0439] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:08.0484] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:08.0516] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         74594
+	voltage:         0
+[09-05-03 12:39:08.0546] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:08.0574] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:08.0617] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:08.0732] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:08.0939] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:08.1465] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:08.2107] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:08.7915] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:08.8082] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: visu, length: 2
+[09-05-03 12:39:08.8117] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:08.8993] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:09.5500] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:09.7174] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:09.7312] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:09.8243] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:09.8684] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:10.4814] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:10.4953] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:10.5894] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:10.6326] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:10.7434] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:10.7579] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:10.8513] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:10.8955] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:11.5314] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:11.5509] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: visu, length: 2
+[09-05-03 12:39:11.5558] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:11.6393] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:12.2940] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:12.9075] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:12.9823] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:13.0069] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:13.0099] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:13.0131] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:13.0169] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:13.0216] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:13.0279] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:13.0317] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 1.5, 8, 6.5, 6.5, 7, 6, 6.5, 7, 9)
+[09-05-03 12:39:13.0357] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:13.0389] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         79592
+	voltage:         0
+[09-05-03 12:39:13.0419] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:13.0448] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123204756
+[09-05-03 12:39:13.0479] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:13.0524] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:13.0558] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         79593
+	voltage:         0
+[09-05-03 12:39:13.0587] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:13.0616] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:13.7200] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:13.9023] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:13.9186] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:14.0103] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:14.0565] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:14.1704] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:14.1857] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:14.2783] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:14.3235] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:18.0026] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:18.0056] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:18.0089] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:18.0118] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:18.0202] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:18.0240] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=1.5, from (1.5, 8, 6.5, 6.5, 7, 6, 6.5, 7, 9, 7)
+[09-05-03 12:39:18.0279] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:18.0311] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         84587
+	voltage:         0
+[09-05-03 12:39:18.0340] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:18.0369] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123209752
+[09-05-03 12:39:18.0400] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:18.0445] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:18.0477] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         84588
+	voltage:         0
+[09-05-03 12:39:18.0506] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:18.0534] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:20.8336] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:20.9415] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:21.1077] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:22.1239] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:23.0077] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:23.0107] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:23.0136] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:23.0174] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:23.0230] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:23.0268] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (8, 6.5, 6.5, 7, 6, 6.5, 7, 9, 7, 6)
+[09-05-03 12:39:23.0308] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:23.0340] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         89593
+	voltage:         0
+[09-05-03 12:39:23.0370] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:23.0398] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123214757
+[09-05-03 12:39:23.0428] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:23.0474] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:23.0508] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         89593
+	voltage:         0
+[09-05-03 12:39:23.0537] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:23.0566] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:24.6135] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:24.6329] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:24.7214] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:24.9884] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:25.0041] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: visu, length: 2
+[09-05-03 12:39:25.0076] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:25.0971] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:25.7461] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:25.9143] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:25.9287] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:26.0223] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:26.0666] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:26.2054] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:26.2198] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:26.3133] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:26.3575] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:27.1195] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:27.1330] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1284
+[09-05-03 12:39:27.2274] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:27.2705] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:27.6485] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:27.6948] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: visu, length: 26
+[09-05-03 12:39:27.6983] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:27.7565] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:28.0116] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:28.0146] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:28.0185] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:28.0214] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:28.0570] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:28.0608] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6.5, 6.5, 7, 6, 6.5, 7, 9, 7, 6, 21)
+[09-05-03 12:39:28.0647] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:28.0682] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         94597
+	voltage:         0
+[09-05-03 12:39:28.0711] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:28.0740] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123219761
+[09-05-03 12:39:28.0771] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:28.0815] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:28.0848] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         94597
+	voltage:         0
+[09-05-03 12:39:28.0877] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:28.0905] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:28.1033] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: ANIC, len: 0
+[09-05-03 12:39:31.1694] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:31.2747] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:31.4435] Slim::Player::Squeezebox::stream (931) strm-q
+[09-05-03 12:39:31.4466] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:31.4495] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:31.5184] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: audg, length: 18
+[09-05-03 12:39:31.5239] Slim::Player::Squeezebox::stream_s (579) stream_s called: format: mp3 url: file:///export/music1/Take6/SoMuch2Say/001-NotAgain.mp3
+[09-05-03 12:39:31.5274] Slim::Player::Squeezebox::stream_s (821) Starting with decoder with format: m autostart: 1 threshold: 255 samplesize: ? samplerate: ? endian: ? channels: ?
+[09-05-03 12:39:31.5314] Slim::Player::Squeezebox::stream_s (847) flags: 0
+[09-05-03 12:39:31.5548] Slim::Player::Squeezebox::stream_s (868) Using smart transition mode
+[09-05-03 12:39:31.5592] Slim::Player::Squeezebox::stream_s (910) sending strm frame of length: 77 request string: [GET /stream.mp3?player=00:04:20:07:fc:44 HTTP/1.0
+
+]
+[09-05-03 12:39:31.5621] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 77
+[09-05-03 12:39:31.5668] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: audg, length: 18
+[09-05-03 12:39:31.6064] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:31.6292] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.6336] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMf: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.6371] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMf
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         98025
+	voltage:         0
+[09-05-03 12:39:31.6400] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.6429] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.6460] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.6507] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.6539] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         98025
+	voltage:         0
+[09-05-03 12:39:31.6569] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.6598] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.6628] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.6674] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-audg: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.6706] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      audg
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 84
+	jiffies:         98094
+	voltage:         0
+[09-05-03 12:39:31.6735] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.6764] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.6795] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.6839] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMf: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.6872] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMf
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         98138
+	voltage:         0
+[09-05-03 12:39:31.6901] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.6929] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.6961] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.7005] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMc: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.7038] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMc
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         98139
+	voltage:         0
+[09-05-03 12:39:31.7086] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.7115] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.7146] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.7200] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.7232] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         98140
+	voltage:         0
+[09-05-03 12:39:31.7262] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.7292] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.7325] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.7371] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMe: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.7403] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMe
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 84
+	jiffies:         98141
+	voltage:         0
+[09-05-03 12:39:31.7432] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.7461] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.7494] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.7538] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-audg: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.7571] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      audg
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         98143
+	voltage:         0
+[09-05-03 12:39:31.7600] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.7628] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.8187] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:31.8232] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMh: fullness=0, output_fullness=-1, elapsed=0.000
+[09-05-03 12:39:31.8265] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMh
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         98372
+	voltage:         0
+[09-05-03 12:39:31.8295] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 0
+	elapsed seconds: 0
+[09-05-03 12:39:31.8323] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:31.8356] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: RESP, len: 101
+[09-05-03 12:39:31.8385] Slim::Networking::Slimproto::_http_response_handler (550) Squeezebox got HTTP response:
+HTTP/1.0 200 OK
+Server: SqueezeCenter (7.4 - 26347)
+Connection: close
+Content-Type: audio/mpeg
+
+[09-05-03 12:39:32.0959] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:32.1009] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMs: fullness=296410, output_fullness=8576, elapsed=0.000
+[09-05-03 12:39:32.1044] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMs
+	bytes_rec_H      0
+	bytes_rec_L      299300
+	fullness:        296410 (9%)
+	bufferSize      3145728
+	fullness         296410
+	bytes_received   299300
+	signal_strength: 80
+	jiffies:         98665
+	voltage:         0
+[09-05-03 12:39:32.1076] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 8576
+	elapsed seconds: 0
+[09-05-03 12:39:32.1105] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:39:32.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:32.6635] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=520637, output_fullness=224512, elapsed=0.564
+[09-05-03 12:39:32.6671] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        520637 (16%)
+	bufferSize      3145728
+	fullness         520637
+	bytes_received   549932
+	signal_strength: 80
+	jiffies:         99229
+	voltage:         0
+[09-05-03 12:39:32.6700] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 224512
+	elapsed seconds: 0
+[09-05-03 12:39:32.6728] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 564
+	server timestamp:     0
+[09-05-03 12:39:32.6838] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: DSCO, len: 1
+[09-05-03 12:39:32.6868] Slim::Networking::Slimproto::_disco_handler (584) Squeezebox got disconnection on the data channel: Connection closed normally
+[09-05-03 12:39:33.0083] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:33.0113] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:33.0143] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:33.0182] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:33.0248] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:33.0287] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6.5, 7, 6, 6.5, 7, 9, 7, 6, 21, 7)
+[09-05-03 12:39:33.0326] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=499028, output_fullness=362624, elapsed=0.930
+[09-05-03 12:39:33.0359] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        499028 (15%)
+	bufferSize      3145728
+	fullness         499028
+	bytes_received   549932
+	signal_strength: 80
+	jiffies:         99595
+	voltage:         0
+[09-05-03 12:39:33.0388] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 362624
+	elapsed seconds: 0
+[09-05-03 12:39:33.0417] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 930
+	server timestamp:     123224757
+[09-05-03 12:39:33.0464] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:33.0508] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=499028, output_fullness=362496, elapsed=0.930
+[09-05-03 12:39:33.0541] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        499028 (15%)
+	bufferSize      3145728
+	fullness         499028
+	bytes_received   549932
+	signal_strength: 80
+	jiffies:         99595
+	voltage:         0
+[09-05-03 12:39:33.0571] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 362496
+	elapsed seconds: 0
+[09-05-03 12:39:33.0599] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 930
+	server timestamp:     0
+[09-05-03 12:39:33.2445] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:33.6590] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:33.6635] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=457583, output_fullness=608896, elapsed=1.564
+[09-05-03 12:39:33.6677] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        457583 (14%)
+	bufferSize      3145728
+	fullness         457583
+	bytes_received   549932
+	signal_strength: 80
+	jiffies:         100229
+	voltage:         0
+[09-05-03 12:39:33.6715] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 608896
+	elapsed seconds: 1
+[09-05-03 12:39:33.6744] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 1564
+	server timestamp:     0
+[09-05-03 12:39:34.2446] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:34.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:34.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=387955, output_fullness=993408, elapsed=2.564
+[09-05-03 12:39:34.6670] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        387955 (12%)
+	bufferSize      3145728
+	fullness         387955
+	bytes_received   549932
+	signal_strength: 76
+	jiffies:         101229
+	voltage:         0
+[09-05-03 12:39:34.6699] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 993408
+	elapsed seconds: 2
+[09-05-03 12:39:34.6728] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 2564
+	server timestamp:     0
+[09-05-03 12:39:35.2447] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:35.6590] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:35.6635] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=316551, output_fullness=1368704, elapsed=3.564
+[09-05-03 12:39:35.6668] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        316551 (10%)
+	bufferSize      3145728
+	fullness         316551
+	bytes_received   549932
+	signal_strength: 71
+	jiffies:         102229
+	voltage:         0
+[09-05-03 12:39:35.6697] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 1368704
+	elapsed seconds: 3
+[09-05-03 12:39:35.6725] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 3564
+	server timestamp:     0
+[09-05-03 12:39:36.2447] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:36.6599] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:36.6644] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=248696, output_fullness=1753216, elapsed=4.564
+[09-05-03 12:39:36.6678] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        248696 (7%)
+	bufferSize      3145728
+	fullness         248696
+	bytes_received   549932
+	signal_strength: 71
+	jiffies:         103229
+	voltage:         0
+[09-05-03 12:39:36.6707] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 1753216
+	elapsed seconds: 4
+[09-05-03 12:39:36.6736] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 4564
+	server timestamp:     0
+[09-05-03 12:39:37.2448] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:37.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:37.6635] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=181885, output_fullness=2137600, elapsed=5.564
+[09-05-03 12:39:37.6668] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        181885 (5%)
+	bufferSize      3145728
+	fullness         181885
+	bytes_received   549932
+	signal_strength: 83
+	jiffies:         104229
+	voltage:         0
+[09-05-03 12:39:37.6697] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 2137600
+	elapsed seconds: 5
+[09-05-03 12:39:37.6728] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 5564
+	server timestamp:     0
+[09-05-03 12:39:38.0087] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:38.0116] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:38.0146] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:38.0184] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:38.0240] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:38.0278] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (7, 6, 6.5, 7, 9, 7, 6, 21, 7, 6)
+[09-05-03 12:39:38.0317] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=156727, output_fullness=2276224, elapsed=5.929
+[09-05-03 12:39:38.0349] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        156727 (4%)
+	bufferSize      3145728
+	fullness         156727
+	bytes_received   549932
+	signal_strength: 83
+	jiffies:         104594
+	voltage:         0
+[09-05-03 12:39:38.0379] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 2276224
+	elapsed seconds: 5
+[09-05-03 12:39:38.0407] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 5929
+	server timestamp:     123229758
+[09-05-03 12:39:38.0441] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:38.0487] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=156727, output_fullness=2275968, elapsed=5.929
+[09-05-03 12:39:38.0520] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        156727 (4%)
+	bufferSize      3145728
+	fullness         156727
+	bytes_received   549932
+	signal_strength: 83
+	jiffies:         104594
+	voltage:         0
+[09-05-03 12:39:38.0549] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 2275968
+	elapsed seconds: 5
+[09-05-03 12:39:38.0578] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 5929
+	server timestamp:     0
+[09-05-03 12:39:38.2449] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:38.6594] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:38.6638] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=113927, output_fullness=2522112, elapsed=6.564
+[09-05-03 12:39:38.6679] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        113927 (3%)
+	bufferSize      3145728
+	fullness         113927
+	bytes_received   549932
+	signal_strength: 84
+	jiffies:         105229
+	voltage:         0
+[09-05-03 12:39:38.6731] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 2522112
+	elapsed seconds: 6
+[09-05-03 12:39:38.6762] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 6564
+	server timestamp:     0
+[09-05-03 12:39:39.2452] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:39.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:39.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=39913, output_fullness=2897408, elapsed=7.564
+[09-05-03 12:39:39.6669] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        39913 (1%)
+	bufferSize      3145728
+	fullness         39913
+	bytes_received   549932
+	signal_strength: 83
+	jiffies:         106229
+	voltage:         0
+[09-05-03 12:39:39.6701] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 2897408
+	elapsed seconds: 7
+[09-05-03 12:39:39.6729] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 7564
+	server timestamp:     0
+[09-05-03 12:39:40.2455] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:40.2501] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.2547] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMd: fullness=0, output_fullness=3116672, elapsed=8.144
+[09-05-03 12:39:40.2580] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMd
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   549932
+	signal_strength: 83
+	jiffies:         106809
+	voltage:         0
+[09-05-03 12:39:40.2611] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3116672
+	elapsed seconds: 8
+[09-05-03 12:39:40.2639] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8144
+	server timestamp:     0
+[09-05-03 12:39:40.3450] Slim::Player::Squeezebox::stream_s (579) stream_s called: format: mp3 url: file:///export/music1/Take6/SoMuch2Say/002-SoMuch2Say.mp3
+[09-05-03 12:39:40.3484] Slim::Player::Squeezebox::stream_s (821) Starting with decoder with format: m autostart: 1 threshold: 255 samplesize: ? samplerate: ? endian: ? channels: ?
+[09-05-03 12:39:40.3524] Slim::Player::Squeezebox::stream_s (847) flags: 0
+[09-05-03 12:39:40.3752] Slim::Player::Squeezebox::stream_s (868) Using smart transition mode
+[09-05-03 12:39:40.3782] Slim::Player::Squeezebox::stream_s (910) sending strm frame of length: 77 request string: [GET /stream.mp3?player=00:04:20:07:fc:44 HTTP/1.0
+
+]
+[09-05-03 12:39:40.3811] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 77
+[09-05-03 12:39:40.3858] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: audg, length: 18
+[09-05-03 12:39:40.3943] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.3989] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMf: fullness=0, output_fullness=3066696, elapsed=8.292
+[09-05-03 12:39:40.4022] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMf
+	bytes_rec_H      0
+	bytes_rec_L      549932
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   549932
+	signal_strength: 83
+	jiffies:         106957
+	voltage:         0
+[09-05-03 12:39:40.4051] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3066696
+	elapsed seconds: 8
+[09-05-03 12:39:40.4082] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8292
+	server timestamp:     0
+[09-05-03 12:39:40.4113] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.4158] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMc: fullness=0, output_fullness=3066184, elapsed=8.293
+[09-05-03 12:39:40.4200] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMc
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         106958
+	voltage:         0
+[09-05-03 12:39:40.4229] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3066184
+	elapsed seconds: 8
+[09-05-03 12:39:40.4257] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8293
+	server timestamp:     0
+[09-05-03 12:39:40.4293] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.4338] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3065928, elapsed=8.294
+[09-05-03 12:39:40.4371] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         106959
+	voltage:         0
+[09-05-03 12:39:40.4400] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3065928
+	elapsed seconds: 8
+[09-05-03 12:39:40.4429] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8294
+	server timestamp:     0
+[09-05-03 12:39:40.4463] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.4509] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMe: fullness=0, output_fullness=3064904, elapsed=8.297
+[09-05-03 12:39:40.4541] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMe
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 85
+	jiffies:         106961
+	voltage:         0
+[09-05-03 12:39:40.4571] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3064904
+	elapsed seconds: 8
+[09-05-03 12:39:40.4599] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8297
+	server timestamp:     0
+[09-05-03 12:39:40.4633] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.4679] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-audg: fullness=0, output_fullness=3064008, elapsed=8.299
+[09-05-03 12:39:40.4712] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      audg
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 87
+	jiffies:         106964
+	voltage:         0
+[09-05-03 12:39:40.4741] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3064008
+	elapsed seconds: 8
+[09-05-03 12:39:40.4770] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8299
+	server timestamp:     0
+[09-05-03 12:39:40.5161] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.5221] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMh: fullness=0, output_fullness=3022152, elapsed=8.418
+[09-05-03 12:39:40.5259] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMh
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 83
+	jiffies:         107083
+	voltage:         0
+[09-05-03 12:39:40.5291] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3022152
+	elapsed seconds: 8
+[09-05-03 12:39:40.5322] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8418
+	server timestamp:     0
+[09-05-03 12:39:40.5360] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: RESP, len: 101
+[09-05-03 12:39:40.5389] Slim::Networking::Slimproto::_http_response_handler (550) Squeezebox got HTTP response:
+HTTP/1.0 200 OK
+Server: SqueezeCenter (7.4 - 26347)
+Connection: close
+Content-Type: audio/mpeg
+
+[09-05-03 12:39:40.6597] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:40.6646] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=170008, output_fullness=2970696, elapsed=8.564
+[09-05-03 12:39:40.6684] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      170008
+	fullness:        170008 (5%)
+	bufferSize      3145728
+	fullness         170008
+	bytes_received   170008
+	signal_strength: 85
+	jiffies:         107229
+	voltage:         0
+[09-05-03 12:39:40.6718] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 2970696
+	elapsed seconds: 8
+[09-05-03 12:39:40.6749] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8564
+	server timestamp:     0
+[09-05-03 12:39:41.2650] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:41.6593] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:41.6646] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1232134, output_fullness=3226432, elapsed=9.564
+[09-05-03 12:39:41.6681] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      1285448
+	fullness:        1232134 (39%)
+	bufferSize      3145728
+	fullness         1232134
+	bytes_received   1285448
+	signal_strength: 85
+	jiffies:         108229
+	voltage:         0
+[09-05-03 12:39:41.6713] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3226432
+	elapsed seconds: 9
+[09-05-03 12:39:41.6744] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 9564
+	server timestamp:     0
+[09-05-03 12:39:42.2461] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:42.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:42.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1930640, output_fullness=3518840, elapsed=10.564
+[09-05-03 12:39:42.6669] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1930640 (61%)
+	bufferSize      3145728
+	fullness         1930640
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         109229
+	voltage:         0
+[09-05-03 12:39:42.6699] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3518840
+	elapsed seconds: 10
+[09-05-03 12:39:42.6727] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 10564
+	server timestamp:     0
+[09-05-03 12:39:42.6838] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: DSCO, len: 1
+[09-05-03 12:39:42.6867] Slim::Networking::Slimproto::_disco_handler (584) Squeezebox got disconnection on the data channel: Connection closed normally
+[09-05-03 12:39:42.6901] Slim::Player::Squeezebox::stream (931) strm-u
+[09-05-03 12:39:42.6931] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:42.6960] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:42.7051] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:42.7115] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMr: fullness=1928030, output_fullness=3521016, elapsed=10.610
+[09-05-03 12:39:42.7147] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMr
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1928030 (61%)
+	bufferSize      3145728
+	fullness         1928030
+	bytes_received   2038029
+	signal_strength: 81
+	jiffies:         109275
+	voltage:         0
+[09-05-03 12:39:42.7186] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3521016
+	elapsed seconds: 10
+[09-05-03 12:39:42.7214] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 10610
+	server timestamp:     0
+[09-05-03 12:39:42.7251] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:42.7298] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=1928030, output_fullness=3520760, elapsed=10.610
+[09-05-03 12:39:42.7330] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1928030 (61%)
+	bufferSize      3145728
+	fullness         1928030
+	bytes_received   2038029
+	signal_strength: 81
+	jiffies:         109275
+	voltage:         0
+[09-05-03 12:39:42.7359] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3520760
+	elapsed seconds: 10
+[09-05-03 12:39:42.7389] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 10610
+	server timestamp:     0
+[09-05-03 12:39:43.0090] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:43.0120] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:43.0150] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:43.0188] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:43.0245] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:43.0283] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6, 6.5, 7, 9, 7, 6, 21, 7, 6, 6)
+[09-05-03 12:39:43.0322] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1917799, output_fullness=3518968, elapsed=10.929
+[09-05-03 12:39:43.0354] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1917799 (60%)
+	bufferSize      3145728
+	fullness         1917799
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         109594
+	voltage:         0
+[09-05-03 12:39:43.0384] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3518968
+	elapsed seconds: 10
+[09-05-03 12:39:43.0413] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 10929
+	server timestamp:     123234758
+[09-05-03 12:39:43.0458] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:43.0504] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=1917799, output_fullness=3518712, elapsed=10.930
+[09-05-03 12:39:43.0537] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1917799 (60%)
+	bufferSize      3145728
+	fullness         1917799
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         109595
+	voltage:         0
+[09-05-03 12:39:43.0566] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3518712
+	elapsed seconds: 10
+[09-05-03 12:39:43.0595] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 10930
+	server timestamp:     0
+[09-05-03 12:39:43.2456] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:43.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:43.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1898905, output_fullness=3516152, elapsed=11.564
+[09-05-03 12:39:43.6672] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1898905 (60%)
+	bufferSize      3145728
+	fullness         1898905
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         110229
+	voltage:         0
+[09-05-03 12:39:43.6714] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516152
+	elapsed seconds: 11
+[09-05-03 12:39:43.6743] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 11564
+	server timestamp:     0
+[09-05-03 12:39:44.2456] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:44.6592] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:44.6637] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1868736, output_fullness=3522808, elapsed=12.564
+[09-05-03 12:39:44.6669] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1868736 (59%)
+	bufferSize      3145728
+	fullness         1868736
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         111229
+	voltage:         0
+[09-05-03 12:39:44.6699] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3522808
+	elapsed seconds: 12
+[09-05-03 12:39:44.6727] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 12564
+	server timestamp:     0
+[09-05-03 12:39:45.2369] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:45.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:45.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1837941, output_fullness=3520248, elapsed=13.564
+[09-05-03 12:39:45.6669] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1837941 (58%)
+	bufferSize      3145728
+	fullness         1837941
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         112229
+	voltage:         0
+[09-05-03 12:39:45.6698] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3520248
+	elapsed seconds: 13
+[09-05-03 12:39:45.6727] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 13564
+	server timestamp:     0
+[09-05-03 12:39:46.2370] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:46.6592] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:46.6637] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1810177, output_fullness=3517688, elapsed=14.564
+[09-05-03 12:39:46.6670] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1810177 (57%)
+	bufferSize      3145728
+	fullness         1810177
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         113229
+	voltage:         0
+[09-05-03 12:39:46.6699] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3517688
+	elapsed seconds: 14
+[09-05-03 12:39:46.6728] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 14564
+	server timestamp:     0
+[09-05-03 12:39:47.2367] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:47.6592] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:47.6637] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1783247, output_fullness=3515000, elapsed=15.564
+[09-05-03 12:39:47.6669] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1783247 (56%)
+	bufferSize      3145728
+	fullness         1783247
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         114229
+	voltage:         0
+[09-05-03 12:39:47.6701] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3515000
+	elapsed seconds: 15
+[09-05-03 12:39:47.6729] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 15564
+	server timestamp:     0
+[09-05-03 12:39:48.0067] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:48.0098] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:48.0127] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:48.0156] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:48.0238] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:48.0278] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6.5, 7, 9, 7, 6, 21, 7, 6, 6, 7)
+[09-05-03 12:39:48.0318] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1774271, output_fullness=3516280, elapsed=15.926
+[09-05-03 12:39:48.0351] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1774271 (56%)
+	bufferSize      3145728
+	fullness         1774271
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         114591
+	voltage:         0
+[09-05-03 12:39:48.0381] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516280
+	elapsed seconds: 15
+[09-05-03 12:39:48.0409] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 15926
+	server timestamp:     123239756
+[09-05-03 12:39:48.0443] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:48.0490] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=1774271, output_fullness=3516152, elapsed=15.926
+[09-05-03 12:39:48.0522] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1774271 (56%)
+	bufferSize      3145728
+	fullness         1774271
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         114591
+	voltage:         0
+[09-05-03 12:39:48.0551] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516152
+	elapsed seconds: 15
+[09-05-03 12:39:48.0580] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 15926
+	server timestamp:     0
+[09-05-03 12:39:48.2572] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:48.6672] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:48.6738] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1757468, output_fullness=3521656, elapsed=16.564
+[09-05-03 12:39:48.6771] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1757468 (55%)
+	bufferSize      3145728
+	fullness         1757468
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         115229
+	voltage:         0
+[09-05-03 12:39:48.6800] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3521656
+	elapsed seconds: 16
+[09-05-03 12:39:48.6828] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 16564
+	server timestamp:     0
+[09-05-03 12:39:49.1131] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:49.1187] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMs: fullness=1745151, output_fullness=3519864, elapsed=0.001
+[09-05-03 12:39:49.1219] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMs
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1745151 (55%)
+	bufferSize      3145728
+	fullness         1745151
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         115652
+	voltage:         0
+[09-05-03 12:39:49.1251] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3519864
+	elapsed seconds: 0
+[09-05-03 12:39:49.1280] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 1
+	server timestamp:     0
+[09-05-03 12:39:49.3053] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:49.6590] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:49.6635] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1729598, output_fullness=3519096, elapsed=0.578
+[09-05-03 12:39:49.6667] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1729598 (54%)
+	bufferSize      3145728
+	fullness         1729598
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         116229
+	voltage:         0
+[09-05-03 12:39:49.6698] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3519096
+	elapsed seconds: 0
+[09-05-03 12:39:49.6726] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 578
+	server timestamp:     0
+[09-05-03 12:39:50.6596] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:50.6641] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1697550, output_fullness=3516536, elapsed=1.578
+[09-05-03 12:39:50.6674] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1697550 (53%)
+	bufferSize      3145728
+	fullness         1697550
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         117229
+	voltage:         0
+[09-05-03 12:39:50.6704] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516536
+	elapsed seconds: 1
+[09-05-03 12:39:50.6732] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 1578
+	server timestamp:     0
+[09-05-03 12:39:51.2558] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:51.6593] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:51.6638] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1669888, output_fullness=3523192, elapsed=2.578
+[09-05-03 12:39:51.6670] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1669888 (53%)
+	bufferSize      3145728
+	fullness         1669888
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         118229
+	voltage:         0
+[09-05-03 12:39:51.6700] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523192
+	elapsed seconds: 2
+[09-05-03 12:39:51.6728] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 2578
+	server timestamp:     0
+[09-05-03 12:39:52.2562] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:52.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:52.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1640658, output_fullness=3520568, elapsed=3.578
+[09-05-03 12:39:52.6669] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1640658 (52%)
+	bufferSize      3145728
+	fullness         1640658
+	bytes_received   2038029
+	signal_strength: 83
+	jiffies:         119229
+	voltage:         0
+[09-05-03 12:39:52.6700] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3520568
+	elapsed seconds: 3
+[09-05-03 12:39:52.6729] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 3578
+	server timestamp:     0
+[09-05-03 12:39:53.0097] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:53.0127] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:53.0157] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:53.0196] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:53.0251] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:53.0289] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (7, 9, 7, 6, 21, 7, 6, 6, 7, 6)
+[09-05-03 12:39:53.0328] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1631262, output_fullness=3520440, elapsed=3.944
+[09-05-03 12:39:53.0361] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1631262 (51%)
+	bufferSize      3145728
+	fullness         1631262
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         119595
+	voltage:         0
+[09-05-03 12:39:53.0391] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3520440
+	elapsed seconds: 3
+[09-05-03 12:39:53.0419] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 3944
+	server timestamp:     123244759
+[09-05-03 12:39:53.0453] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:53.0500] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=1631262, output_fullness=3520312, elapsed=3.945
+[09-05-03 12:39:53.0532] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1631262 (51%)
+	bufferSize      3145728
+	fullness         1631262
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         119595
+	voltage:         0
+[09-05-03 12:39:53.0562] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3520312
+	elapsed seconds: 3
+[09-05-03 12:39:53.0591] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 3945
+	server timestamp:     0
+[09-05-03 12:39:53.2563] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:53.7124] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:53.7170] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1609652, output_fullness=3518008, elapsed=4.578
+[09-05-03 12:39:53.7211] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1609652 (51%)
+	bufferSize      3145728
+	fullness         1609652
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         120229
+	voltage:         0
+[09-05-03 12:39:53.7240] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3518008
+	elapsed seconds: 4
+[09-05-03 12:39:53.7269] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 4578
+	server timestamp:     0
+[09-05-03 12:39:54.6661] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:54.6707] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1580630, output_fullness=3515320, elapsed=5.578
+[09-05-03 12:39:54.6740] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1580630 (50%)
+	bufferSize      3145728
+	fullness         1580630
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         121229
+	voltage:         0
+[09-05-03 12:39:54.6771] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3515320
+	elapsed seconds: 5
+[09-05-03 12:39:54.6800] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 5578
+	server timestamp:     0
+[09-05-03 12:39:55.2567] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:55.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:55.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1551712, output_fullness=3521976, elapsed=6.578
+[09-05-03 12:39:55.6668] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1551712 (49%)
+	bufferSize      3145728
+	fullness         1551712
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         122229
+	voltage:         0
+[09-05-03 12:39:55.6698] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3521976
+	elapsed seconds: 6
+[09-05-03 12:39:55.6726] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 6578
+	server timestamp:     0
+[09-05-03 12:39:56.2564] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:56.6591] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:56.6636] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1523946, output_fullness=3519416, elapsed=7.578
+[09-05-03 12:39:56.6668] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1523946 (48%)
+	bufferSize      3145728
+	fullness         1523946
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         123229
+	voltage:         0
+[09-05-03 12:39:56.6698] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3519416
+	elapsed seconds: 7
+[09-05-03 12:39:56.6726] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 7578
+	server timestamp:     0
+[09-05-03 12:39:57.1137] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.2213] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.2566] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:57.3287] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.4366] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.5451] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.6526] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.6594] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:57.6638] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1494298, output_fullness=3516856, elapsed=8.578
+[09-05-03 12:39:57.6671] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1494298 (47%)
+	bufferSize      3145728
+	fullness         1494298
+	bytes_received   2038029
+	signal_strength: 87
+	jiffies:         124229
+	voltage:         0
+[09-05-03 12:39:57.6701] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516856
+	elapsed seconds: 8
+[09-05-03 12:39:57.6729] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8578
+	server timestamp:     0
+[09-05-03 12:39:57.7609] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.8688] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:57.9767] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.0100] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:39:58.0129] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:39:58.0159] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:58.0197] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:58.0253] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:58.0291] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (9, 7, 6, 21, 7, 6, 6, 7, 6, 6)
+[09-05-03 12:39:58.0330] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=1483546, output_fullness=3516600, elapsed=8.944
+[09-05-03 12:39:58.0362] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1483546 (47%)
+	bufferSize      3145728
+	fullness         1483546
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         124595
+	voltage:         0
+[09-05-03 12:39:58.0392] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516600
+	elapsed seconds: 8
+[09-05-03 12:39:58.0421] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8944
+	server timestamp:     123249759
+[09-05-03 12:39:58.0454] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:58.0501] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=1483546, output_fullness=3516472, elapsed=8.945
+[09-05-03 12:39:58.0533] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      2038029
+	fullness:        1483546 (47%)
+	bufferSize      3145728
+	fullness         1483546
+	bytes_received   2038029
+	signal_strength: 84
+	jiffies:         124596
+	voltage:         0
+[09-05-03 12:39:58.0562] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3516472
+	elapsed seconds: 8
+[09-05-03 12:39:58.0591] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 8945
+	server timestamp:     0
+[09-05-03 12:39:58.0847] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.0941] Slim::Player::Squeezebox::stream (931) strm-q
+[09-05-03 12:39:58.0971] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:39:58.1000] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:39:58.1292] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:58.1428] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:39:58.1482] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:58.1528] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMf: fullness=1483546, output_fullness=3515960, elapsed=9.025
+[09-05-03 12:39:58.1561] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMf
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        1483546 (47%)
+	bufferSize      3145728
+	fullness         1483546
+	bytes_received   0
+	signal_strength: 85
+	jiffies:         124675
+	voltage:         0
+[09-05-03 12:39:58.1591] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3515960
+	elapsed seconds: 9
+[09-05-03 12:39:58.1622] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 9025
+	server timestamp:     0
+[09-05-03 12:39:58.1655] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:39:58.1701] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=9.029
+[09-05-03 12:39:58.1733] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 85
+	jiffies:         124680
+	voltage:         0
+[09-05-03 12:39:58.1762] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 9
+[09-05-03 12:39:58.1791] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 9029
+	server timestamp:     0
+[09-05-03 12:39:58.1935] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.3006] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.4088] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.5166] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.6237] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.7317] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:58.8397] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: IR  , len: 10
+[09-05-03 12:39:59.1669] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfe, length: 1116
+[09-05-03 12:40:03.0104] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:40:03.0133] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:40:03.0163] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:40:03.0201] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:40:03.0264] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:03.0303] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (7, 6, 21, 7, 6, 6, 7, 6, 6, 6.5)
+[09-05-03 12:40:03.0343] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:03.0375] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         129595
+	voltage:         0
+[09-05-03 12:40:03.0405] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:03.0433] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123254759
+[09-05-03 12:40:03.0466] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:03.0512] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:03.0544] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         129596
+	voltage:         0
+[09-05-03 12:40:03.0573] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:03.0605] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:40:08.0124] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:40:08.0153] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:40:08.0183] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:40:08.0221] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:40:08.0276] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:08.0315] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6, 21, 7, 6, 6, 7, 6, 6, 6.5, 6.5)
+[09-05-03 12:40:08.0354] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:08.0387] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         134597
+	voltage:         0
+[09-05-03 12:40:08.0416] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:08.0444] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123259761
+[09-05-03 12:40:08.0477] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:08.0523] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:08.0556] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         134598
+	voltage:         0
+[09-05-03 12:40:08.0585] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:08.0613] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:40:13.0111] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:40:13.0141] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:40:13.0171] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:40:13.0209] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:40:13.0263] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:13.0301] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (21, 7, 6, 6, 7, 6, 6, 6.5, 6.5, 6)
+[09-05-03 12:40:13.0341] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:13.0373] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         139596
+	voltage:         0
+[09-05-03 12:40:13.0403] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:13.0431] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123264760
+[09-05-03 12:40:13.0464] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:13.0511] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:13.0546] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         139596
+	voltage:         0
+[09-05-03 12:40:13.0575] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:13.0604] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:40:18.0114] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:40:18.0144] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:40:18.0174] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:40:18.0212] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:40:18.0271] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:18.0310] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (7, 6, 6, 7, 6, 6, 6.5, 6.5, 6, 6.5)
+[09-05-03 12:40:18.0349] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:18.0381] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         144597
+	voltage:         0
+[09-05-03 12:40:18.0411] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:18.0439] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123269760
+[09-05-03 12:40:18.0472] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:18.0518] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:18.0551] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 80
+	jiffies:         144597
+	voltage:         0
+[09-05-03 12:40:18.0580] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:18.0609] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:40:23.0118] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:40:23.0148] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:40:23.0178] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:40:23.0216] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:40:23.0271] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:23.0310] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6, 6, 7, 6, 6, 6.5, 6.5, 6, 6.5, 6)
+[09-05-03 12:40:23.0349] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:23.0382] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 78
+	jiffies:         149597
+	voltage:         0
+[09-05-03 12:40:23.0411] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:23.0443] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123274761
+[09-05-03 12:40:23.0487] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:23.0533] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:23.0566] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 78
+	jiffies:         149597
+	voltage:         0
+[09-05-03 12:40:23.0595] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:23.0624] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:40:28.0023] Slim::Networking::Slimproto::check_all_clients (213) Checking if 00:04:20:07:fc:44 is still alive
+[09-05-03 12:40:28.0056] Slim::Player::Squeezebox::stream (931) strm-t
+[09-05-03 12:40:28.0091] Slim::Player::Squeezebox::stream (976) sending strm frame of length: 24
+[09-05-03 12:40:28.0122] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: strm, length: 24
+[09-05-03 12:40:28.0350] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:28.0389] Slim::Networking::Slimproto::_stat_handler (735) 00:04:20:07:fc:44 latency=6, from (6, 7, 6, 6, 6.5, 6.5, 6, 6.5, 6, 14.5)
+[09-05-03 12:40:28.0429] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-STMt: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:28.0461] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      STMt
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         154587
+	voltage:         0
+[09-05-03 12:40:28.0490] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:28.0519] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     123279752
+[09-05-03 12:40:28.0552] Slim::Networking::Slimproto::client_readable (392) Slimproto frame: STAT, len: 57
+[09-05-03 12:40:28.0597] Slim::Networking::Slimproto::_stat_handler (787) 00:04:20:07:fc:44: STAT-strm: fullness=0, output_fullness=3523512, elapsed=0.000
+[09-05-03 12:40:28.0631] Slim::Networking::Slimproto::_stat_handler (814) 00:04:20:07:fc:44 Squeezebox stream status:
+	event_code:      strm
+	bytes_rec_H      0
+	bytes_rec_L      0
+	fullness:        0 (0%)
+	bufferSize      3145728
+	fullness         0
+	bytes_received   0
+	signal_strength: 81
+	jiffies:         154588
+	voltage:         0
+[09-05-03 12:40:28.0660] Slim::Networking::Slimproto::_stat_handler (826) 
+	output size:     3528000
+	output fullness: 3523512
+	elapsed seconds: 0
+[09-05-03 12:40:28.0689] Slim::Networking::Slimproto::_stat_handler (838) 
+	elapsed milliseconds: 0
+	server timestamp:     0
+[09-05-03 12:40:28.1334] Slim::Player::Squeezebox::sendFrame (1055) sending squeezebox frame: grfb, length: 2

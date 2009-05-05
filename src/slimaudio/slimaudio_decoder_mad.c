@@ -105,29 +105,38 @@ enum mad_flow mad_input(void *data,
 
 	/* keep partial frame from last decode ... */
 	int remainder = stream->bufend - stream->next_frame;
+
 	memcpy (audio->decoder_data, stream->this_frame, remainder);
 	
 	pthread_mutex_lock(&audio->decoder_mutex);
 
+
 	DEBUGF("decode_input state=%i remainder=%i\n", audio->decoder_state, remainder);
 	if (audio->decoder_state != STREAM_PLAYING) {
 		pthread_mutex_unlock(&audio->decoder_mutex);
+		DEBUGF("mad: decode_state != STREAM_PLAYING\n");
 		return MAD_FLOW_STOP;
 	}
 
 	pthread_mutex_unlock(&audio->decoder_mutex);
 
 	if (audio->decoder_end_of_stream)
+	{
+		DEBUGF("mad: audio->decoder_end_of_stream == TRUE\n");
 		return MAD_FLOW_STOP;
-	
+	}
+
 	int data_len = AUDIO_CHUNK_SIZE-MAD_BUFFER_GUARD-remainder;
+	DEBUGF("mad: data_len:%i\n", data_len);
 	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, audio->decoder_data + remainder, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
+		DEBUGF("mad: SLIMAUDIO_BUFFER_STREAM_END\n");
 		memset(audio->decoder_data + remainder + data_len, 0, MAD_BUFFER_GUARD);
 		audio->decoder_end_of_stream = true;
 	}
-	
-	mad_stream_buffer(stream, (const unsigned char *)audio->decoder_data, data_len + remainder);	
+
+	mad_stream_buffer(stream, (const unsigned char *)audio->decoder_data, data_len + remainder);
+	DEBUGF("mad: mad_input: DONE\n");
 	return MAD_FLOW_CONTINUE;
 }
 
@@ -230,9 +239,8 @@ enum mad_flow mad_output(void *data,
                 *ptr++ = (sample >> 8) & 0xff;
         }
 #endif
-	const u32_t nbytes = nsamples * 2 * nchannels;
-	apply_replaygain(audio->replay_gain, buf, nbytes);
-	slimaudio_buffer_write(audio->output_buffer, buf, nbytes);
+	apply_replaygain(audio->replay_gain, buf, nsamples);
+	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
 
 	free(buf);
 	
