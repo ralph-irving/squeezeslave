@@ -1,3 +1,25 @@
+2009-05-05 15:04  paddockd
+
+	* ChangeLog, logs, logs/sb3take6somuch2say.log,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_buffer.h,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/interactive.c, src/squeezeslave/squeezeslave.c:
+	  Exploratory changes to determine cause of decoder blocking at end
+	  of data instead of advancing to next track via STMd.
+	  Initial testing shows read_buffer return not flagged eof when no
+	  more data is available.
+	  Additional DEBUG statements added to help track this down.
+	  Added -dall option to turn on all debug messages.
+	  Increased version to 58.
+
 2009-05-02 14:44  paddockd
 
 	* src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,

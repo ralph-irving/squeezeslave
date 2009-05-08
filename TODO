@@ -30,6 +30,19 @@ call back and it seems to default to 1024 (it was hard coded as 256
 before), I have tried placing this back again to no avail, there is
 more buffer interaction, but the waits are still in the same place.
 
+More investigations into this shows that read_buffer is not returning
+eof when there's no data available in the http buffer, it blocks waiting
+for http to get more but the trigger STMd is not being sent to get more
+data as it relies on the decoder finishing.
+
+Current #if 0 blocked out code fixes mp3 playback but breaks ogg, flac
+and wav.  Investigate mp3 decoder code.
+
+---
+
+Fix playing of left over buffer after stopping play and changing songs.
+Appears to be related to buffering issue above.
+
 ---
 
 Need to look at supporting skip in calculations as well.
@@ -60,10 +73,6 @@ Most often this is an indication of an error made by an encoder, but it's also p
 ---
 
 Fix getopt_long_only options string handling removing multiple #if defines.
-
----
-
-Fix playing of left over buffer after stopping play and changing songs.
 
 ---
 

@@ -127,7 +127,7 @@ enum mad_flow mad_input(void *data,
 	}
 
 	int data_len = AUDIO_CHUNK_SIZE-MAD_BUFFER_GUARD-remainder;
-	DEBUGF("mad: data_len:%i\n", data_len);
+	DEBUGF("mad: data_len:%i available:%i\n", data_len,slimaudio_buffer_available(audio->decoder_buffer));
 	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, audio->decoder_data + remainder, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 		DEBUGF("mad: SLIMAUDIO_BUFFER_STREAM_END\n");

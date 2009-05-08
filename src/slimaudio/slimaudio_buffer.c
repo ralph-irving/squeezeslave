@@ -87,15 +87,15 @@ void slimaudio_buffer_close(slimaudio_buffer_t *buf) {
 	pthread_mutex_lock(&buf->buffer_mutex);
 
 	assert(buf);
-	
+
 	if (buf->write_stream != NULL)
 		buf->write_stream->eof = true;
-	
+
 	if (buf->writer_blocked) {
 		buf->writer_blocked = false;
 		pthread_cond_signal(&buf->read_cond);
 	}
-		
+
 	pthread_mutex_unlock(&buf->buffer_mutex);		
 }
 
@@ -212,14 +212,31 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	int len = *data_len;
 	
 	while (buf->total_available == 0) {
-		if (buf->read_stream == NULL) {
+		if (buf->read_stream == NULL)
+		{
 			pthread_mutex_unlock(&buf->buffer_mutex);
 			DEBUGF("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
 
 			*data_len = 0;
 			return SLIMAUDIO_BUFFER_STREAM_END;			
 		}
+#if 0
+		// If this is NOT the first buffer read request, we're at the end of the buffer
+		// so block the reader and return end of stream otherwise block on read.
+		// Only fixes mp3 playback, all other formats skip through tracks
+		if ((buf->read_stream == buf->write_stream) && !buf->reader_blocked &&
+			(buf->read_stream->read_count != 0))
+		{
 
+			buf->reader_blocked = true;
+
+			pthread_mutex_unlock(&buf->buffer_mutex);
+			DEBUGF("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
+
+			*data_len = 0;
+			return SLIMAUDIO_BUFFER_STREAM_END;			
+		}
+#endif
 		if ( (buf->read_opt & BUFFER_NONBLOCKING) > 0) {
 			pthread_mutex_unlock(&buf->buffer_mutex);
 
