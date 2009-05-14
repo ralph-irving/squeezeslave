@@ -172,7 +172,7 @@ int slimaudio_output_close(slimaudio_t *audio) {
 // slimaudio_output_disconnect and this requires the mutex to be unlocked.
 static void output_thread_stat(slimaudio_t* audio, char* code) {
 	pthread_mutex_unlock(&audio->output_mutex);
-	slimaudio_stat(audio, code);
+	slimaudio_stat(audio, code, (u32_t) 0);
 	pthread_mutex_lock(&audio->output_mutex);
 }
 
@@ -333,8 +333,9 @@ static void *output_thread(void *ptr) {
 				err = pthread_cond_timedwait(&audio->output_cond, &audio->output_mutex, &timeout);
 
 				if (err == ETIMEDOUT) {
-					DEBUGF("output_thread STMt-PLAYING: %llu\n",audio->pa_streamtime_offset);
-					output_thread_stat(audio, "STMt");
+					DEBUGF("output_thread ETIMEDOUT-PLAYING: %llu\n",audio->pa_streamtime_offset);
+					// output_thread_stat(audio, "STMt");
+					;;
 				}
 
 				/* Track started */				
@@ -543,7 +544,7 @@ void slimaudio_output_unpause(slimaudio_t *audio) {
 	pthread_mutex_unlock(&audio->output_mutex);	
 }
 
-
+#if 0
 u32_t slimaudio_output_streamtime(slimaudio_t *audio) {
 
 	u32_t msec =
@@ -554,7 +555,7 @@ u32_t slimaudio_output_streamtime(slimaudio_t *audio) {
 
 	return msec < 0 ? 0 : msec;
 }
-
+#endif
 
 // Applies software volume to buffers being sent to the output device.  It is
 // important we apply volume changes here rather than, for example, in the 

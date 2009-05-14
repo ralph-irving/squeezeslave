@@ -69,6 +69,7 @@ void slimaudio_buffer_free(slimaudio_buffer_t *buf) {
 
 void slimaudio_buffer_open(slimaudio_buffer_t *buf, void *user_data) {
 	assert(buf);	
+	DEBUGF("buffer_open: %p\n", buf);
 	
 	struct buffer_stream *stream = (struct buffer_stream *) malloc(sizeof(struct buffer_stream));
 	memset(stream, 0, sizeof(struct buffer_stream));
@@ -88,14 +89,20 @@ void slimaudio_buffer_close(slimaudio_buffer_t *buf) {
 
 	assert(buf);
 
+	DEBUGF("buffer_close: %p ", buf);
 	if (buf->write_stream != NULL)
+	{
 		buf->write_stream->eof = true;
+		DEBUGF("write_stream->eof:%i ",buf->write_stream->eof);
+	}
 
 	if (buf->writer_blocked) {
+		DEBUGF("writer_blocked:%i ",buf->writer_blocked);
 		buf->writer_blocked = false;
 		pthread_cond_signal(&buf->read_cond);
 	}
 
+	DEBUGF("\n");
 	pthread_mutex_unlock(&buf->buffer_mutex);		
 }
 
@@ -104,7 +111,7 @@ void slimaudio_buffer_flush(slimaudio_buffer_t *buf) {
 
 	assert(buf);
 	
-	DEBUGF("slimaudio_buffer_flush buf=%p\n", buf);
+	DEBUGF("buffer_flush: buf=%p\n", buf);
 	
 	struct buffer_stream *stream, *next_stream;
 	
@@ -215,32 +222,16 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		if (buf->read_stream == NULL)
 		{
 			pthread_mutex_unlock(&buf->buffer_mutex);
-			DEBUGF("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
+			DEBUGF("buffer_read: read_stream=NULL, total_available=0 len=%i SLIMAUDIO_BUFFER_STREAM_END\n", buf->total_available, len );
 
 			*data_len = 0;
 			return SLIMAUDIO_BUFFER_STREAM_END;			
 		}
-#if 0
-		// If this is NOT the first buffer read request, we're at the end of the buffer
-		// so block the reader and return end of stream otherwise block on read.
-		// Only fixes mp3 playback, all other formats skip through tracks
-		if ((buf->read_stream == buf->write_stream) && !buf->reader_blocked &&
-			(buf->read_stream->read_count != 0))
-		{
 
-			buf->reader_blocked = true;
-
-			pthread_mutex_unlock(&buf->buffer_mutex);
-			DEBUGF("total_available:0 SLIMAUDIO_BUFFER_STREAM_END\n");
-
-			*data_len = 0;
-			return SLIMAUDIO_BUFFER_STREAM_END;			
-		}
-#endif
 		if ( (buf->read_opt & BUFFER_NONBLOCKING) > 0) {
 			pthread_mutex_unlock(&buf->buffer_mutex);
 
-			DEBUGF("total_available:0 BUFFER_NONBLOCKING:%i\n",(buf->read_opt & BUFFER_NONBLOCKING));
+			DEBUGF("buffer_read: read_stream=%p, total_available=%i read_avail=%i read_count=%i len=%i eof=%i opt=%0x SLIMAUDIO_BUFFER_STREAM_CONTINUE\n",buf->read_stream,buf->total_available,buf->read_stream->available,buf->read_stream->read_count, len, buf->read_stream->eof, buf->read_opt);
 
 			*data_len = 0;
 			return SLIMAUDIO_BUFFER_STREAM_CONTINUE;
@@ -248,16 +239,18 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 
 		buf->reader_blocked = true;
 
-		DEBUGF("buffer_read  %p write_ptr=%p read_ptr=%p available=%i reader_blocked=%i writer_blocked=%i\n",
+		DEBUGF("buffer_read: %p write_ptr=%p read_ptr=%p read_avail=%i reader_blocked=%i writer_blocked=%i read_count=%i len=%i eof=%i opt=%0x\n",
 			buf, buf->write_ptr, buf->read_ptr, buf->read_stream->available, buf->reader_blocked,
-			buf->writer_blocked);
+			buf->writer_blocked, buf->read_stream->read_count, len, buf->read_stream->eof, buf->read_opt);
+
 
 		pthread_cond_wait(&buf->write_cond, &buf->buffer_mutex);
 	}
 
-	VDEBUGF("buffer_read  %p write_ptr=%p read_ptr=%p available=%i reader_blocked=%i writer_blocked=%i\n",
+	VDEBUGF("buffer_read_top: %p write_ptr=%p read_ptr=%p read_avail=%i reader_blocked=%i writer_blocked=%i read_count=%i len=%i eof=%i opt=%0x\n",
 		buf, buf->write_ptr, buf->read_ptr, buf->read_stream->available, buf->reader_blocked,
-		buf->writer_blocked);
+		buf->writer_blocked, buf->read_stream->read_count, len, buf->read_stream->eof, buf->read_opt);
+
 
 	/* when the stream is complete, move on */
 	while (buf->read_stream->available == 0) {
@@ -311,8 +304,12 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		DEBUGF("slimaudio_buffer_read EOF\n");
 		status = SLIMAUDIO_BUFFER_STREAM_END;
 	}
-	
+
 	pthread_mutex_unlock(&buf->buffer_mutex);
+	
+	VDEBUGF("buffer_read_end: %p write_ptr=%p read_ptr=%p read_avail=%i reader_blocked=%i writer_blocked=%i read_count=%i len=%i eof=%i opt=%0x\n",
+		buf, buf->write_ptr, buf->read_ptr, buf->read_stream->available, buf->reader_blocked,
+		buf->writer_blocked, buf->read_stream->read_count, *data_len, buf->read_stream->eof, buf->read_opt);
 	
 	return status;
 }

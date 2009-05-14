@@ -67,12 +67,6 @@ static void *proto_thread(void *ptr);
 static int proto_connect(slimproto_t *p);
 static int proto_recv(slimproto_t *p);
 
-float unpackFixedPoint(const unsigned char *buf, int pos) {
-	int v = unpackN4(buf, pos);
-	return ((v & 0xFFFF0000) >> 16) + ((v & 0xFFFF) / (float)0xFFFF);
-}
-
-
 int slimproto_init(slimproto_t *p) {
 	memset(p, 0, sizeof(slimproto_t));
 #ifdef __WIN32__
@@ -378,7 +372,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 		msg->strm.flags = unpackC(buf, 17);
 		msg->strm.output_threshold = unpackC(buf, 18);
 		msg->strm.reserved = unpackC(buf, 19);
-		msg->strm.replay_gain = unpackFixedPoint(buf, 20);
+		msg->strm.replay_gain = unpackN4(buf, 20);
 		msg->strm.server_port = unpackN2(buf, 24);
 		msg->strm.server_ip = unpackN4(buf, 26);
 		int http_len = msg->strm.length-28;
@@ -478,9 +472,9 @@ int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode) {
 	return slimproto_send(p, msg);
 }
 
-int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, int decoder_buffer_fullness, u64_t bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_milliseconds)
+int slimproto_stat(slimproto_t *p, const char *code, int decoder_buffer_size, int decoder_buffer_fullness, u64_t bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_milliseconds, u32_t server_timestamp)
 {
-	u32_t server_timestamp;
+	u32_t client_timestamp;
 	u32_t rbytes_low, rbytes_high;
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
 
@@ -521,7 +515,7 @@ u16_t error_code;
 	packN4(msg, 23, rbytes_high );
 	packN4(msg, 27, rbytes_low );
 	packN2(msg, 31, 65534); // signal strength
-	server_timestamp = slimproto_set_jiffies(p, msg, 33); // Keep both values close
+	client_timestamp = slimproto_set_jiffies(p, msg, 33); // Keep both values close, not used
 	packN4(msg, 37, output_buffer_size);
 	packN4(msg, 41, output_buffer_fullness);
 	packN4(msg, 45, elapsed_seconds);
@@ -530,7 +524,14 @@ u16_t error_code;
 	packN4(msg, 55, server_timestamp);
 	packN2(msg, 59, 0); // error code
 
-	DEBUGF("slimproto_stat\n\tcode=%4.4s\n\tdecoder_buffer_size=%i\n\tdecoder_buffer_fullness=%i\n\trbytes_high=%i\n\trbytes_low=%i\n\toutput_buffer_size=%i\n\toutput_buffer_fullness=%i\n\telapsed_seconds=%i\n\telapsed_milliseconds=%i\n\tserver_timestamp=%i\n", code, decoder_buffer_size, decoder_buffer_fullness, rbytes_high, rbytes_low, output_buffer_size, output_buffer_fullness, elapsed_seconds, elapsed_milliseconds, server_timestamp);
+	DEBUGF("slimproto_stat: code=%4.4s decoder_buffer_size=%i decoder_buffer_fullness=%i ",
+		code, decoder_buffer_size, decoder_buffer_fullness);
+
+	DEBUGF("rbytes_high=%i rbytes_low=%i output_buffer_size=%i output_buffer_fullness=%i ",
+       		rbytes_high, rbytes_low, output_buffer_size, output_buffer_fullness);
+
+	DEBUGF("elapsed_seconds=%i elapsed_milliseconds=%i server_timestamp=%i\n",
+       		elapsed_seconds, elapsed_milliseconds, server_timestamp);
 
 	return slimproto_send(p, msg);	
 }

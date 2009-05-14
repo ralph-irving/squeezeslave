@@ -142,7 +142,7 @@ static void *decoder_thread(void *ptr) {
 					
 				default:
 					fprintf(stderr, "Cannot decode unknown format: %c\n", audio->decoder_mode);
-					slimaudio_stat(audio, "STMn"); // decoder does not support format
+					slimaudio_stat(audio, "STMn", (u32_t) 0); // decoder does not support format
 					break;
 				}
 
@@ -151,7 +151,7 @@ static void *decoder_thread(void *ptr) {
 
 				if ( audio->decoder_state == STREAM_PLAYING )
 				{
-					slimaudio_stat(audio, "STMd");
+					slimaudio_stat(audio, "STMd", (u32_t) 0);
 					DEBUGF("decoder_thread: STREAM_PLAY (after STMd) previous state: %i\n",
 							audio->decoder_state);
 				}

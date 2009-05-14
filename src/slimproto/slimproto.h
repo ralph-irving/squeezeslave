@@ -61,7 +61,7 @@ typedef union {
 		u8_t flags;		// [1]	0x80 - loop infinitely, 0x40 - stream without restarting decoder, 0x01 - polarity inversion left. 0x02 - polarity inversion right 
 		u8_t output_threshold;		// [1]	amount of output buffer data before playback starts, in tenths of second
 		u8_t reserved;			// [1]	reserved
-		float replay_gain;		// [4]	replay gain in 16.16 fixed point, 0 means none
+		u32_t replay_gain;		// [4]	replay gain in 16.16 fixed point, 0 means none
 		u16_t server_port;		// [2]	server's port
 		u32_t server_ip;		// [4]	server's IP		
 		char http_hdr[1024];	// HTTP headers from here
@@ -155,9 +155,7 @@ int slimproto_dsco(slimproto_t *p, int status);
 
 int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 
-int slimproto_stat(slimproto_t *p, const char *code, int rptr, int wptr, u64_t bytes_rx, int output_buffer_size, int output_buffer_fullness, u32_t elapsed_seconds);
-
-float unpackFixedPoint(const unsigned char *buf, int pos);
+int slimproto_stat(slimproto_t *, const char *, int, int, u64_t, int, int, u32_t, u32_t);
 
 // This function configures the socket whose fd is passed in, in order
 // to disable the raise of SIGPIPE when writing to a closed socket.

@@ -142,21 +142,16 @@ int slimaudio_close(slimaudio_t *audio) {
 	return 0;
 }
 
-int slimaudio_stat(slimaudio_t *audio, const char *code) {
+int slimaudio_stat(slimaudio_t *audio, const char *code, u32_t interval) {
 	int decoder_available = slimaudio_buffer_available(audio->decoder_buffer);
 	int output_available = slimaudio_buffer_available(audio->output_buffer);
-	
-	DEBUGF("slimaudio_stat code:%4.4s decoder_available:%i read_available:%i\n", code, decoder_available, output_available);
+        u32_t msec =
+                (u32_t) ((audio->stream_samples - audio->pa_streamtime_offset) / 44.100)
+			+ audio->output_predelay_msec;
 
-	return slimproto_stat(audio->proto,
-						code,
-						DECODER_BUFFER_SIZE,
-						decoder_available,
-						audio->http_total_bytes,
-						OUTPUT_BUFFER_SIZE,
-						output_available,
-						slimaudio_output_streamtime(audio)
-						);
+	return slimproto_stat(audio->proto, code, DECODER_BUFFER_SIZE, decoder_available,
+			audio->http_total_bytes, OUTPUT_BUFFER_SIZE, output_available,
+			msec < 0 ? 0 : msec, interval );
 }
 
 /*
@@ -167,41 +162,51 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	
 	slimaudio_t *audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
-#if 0
-        audio->replay_gain = (float) (msg.strm.replay_gain);
-	float dB = (float) (log(audio->replay_gain) / log(10.0) * 20.0);
-#endif
-	DEBUGF("strm cmd %c\n", msg.strm.command);
+
+	DEBUGF("strm cmd %c strm.gain:%i ", msg.strm.command, msg.strm.replay_gain);
 
 	switch (msg.strm.command) {
 		case 's': /* start */
+			audio->replay_gain = ((float)(msg.strm.replay_gain) / 65536.0);
+			DEBUGF("replay_gain:%f\n", audio->replay_gain);
 			slimaudio_http_connect(audio, &msg);
 			slimaudio_decoder_connect(audio, &msg);
 			slimaudio_output_connect(audio, &msg);
 			break;
 			
 		case 'p': /* pause */
+			DEBUGF("\n");
 			slimaudio_output_pause(audio);
-			slimaudio_stat(audio, "STMp"); /* pause */
+
+			/* Only send STMp if interval is zero */
+			if (! msg.strm.replay_gain)
+				slimaudio_stat(audio, "STMp", (u32_t) 0); /* pause */
 			break;	
 		
 		case 'u': /* unpause */
+			DEBUGF("\n");
 			slimaudio_output_unpause(audio);
-			slimaudio_stat(audio, "STMr"); /* resume */
+			slimaudio_stat(audio, "STMr", (u32_t) 0); /* resume */
 			break;	
 		
 		case 'q': /* stop */
+			DEBUGF("\n");
 			audio_stop(audio);
 			break;	
 		
 		case 'f': /* flush */
+			DEBUGF("\n");
 			slimaudio_buffer_flush(audio->decoder_buffer);
 			slimaudio_buffer_flush(audio->output_buffer);
 			break;			
 
 		case 'a': /* skip ahead */
+			DEBUGF("\n");
+			break;
+
 		case 't': /* status */
-			slimaudio_stat(audio, (char *)&msg.strm.cmd);
+			DEBUGF("\n");
+			slimaudio_stat(audio, "STMt", msg.strm.replay_gain);
 			break;			
 	}
 	

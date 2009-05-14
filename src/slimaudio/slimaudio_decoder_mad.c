@@ -71,6 +71,8 @@ void slimaudio_decoder_mad_free(slimaudio_t *audio) {
 }
 
 int slimaudio_decoder_mad_process(slimaudio_t *audio) {
+	int retcode = 0;
+
 	/* configure input, output, and error functions */
     mad_decoder_init(&audio->mad_decoder, audio,
 		mad_input, 0 /* header */, 0 /* filter */, mad_output,
@@ -80,11 +82,11 @@ int slimaudio_decoder_mad_process(slimaudio_t *audio) {
 	audio->decoder_end_of_stream = false;
 	int result = mad_decoder_run(&audio->mad_decoder, MAD_DECODER_MODE_SYNC);
 	if (result != 0)
-		return -1;
+		retcode = -1;
 
 	/* release the decoder */
 	mad_decoder_finish(&audio->mad_decoder);	
-	return 0;
+	return (retcode);
 }
 
 
@@ -102,16 +104,11 @@ enum mad_flow mad_input(void *data,
 		    struct mad_stream *stream)
 {
 	slimaudio_t *audio = (slimaudio_t *) data;
+	int remainder;
 
-	/* keep partial frame from last decode ... */
-	int remainder = stream->bufend - stream->next_frame;
-
-	memcpy (audio->decoder_data, stream->this_frame, remainder);
-	
 	pthread_mutex_lock(&audio->decoder_mutex);
 
-
-	DEBUGF("decode_input state=%i remainder=%i\n", audio->decoder_state, remainder);
+	DEBUGF("decode_input state=%i\n", audio->decoder_state);
 	if (audio->decoder_state != STREAM_PLAYING) {
 		pthread_mutex_unlock(&audio->decoder_mutex);
 		DEBUGF("mad: decode_state != STREAM_PLAYING\n");
@@ -126,8 +123,13 @@ enum mad_flow mad_input(void *data,
 		return MAD_FLOW_STOP;
 	}
 
+	/* keep partial frame from last decode ... */
+	remainder = stream->bufend - stream->next_frame;
+
+	memcpy (audio->decoder_data, stream->this_frame, remainder);
+	
 	int data_len = AUDIO_CHUNK_SIZE-MAD_BUFFER_GUARD-remainder;
-	DEBUGF("mad: data_len:%i available:%i\n", data_len,slimaudio_buffer_available(audio->decoder_buffer));
+	DEBUGF("mad: data_len:%i remainder:%i available:%i\n", data_len, remainder, slimaudio_buffer_available(audio->decoder_buffer));
 	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, audio->decoder_data + remainder, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 		DEBUGF("mad: SLIMAUDIO_BUFFER_STREAM_END\n");

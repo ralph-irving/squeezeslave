@@ -149,7 +149,7 @@ int slimaudio_init(slimaudio_t *audio, slimproto_t *proto);
 void slimaudio_destroy(slimaudio_t *audio);
 int slimaudio_open(slimaudio_t *audio);
 int slimaudio_close(slimaudio_t *audio);
-int slimaudio_stat(slimaudio_t *audio, const char *code);
+int slimaudio_stat(slimaudio_t *, const char *, u32_t);
 void slimaudio_get_output_devices(slimaudio_t *audio, char ***device_names, int *num_device_names);
 void slimaudio_set_output_device(slimaudio_t *audio, int device_id);
 // Sets the interval between keepalive signals sent to the server
@@ -213,7 +213,7 @@ int slimaudio_decoder_pcm_init(slimaudio_t *audio);
 void slimaudio_decoder_pcm_free(slimaudio_t *audio);
 int slimaudio_decoder_pcm_process(slimaudio_t *audio);
 
-#define apply_replaygain(...)
-// void apply_replaygain (float, void*, int);
+// #define apply_replaygain(...)
+void apply_replaygain (float, void*, int);
 
 #endif //_SLIMAUDIO_H_
