@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS=-D__BIG_ENDIAN__ -s -xO5 -fast -w -fsimple -xarch=v8plusa -xthreadvar=no%dynamic
+CFLAGS=-D__BIG_ENDIAN__ -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -xO5 -fast -w -fsimple -xarch=v8plusa -xthreadvar=no%dynamic
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/flac/s9sparc/include -Ilib/libmad/s9sparc -Ilib/getopt -Ilib/vorbis/s9sparc/include
 

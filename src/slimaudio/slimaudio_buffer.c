@@ -222,7 +222,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		if (buf->read_stream == NULL)
 		{
 			pthread_mutex_unlock(&buf->buffer_mutex);
-			DEBUGF("buffer_read: read_stream=NULL, total_available=0 len=%i SLIMAUDIO_BUFFER_STREAM_END\n", buf->total_available, len );
+			DEBUGF("buffer_read: read_stream=NULL total_available=0 len=%i SLIMAUDIO_BUFFER_STREAM_END\n", len );
 
 			*data_len = 0;
 			return SLIMAUDIO_BUFFER_STREAM_END;			

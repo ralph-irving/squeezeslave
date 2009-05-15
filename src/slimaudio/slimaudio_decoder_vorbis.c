@@ -91,7 +91,6 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 			break;
 			
 		default:
-			apply_replaygain(audio->replay_gain, buffer, bytes_read / 2);
 			slimaudio_buffer_write(audio->output_buffer, buffer, bytes_read);
 		}
 

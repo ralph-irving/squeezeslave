@@ -159,16 +159,19 @@ int slimaudio_stat(slimaudio_t *audio, const char *code, u32_t interval) {
  */
 static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_len, void *user_data) {
 	slimproto_msg_t msg;
-	
+	float replay_gain;	
 	slimaudio_t *audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
 
-	DEBUGF("strm cmd %c strm.gain:%i ", msg.strm.command, msg.strm.replay_gain);
+	DEBUGF("strm cmd %c strm.replay_gain:%i ", msg.strm.command, msg.strm.replay_gain);
 
 	switch (msg.strm.command) {
 		case 's': /* start */
-			audio->replay_gain = ((float)(msg.strm.replay_gain) / 65536.0);
-			DEBUGF("replay_gain:%f\n", audio->replay_gain);
+			replay_gain = (float) (msg.strm.replay_gain) / 65536.0;
+			audio->start_replay_gain = replay_gain == 0.0 ? 1.0 : replay_gain;
+
+			DEBUGF("start_replay_gain:%f\n", audio->start_replay_gain);
+
 			slimaudio_http_connect(audio, &msg);
 			slimaudio_decoder_connect(audio, &msg);
 			slimaudio_output_connect(audio, &msg);

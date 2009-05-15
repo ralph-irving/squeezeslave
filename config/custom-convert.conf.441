@@ -1,0 +1,35 @@
+# Capabilities
+# I - can transcode from stdin
+# F - can transcode from a named file
+# R - can transcode from a remote URL (URL types unspecified)
+# 
+# O - can seek to a byte offset in the source stream
+# T - can seek to a start time offset
+# U - can seek to start time offset and finish at end time offset
+#
+# D - can downsample 
+# B - can limit bitrate
+#
+# Substitution strings for variable capabilities
+# %f - file path (local files)
+# %F - full URL (remote streams)
+#
+# %o - stream start byte offset
+# 
+# %S - stream samples start offset
+# %s - stream seconds start offset
+# %t - stream time (m:ss) start offset
+# %U - stream samples end offset
+# %u - stream seconds end offset
+# %v - stream time (m:ss) end offset
+# %w - stream seconds duration
+
+#
+# %b - limit bitrate: b/s
+# %B - limit bitrate: kb/s
+# %d - samplerate: samples/s
+# %D - samplerate: ksamples/s
+
+mp3 flc * 00:00:00:00:00:01
+    # FRT:{START=-ss %s}U:{DURATION=-endpos %w}
+    [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -af volume=0,resample=44100:0:1,channels=2 -ao pcm:file=/dev/fd/3 $FILE$ | [flac] -cs --totally-silent --compression-level-0 -

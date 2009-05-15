@@ -89,14 +89,15 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	audio->px_mixer = NULL;
 	audio->volume_control = VOLUME_DRIVER;
 	audio->volume = 1.0;
-	audio->prev_volume = -1.0; // Signals prev = volume.
+	audio->prev_volume = -1.0;	// Signals prev = volume.
 	audio->output_predelay_msec = 0;
 	audio->output_predelay_frames = 0;
 	audio->output_predelay_amplitude = 0;
 	audio->keepalive_interval = -1;
 	audio->decode_num_tracks_started = 0L;	
 	audio->stream_samples = 0UL;	
-	audio->replay_gain = 0.0;  // none to start
+	audio->replay_gain = 1.0;  	// none to start
+	audio->start_replay_gain = 1.0;  // none to start
 
 	slimproto_add_command_callback(audio->proto, "audg", &audg_callback, audio);
 	
@@ -320,7 +321,9 @@ static void *output_thread(void *ptr) {
 
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
+				audio->replay_gain = audio->start_replay_gain;
 				audio->output_state = PLAYING;
+
 				pthread_cond_broadcast(&audio->output_cond);
 				break;
 
@@ -334,7 +337,7 @@ static void *output_thread(void *ptr) {
 
 				if (err == ETIMEDOUT) {
 					DEBUGF("output_thread ETIMEDOUT-PLAYING: %llu\n",audio->pa_streamtime_offset);
-					// output_thread_stat(audio, "STMt");
+					output_thread_stat(audio, "STMt");
 					;;
 				}
 
@@ -452,12 +455,18 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimaudio_t* const audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
 
-	const float vol_adjust = (float) ((msg.audg.left_gain + msg.audg.right_gain)/2) / 65536.0;
-	audio->volume = vol_adjust > 1.0 ? 1.0 : vol_adjust;
+	float vol_adjust = (float) (msg.audg.left_gain) / 65536.0;
+
+	if ( vol_adjust > 1.0 )
+		vol_adjust = 1.0;
+
+	audio->volume = vol_adjust * audio->replay_gain;
 
 	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain:%u",
 			msg.audg.left_gain, msg.audg.right_gain, audio->volume,
 			msg.audg.old_left_gain, msg.audg.old_right_gain);
+	DEBUGF(" vol_adjust:%f replay_gain:%f start_replay_gain:%f",
+			vol_adjust, audio->replay_gain, audio->start_replay_gain);
 	VDEBUGF(" preamp:%hhu digital_volume_control:%hhu", msg.audg.preamp, msg.audg.digital_volume_control);
 	DEBUGF("\n");
 
@@ -600,24 +609,6 @@ static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer,
 
 	VDEBUGF("volume: %f applied\n",newVolume);
 }
-
-#ifndef apply_replaygain
-void apply_replaygain (float replayGain, void* Buffer, int nbSamples) {
-	VDEBUGF("replaygain: %f applied\n", replayGain);
-
-	// No replaygain to apply
-	if (replayGain == 0.0)
-		return;
-
-	short* const samples = (short*)Buffer;
-	int i;
-	for (i = 0; i < nbSamples; i += 2)
-	{
-		samples[i]     = ((float)samples[i])     * replayGain;
-		samples[i + 1] = ((float)samples[i + 1]) * replayGain;
-	}
-}
-#endif
 
 // Writes pre-delay sample-frames into the output buffer passed in.
 // Pre-delay will most often be silence but can also be a tone at

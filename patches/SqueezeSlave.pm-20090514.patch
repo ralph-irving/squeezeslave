@@ -1,0 +1,29 @@
+--- SqueezeSlave.pm.orig	2009-04-10 06:17:16.000000000 -0400
++++ SqueezeSlave.pm	2009-05-14 18:12:21.000000000 -0400
+@@ -102,6 +102,7 @@
+  );
+ 
+ sub dBToFixed {
++	my $client = shift;
+ 	my $db = shift;
+ 
+ 	# Map a floating point dB value to a 16.16 fixed point value to
+@@ -147,7 +148,7 @@
+ 			# With new style volume, let's try -49.5dB as the lowest
+ 			# value.
+ 			my $db = ($volume - 100)/2;	
+-			$newGain = dBToFixed($db);
++			$newGain = $client->dBToFixed($db);
+ 		}
+ 
+ 		my $data = pack('NNCCNN', $oldGain, $oldGain, $prefs->client($client)->get('digitalVolumeControl'), $preamp, $newGain, $newGain);
+@@ -203,6 +204,9 @@
+ sub hasDigitalOut {
+ 	return 0;
+ }
++sub hasPowerControl {
++	return 0;
++}
+ 
+ sub pcm_sample_rates {
+ 	my $client = shift;
