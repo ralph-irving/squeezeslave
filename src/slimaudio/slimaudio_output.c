@@ -321,7 +321,7 @@ static void *output_thread(void *ptr) {
 
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
-				audio->replay_gain = audio->start_replay_gain;
+//				audio->replay_gain = audio->start_replay_gain;
 				audio->output_state = PLAYING;
 
 				pthread_cond_broadcast(&audio->output_cond);
@@ -460,7 +460,8 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	if ( vol_adjust > 1.0 )
 		vol_adjust = 1.0;
 
-	audio->volume = vol_adjust * audio->replay_gain;
+//	audio->volume = vol_adjust * audio->replay_gain;
+	audio->volume = vol_adjust * audio->start_replay_gain;
 
 	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain:%u",
 			msg.audg.left_gain, msg.audg.right_gain, audio->volume,
@@ -709,6 +710,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			// this advances the playlist.
 			audio->output_STMs = true;
 			audio->decode_num_tracks_started++;
+			audio->replay_gain = audio->start_replay_gain;
 			audio->pa_streamtime_offset = audio->stream_samples;
 
 			DEBUGF("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
