@@ -89,6 +89,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	audio->px_mixer = NULL;
 	audio->volume_control = VOLUME_DRIVER;
 	audio->volume = 1.0;
+	audio->vol_adjust = 1.0;
 	audio->prev_volume = -1.0;	// Signals prev = volume.
 	audio->output_predelay_msec = 0;
 	audio->output_predelay_frames = 0;
@@ -96,7 +97,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	audio->keepalive_interval = -1;
 	audio->decode_num_tracks_started = 0L;	
 	audio->stream_samples = 0UL;	
-	audio->replay_gain = 1.0;  	// none to start
+	audio->replay_gain = -1.0;  	// signals first start
 	audio->start_replay_gain = 1.0;  // none to start
 
 	slimproto_add_command_callback(audio->proto, "audg", &audg_callback, audio);
@@ -321,7 +322,6 @@ static void *output_thread(void *ptr) {
 
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
-//				audio->replay_gain = audio->start_replay_gain;
 				audio->output_state = PLAYING;
 
 				pthread_cond_broadcast(&audio->output_cond);
@@ -455,19 +455,21 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimaudio_t* const audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
 
-	float vol_adjust = (float) (msg.audg.left_gain) / 65536.0;
+	audio->vol_adjust = (float) (msg.audg.left_gain) / 65536.0;
 
-	if ( vol_adjust > 1.0 )
-		vol_adjust = 1.0;
+	if ( audio->vol_adjust > 1.0 )
+		audio->vol_adjust = 1.0;
 
-//	audio->volume = vol_adjust * audio->replay_gain;
-	audio->volume = vol_adjust * audio->start_replay_gain;
+	audio->volume = audio->vol_adjust * audio->replay_gain;
+
+	if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
+		audio->volume = 1.0;
 
 	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain:%u",
 			msg.audg.left_gain, msg.audg.right_gain, audio->volume,
 			msg.audg.old_left_gain, msg.audg.old_right_gain);
 	DEBUGF(" vol_adjust:%f replay_gain:%f start_replay_gain:%f",
-			vol_adjust, audio->replay_gain, audio->start_replay_gain);
+			audio->vol_adjust, audio->replay_gain, audio->start_replay_gain);
 	VDEBUGF(" preamp:%hhu digital_volume_control:%hhu", msg.audg.preamp, msg.audg.digital_volume_control);
 	DEBUGF("\n");
 
@@ -554,19 +556,6 @@ void slimaudio_output_unpause(slimaudio_t *audio) {
 	pthread_mutex_unlock(&audio->output_mutex);	
 }
 
-#if 0
-u32_t slimaudio_output_streamtime(slimaudio_t *audio) {
-
-	u32_t msec =
-		(u32_t) ((audio->stream_samples - audio->pa_streamtime_offset) / 44.100) +audio->output_predelay_msec;
-	DEBUGF("outputstate:%d streamsamples:%llu st_offset:%llu tplayed:%u predelay_msec:%u msec:%u\n",
-		audio->output_state, audio->stream_samples, audio->pa_streamtime_offset,
-		audio->decode_num_tracks_started, audio->output_predelay_msec, msec);
-
-	return msec < 0 ? 0 : msec;
-}
-#endif
-
 // Applies software volume to buffers being sent to the output device.  It is
 // important we apply volume changes here rather than, for example, in the 
 // decoder, to avoid latency between volume modification and audible change.
@@ -580,14 +569,18 @@ u32_t slimaudio_output_streamtime(slimaudio_t *audio) {
 //    changing audio buffers so they are format-aware.
 static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer,
 				  int nbFrames) {
-	if (audio->prev_volume == -1.F) {
+	if (audio->prev_volume == -1.0) {
 		// A value of -1 indicates it's the first time we pass here.
 		// Copy volume into prev_volume to start immediatly at the right
 		// volume.
 		audio->prev_volume = audio->volume;
 	}
 
-	if (audio->volume == 1.F && audio->prev_volume == 1.F) {
+	if ( (audio->volume == 1.0) &&
+		(audio->prev_volume == 1.0) &&
+		(audio->replay_gain == 1.0) ) {
+		VDEBUGF("volume: replay_gain: %f start_replay_gain: %f not applied\n",
+			audio->replay_gain, audio->start_replay_gain);
 		return;
 	}
 
@@ -709,8 +702,15 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			// Send track start to SqueezeCenter. During normal play
 			// this advances the playlist.
 			audio->output_STMs = true;
+
 			audio->decode_num_tracks_started++;
+
 			audio->replay_gain = audio->start_replay_gain;
+			audio->volume = audio->vol_adjust * audio->replay_gain;
+
+			if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
+				audio->volume = 1.0;
+
 			audio->pa_streamtime_offset = audio->stream_samples;
 
 			DEBUGF("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);

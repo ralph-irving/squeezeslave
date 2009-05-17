@@ -22,6 +22,7 @@
 #include "squeezeslave.h"
 
 extern char* version;
+extern int revision;
 
 // Print list of available audio devices
 void listAudioDevices(slimaudio_t * slimaudio, int output_device_id) {
@@ -57,7 +58,7 @@ int parse_macaddress(char *macaddress, const char *str) {
 }
 
 void print_version(void) {
-	fprintf(stdout, "squeezeslave %s\n", version);
+	fprintf(stdout, "squeezeslave %s-%d\n", version, revision);
 	fprintf(stdout, "compile flags: ");
 #if defined(__APPLE__) && defined(__MACH__)
 	fprintf(stdout, "osx ");

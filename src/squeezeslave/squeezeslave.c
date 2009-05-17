@@ -42,7 +42,8 @@ bool retry_connection = false;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "0.8-63";
+const char* version = "0.8";
+const int revision = 64;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -128,7 +129,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 #endif
 
 	if (isConnected) {
-		if (slimproto_helo(p, player_type, 0, (char*) user_data, 0, 0) < 0) {
+		if (slimproto_helo(p, player_type, 1, (char*) user_data, 0, 0) < 0) {
 			fprintf(stderr, "Could not send helo to SqueezeCenter\n");
 		        send_restart_signal();
 		}

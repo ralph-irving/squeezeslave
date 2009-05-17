@@ -170,6 +170,9 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 			replay_gain = (float) (msg.strm.replay_gain) / 65536.0;
 			audio->start_replay_gain = replay_gain == 0.0 ? 1.0 : replay_gain;
 
+			if (audio->replay_gain == -1.0)
+				audio->replay_gain = audio->start_replay_gain;
+
 			DEBUGF("start_replay_gain:%f\n", audio->start_replay_gain);
 
 			slimaudio_http_connect(audio, &msg);

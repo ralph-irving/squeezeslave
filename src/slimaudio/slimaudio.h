@@ -96,6 +96,7 @@ typedef struct {
 	slimaudio_volume_t volume_control;
 	float volume;
 	float prev_volume;
+	float vol_adjust;
 	unsigned int output_predelay_msec;
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
