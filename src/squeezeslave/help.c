@@ -84,7 +84,7 @@ void print_version(void) {
 	fprintf(stdout, "getopt ");
 #endif
 #ifdef INTERACTIVE
-	fprintf(stdout, "curses lirc ");
+	fprintf(stdout, "interactive ");
 #endif
 #ifdef DAEMONIZE
 	fprintf(stdout, "daemon ");
@@ -92,26 +92,27 @@ void print_version(void) {
 #ifdef __BIG_ENDIAN__
 	fprintf(stdout, "bigendian ");
 #endif
-	fprintf(stdout, "\n");
-
-	fprintf(stdout, "Copyright (c) 2004-2007 Richard Titmuss,\n");
-	fprintf(stdout, "              2008-2009 Duane Paddock.\n\n");
+	fprintf(stdout, "\n\n");
 
 	fprintf (stdout,
-	"This program is licensed free of charge, there is no warranty for\n"
-	"the program, to the extent permitted by applicable law. This program\n"
-	"is provided \"as is\" without warranty of any kind, either expressed\n"
-	"or implied, including, but not limited to, the implied warranties of\n"
-	"merchantability and fitness for a particular purpose.  The entire risk as\n"
-	"to the quality and performance of the program is with you.  Should the\n"
-	"program prove defective, you assume the cost of all necessary servicing,\n"
-	"repair or correction.\n"
+	"Squeezeslave is licensed free of charge. There is NO WARRANTY for\n"
+	"the program. This program is provided \"as is\" without warranty of\n"
+	"any kind, either expressed or implied, including, but not limited\n"
+       	"to, the implied warranties of merchantability and fitness for a\n"
+       	"particular purpose.  The entire risk as to the quality and\n"
+       	"performance of the program is with you.  Should the program prove\n"
+       	"defective, you assume the cost of all necessary servicing, repair\n"
+       	"or correction.\n\n"
 	);
+
+	fprintf(stdout, "Copyright (c) 2004-2007 Richard Titmuss,\n");
+	fprintf(stdout, "              2008-2009 Duane Paddock.\n");
 }
 
 void print_help(void) {
 	print_version();      
 	fprintf(stdout,
+"\n"
 "squeezeslave [options] [<squeezecenter address>]\n"
 "The SqueezeCenter address defaults to 127.0.0.1.\n"
 "Options:\n"

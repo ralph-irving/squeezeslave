@@ -1,0 +1,21 @@
+
+# HDCD on-the-fly transcoding rules (cases supported:)
+
+# hard code transcoding for softsqueeze always 44.1k 16-bit
+flc flc softsqueeze *
+  # FT:{START=--skip=%t}U:{END=--until=%v}D:{RESAMPLE=-r %d}
+  [flac] -dcs $START$ $END$ -- $FILE$ | perl c:\local\gdir\Audiotools\hdcd-convert\hdcdwrapper.pl | [sox] -q -t wav - -t flac -C 0 -b 16 -r 44.1k -
+
+# Bit rate limited, remote streaming to softsqueeze...
+flc mp3 softsqueeze *
+	# FB:{BITRATE=-B %B}T:{START=--skip=%t}U:{END=--until=%v}D:{RESAMPLE=--resample %D}
+	[flac] -dcs $START$ $END$ -- $FILE$ | perl c:\local\gdir\Audiotools\hdcd-convert\hdcdwrapper.pl | [lame] --silent -q $QUALITY$ $RESAMPLE$ -v $BITRATE$ - -
+
+# For cue/flac transcoding
+flc flc transcode *
+	# FT:{START=--skip=%t}U:{END=--until=%v}D:{RESAMPLE=-r %d}
+	[flac] -dcs $START$ $END$ -- $FILE$ | perl c:\local\gdir\Audiotools\hdcd-convert\hdcdwrapper.pl | [sox] -q -t wav - -t flac -C 0 $RESAMPLE$ - 
+
+# For individual flac tracks
+flc flc * *
+  [flac] -dcs $START$ $END$ -- $FILE$ | perl c:\local\gdir\Audiotools\hdcd-convert\hdcdwrapper.pl | [sox] -q -t wav - -t flac -C 0 $RESAMPLE$ - 

@@ -1,6 +1,76 @@
+2009-05-17 13:48  paddockd
+
+	* [r64] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Increased player firmware
+	  version to 1 to identify replay gain capability.
+	  Moved applying replay gain to stream start as it uses volume
+	  adjust which applies the changes immediately.
+	  Separated out revision number in version string.
+	  Increased revision to 64.
+
+2009-05-16 10:55  paddockd
+
+	* [r63] src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: First release to pass replay
+	  gain tests without anomolies in the audio.
+	  Increased version to 63.
+
+2009-05-15 11:46  paddockd
+
+	* [r62] config/custom-convert.conf.441, config/mplayer.sh,
+	  makefile.s9sparc, patches/SqueezeSlave.pm-20090514.patch,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added patch 3 submitted to bug
+	  11330.
+	  Added config files for SC to resample streams to 44.1KHz for
+	  squeezeslave.
+	  Fixed replay_gain being applied too early.
+	  Increased version to 62.
+
+2009-05-14 11:49  paddockd
+
+	* [r61] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_output.c, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/squeezeslave.c:
+	  Cleaned up STMt handling, removed spurious stat replies from
+	  squeezeslave. Only replies now when status requested by server.
+	  Additional DEBUG logging cleanup.
+	  Second cut of replay gain handling.
+	  Fixed STMt replies to send back server_timestamp from replay_gain
+	  field.
+	  Additional pause/unpause status cleanup.
+
+2009-05-08 14:55  paddockd
+
+	* [r60] src/squeezeslave/squeezeslave.c: Increased version to 60 to
+	  differentiate from 59 test release.
+
+2009-05-08 14:53  paddockd
+
+	* [r59] ChangeLog, TODO, lib/libportaudio/win32/lib/libportaudio.a,
+	  makefile.linux26-alsa-display, src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Removed initial fix for decoder
+	  blocking.
+	  Changed order of read_buffer == NULL in zero byte read_buffer to
+	  before NONBLOCKING in while loop.
+	  Removed debug build from makefile.linux26-alsa-display.
+	  Increased version to 59.
+
 2009-05-05 15:04  paddockd
 
-	* ChangeLog, logs, logs/sb3take6somuch2say.log,
+	* [r58] ChangeLog, logs, logs/sb3take6somuch2say.log,
 	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
 	  src/slimaudio/slimaudio_buffer.c,
 	  src/slimaudio/slimaudio_buffer.h,
@@ -22,7 +92,7 @@
 
 2009-05-02 14:44  paddockd
 
-	* src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	* [r57] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
 	  src/slimaudio/slimaudio_decoder_flac.c,
 	  src/slimaudio/slimaudio_decoder_mad.c,
 	  src/slimaudio/slimaudio_decoder_pcm.c,
@@ -35,7 +105,7 @@
 
 2009-05-02 11:20  paddockd
 
-	* makefile.linux24-display, src/slimaudio/slimaudio.c,
+	* [r56] makefile.linux24-display, src/slimaudio/slimaudio.c,
 	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_buffer.c,
 	  src/slimaudio/slimaudio_decoder.c,
 	  src/slimaudio/slimaudio_decoder_flac.c,
@@ -52,7 +122,7 @@
 
 2009-04-26 16:32  paddockd
 
-	* bin, lib/libportaudio/linux26/lib/libportaudio-debug.a,
+	* [r55] bin, lib/libportaudio/linux26/lib/libportaudio-debug.a,
 	  lib/libportaudio/linux26/lib/libportaudio-old.a,
 	  lib/libportaudio/win32, lib/libportaudio/win32/build,
 	  lib/libportaudio/win32/include,
@@ -67,18 +137,18 @@
 
 2009-04-23 21:19  paddockd
 
-	* ChangeLog, src/squeezeslave/squeezeslave.c: Increased version to
-	  54.
+	* [r54] ChangeLog, src/squeezeslave/squeezeslave.c: Increased
+	  version to 54.
 	  Updated ChangeLog with final changes before beta release.
 
 2009-04-23 21:14  paddockd
 
-	* ChangeLog, src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
-	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
-	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
-	  src/squeezeslave/squeezeslave.c: Added output_threshold to audio
-	  structure and bytes calculation to slimaudio_http.c. Not
-	  currently used in decoder start.
+	* [r53] ChangeLog, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_http.c,
+	  src/slimaudio/slimaudio_output.c, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/squeezeslave.c: Added
+	  output_threshold to audio structure and bytes calculation to
+	  slimaudio_http.c. Not currently used in decoder start.
 	  Commented out strm flush routines. Need more information on
 	  expected behaviour.
 	  Fixed missing VDEBUGF definition in slimaudio_output.c.
@@ -88,7 +158,7 @@
 
 2009-04-22 11:52  paddockd
 
-	* ChangeLog, lib/libportaudio/linux26/lib/libportaudio.a,
+	* [r52] ChangeLog, lib/libportaudio/linux26/lib/libportaudio.a,
 	  lib/portaudio/pa_win_ds/dsound_wrapper.c, makefile.mingw32,
 	  makefile.mingw32-debug, src/slimaudio/slimaudio.c,
 	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_buffer.c,
@@ -109,7 +179,8 @@
 
 2009-04-19 22:26  paddockd
 
-	* ChangeLog, lib/libportaudio/linux24/build-portaudio-lnx24-alsa,
+	* [r51] ChangeLog,
+	  lib/libportaudio/linux24/build-portaudio-lnx24-alsa,
 	  lib/libportaudio/linux24/include/portaudio-old.h,
 	  lib/libportaudio/linux24/lib/libportaudio-debug-old.a,
 	  lib/libportaudio/linux24/lib/libportaudio-debug.a,
@@ -128,7 +199,7 @@
 
 2009-04-18 22:00  paddockd
 
-	* ChangeLog, makefile.cygwin, makefile.linux24,
+	* [r50] ChangeLog, makefile.cygwin, makefile.linux24,
 	  makefile.linux24-alsa, makefile.linux24-debug,
 	  makefile.linux24-display, makefile.linux24-i586,
 	  makefile.linux24-i586-display, makefile.linux26,
@@ -161,7 +232,7 @@
 
 2009-04-13 20:39  paddockd
 
-	* src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	* [r49] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
 	  src/slimaudio/slimaudio_buffer.c,
 	  src/slimaudio/slimaudio_output.c,
 	  src/squeezeslave/squeezeslave.c: Increased decoder buffer size
@@ -170,7 +241,7 @@
 
 2009-04-13 12:07  paddockd
 
-	* ChangeLog, src/slimaudio/slimaudio.c,
+	* [r48] ChangeLog, src/slimaudio/slimaudio.c,
 	  src/slimaudio/slimaudio_buffer.c,
 	  src/slimaudio/slimaudio_buffer.h,
 	  src/slimaudio/slimaudio_decoder.c,
@@ -181,7 +252,7 @@
 
 2009-04-10 21:20  paddockd
 
-	* ChangeLog, TODO, lib/getopt/getopt.c,
+	* [r47] ChangeLog, TODO, lib/getopt/getopt.c,
 	  lib/portaudio/pa_win_ds/pa_dsound.c, src/slimaudio/slimaudio.c,
 	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_output.c,
 	  src/squeezeslave/squeezeslave.c: Removed STAT debugging code.
@@ -191,7 +262,7 @@
 
 2009-04-10 19:56  paddockd
 
-	* makefile.linux24-display, src/slimaudio/slimaudio.c,
+	* [r46] makefile.linux24-display, src/slimaudio/slimaudio.c,
 	  src/slimaudio/slimaudio.h, src/slimproto/slimproto.c,
 	  src/slimproto/slimproto.h: Fixed high/low received bytes counters
 	  for STAT.
@@ -200,7 +271,7 @@
 
 2009-04-09 19:54  paddockd
 
-	* ChangeLog, TODO, makefile.linux24-display,
+	* [r45] ChangeLog, TODO, makefile.linux24-display,
 	  patches/squeezecenter_squeezeslave_player3-7.4.patch,
 	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
 	  src/slimaudio/slimaudio_decoder_mad.c,
@@ -215,7 +286,7 @@
 
 2009-03-25 12:24  paddockd
 
-	* ChangeLog, SqueezeSlave.wiki, TODO,
+	* [r41] ChangeLog, SqueezeSlave.wiki, TODO,
 	  patches/squeezecenter_squeezeslave_player2-7.2.patch,
 	  src/squeezeslave/squeezeslave.c: Added 7.2 version of
 	  squeezecenter player patch.
@@ -224,7 +295,7 @@
 
 2009-03-14 11:14  paddockd
 
-	* ChangeLog, SqueezeSlave.wiki, makefile.linux26-display,
+	* [r38] ChangeLog, SqueezeSlave.wiki, makefile.linux26-display,
 	  patches/squeezecenter_squeezeslave_player-7.3.patch,
 	  patches/squeezecenter_squeezeslave_player2-7.3.patch,
 	  src/squeezeslave/squeezeslave.c: New linux26 OSS and display
@@ -235,12 +306,12 @@
 
 2009-03-11 11:57  paddockd
 
-	* ChangeLog, src/squeezeslave/squeezeslave.c: Bring squeezeslave
-	  version in line with playertype changes.
+	* [r33] ChangeLog, src/squeezeslave/squeezeslave.c: Bring
+	  squeezeslave version in line with playertype changes.
 
 2009-03-07 22:06  paddockd
 
-	* ChangeLog, ReleaseNotes, makefile.linux24-debug,
+	* [r29] ChangeLog, ReleaseNotes, makefile.linux24-debug,
 	  makefile.s9sparc-debug, src/squeezeslave/squeezeslave.c: Updated
 	  damonize feature to pass logfile on command line. No longer
 	  writes to /var/log by default. Changed to allow non-root users to
@@ -249,7 +320,7 @@
 
 2009-03-01 13:30  paddockd
 
-	* ChangeLog, ReleaseNotes, TODO, config/squeezeslave.plist,
+	* [r28] ChangeLog, ReleaseNotes, TODO, config/squeezeslave.plist,
 	  makefile.osx, makefile.osxintel, src/squeezeslave/squeezeslave.c:
 	  Integrated Ivor Bosloper's support to startup as a daemon by
 	  defining DAEMONIZE at compile time.
@@ -263,7 +334,7 @@
 
 2009-02-05 18:47  paddockd
 
-	* .lircrc, ChangeLog, ReleaseNotes, config/.lircrc,
+	* [r26] .lircrc, ChangeLog, ReleaseNotes, config/.lircrc,
 	  config/dot-asoundrc, config/dot-lircrc,
 	  config/squeezeslave.init.rh52, patches/daemonize.patch,
 	  src/squeezeslave/squeezeslave.c: Added -e/--playerid options.
@@ -271,7 +342,7 @@
 
 2009-01-17 12:44  paddockd
 
-	* ChangeLog, lib/portaudio/pa_unix_oss/pa_unix_oss.c,
+	* [r25] ChangeLog, lib/portaudio/pa_unix_oss/pa_unix_oss.c,
 	  src/slimaudio/slimaudio_output.c,
 	  src/squeezeslave/squeezeslave.c: Added fix from ivy for portaudio
 	  v19 (alsa) Pa_GetStreamTime.
@@ -281,7 +352,8 @@
 
 2008-12-21 15:18  paddockd
 
-	* ChangeLog, lib/libportaudio/linux24/lib/libportaudio-debug.a,
+	* [r24] ChangeLog,
+	  lib/libportaudio/linux24/lib/libportaudio-debug.a,
 	  lib/portaudio/pa_win_ds/pa_dsound.c, makefile.linux24-alsa,
 	  makefile.linux24-display, makefile.linux24-i586-display,
 	  src/squeezeslave/squeezeslave.c: Removed
@@ -296,7 +368,7 @@
 
 2008-12-02 12:11  paddockd
 
-	* ChangeLog, makefile.linux24-display,
+	* [r23] ChangeLog, makefile.linux24-display,
 	  makefile.linux24-i586-display, src/squeezeslave/squeezeslave.c:
 	  Added , key for rewind.
 	  Added . key for forward to remove need for shift key use.
@@ -305,7 +377,7 @@
 
 2008-11-19 13:28  paddockd
 
-	* .lircrc, ChangeLog, ReleaseNotes, config, config/.lircrc,
+	* [r22] .lircrc, ChangeLog, ReleaseNotes, config, config/.lircrc,
 	  makefile.linux26-alsa-display,
 	  patches/squeezecenter_var_size_display.patch,
 	  patches/squeezeslave-display.patch, src/slimproto/slimproto.c,
@@ -314,7 +386,7 @@
 
 2008-11-19 12:17  paddockd
 
-	* ChangeLog, lib/popt, lib/popt/build-popt-linux24,
+	* [r21] ChangeLog, lib/popt, lib/popt/build-popt-linux24,
 	  lib/popt/build-popt-s9, lib/popt/linux24,
 	  lib/popt/linux24/include, lib/popt/linux24/include/popt.h,
 	  lib/popt/linux24/lib, lib/popt/linux24/lib/libpopt.a,
@@ -332,7 +404,7 @@
 
 2008-11-03 12:49  paddockd
 
-	* ChangeLog, makefile.linux26-alsa, makefile.linux26-debug,
+	* [r20] ChangeLog, makefile.linux26-alsa, makefile.linux26-debug,
 	  src/slimaudio/slimaudio.h, src/squeezeslave/squeezeslave.c:
 	  Increased decoder and audio buffers by ~50%.
 	  Help message updates.
@@ -341,7 +413,7 @@
 
 2008-10-30 20:20  paddockd
 
-	* ChangeLog, makefile.linux26-alsa,
+	* [r19] ChangeLog, makefile.linux26-alsa,
 	  src/squeezeslave/squeezeslave.c: Fixed retry option command line
 	  parsing.
 	  Added use of local getopt library.
@@ -349,7 +421,7 @@
 
 2008-10-30 01:25  paddockd
 
-	* makefile.linux26-alsa, src/slimaudio/slimaudio.h,
+	* [r18] makefile.linux26-alsa, src/slimaudio/slimaudio.h,
 	  src/slimaudio/slimaudio_output.c,
 	  src/squeezeslave/squeezeslave.c: Increased both the decoder and
 	  audio buffer sizes for portaudio v19.
@@ -358,7 +430,7 @@
 
 2008-10-28 11:31  paddockd
 
-	* ChangeLog, lib/libportaudio, lib/libportaudio/linux24,
+	* [r17] ChangeLog, lib/libportaudio, lib/libportaudio/linux24,
 	  lib/libportaudio/linux24/include,
 	  lib/libportaudio/linux24/include/portaudio.h,
 	  lib/libportaudio/linux24/lib,
@@ -382,7 +454,7 @@
 
 2008-10-26 09:10  paddockd
 
-	* makefile.linux26, makefile.linux26-debug,
+	* [r16] makefile.linux26, makefile.linux26-debug,
 	  src/squeezeslave/squeezeslave.c: Removed
 	  -DGETOPT_SUPPORTS_OPTIONAL build option from linux26 makefiles.
 	  Added missing octet in mac address example in help message, only
@@ -393,7 +465,7 @@
 
 2008-10-25 13:43  paddockd
 
-	* ChangeLog, ReleaseNotes, lib/flac/build-flac-cygwin,
+	* [r15] ChangeLog, ReleaseNotes, lib/flac/build-flac-cygwin,
 	  lib/libmad/build-mad-cygwin, lib/libmad/build-mad-win32,
 	  lib/vorbis/build-ogg-cygwin, lib/vorbis/build-vorbis-cygwin,
 	  patches/gettimeofday.patch, patches/portaudioV19_3.patch,
@@ -411,7 +483,7 @@
 
 2008-10-23 21:14  paddockd
 
-	* ChangeLog, makefile.linux24, makefile.linux24-debug,
+	* [r12] ChangeLog, makefile.linux24, makefile.linux24-debug,
 	  makefile.linux24-i586, makefile.linux26-debug, makefile.s10intel,
 	  patches, patches/flaac.patch, patches/pa19segfault.patch,
 	  patches/portaudiov19.patch, patches/retry.patch,
@@ -424,7 +496,7 @@
 
 2008-10-23 12:36  paddockd
 
-	* ChangeLog, lib/flac/build-flac-solaris10, lib/flac/solaris,
+	* [r11] ChangeLog, lib/flac/build-flac-solaris10, lib/flac/solaris,
 	  lib/flac/solaris/include, lib/flac/solaris/include/FLAC,
 	  lib/flac/solaris/include/FLAC/all.h,
 	  lib/flac/solaris/include/FLAC/assert.h,
@@ -460,20 +532,21 @@
 
 2008-10-22 13:12  paddockd
 
-	* src/squeezeslave/squeezeslave.c: Used #define for default retry
-	  connection value.
+	* [r10] src/squeezeslave/squeezeslave.c: Used #define for default
+	  retry connection value.
 
 2008-10-22 12:07  paddockd
 
-	* makefile.cygwin, makefile.osx, src/squeezeslave/squeezeslave.c:
-	  Added OSX makefile. Not tested, no MAC.
+	* [r9] makefile.cygwin, makefile.osx,
+	  src/squeezeslave/squeezeslave.c: Added OSX makefile. Not tested,
+	  no MAC.
 	  Added less than 1 check to retry interval and reset to default of
 	  5.
 	  Increased version to 9
 
 2008-10-22 11:29  paddockd
 
-	* src/slimaudio/slimaudio_decoder_mad.c,
+	* [r8] src/slimaudio/slimaudio_decoder_mad.c,
 	  src/slimaudio/slimaudio_decoder_vorbis.c,
 	  src/squeezeslave/squeezeslave.c: Fixed endian problem with
 	  ogg/vorbis decoding for Solaris SPARC and MacOSX.
@@ -486,13 +559,13 @@
 
 2008-10-17 18:04  paddockd
 
-	* makefile.mingw32, src/squeezeslave/squeezeslave.c: Updated
+	* [r7] makefile.mingw32, src/squeezeslave/squeezeslave.c: Updated
 	  version.
 	  Reverted mingw32 makefile to use external dlls
 
 2008-10-17 17:40  paddockd
 
-	* bin/pthreadGC2.dll, makefile.cygwin, makefile.linux24,
+	* [r6] bin/pthreadGC2.dll, makefile.cygwin, makefile.linux24,
 	  makefile.mingw32, src/slimaudio/slimaudio_decoder_flac.c,
 	  src/slimaudio/slimaudio_decoder_mad.c,
 	  src/slimaudio/slimaudio_output.c: Modified libmad and libflac
@@ -502,7 +575,7 @@
 
 2008-10-16 21:51  paddockd
 
-	* bin/pthreadGC2.dll, lib/dx, lib/dx/include,
+	* [r5] bin/pthreadGC2.dll, lib/dx, lib/dx/include,
 	  lib/dx/include/D3D10.h, lib/dx/include/D3D10effect.h,
 	  lib/dx/include/D3D10shader.h, lib/dx/include/D3DX10.h,
 	  lib/dx/include/D3DX10core.h, lib/dx/include/D3DX10math.h,
@@ -673,11 +746,11 @@
 
 2008-10-08 16:21  paddockd
 
-	* bin: Added bin directory.
+	* [r4] bin: Added bin directory.
 
 2008-10-08 12:29  paddockd
 
-	* lib, lib/getopt, lib/getopt/getopt.c, lib/getopt/getopt.h,
+	* [r3] lib, lib/getopt, lib/getopt/getopt.c, lib/getopt/getopt.h,
 	  lib/getopt/getopt1.c, lib/portaudio, lib/portaudio/LICENSE.txt,
 	  lib/portaudio/Makefile.in, lib/portaudio/Makefile.linux,
 	  lib/portaudio/Makefile.mingw, lib/portaudio/Makefile.solaris,
@@ -839,8 +912,9 @@
 
 2008-10-06 14:42  paddockd
 
-	* ., LICENSE.txt, src, src/slimaudio, src/slimaudio/slimaudio.c,
-	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_buffer.c,
+	* [r2] ., LICENSE.txt, src, src/slimaudio,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_buffer.c,
 	  src/slimaudio/slimaudio_buffer.h,
 	  src/slimaudio/slimaudio_decoder.c,
 	  src/slimaudio/slimaudio_decoder_flac.c,

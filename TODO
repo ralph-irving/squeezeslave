@@ -35,9 +35,6 @@ eof when there's no data available in the http buffer, it blocks waiting
 for http to get more but the trigger STMd is not being sent to get more
 data as it relies on the decoder finishing.
 
-Current #if 0 blocked out code fixes mp3 playback but breaks ogg, flac
-and wav.  Investigate mp3 decoder code.
-
 ---
 
 Fix playing of left over buffer after stopping play and changing songs.
