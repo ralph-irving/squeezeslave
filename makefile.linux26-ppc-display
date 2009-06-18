@@ -1,0 +1,49 @@
+CC=gcc
+
+CFLAGS=-g -O2 -D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DUSE_SIGNALS_FOR_RESTART
+
+INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/getopt
+
+PORTAUDIOFILES:=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_oss.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
+
+PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
+
+GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c
+
+.c.o:
+	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+all : bin/squeezeslave
+
+lib/libportaudio.a: $(PORTAUDIOFILES:.c=.o)
+	ar cru lib/libportaudio.a $^
+	ranlib lib/libportaudio.a
+
+lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
+	ar cru lib/libslimproto.a $^
+	ranlib lib/libslimproto.a
+
+lib/libgetopt.a: $(GETOPTFILES:.c=.o)
+	ar cru lib/libgetopt.a $^
+	ranlib lib/libgetopt.a
+
+bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a lib/libgetopt.a
+	${CC} -g -o bin/squeezeslave $^ -lmad -lFLAC -lvorbisfile -lvorbis -logg -lpthread -lm -lcurses -llirc_client
+
+clean:
+	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \
+	               $(SLIMPROTOFILES:.c=.o) \
+	               $(PORTMIXERFILES:.c=.o) \
+	               $(SQUEEZESLAVEFILES:.c=.o) \
+	               lib/libportaudio.a \
+	               lib/libslimproto.a \
+	               lib/libgetopt.a \
+	               bin/squeezeslave; do \
+	  test -e $$FILE && echo $$FILE || true; \
+	  test -e $$FILE && $(RM) $$FILE 2>/dev/null || true; \
+	done; } | xargs --no-run-if-empty echo $(RM)
+

@@ -1,3 +1,15 @@
+2009-05-31 22:16  paddockd
+
+	* [r65] ChangeLog, SqueezeSlave.wiki, TODO,
+	  config/custom-convert.conf.hdcd, config/hdcdwrapper.pl,
+	  patches/squeezecenter_squeezeslave_player3-7.2.patch,
+	  patches/squeezecenter_squeezeslave_player3-7.3.patch,
+	  patches/squeezecenter_squeezeslave_player4-7.4.patch,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  new patch files with replay gain fix.
+	  Updated legal notice.
+	  Increased version to 0.9-65.
+
 2009-05-17 13:48  paddockd
 
 	* [r64] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
