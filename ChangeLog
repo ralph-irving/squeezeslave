@@ -1,3 +1,12 @@
+2009-06-18 11:11  paddockd
+
+	* [r67] ChangeLog, ReleaseNotes, ReleaseNotes-0.8,
+	  makefile.linux26-ppc-display, src/squeezeslave/squeezeslave.c:
+	  Added cast to shortopt compare to fix gcc 4.3. Thanks to pukekawa
+	  for the fix.
+	  Added linux power pc makefile.
+	  Created new release notes.
+
 2009-05-31 22:16  paddockd
 
 	* [r65] ChangeLog, SqueezeSlave.wiki, TODO,
