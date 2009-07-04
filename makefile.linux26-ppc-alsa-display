@@ -1,0 +1,53 @@
+CC=gcc
+TAR=tar
+
+CFLAGS=-g -O2 -D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DPORTAUDIO_ALSA -DINTERACTIVE -DUSE_SIGNALS_FOR_RESTART
+
+INCLUDE=-Ilib/libportaudio/linux26-ppc/include -Ilib/portmixer/px_common -Isrc -Ilib/getopt
+
+PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
+
+GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
+
+.c.o:
+	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+all : lib/libportaudio/linux26-ppc/lib/libportaudio.a bin/squeezeslave-alsa
+
+# portaudio
+portaudiov19/Makefile:
+	cd lib/libportaudio/linux26-ppc/build && ${TAR} -xzf ../../../../sources/pa_snapshot-20090419.tar.gz
+	cd lib/libportaudio/linux26-ppc/build/portaudio && ./configure --without-jack --disable-shared
+
+lib/libportaudio/linux26-ppc/lib/libportaudio.a: portaudiov19/Makefile
+	cd lib/libportaudio/linux26-ppc/build/portaudio; make lib/libportaudio.la
+	cp -p lib/libportaudio/linux26-ppc/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/linux26-ppc/lib
+	cp -p lib/libportaudio/linux26-ppc/build/portaudio/include/portaudio.h lib/libportaudio/linux26-ppc/include
+
+lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
+	ar cru lib/libslimproto.a $^
+	ranlib lib/libslimproto.a
+
+lib/libgetopt.a: $(GETOPTFILES:.c=.o)
+	ar cru lib/libgetopt.a $^
+	ranlib lib/libgetopt.a
+
+bin/squeezeslave-alsa: $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libgetopt.a lib/libportaudio/linux26-ppc/lib/libportaudio.a
+	${CC} -g -o bin/squeezeslave-alsa $^ -lasound -lrt -lmad -lFLAC -lvorbisfile -lvorbis -logg -lpthread -lm -lcurses -llirc_client
+
+clean:
+	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \
+	               $(SLIMPROTOFILES:.c=.o) \
+	               $(PORTMIXERFILES:.c=.o) \
+	               $(SQUEEZESLAVEFILES:.c=.o) \
+	               lib/libslimproto.a \
+	               lib/libgetopt.a \
+	               bin/squeezeslave-alsa; do \
+	  test -e $$FILE && echo $$FILE || true; \
+	  test -e $$FILE && $(RM) $$FILE 2>/dev/null || true; \
+	done; } | xargs --no-run-if-empty echo $(RM)
+	-cd lib/libportaudio/linux26-ppc/build/portaudio && make distclean
