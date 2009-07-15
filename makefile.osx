@@ -1,8 +1,17 @@
+# Cross compiles OSX PowerPC binary on OSX Intel
+
 CC=gcc
+CXX=g++
+TAR=tar
+CFLAGS=-Wall -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -D__BIG_ENDIAN__ -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc
+LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc
 
-CFLAGS=-Wall -DSLIMPROTO_DEBUG -D__BIG_ENDIAN__
+INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/osxppc/include -Ilib/vorbis/osxppc/include -Ilib/flac/osxppc/include
 
-INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
+LIBMAD=libmad-0.15.1b
+LIBOGG=libogg-1.1.4
+LIBVORBIS=libvorbis-1.2.3
+LIBFLAC=flac-1.2.1
 
 PORTAUDIOFILES:=lib/portaudio/pa_mac_core/pa_mac_core.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
 
@@ -12,31 +21,79 @@ SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c
 
 SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
 
+LIBPORTAUDIO=lib/libportaudio.a
+
+LIBSLIMPROTO=lib/libslimproto.a
+
+SUPPORTLIBS=lib/libmad/osxppc/lib/libmad.a lib/vorbis/osxppc/lib/libvorbisfile.a lib/vorbis/osxppc/lib/libvorbis.a lib/vorbis/osxppc/lib/libvorbisenc.a lib/vorbis/osxppc/lib/libogg.a lib/flac/osxppc/lib/libFLAC.a
+
+SQUEEZESLAVE=bin/squeezeslave
+
 .c.o:
 	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
-.o:
-	${CC} $*.o -o $* -Lpa_unix_oss -lportaudio $(LIBS)
+all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
-all : bin/squeezeslave
+lib/libmad/osxppc/lib/libmad.a:
+	cd lib/libmad/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
+	cd lib/libmad/osxppc/build/$(LIBMAD) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=powerpc-apple-darwin8 --enable-shared=no --enable-fpm=ppc
+	cd lib/libmad/osxppc/build/$(LIBMAD) && make clean && make
+	cp -p lib/libmad/osxppc/build/$(LIBMAD)/.libs/libmad.a lib/libmad/osxppc/lib
+	cp -p lib/libmad/osxppc/build/$(LIBMAD)/mad.h lib/libmad/osxppc/include
 
-lib/libportaudio.a: $(PORTAUDIOFILES:.c=.o)
-	ar cru lib/libportaudio.a $^
-	ranlib lib/libportaudio.a
+lib/vorbis/osxppc/lib/libogg.a:
+	cd lib/vorbis/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
+	cd lib/vorbis/osxppc/build/$(LIBOGG) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=powerpc-apple-darwin8 --enable-shared=no
+	cd lib/vorbis/osxppc/build/$(LIBOGG) && make clean && make
+	cp -p lib/vorbis/osxppc/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/osxppc/lib
+	cp -p lib/vorbis/osxppc/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h} lib/vorbis/osxppc/include/ogg
 
-lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
-	ar cru lib/libslimproto.a $^
-	ranlib lib/libslimproto.a
+lib/vorbis/osxppc/lib/libvorbisfile.a: lib/vorbis/osxppc/lib/libogg.a
+lib/vorbis/osxppc/lib/libvorbisenc.a: lib/vorbis/osxppc/lib/libogg.a
+lib/vorbis/osxppc/lib/libvorbis.a: lib/vorbis/osxppc/lib/libogg.a
+	cd lib/vorbis/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
+	cd lib/vorbis/osxppc/build/$(LIBVORBIS) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=powerpc-apple-darwin8 --enable-shared=no
+	cd lib/vorbis/osxppc/build/$(LIBVORBIS) && sed -i .bak "s:^LIBS =.*:LIBS = `pwd`/../../lib/libogg.a:"  examples/Makefile
+	cd lib/vorbis/osxppc/build/$(LIBVORBIS) && make clean && make
+	cp -p lib/vorbis/osxppc/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/osxppc/lib
+	cp -p lib/vorbis/osxppc/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/osxppc/include/vorbis
 
-bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
-	${CC} -o bin/squeezeslave $^ -L/usr/local/lib -lmad -lFLAC -lvorbisfile -lvorbis -logg /System/Library/Frameworks/CoreAudio.framework/CoreAudio /System/Library/Frameworks/AudioToolbox.framework/AudioToolbox -lpthread
+lib/flac/osxppc/lib/libFLAC.a: lib/vorbis/osxppc/lib/libogg.a
+	cd lib/flac/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
+	cd lib/flac/osxppc/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=powerpc-apple-darwin8 --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/osxppc/lib --with-ogg-includes=`pwd`/../../../../vorbis/osxppc/include
+	cd lib/flac/osxppc/build/$(LIBFLAC)/src/libFLAC && make clean && make
+	cp -p lib/flac/osxppc/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/osxppc/lib
+	cp -p lib/flac/osxppc/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/osxppc/include/FLAC
 
+$(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
+	ar cru $(LIBPORTAUDIO) $^
+	ranlib $(LIBPORTAUDIO)
+
+$(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
+	ar cru $(LIBSLIMPROTO) $^
+	ranlib $(LIBSLIMPROTO)
+
+$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(SUPPORTLIBS)
+	${CC} $(LDFLAGS) -o $(SQUEEZESLAVE) $^ /System/Library/Frameworks/CoreAudio.framework/CoreAudio /System/Library/Frameworks/AudioToolbox.framework/AudioToolbox -lpthread -lm
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
 	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
-	-@rm -f lib/libportaudio.a
-	-@rm -f lib/libslimproto.a
-	-@rm -f bin/squeezeslave
+	-@rm -f $(PORTMIXERFILES:.c=.o)
+	-@rm -f $(LIBPORTAUDIO)
+	-@rm -f $(LIBSLIMPROTO)
+	-@rm -f $(SQUEEZESLAVE)
+
+realclean: clean
+	-@rm -rf lib/libmad/osxppc/build/$(LIBMAD)
+	-@rm -rf lib/vorbis/osxppc/build/$(LIBOGG)
+	-@rm -rf lib/vorbis/osxppc/build/$(LIBVORBIS)
+	-@rm -rf lib/flac/osxppc/build/$(LIBFLAC)
+	-@rm -f lib/libmad/osxppc/lib/libmad.a lib/libmad/osxpcc/include/mad.h
+	-@rm -f lib/vorbis/osxppc/lib/libogg.a lib/vorbis/osxppc/include/ogg/{ogg.h,os_types.h}
+	-@rm -f lib/vorbis/osxppc/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
+	-@rm -f lib/vorbis/osxppc/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
+	-@rm -f lib/flac/osxppc/lib/libFLAC.a
+	-@rm -f lib/flac/osxppc/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 
