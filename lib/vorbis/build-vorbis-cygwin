@@ -1,1 +1,0 @@
-./configure --prefix=/usr --enable-shared=no --with-ogg-includes=../cygwin/include --with-ogg-libraries=../cygwin/lib

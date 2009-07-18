@@ -1,12 +1,14 @@
 # Cross compiles OSX PowerPC binary on OSX Intel
 
+OS=osxppc
 CC=gcc
 CXX=g++
 TAR=tar
+SED=sed
 CFLAGS=-Wall -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -D__BIG_ENDIAN__ -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc
 LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc
 
-INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/osxppc/include -Ilib/vorbis/osxppc/include -Ilib/flac/osxppc/include
+INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
@@ -25,7 +27,7 @@ LIBPORTAUDIO=lib/libportaudio.a
 
 LIBSLIMPROTO=lib/libslimproto.a
 
-SUPPORTLIBS=lib/libmad/osxppc/lib/libmad.a lib/vorbis/osxppc/lib/libvorbisfile.a lib/vorbis/osxppc/lib/libvorbis.a lib/vorbis/osxppc/lib/libvorbisenc.a lib/vorbis/osxppc/lib/libogg.a lib/flac/osxppc/lib/libFLAC.a
+SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a
 
 SQUEEZESLAVE=bin/squeezeslave
 
@@ -34,36 +36,36 @@ SQUEEZESLAVE=bin/squeezeslave
 
 all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
-lib/libmad/osxppc/lib/libmad.a:
-	cd lib/libmad/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
-	cd lib/libmad/osxppc/build/$(LIBMAD) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=powerpc-apple-darwin8 --enable-shared=no --enable-fpm=ppc
-	cd lib/libmad/osxppc/build/$(LIBMAD) && make clean && make
-	cp -p lib/libmad/osxppc/build/$(LIBMAD)/.libs/libmad.a lib/libmad/osxppc/lib
-	cp -p lib/libmad/osxppc/build/$(LIBMAD)/mad.h lib/libmad/osxppc/include
+lib/libmad/$(OS)/lib/libmad.a:
+	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=powerpc-apple-darwin8 --enable-shared=no --enable-fpm=ppc
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/mad.h lib/libmad/$(OS)/include
 
-lib/vorbis/osxppc/lib/libogg.a:
-	cd lib/vorbis/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
-	cd lib/vorbis/osxppc/build/$(LIBOGG) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=powerpc-apple-darwin8 --enable-shared=no
-	cd lib/vorbis/osxppc/build/$(LIBOGG) && make clean && make
-	cp -p lib/vorbis/osxppc/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/osxppc/lib
-	cp -p lib/vorbis/osxppc/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h} lib/vorbis/osxppc/include/ogg
+lib/vorbis/$(OS)/lib/libogg.a:
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=powerpc-apple-darwin8 --enable-shared=no
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h,config_types.h} lib/vorbis/$(OS)/include/ogg
 
-lib/vorbis/osxppc/lib/libvorbisfile.a: lib/vorbis/osxppc/lib/libogg.a
-lib/vorbis/osxppc/lib/libvorbisenc.a: lib/vorbis/osxppc/lib/libogg.a
-lib/vorbis/osxppc/lib/libvorbis.a: lib/vorbis/osxppc/lib/libogg.a
-	cd lib/vorbis/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
-	cd lib/vorbis/osxppc/build/$(LIBVORBIS) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=powerpc-apple-darwin8 --enable-shared=no
-	cd lib/vorbis/osxppc/build/$(LIBVORBIS) && sed -i .bak "s:^LIBS =.*:LIBS = `pwd`/../../lib/libogg.a:"  examples/Makefile
-	cd lib/vorbis/osxppc/build/$(LIBVORBIS) && make clean && make
-	cp -p lib/vorbis/osxppc/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/osxppc/lib
-	cp -p lib/vorbis/osxppc/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/osxppc/include/vorbis
+lib/vorbis/$(OS)/lib/libvorbisfile.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=powerpc-apple-darwin8 --enable-shared=no
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && $(SED) -i .bak "s:^LIBS =.*:LIBS = `pwd`/../../lib/libogg.a:"  examples/Makefile
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/$(OS)/include/vorbis
 
-lib/flac/osxppc/lib/libFLAC.a: lib/vorbis/osxppc/lib/libogg.a
-	cd lib/flac/osxppc/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
-	cd lib/flac/osxppc/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=powerpc-apple-darwin8 --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/osxppc/lib --with-ogg-includes=`pwd`/../../../../vorbis/osxppc/include
-	cd lib/flac/osxppc/build/$(LIBFLAC)/src/libFLAC && make clean && make
-	cp -p lib/flac/osxppc/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/osxppc/lib
-	cp -p lib/flac/osxppc/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/osxppc/include/FLAC
+lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=powerpc-apple-darwin8 --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
+	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
 
 $(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
 	ar cru $(LIBPORTAUDIO) $^
@@ -86,14 +88,14 @@ clean:
 	-@rm -f $(SQUEEZESLAVE)
 
 realclean: clean
-	-@rm -rf lib/libmad/osxppc/build/$(LIBMAD)
-	-@rm -rf lib/vorbis/osxppc/build/$(LIBOGG)
-	-@rm -rf lib/vorbis/osxppc/build/$(LIBVORBIS)
-	-@rm -rf lib/flac/osxppc/build/$(LIBFLAC)
-	-@rm -f lib/libmad/osxppc/lib/libmad.a lib/libmad/osxpcc/include/mad.h
-	-@rm -f lib/vorbis/osxppc/lib/libogg.a lib/vorbis/osxppc/include/ogg/{ogg.h,os_types.h}
-	-@rm -f lib/vorbis/osxppc/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
-	-@rm -f lib/vorbis/osxppc/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
-	-@rm -f lib/flac/osxppc/lib/libFLAC.a
-	-@rm -f lib/flac/osxppc/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
+	-@rm -rf lib/libmad/$(OS)/build/$(LIBMAD)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBOGG)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
+	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
+	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
+	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
+	-@rm -f lib/vorbis/$(OS)/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
+	-@rm -f lib/vorbis/$(OS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
+	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
+	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 

@@ -1,1 +1,0 @@
-./configure --prefix=/usr --enable-shared=no --with-ogg-includes=home/paddockd/source/squeezeslave/lib/vorbis/cygwin/include --with-ogg-libraries=/home/paddockd/source/squeezeslave/lib/vorbis/cygwin/lib
