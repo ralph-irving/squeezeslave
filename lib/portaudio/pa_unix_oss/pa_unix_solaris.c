@@ -76,7 +76,9 @@ PaError Pa_QueryDevice( const char *deviceName, internalPortAudioDevice *pad )
 	 equivalent "-ctl"-descriptor - MR
 	*/
     char devname[strlen(deviceName) + 4];
-    if ( (tempDevHandle = open(strcat(strcpy(devname, deviceName), "ctl"), O_WRONLY|O_NONBLOCK))  == -1 )
+    snprintf(devname,(strlen(deviceName) + 4),"%sctl",deviceName);
+
+    if ((tempDevHandle = open(devname, O_WRONLY|O_NONBLOCK))  == -1 )
     {
         DBUG(("Pa_QueryDevice: could not open %s\n", deviceName ));
         return paHostError;

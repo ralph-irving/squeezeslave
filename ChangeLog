@@ -1,3 +1,24 @@
+2009-07-18 17:57  paddockd
+
+	* [r74] lib/flac/s10sparc, lib/flac/s10sparc/build,
+	  lib/flac/s10sparc/include, lib/flac/s10sparc/include/FLAC,
+	  lib/flac/s10sparc/lib, lib/libmad/build-mad-solaris,
+	  lib/libmad/s10sparc, lib/libmad/s10sparc/build,
+	  lib/libmad/s10sparc/include,
+	  lib/libmad/s10sparc/include/stdbool.h, lib/libmad/s10sparc/lib,
+	  lib/vorbis/s10sparc, lib/vorbis/s10sparc/build,
+	  lib/vorbis/s10sparc/include, lib/vorbis/s10sparc/include/ogg,
+	  lib/vorbis/s10sparc/include/vorbis, lib/vorbis/s10sparc/lib,
+	  makefile.osx, makefile.s10intel, makefile.s10sparc,
+	  makefile.s9sparc: Added Solaris 10 SPARC 64-bit makefile and
+	  support directories.
+	  Fixed CC macro to use make variable instead of shell variable.
+
+2009-07-18 12:01  paddockd
+
+	* [r73] ChangeLog, makefile.s10intel: Fixed makefile.s10intel
+	  support library builds to use cc instead of gcc default.
+
 2009-07-18 11:24  paddockd
 
 	* [r72] lib/flac/build-flac-solaris10, lib/flac/s10intel,
