@@ -1,3 +1,96 @@
+2009-07-18 11:24  paddockd
+
+	* [r72] lib/flac/build-flac-solaris10, lib/flac/s10intel,
+	  lib/flac/s10intel/build, lib/flac/s10intel/include,
+	  lib/flac/s10intel/include/FLAC, lib/flac/s10intel/lib,
+	  lib/flac/solaris, lib/libmad/s10intel, lib/libmad/s10intel/build,
+	  lib/libmad/s10intel/include,
+	  lib/libmad/s10intel/include/stdbool.h, lib/libmad/s10intel/lib,
+	  lib/libmad/solaris, lib/vorbis/build-ogg-solaris,
+	  lib/vorbis/build-vorbis-solaris, lib/vorbis/s10intel,
+	  lib/vorbis/s10intel/build, lib/vorbis/s10intel/include,
+	  lib/vorbis/s10intel/include/ogg,
+	  lib/vorbis/s10intel/include/vorbis, lib/vorbis/s10intel/lib,
+	  lib/vorbis/solaris, makefile.s10intel, makefile.s10intel-debug:
+	  Removed solaris 10 intel precompiled libraries and header files.
+	  Modified makefile.s10intel to build all required decoder support
+	  libraries.
+	  Removed makefile.s10intel-debug as all binaries will include
+	  debug feature.
+	  Removed old precompiled library build scripts.
+
+2009-07-18 10:12  paddockd
+
+	* [r71] lib/flac/build-flac-cygwin, lib/flac/cygwin,
+	  lib/flac/s9sparc/build, lib/flac/s9sparc/include/FLAC/all.h,
+	  lib/flac/s9sparc/include/FLAC/callback.h,
+	  lib/flac/s9sparc/include/FLAC/export.h,
+	  lib/flac/s9sparc/include/FLAC/format.h,
+	  lib/flac/s9sparc/include/FLAC/metadata.h,
+	  lib/flac/s9sparc/include/FLAC/ordinals.h,
+	  lib/flac/s9sparc/include/FLAC/stream_decoder.h,
+	  lib/flac/s9sparc/include/FLAC/stream_encoder.h,
+	  lib/flac/s9sparc/lib/libFLAC.a, lib/libmad/build-mad-cygwin,
+	  lib/libmad/cygwin, lib/libmad/s9sparc/build,
+	  lib/libmad/s9sparc/include, lib/libmad/s9sparc/include/stdbool.h,
+	  lib/libmad/s9sparc/lib, lib/libmad/s9sparc/libmad-sparc.a,
+	  lib/libmad/s9sparc/libmad.a, lib/libmad/s9sparc/libmads9.a,
+	  lib/libmad/s9sparc/mad.h, lib/libmad/s9sparc/stdbool.h,
+	  lib/vorbis/build-ogg-cygwin, lib/vorbis/build-vorbis-cygwin,
+	  lib/vorbis/cygwin, lib/vorbis/s9sparc/build,
+	  lib/vorbis/s9sparc/include/ogg/config_types.h,
+	  lib/vorbis/s9sparc/include/ogg/ogg.h,
+	  lib/vorbis/s9sparc/include/ogg/os_types.h,
+	  lib/vorbis/s9sparc/include/vorbis/codec.h,
+	  lib/vorbis/s9sparc/include/vorbis/vorbisenc.h,
+	  lib/vorbis/s9sparc/include/vorbis/vorbisfile.h,
+	  lib/vorbis/s9sparc/lib/libogg.a,
+	  lib/vorbis/s9sparc/lib/libvorbis.a,
+	  lib/vorbis/s9sparc/lib/libvorbisenc.a,
+	  lib/vorbis/s9sparc/lib/libvorbisfile.a, makefile.osx,
+	  makefile.s9sparc, makefile.s9sparc-debug: Removed all files
+	  related to building cygwin version as only Windows Multimedia
+	  extensions are supported and we only use the Direct Sound
+	  interface.
+	  Removed precompiled support libraries and related header files
+	  for Solaris 9 SPARC.
+	  Revised Solaris 9 SPARC makefile to build all support libraries.
+	  Removed Solaris 9 SPARC debug makefile as all revised makefiles
+	  will include debug support.
+
+2009-07-15 19:01  paddockd
+
+	* [r70] lib/flac/osxppc, lib/flac/osxppc/build,
+	  lib/flac/osxppc/include, lib/flac/osxppc/include/FLAC,
+	  lib/flac/osxppc/lib, lib/libmad/osxppc, lib/libmad/osxppc/build,
+	  lib/libmad/osxppc/include, lib/libmad/osxppc/lib,
+	  lib/vorbis/osxppc, lib/vorbis/osxppc/build,
+	  lib/vorbis/osxppc/include, lib/vorbis/osxppc/include/ogg,
+	  lib/vorbis/osxppc/include/vorbis, lib/vorbis/osxppc/lib,
+	  makefile.osx, makefile.osxintel, sources/libogg-1.1.4.tar.bz2,
+	  sources/libvorbis-1.2.3.tar.bz2: Modified makefile.osx to build
+	  ppc version using cross compiler on intel based macs. The
+	  makefile.osx builds all support libraries used by squeezeslave.
+	  This will be used as model to upgrade other platform makefiles to
+	  build all libraries.
+	  Fixed missing cleanup for port mixer files on osx intel.
+	  Added new sources for libogg and libvorbis.
+	  Added directories required to build osxppc binary using
+	  makefile.osx.
+
+2009-07-04 10:58  paddockd
+
+	* [r69] ChangeLog, TODO, lib/libportaudio/linux26-amd64,
+	  lib/libportaudio/linux26-amd64/build,
+	  lib/libportaudio/linux26-amd64/include,
+	  lib/libportaudio/linux26-amd64/lib, lib/libportaudio/linux26-ppc,
+	  lib/libportaudio/linux26-ppc/build,
+	  lib/libportaudio/linux26-ppc/include,
+	  lib/libportaudio/linux26-ppc/lib, makefile.linux26-amd64,
+	  makefile.linux26-amd64-alsa, makefile.linux26-ppc-alsa-display:
+	  Added new makefiles and directories for PowerPC and intel/amd
+	  64-bit.
+
 2009-06-26 11:24  paddockd
 
 	* [r68] ChangeLog, makefile.linux26-ppc-display: Fixed compile
