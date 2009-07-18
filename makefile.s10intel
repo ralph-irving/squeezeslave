@@ -38,7 +38,7 @@ SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a l
 SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
-	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
 all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
@@ -86,7 +86,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	${CC} $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm -lsocket -lnsl -lrt /opt/SUNWspro/prod/lib/libsunmath.a
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm -lsocket -lnsl -lrt /opt/SUNWspro/prod/lib/libsunmath.a
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)

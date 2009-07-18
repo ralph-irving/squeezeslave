@@ -32,7 +32,7 @@ SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a l
 SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
-	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
 all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
@@ -76,7 +76,7 @@ $(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
 	ranlib $(LIBSLIMPROTO)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(SUPPORTLIBS)
-	${CC} $(LDFLAGS) -o $(SQUEEZESLAVE) $^ /System/Library/Frameworks/CoreAudio.framework/CoreAudio /System/Library/Frameworks/AudioToolbox.framework/AudioToolbox -lpthread -lm
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ /System/Library/Frameworks/CoreAudio.framework/CoreAudio /System/Library/Frameworks/AudioToolbox.framework/AudioToolbox -lpthread -lm
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)

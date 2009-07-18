@@ -1,7 +1,0 @@
-#!/bin/ksh
-CC=cc \
-CXX=CC \
-CFLAGS="-I/usr/sfw/include -s -xO4 -fast -xpentium" \
-CXXFLAGS="$CFLAGS" \
-LDFLAGS="-L/usr/sfw/lib" \
-./configure --prefix=/usr/sfw
