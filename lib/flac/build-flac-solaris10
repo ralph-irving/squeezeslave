@@ -1,7 +1,0 @@
-#!/bin/ksh
-CC=cc \
-CXX=CC \
-CFLAGS="-I/export/home0/paddockd/source/squeezeslave-12987/SlimProtoLib/lib/vorbis/solaris -s -xO4 -fast -xpentium" \
-CXXFLAGS="$CFLAGS" \
-LDFLAGS="-L/export/home0/paddockd/source/squeezeslave-12987/SlimProtoLib/lib/vorbis/solaris" \
-./configure --prefix=/usr/sfw

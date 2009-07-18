@@ -1,5 +1,0 @@
-#!/bin/ksh
-CC=cc \
-CXX=CC \
-CFLAGS="-fast -xO4 -s -xpentium" \
-./configure --prefix=/usr/sfw
