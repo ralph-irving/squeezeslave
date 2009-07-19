@@ -1,11 +1,23 @@
+# Windows 32-bit makefile using Cygwin 2.573.2.3 setup.exe
+# Requires Windows DirectX SDK Nov 2008.  You must download DXSDK_Nov08.exe from
+# www.microsoft.com and place the file in sources/
+#
+OS=mingw32
 CC=gcc
-DLLTOOL=dlltool
-DLLWRAP=dllwrap
-RM=rm
+CXX=g++
+TAR=tar
+SED=sed
+CFLAGS=-DSLIMPROTO_DEBUG -Wall -O2 -mno-cygwin -march=i586
+LDFLAGS=-s
 
-CFLAGS=-Wall -mno-cygwin -march=i586
+INCLUDE=-Ilib/dxsdk/$(OS)/include -Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pa_win_ds -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
-INCLUDE=-Ilib/getopt -Ilib/dx/include -Ilib/portaudio/pa_common -Ilib/portaudio/pa_win_ds -Ilib/portmixer/px_common -Ilib/pthread/win32/include -Ilib/libmad/win32 -Ilib/flac/win32/include -Ilib/vorbis/win32/include -Isrc
+LIBMAD=libmad-0.15.1b
+LIBOGG=libogg-1.1.4
+LIBVORBIS=libvorbis-1.2.3
+LIBFLAC=flac-1.2.1
+LIBPTHREAD=pthreads-w32-2-8-0
+7ZIPSRC=p7zip_4.65
 
 PORTAUDIOFILES:=lib/portaudio/pa_win_ds/dsound_wrapper.c lib/portaudio/pa_win_ds/pa_dsound.c lib/portaudio/pa_common/pa_lib.c
 
@@ -13,22 +25,118 @@ PORTMIXERFILES:=lib/portmixer/px_win_ds/px_win_ds.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
-SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
 
-SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
+
+LIBPORTAUDIO=lib/libportaudio.a
+
+LIBSLIMPROTO=lib/libslimproto.a
+
+LIBGETOPT=lib/libgetopt.a
+
+SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/pthread/$(OS)/lib/libpthreadGC2.a lib/dxsdk/$(OS)/lib/dsound.lib
+
+7ZIP=bin/7z.exe
+
+SQUEEZESLAVE=bin/squeezeslave.exe
 
 .c.o:
-	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
-all : bin/squeezeslave.exe
+all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
-bin/squeezeslave.exe : $(SQUEEZESLAVEFILES:.c=.o) $(PORTAUDIOFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(SLIMPROTOFILES:.c=.o) $(GETOPTFILES:.c=.o)
-	${CC} -o bin/squeezeslave.exe $^ -mno-cygwin lib/flac/win32/lib/libFLAC.lib  lib/libmad/win32/libmad-intel.a lib/vorbis/win32/lib/libvorbisfile.a lib/vorbis/win32/lib/libvorbis.a lib/vorbis/win32/lib/libogg.a -Llib/pthread/win32/lib -lpthreadGC2 -Ldx/lib -lws2_32 -ldsound -lwinmm -lm
+$(7ZIP):
+	cd lib/7z/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(7ZIPSRC)_src_all.tar.bz2
+	cd lib/7z/$(OS)/build/$(7ZIPSRC) && cp -p makefile.cygwin makefile.machine
+	cd lib/7z/$(OS)/build/$(7ZIPSRC) && $(SED) -i "s| -DHAVE_GCCVISIBILITYPATCH -fvisibility=hidden -fvisibility-inlines-hidden||g" makefile.machine
+	cd lib/7z/$(OS)/build/$(7ZIPSRC) && make clean && make 7z
+	cp -pr lib/7z/$(OS)/build/$(7ZIPSRC)/bin/{7z.exe,7z.so,Codecs} bin/
+
+lib/dxsdk/$(OS)/lib/dsound.lib: $(7ZIP)
+	cd lib/dxsdk/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/DXSDK_Nov08.exe DXSDK/Lib/x86/dsound.lib DXSDK/Include/dsound.h > /dev/null
+	cp -f lib/dxsdk/$(OS)/build/DXSDK/Lib/x86/dsound.lib lib/dxsdk/$(OS)/lib
+	cp -f lib/dxsdk/$(OS)/build/DXSDK/Include/dsound.h lib/dxsdk/$(OS)/include
+
+lib/pthread/$(OS)/lib/libpthreadGC2.a:
+	cd lib/pthread/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBPTHREAD)-release.tar.bz2
+	cp -p lib/pthread/$(OS)/build/Pre-built.2/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/lib
+	cp -p lib/pthread/$(OS)/build/Pre-built.2/lib/pthreadGC2.dll bin/
+	cp -p lib/pthread/$(OS)/build/Pre-built.2/include/{semaphore.h,pthread.h,sched.h} lib/pthread/$(OS)/include
+
+lib/libmad/$(OS)/lib/libmad.a:
+	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=intel
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/mad.h lib/libmad/$(OS)/include
+
+lib/vorbis/$(OS)/lib/libogg.a:
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --host=i686-pc-mingw32 --build=i686-pc-cygwin --enable-shared=no
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h,config_types.h} lib/vorbis/$(OS)/include/ogg
+
+lib/vorbis/$(OS)/lib/libvorbisfile.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=-L`pwd`/../../lib CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --host=i686-pc-mingw32 --build=i686-pc-cygwin --enable-shared=no
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && $(SED) -i "s:^LIBS =.*:LIBS = `pwd`/../../lib/libogg.a:" examples/Makefile
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/$(OS)/include/vorbis
+
+lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && CC="$(CC)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && $(SED) -i "s:^#   error$$:#   define SIZE_T_MAX UINT_MAX:" include/share/alloc.h
+	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
+
+$(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
+	ar cru $(LIBPORTAUDIO) $^
+	ranlib $(LIBPORTAUDIO)
+
+$(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
+	ar cru $(LIBSLIMPROTO) $^
+	ranlib $(LIBSLIMPROTO)
+
+$(LIBGETOPT): $(GETOPTFILES:.c=.o)
+	ar cru $(LIBGETOPT) $^
+	ranlib $(LIBGETOPT)
+
+$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
+	$(CC) $(LDFLAGS) -mno-cygwin -o $(SQUEEZESLAVE) $^ -lm -lws2_32 -lwinmm
 
 clean:
-	-@${RM} $(PORTAUDIOFILES:.c=.o)
-	-@${RM} $(PORTMIXERFILES:.c=.o)
-	-@${RM} $(SLIMPROTOFILES:.c=.o)
-	-@${RM} $(SQUEEZESLAVEFILES:.c=.o)
-	-@${RM} $(GETOPTFILES:.c=.o)
-	-@${RM} bin/squeezeslave.exe
+	-@rm -f $(PORTAUDIOFILES:.c=.o)
+	-@rm -f $(SLIMPROTOFILES:.c=.o)
+	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
+	-@rm -f $(PORTMIXERFILES:.c=.o)
+	-@rm -f $(GETOPTFILES:.c=.o)
+	-@rm -f $(LIBPORTAUDIO)
+	-@rm -f $(LIBSLIMPROTO)
+	-@rm -f $(LIBGETOPT)
+	-@rm -f $(SQUEEZESLAVE)
+
+realclean: clean
+	-@rm -rf lib/libmad/$(OS)/build/$(LIBMAD)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBOGG)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
+	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
+	-@rm -rf lib/pthread/$(OS)/build/Pre-built.2
+	-@rm -rf lib/dxsdk/$(OS)/build/DXSDK
+	-@rm -rf lib/7z/$(OS)/build/$(7ZIPSRC)
+	-@rm -rf bin/{7z.exe,7z.so,Codecs}
+	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
+	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
+	-@rm -f lib/vorbis/$(OS)/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
+	-@rm -f lib/vorbis/$(OS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
+	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
+	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
+	-@rm -f lib/pthread/$(OS)/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/include/{semaphore.h,pthread.h,sched.h} bin/pthreadGC2.dll
+	-@rm -f lib/dxsdk/$(OS)/lib/dsound.lib lib/dxsdk/$(OS)/include/dsound.h
+

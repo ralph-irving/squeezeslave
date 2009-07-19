@@ -1,3 +1,12 @@
+2009-07-18 18:57  paddockd
+
+	* [r75] ChangeLog, lib/portaudio/pa_unix_oss/pa_unix_solaris.c,
+	  makefile.cygwin, src/squeezeslave/squeezeslave.c: Fixed solaris
+	  segmentation fault in Pa_QueryDevice audioctl device name
+	  creation.
+	  Increased version to 75.
+	  Removed obsolete cygwin makefile.
+
 2009-07-18 17:57  paddockd
 
 	* [r74] lib/flac/s10sparc, lib/flac/s10sparc/build,
