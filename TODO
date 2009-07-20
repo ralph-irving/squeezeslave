@@ -72,3 +72,9 @@ Most often this is an indication of an error made by an encoder, but it's also p
 Fix getopt_long_only options string handling removing multiple #if defines.
 
 ---
+
+Complete ASIO SDK integration in makefile.mingw32-asio removing current DirectX usage.
+Building a win32 version using portaudio v19 allows for testing before attempting ASIO support.
+The older portaudio v18.1 does not support ASIO which is currentlu used in all win32 binaries.
+
+---

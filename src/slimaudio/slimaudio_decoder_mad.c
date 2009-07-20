@@ -129,7 +129,7 @@ enum mad_flow mad_input(void *data,
 	memcpy (audio->decoder_data, stream->this_frame, remainder);
 	
 	int data_len = AUDIO_CHUNK_SIZE-MAD_BUFFER_GUARD-remainder;
-	DEBUGF("mad: data_len:%i remainder:%i available:%i\n", data_len, remainder, slimaudio_buffer_available(audio->decoder_buffer));
+	VDEBUGF("mad: data_len:%i remainder:%i available:%i\n", data_len, remainder, slimaudio_buffer_available(audio->decoder_buffer));
 	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, audio->decoder_data + remainder, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 		DEBUGF("mad: SLIMAUDIO_BUFFER_STREAM_END\n");
@@ -260,16 +260,22 @@ enum mad_flow mad_error(void *data,
 		    struct mad_stream *stream,
 		    struct mad_frame *frame)
 {
-
-  fprintf(stderr, "libmad: (mp3) decoding error (0x%04x)\n", stream->error); //FIXME
-
+  switch (stream->error)
+  {
+    /*
+     * Ignore lost syncronization error, as we recover gracefully,
+     * unless debug is enabled, then we display the error.
+     */
+    case MAD_ERROR_LOSTSYNC:
+	DEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error);
+	break;
+    default:
+	fprintf(stderr, "libmad: (mp3) decoding error (0x%04x)\n", stream->error); //FIXME
+  }
   /* return MAD_FLOW_BREAK here to stop decoding (and propagate an error) */
 
   return MAD_FLOW_CONTINUE;
 }
-
-
-
 
 /*
  * madplay - MPEG audio decoder and player
