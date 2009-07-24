@@ -43,7 +43,7 @@ bool retry_connection = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 78;
+const int revision = 79;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -134,8 +134,6 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 		        send_restart_signal();
 		}
 #ifdef INTERACTIVE
-		if (!using_curses)
-			fprintf(stderr, "Connected.\n");
                 memset(&msg, 0, SLIMPROTO_MSG_SIZE);
                 packA4(msg, 0, "SETD");
                 packN4(msg, 4, 2);

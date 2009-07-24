@@ -67,6 +67,41 @@ The 0x0238 error is a Huffman data overrun error. It happens when the actual big
 
 Most often this is an indication of an error made by an encoder, but it's also possible to happen if there is an error in MAD's Huffman code tables or the process of reading them. As the Huffman table union initialization macros are subject to portability issues, this is a possible source of the problem if you get a lot of these errors.
 
+> In file mad.h you have all the error codes:
+>
+>   MAD_ERROR_LOSTSYNC       = 0x0101,    /* lost synchronization */
+>
+> I'm quite new to MAD too but I've experienced this one
+> already. You get this error when your input function
+> places other than MPEG Audio frames in the MAD input
+> buffer. I experienced this with some files that had
+> some ID tags in the beginning of the file. I had to
+> find the first frame (frame synchronization) and place
+> *that* in the MAD input buffer. In other words, try to
+> skip the something in the beginning of your file and
+> make sure you always give MAD MPEG Audio frames only.
+
+Just to clarify, libmad returns this error whenever it expected to find an 
+MPEG audio sync word (marking the beginning of a frame) but found 
+something else instead. It's mostly an informational error; when you call 
+the decoding routine again it will automatically search for the next sync 
+word in the stream and resynchronize.
+
+There are two cases when libmad expects to find a sync word:
+
+1. After a call to mad_stream_buffer(), a sync word is expected to be 
+found at the beginning of the buffer.
+
+2. After successfully decoding a frame header and calculating the frame's 
+size, another sync word is expected immediately to follow the frame.
+
+When this error is returned, stream->this_frame points to the place in the 
+stream where a sync word was expected.
+
+Usually this error is an indication that something else is in the 
+bitstream, such as an ID3 tag. In this case you might call id3_tag_query() 
+to see if it really is a tag and either read or skip it.
+
 ---
 
 Fix getopt_long_only options string handling removing multiple #if defines.
@@ -76,5 +111,9 @@ Fix getopt_long_only options string handling removing multiple #if defines.
 Complete ASIO SDK integration in makefile.mingw32-asio removing current DirectX usage.
 Building a win32 version using portaudio v19 allows for testing before attempting ASIO support.
 The older portaudio v18.1 does not support ASIO which is currentlu used in all win32 binaries.
+
+---
+
+Change -L to display output devices only.
 
 ---
