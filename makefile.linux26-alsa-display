@@ -46,6 +46,7 @@ lib/libportaudio/$(OS)/lib/libportaudio.a:
 
 lib/libmad/$(OS)/lib/libmad.a:
 	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
+	cd lib/libmad/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libmad-forcemem.patch
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=intel
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
 	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib

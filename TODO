@@ -115,5 +115,6 @@ The older portaudio v18.1 does not support ASIO which is currentlu used in all w
 ---
 
 Change -L to display output devices only.
+Research https://bugzilla.redhat.com/show_bug.cgi?id=445644 regarding base device array index
 
 ---
