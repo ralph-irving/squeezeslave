@@ -138,7 +138,7 @@ enum mad_flow mad_input(void *data,
 	}
 
 	mad_stream_buffer(stream, (const unsigned char *)audio->decoder_data, data_len + remainder);
-	DEBUGF("mad: mad_input: DONE\n");
+	DEBUGF("mad: mad_input: CONTINUE\n");
 	return MAD_FLOW_CONTINUE;
 }
 

@@ -1,3 +1,41 @@
+2009-07-26 20:49  paddockd
+
+	* [r80] ChangeLog, TODO, config/audiobyname.sh, lib/flac/lnx26i64,
+	  lib/flac/lnx26i64/build, lib/flac/lnx26i64/include,
+	  lib/flac/lnx26i64/include/FLAC, lib/flac/lnx26i64/lib,
+	  lib/flac/lnx26ppc, lib/flac/lnx26ppc/build,
+	  lib/flac/lnx26ppc/include, lib/flac/lnx26ppc/include/FLAC,
+	  lib/flac/lnx26ppc/lib, lib/libmad/lnx26i64,
+	  lib/libmad/lnx26i64/build, lib/libmad/lnx26i64/include,
+	  lib/libmad/lnx26i64/lib, lib/libmad/lnx26ppc,
+	  lib/libmad/lnx26ppc/build, lib/libmad/lnx26ppc/include,
+	  lib/libmad/lnx26ppc/lib, lib/libportaudio/linux26-amd64,
+	  lib/libportaudio/linux26-ppc, lib/libportaudio/lnx26i64,
+	  lib/libportaudio/lnx26i64/build,
+	  lib/libportaudio/lnx26i64/include, lib/libportaudio/lnx26i64/lib,
+	  lib/libportaudio/lnx26ppc, lib/libportaudio/lnx26ppc/build,
+	  lib/libportaudio/lnx26ppc/include, lib/libportaudio/lnx26ppc/lib,
+	  lib/vorbis/lnx26i64, lib/vorbis/lnx26i64/build,
+	  lib/vorbis/lnx26i64/include, lib/vorbis/lnx26i64/include/ogg,
+	  lib/vorbis/lnx26i64/include/vorbis, lib/vorbis/lnx26i64/lib,
+	  lib/vorbis/lnx26ppc, lib/vorbis/lnx26ppc/build,
+	  lib/vorbis/lnx26ppc/include, lib/vorbis/lnx26ppc/include/ogg,
+	  lib/vorbis/lnx26ppc/include/vorbis, lib/vorbis/lnx26ppc/lib,
+	  makefile.linux26, makefile.linux26-alsa,
+	  makefile.linux26-alsa-display, makefile.linux26-amd64,
+	  makefile.linux26-amd64-alsa, makefile.linux26-debug,
+	  makefile.linux26-display, makefile.linux26-i64-alsa,
+	  makefile.linux26-i64-alsa-display, makefile.linux26-ppc-alsa,
+	  makefile.linux26-ppc-alsa-display, makefile.linux26-ppc-display,
+	  makefile.mingw32-asio, patches/libmad-forcemem.patch: Completed
+	  conversion of linux 2.6 makefiles to build all support libraries.
+	  Removed static support libraries and header files.
+	  Added script to find output device index using the device name.
+	  Added patch for libmad to remove -fforce-mem obsolete gcc 4.3+
+	  compile option from configure.
+	  Renamed amd64 makefiles to i64.
+	  Removed OSS makefiles for ppc and i64.
+
 2009-07-24 20:26  paddockd
 
 	* [r79] ChangeLog, TODO, lib/flac/lnx26, lib/flac/lnx26/build,

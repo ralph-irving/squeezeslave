@@ -118,3 +118,7 @@ Change -L to display output devices only.
 Research https://bugzilla.redhat.com/show_bug.cgi?id=445644 regarding base device array index
 
 ---
+
+Update makefile.osxintel to build all support libraries instead of using MacPorts.
+
+---

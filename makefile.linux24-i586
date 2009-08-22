@@ -1,3 +1,7 @@
+# This makefile is used to build squeezeslave for an old 133MHz Pentium MMX laptop.
+# As it is very slow to compile squeezeslave on it, the system installed support libraries
+# are used instead of compiling them as part of the build.
+
 CC=gcc
 
 CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DNDEBUG -fomit-frame-pointer
