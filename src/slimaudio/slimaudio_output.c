@@ -285,17 +285,6 @@ static void *output_thread(void *ptr) {
 			  	// seems to report every 1 second or so, but the server only
 			  	// drops the connection after 15-20 seconds of inactivity.
 
-				/* Output buffer underflow */
-				if (audio->output_STMo) {
-					DEBUGF("output_thread STMo-PAUSED: %llu\n",audio->pa_streamtime_offset);
-					output_thread_stat(audio, "STMo");
-
-					audio->output_STMo = false;
-
-					/* Tell server decoder is ready for next track */
-					output_thread_stat(audio, "STMd");
-				}
-
 				DEBUGF("output_thread PAUSED: %llu\n",audio->pa_streamtime_offset);
 
 			  	if (audio->keepalive_interval <= 0) {
@@ -367,6 +356,15 @@ static void *output_thread(void *ptr) {
 
 					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
+				}
+
+				/* Output buffer underflow */
+				/* XXX FIXME Does not implement rebuffering, disabled notification. */
+				if (audio->output_STMo) {
+					audio->output_STMo = false;
+
+					DEBUGF("output_thread STMo-PLAYING FIXME: %llu\n",audio->pa_streamtime_offset);
+					// output_thread_stat(audio, "STMo");
 				}
 
 				break;
@@ -724,9 +722,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
-
-				/* pause audio to avoid audio glitch */
-				audio->output_state = PAUSE;
 
 				/* output buffer underrun */
 				audio->output_STMo = true;

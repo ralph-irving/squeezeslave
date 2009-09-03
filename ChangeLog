@@ -1,3 +1,31 @@
+2009-08-22 20:22  paddockd
+
+	* [r81] ChangeLog, TODO, lib/flac/lnx24, lib/flac/lnx24/build,
+	  lib/flac/lnx24/include, lib/flac/lnx24/include/FLAC,
+	  lib/flac/lnx24/lib, lib/libmad/lnx24, lib/libmad/lnx24/build,
+	  lib/libmad/lnx24/include, lib/libmad/lnx24/lib,
+	  lib/libportaudio/lnx24, lib/libportaudio/lnx24/build,
+	  lib/libportaudio/lnx24/include, lib/libportaudio/lnx24/lib,
+	  lib/vorbis/lnx24, lib/vorbis/lnx24/build,
+	  lib/vorbis/lnx24/include, lib/vorbis/lnx24/include/ogg,
+	  lib/vorbis/lnx24/include/vorbis, lib/vorbis/lnx24/lib,
+	  makefile.linux24, makefile.linux24-alsa,
+	  makefile.linux24-alsa-display, makefile.linux24-debug,
+	  makefile.linux24-display, makefile.linux24-i586,
+	  makefile.linux24-i586-display,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Updated linux 2.4 makefiles to
+	  build all support libraries.
+	  Added lnx24 build directories for libraries.
+	  Removed linux 2.4 debug makefile as all makefiles now include
+	  DEBUG support.
+	  Added initial support for rebuffering. Currently the percentage
+	  never increases about 0, but player does advance to the next
+	  track with last.fm and mp3 tracks less than 20 seconds in
+	  duration.
+	  Increased version to 81.
+
 2009-07-26 20:49  paddockd
 
 	* [r80] ChangeLog, TODO, config/audiobyname.sh, lib/flac/lnx26i64,
