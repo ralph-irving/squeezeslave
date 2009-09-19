@@ -1,3 +1,10 @@
+2009-09-03 11:41  paddockd
+
+	* [r82] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Reverted rebuffering changes
+	  committed at rev 81.
+	  Increased version to 82.
+
 2009-08-22 20:22  paddockd
 
 	* [r81] ChangeLog, TODO, lib/flac/lnx24, lib/flac/lnx24/build,

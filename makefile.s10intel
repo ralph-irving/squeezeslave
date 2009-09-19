@@ -2,11 +2,11 @@
 # Requires GNU make, GNU tar and GNU sed
 
 OS=s10intel
-SHELL=/bin/bash
 CC=cc
 CXX=CC
 TAR=gtar
 SED=gsed
+SHELL=/bin/bash
 CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -xO4 -fast -xpentium -xthreadvar=no%dynamic
 LDFLAGS=-s
 

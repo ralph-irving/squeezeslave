@@ -2,11 +2,11 @@
 # Requires GNU make, GNU tar and GNU sed
 
 OS=s10sparc
-SHELL=/bin/bash
 CC=cc
 CXX=CC
 TAR=gtar
 SED=gsed
+SHELL=/bin/bash
 CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -xO4 -xarch=v9 -xthreadvar=no%dynamic
 LDFLAGS=-s -xarch=v9
 
