@@ -73,11 +73,24 @@ int slimaudio_output_init(slimaudio_t *audio) {
 #else
 	audio->num_device_names = Pa_GetDeviceCount();
 #endif
+
+	if ( audio->num_device_names < 0 )
+	{
+		printf("PortAudio error: %s\n", Pa_GetErrorText(audio->num_device_names) );	
+		exit(-1);
+	}
+
 	audio->device_names = (char **)malloc(sizeof(char *) * audio->num_device_names);
 	
 	const PaDeviceInfo *pdi;
 	for(i=0; i<audio->num_device_names; i++ ) {
 		pdi = Pa_GetDeviceInfo( i );
+		if ( pdi->name == NULL )
+		{
+			printf("PortAudio error: GetDeviceInfo failed.\n" );	
+			exit(-1);
+		}
+
 		audio->device_names[i] = strdup(pdi->name);
 	}
 
@@ -86,6 +99,12 @@ int slimaudio_output_init(slimaudio_t *audio) {
 #else
 	audio->output_device_id = Pa_GetDefaultOutputDevice();
 #endif
+
+	if ( audio->output_device_id == paNoDevice )
+	{
+		printf("PortAudio error: No output devices found.\n" );	
+		exit(-1);
+	}
 	audio->px_mixer = NULL;
 	audio->volume_control = VOLUME_DRIVER;
 	audio->volume = 1.0;

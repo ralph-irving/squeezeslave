@@ -1,3 +1,15 @@
+2009-09-19 11:21  paddockd
+
+	* [r83] ChangeLog, makefile.linux24, makefile.linux24-alsa,
+	  makefile.linux24-display, makefile.linux26,
+	  makefile.linux26-alsa, makefile.linux26-alsa-display,
+	  makefile.linux26-display, makefile.linux26-i64-alsa,
+	  makefile.linux26-i64-alsa-display, makefile.linux26-ppc-alsa,
+	  makefile.linux26-ppc-alsa-display, makefile.s10intel,
+	  makefile.s10sparc, makefile.s9sparc: Updated makefiles with bash
+	  specific file specs in copy commands to use /bin/bash for the
+	  shell.
+
 2009-09-03 11:41  paddockd
 
 	* [r82] ChangeLog, src/slimaudio/slimaudio_output.c,

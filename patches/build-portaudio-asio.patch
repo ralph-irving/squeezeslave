@@ -1,0 +1,14 @@
+--- portaudio/Makefile.orig	2009-10-07 07:20:23.000000000 -0400
++++ portaudio/Makefile	2009-10-07 07:18:52.000000000 -0400
+@@ -187,7 +187,10 @@
+ 	$(LIBTOOL) --mode=compile $(CC) -c $(CFLAGS) $< -o $@
+ 
+ %.o: %.cpp $(MAKEFILE) $(PAINC)
+-	$(CXX) -c $(CXXFLAGS) $< -o $@
++	$(CXX) -c $(CFLAGS) $< -o $@
++
++%.lo: %.cpp $(MAKEFILE) $(PAINC)
++	$(LIBTOOL) --mode=compile $(CXX) -c $(CFLAGS) $< -o $@
+ 
+ %.o: %.asm
+ 	$(NASM) $(NASMOPT) -o $@ $<

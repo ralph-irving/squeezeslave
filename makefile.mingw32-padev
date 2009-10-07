@@ -11,10 +11,10 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DPORTAUDIO_ALSA -DPA_ASIO -Wall -O2 -mno-cygwin -march=i586
+CFLAGS=-DSLIMPROTO_DEBUG -DPORTAUDIO_ALSA -Wall -O2 -mno-cygwin -march=i586
 LDFLAGS=-s
 
-INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
+INCLUDE=-Ilib/dxsdk/$(OS)/include -Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
@@ -23,7 +23,7 @@ LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
 LIBPORTAUDIO=pa_snapshot-20090724
-ASIOSDK=asiosdk2.2
+
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
@@ -36,7 +36,7 @@ LIBSLIMPROTO=lib/libslimproto.a
 
 LIBGETOPT=lib/libgetopt.a
 
-SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/pthread/$(OS)/lib/libpthreadGC2.a
+SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/pthread/$(OS)/lib/libpthreadGC2.a lib/dxsdk/$(OS)/lib/dsound.lib
 
 7ZIP=bin/7z.exe
 
@@ -54,19 +54,23 @@ $(7ZIP):
 	cd lib/7z/$(OS)/build/$(7ZIPSRC) && make clean && make 7z
 	cp -pr lib/7z/$(OS)/build/$(7ZIPSRC)/bin/{7z.exe,7z.so,Codecs} bin/
 
+lib/dxsdk/$(OS)/lib/dsound.lib: $(7ZIP)
+	cd lib/dxsdk/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/DXSDK_Nov08.exe DXSDK/Lib/x86/dsound.lib DXSDK/Include/dsound.h > /dev/null
+	cp -f lib/dxsdk/$(OS)/build/DXSDK/Lib/x86/dsound.lib lib/dxsdk/$(OS)/lib
+	cp -f lib/dxsdk/$(OS)/build/DXSDK/Include/dsound.h lib/dxsdk/$(OS)/include
+	cd lib/dxsdk/$(OS)/include && chmod 644 dsound.h && $(SED) -i "s:^typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;$$:// typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;:" dsound.h
+
 lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
+	# cd lib/pthread/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBPTHREAD)-release.exe
 	cd lib/pthread/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(LIBPTHREAD)-release.exe Pre-built.2/lib/libpthreadGC2.a Pre-built.2/lib/pthreadGC2.dll Pre-built.2/include/semaphore.h Pre-built.2/include/pthread.h Pre-built.2/include/sched.h > /dev/null
 	cp -f lib/pthread/$(OS)/build/Pre-built.2/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/lib
 	cp -f lib/pthread/$(OS)/build/Pre-built.2/lib/pthreadGC2.dll bin/
 	cp -f lib/pthread/$(OS)/build/Pre-built.2/include/{semaphore.h,pthread.h,sched.h} lib/pthread/$(OS)/include
 
-lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a $(7ZIP)
+lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a lib/dxsdk/$(OS)/lib/dsound.lib
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
-	cd lib/libportaudio/$(OS)/build/portaudio && ../../../../../$(7ZIP) x -y ../../../../../sources/$(ASIOSDK).zip > /dev/null
-	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p0 -i ../../../../../patches/build-portaudio-asiosdk2.patch
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio.patch
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`../../../../pthread/$(OS)/include" CFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" CPPFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" LDFLAGS="$(LDFLAGS) -L`pwd`../../../../pthread/$(OS)/lib" ./configure --with-host_os=mingw --with-winapi=asio --with-asiodir=`pwd`/ASIOSDK2 --without-jack --enable-shared=no
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-asio.patch
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`../../../../pthread/$(OS)/include" CFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" CPPFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" LDFLAGS="$(LDFLAGS) -L`pwd`../../../../pthread/$(OS)/lib" ./configure --with-host_os=mingw --with-winapi=directx --with-dxdir=`pwd`/../../../../dxsdk/$(OS) --without-jack --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
@@ -112,7 +116,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -mno-cygwin -o $(SQUEEZESLAVE) $^ -lm -lstdc++ -lws2_32 -lwinmm -lole32
+	$(CC) $(LDFLAGS) -mno-cygwin -o $(SQUEEZESLAVE) $^ -lm -lws2_32 -lwinmm -lole32
 
 clean:
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
@@ -129,6 +133,7 @@ realclean: clean
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
 	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
 	-@rm -rf lib/pthread/$(OS)/build/Pre-built.2
+	-@rm -rf lib/dxsdk/$(OS)/build/DXSDK
 	-@rm -rf lib/7z/$(OS)/build/$(7ZIPSRC)
 	-@rm -rf bin/{7z.exe,7z.so,Codecs}
 	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
@@ -139,5 +144,6 @@ realclean: clean
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 	-@rm -f lib/pthread/$(OS)/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/include/{semaphore.h,pthread.h,sched.h} bin/pthreadGC2.dll
+	-@rm -f lib/dxsdk/$(OS)/lib/dsound.lib lib/dxsdk/$(OS)/include/dsound.h
 	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
 

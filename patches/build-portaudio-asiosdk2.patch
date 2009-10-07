@@ -1,0 +1,11 @@
+--- ASIOSDK2/common/combase.h.orig	2006-07-17 14:10:16.000000000 -0400
++++ ASIOSDK2/common/combase.h	2009-10-07 07:25:30.000000000 -0400
+@@ -216,7 +216,7 @@
+ 
+ };
+ 
+-#if WINVER < 0x0501
++#if 0
+ 
+ /* The standard InterlockedXXX functions won't take volatiles */
+ static inline LONG InterlockedIncrement( volatile LONG * plong )

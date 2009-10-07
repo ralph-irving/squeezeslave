@@ -1,0 +1,61 @@
+== Installation ==
+#Download and install [http://www.activestate.com/store/languages/register.plex?id=ActivePerl ActiveState perl] (Perl 5.10 is required to run Squeezebox Server 7.4. For SqueezeCenter 7.3, use the latest 5.8 version)
+#Download and install [http://tortoisesvn.net/downloads TortoiseSVN]
+#Download and install the [http://www.microsoft.com/downloads/details.aspx?familyid=9d467a69-57ff-4ae7-96ee-b18c4790cffd&displaylang=en Windows Server 2003 Resource Kit Tools]
+#Create a folder <code>C:\Program Files\Squeezebox</code>, <code>C:\Program Files\Slimserver</code> or <code>C:\Program Files\SqueezeCenter</code>.  Win32.pm only looks for files in one of these folders during startup, so you must use one of the three folder names for the server to start.
+#Browse to this folder in Explorer
+#Right-click and choose "SVN Checkout"
+#Enter [http://svn.slimdevices.com/repos/slim/7.4/trunk/server] <code>http://svn.slimdevices.com/repos/slim/7.4/trunk/server</code> as the "URL of Repository" ("7.4" should be replaced by the release version number you'd like to base your installation upon (e.g. "7.3", for a demonstration follow the link with your browser).
+#Click OK and wait until the Checkout completes
+#This step is not required for 7.4. Browse to the <code>C:\Program Files\Slimserver\server</code> folder. Check to see if there is a folder called "Cache". If it doesn't exist, create it.
+#Win32.pm only looks for scanner.exe which doesn't exist when running interpreted perl.  You need to tell the server to use scanner.pl instead. Browse to the <code>C:\Program Files\Squeezebox\Slim\Utils\OS</code> folder and create the file called Custom.pm with the contents below.  Replace the "Squeezebox" in the PATHs with the folder name you created above, if different.
+ package Slim::Utils::OS::Custom;
+ use strict;
+ use base qw(Slim::Utils::OS::Win32);
+ sub initDetails {
+        my $class = shift;
+        $class->{osDetails} = $class->SUPER::initDetails();
+        # Make sure we can find any CPAN modules packaged with Squeezebox Server.
+        unshift @INC, 'C:/Program Files/Squeezebox/CPAN';
+        # Make sure plugin files are found.
+        push @INC, 'C:/Documents and Settings/All Users/Application Data/Squeezebox';
+        return $class->{osDetails};
+ }
+ sub scanner {
+ 	return 'C:/Program Files/Squeezebox/scanner.pl';
+ }
+ 1;
+#The latest 5.10 ActiveState perl requires Digest::SHA1 to be newer than 2.11.  Version 2.11 is still included within the source and needs to be removed before attempting to start the server. Browse to the <code>C:\Program Files\Squeezebox\CPAN\Digest</code> folder.  Right click on SHA1.pm, select TortoiseSVN->Delete and add to the ignore list->SHA1.pm.  After an exclaimation mark is added to the icon, delete the file.
+#Open a Command prompt and create the new [[SlimServer]] service as follows:<br><code>instsrv slimsvc "C:\Program Files\Windows Resource Kits\Tools\srvany.exe"</code>
+#Configure the [[SlimServer]] service as follows:
+## Run regedit
+## Go to [=HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services]
+## Right-click the slimsvc keyname, point to New, and then click Key.
+## In the console pane, for the name of the new key, type Parameters.
+## Right-click the Parameters subkey, point to New, and then click String Value.
+## Type the name of the new entry as Application.
+## Right-click Application and then click Modify.
+## In the Edit String window, in Value Data, type [C:\perl\bin\perl  "C:\Program Files\Squeezebox\slimserver.pl"]
+#If you have a firewall installed, don't forget to make sure you open the [http://slimdevices.com/su_faq.html#networking-firewall necessary ports].
+#Start the new service from the Services tool or from the command-line as follows:<br><code>net start</code> <code>slimsvc</code>
+#Browse to http://localhost:9000 to check it's working.
+#Finally, go to Server Settings and set your Music Folder location.
+
+== Updating ==
+
+To update to the latest version simply browse to the folder in Explorer, right-click, and choose "SVN Update". You will need to restart the service for the changes to take effect.
+
+Alternatively, a batch file can be written to automate the update. The following temporarily stops the service, updates to the latest SVN, and then restarts the service. This ensures that all files can be overwritten during the update. Here's an example of how the batch file should look like:
+ net stop slimsvc
+ "<path to Tortoise SVN bin folder>\TortoiseProc.exe" /command:update /path:"<path to Slimserver>" /notempfile /closeonend:1
+ net start slimsvc
+
+Where <code><path to Slimserver></code>: e.g. "C:\Program Files\SlimServer"
+
+The argument <code>/closeonend:1</code> closes the [[TortoiseProc]] window if no errors occur. If you would prefer to keep the GUI window up with what occured you can remove this argument.
+
+== Errors ==
+
+Should [[SlimServer]] crash, the application will not log the error report to the event log. srvany.exe will still be running, and thus the service will still be reported as running. The service should therefore be stopped manually using <code>net stop slimsvc</code>, and then restarted with <code>net start slimsvc</code>.
+[[Category:Installation Guide Pages]]
+

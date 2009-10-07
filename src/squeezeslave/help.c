@@ -72,8 +72,12 @@ void print_version(void) {
 #ifndef PORTAUDIO_ALSA
 	fprintf(stdout, "portaudio:1810 ");
 #else
+#ifndef PA_ASIO
 	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
-#endif
+#else
+	fprintf(stdout, "portaudio:%d:asio ", Pa_GetVersion());
+#endif # PA_ASIO
+#endif # PORTAUDIO_ALSA
 #ifdef SLIMPROTO_DEBUG
 	fprintf(stdout, "debug ");
 #endif
