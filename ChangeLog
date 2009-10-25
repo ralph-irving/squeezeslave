@@ -1,3 +1,28 @@
+2009-10-07 20:04  paddockd
+
+	* [r85] InstallSVNTrunkAsService.wiki, SqueezeSlave.wiki, wiki,
+	  wiki/InstallSVNTrunkAsService.wiki, wiki/SqueezeSlave.wiki:
+	  Rearranged wiki content files.
+
+2009-10-07 20:03  paddockd
+
+	* [r84] ChangeLog, InstallSVNTrunkAsService.wiki,
+	  makefile.mingw32-asio, makefile.mingw32-padev,
+	  patches/build-portaudio-asio.patch,
+	  patches/build-portaudio-asiosdk2.patch,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added mingw32 portaudio asio
+	  compile patches.
+	  Copied makefile.mingw32-asio as makefile.mingw32-padev to reflect
+	  correct makefile type.
+	  Modified makefile.mingw32-asio to build an asio only version of
+	  libportaudio.
+	  Added libportaudio function call return value checking to
+	  slimaudio_output.c
+	  Added asio compile info to -V output.
+	  Updated ChangeLog
+	  Increased version to 84.
+
 2009-09-19 11:21  paddockd
 
 	* [r83] ChangeLog, makefile.linux24, makefile.linux24-alsa,
