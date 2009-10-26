@@ -26,7 +26,9 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <portaudio.h>
+#ifndef PORTAUDIO_ALSA
 #include <portmixer.h>
+#endif
 
 #include <mad.h>
 #include <FLAC/stream_decoder.h>
@@ -100,8 +102,9 @@ typedef struct {
 	unsigned int output_predelay_msec;
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
+#ifndef PORTAUDIO_ALSA
 	PxMixer *px_mixer;
-
+#endif
 	u64_t pa_streamtime_offset;
 	u64_t stream_samples;
 

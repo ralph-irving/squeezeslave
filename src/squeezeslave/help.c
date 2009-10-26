@@ -206,11 +206,17 @@ void print_help(void) {
 "                            A value is required for this option.\n"
 "-s, --signal:               Ignored. Always uses SIGTERM to exit.\n"
 "-V, --version:              Prints the squeezeslave version.\n"
+#ifndef PORTAUDIO_ALSA
 "-v, --volume <on|sw|off>:   Enables/disables volume changes done by\n"
+#else
+"-v, --volume <sw|off>:      Enables/disables volume changes done by\n"
+#endif
 "                            SqueezeCenter during its operation, such as when\n"
 "                            changing the volume through the web interface or\n"
 "                            when applying replay gain.  Defaults to sw.\n"
+#ifndef PORTAUDIO_ALSA
 "                                    on:  volume changes performed on device.\n"
+#endif
 "                                    sw:  volume changes performed in software.\n"
 "                                    off: volume changes ignored.\n"
 #ifdef SLIMPROTO_DEBUG

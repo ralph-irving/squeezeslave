@@ -408,12 +408,14 @@ int main(int argc, char *argv[]) {
 			exit(0);
 			break;
 		case 'v':
-		 	if (strcmp(optarg, "on") == 0) {
-				volume_control = VOLUME_DRIVER;
-			}
-			else if (strcmp(optarg, "sw") == 0 ) {
+		 	if (strcmp(optarg, "sw") == 0) {
 				volume_control = VOLUME_SOFTWARE;
 			}
+#ifndef PORTAUDIO_ALSA
+			else if (strcmp(optarg, "on") == 0 ) {
+				volume_control = VOLUME_DRIVER;
+			}
+#endif
 			else if (strcmp(optarg, "off") == 0 ) {
 				volume_control = VOLUME_NONE;
 			}

@@ -26,7 +26,9 @@
 #include <limits.h>
 
 #include <portaudio.h>
+#ifndef PORTAUDIO_ALSA
 #include <portmixer.h>
+#endif
 
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
@@ -105,7 +107,10 @@ int slimaudio_output_init(slimaudio_t *audio) {
 		printf("PortAudio error: No output devices found.\n" );	
 		exit(-1);
 	}
+
+#ifndef PORTAUDIO_ALSA
 	audio->px_mixer = NULL;
+#endif
 	audio->volume_control = VOLUME_DRIVER;
 	audio->volume = 1.0;
 	audio->vol_adjust = 1.0;
@@ -257,6 +262,7 @@ static void *output_thread(void *ptr) {
 		exit(-1);
 	}
 
+#ifndef PORTAUDIO_ALSA
 	int num_mixers = Px_GetNumMixers(audio->pa_stream);
 	while (--num_mixers >= 0) {
 		DEBUGF("Mixer: %s\n", Px_GetMixerName(audio->pa_stream, num_mixers));
@@ -283,6 +289,7 @@ static void *output_thread(void *ptr) {
 				Px_GetOutputVolumeName(audio->px_mixer, volumeIdx));
 		}
 	}
+#endif
 
 	while (audio->output_state != QUIT) {
 
@@ -448,12 +455,14 @@ static void *output_thread(void *ptr) {
 		}		
 	}
 	pthread_mutex_unlock(&audio->output_mutex);
-	
+
+#ifndef PORTAUDIO_ALSA	
 	if (audio->px_mixer != NULL) {
 		Px_CloseMixer(audio->px_mixer);
 		audio->px_mixer = NULL;
 	}
-	
+#endif
+
 	err = Pa_CloseStream(audio->pa_stream);
 	if (err != paNoError) {
 		printf("output_thread[exit]: PortAudio error3: %s\n", Pa_GetErrorText(err) );
@@ -492,11 +501,12 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	VDEBUGF(" preamp:%hhu digital_volume_control:%hhu", msg.audg.preamp, msg.audg.digital_volume_control);
 	DEBUGF("\n");
 
+#ifndef PORTAUDIO_ALSA
 	if (audio->px_mixer != NULL) {
 		Px_SetPCMOutputVolume(audio->px_mixer, (PxVolume)audio->volume);
 		DEBUGF("pcm volume %f\n", Px_GetPCMOutputVolume(audio->px_mixer));	
 	}
-		
+#endif		
 	return 0;
 }
 
