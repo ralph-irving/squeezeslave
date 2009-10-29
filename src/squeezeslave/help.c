@@ -69,7 +69,7 @@ void print_version(void) {
 #else
 	fprintf(stdout, "linux ");
 #endif
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 	fprintf(stdout, "portaudio:1810 ");
 #else
 #ifndef PA_ASIO
@@ -77,7 +77,7 @@ void print_version(void) {
 #else
 	fprintf(stdout, "portaudio:%d:asio ", Pa_GetVersion());
 #endif # PA_ASIO
-#endif # PORTAUDIO_ALSA
+#endif # PORTAUDIO_DEV
 #ifdef SLIMPROTO_DEBUG
 	fprintf(stdout, "debug ");
 #endif
@@ -206,7 +206,7 @@ void print_help(void) {
 "                            A value is required for this option.\n"
 "-s, --signal:               Ignored. Always uses SIGTERM to exit.\n"
 "-V, --version:              Prints the squeezeslave version.\n"
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 "-v, --volume <on|sw|off>:   Enables/disables volume changes done by\n"
 #else
 "-v, --volume <sw|off>:      Enables/disables volume changes done by\n"
@@ -214,7 +214,7 @@ void print_help(void) {
 "                            SqueezeCenter during its operation, such as when\n"
 "                            changing the volume through the web interface or\n"
 "                            when applying replay gain.  Defaults to sw.\n"
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 "                                    on:  volume changes performed on device.\n"
 #endif
 "                                    sw:  volume changes performed in software.\n"

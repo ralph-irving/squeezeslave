@@ -26,7 +26,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <portaudio.h>
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 #include <portmixer.h>
 #endif
 
@@ -37,7 +37,7 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio_buffer.h"
 
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 #define DECODER_BUFFER_SIZE	(3072*1024)
 #define OUTPUT_BUFFER_SIZE	(10*2*44100*4)
 #else
@@ -90,7 +90,7 @@ typedef struct {
 	pthread_cond_t output_cond;
 	
 	slimaudio_output_state_t output_state;
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 	PortAudioStream *pa_stream;
 #else
 	PaStream *pa_stream;
@@ -102,7 +102,7 @@ typedef struct {
 	unsigned int output_predelay_msec;
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 	PxMixer *px_mixer;
 #endif
 	u64_t pa_streamtime_offset;
@@ -115,7 +115,7 @@ typedef struct {
 	bool output_EoS;
 	int keepalive_interval;
 	
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 	int output_device_id;
 	int num_device_names;
 #else

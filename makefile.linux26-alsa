@@ -6,7 +6,7 @@ TAR=tar
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_ALSA -Wall -O2 -march=i686
+CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -Wall -O2 -march=i686
 LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include

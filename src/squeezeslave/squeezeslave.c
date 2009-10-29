@@ -43,7 +43,7 @@ bool retry_connection = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 84;
+const int revision = 90;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 	int output_device_id = -1;
 #else
 	PaDeviceIndex output_device_id = 0;
@@ -411,7 +411,7 @@ int main(int argc, char *argv[]) {
 		 	if (strcmp(optarg, "sw") == 0) {
 				volume_control = VOLUME_SOFTWARE;
 			}
-#ifndef PORTAUDIO_ALSA
+#ifndef PORTAUDIO_DEV
 			else if (strcmp(optarg, "on") == 0 ) {
 				volume_control = VOLUME_DRIVER;
 			}
