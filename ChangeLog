@@ -1,3 +1,64 @@
+2009-10-29 11:16  paddockd
+
+	* [r90] makefile.linux24-alsa, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa, makefile.linux26-alsa-display,
+	  makefile.linux26-i64-alsa, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa, makefile.linux26-ppc-alsa-display,
+	  makefile.mingw32-asio, makefile.mingw32-padev,
+	  makefile.osxintel-padev, makefile.osxppc-padev,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c:
+	  Replaced all occurances of PORTAUDIO_ALSA with PORTAUDIO_DEV to
+	  remove the Linux specific reference to ALSA.
+
+2009-10-29 10:58  paddockd
+
+	* [r89] lib/libportaudio/osxppc, lib/libportaudio/osxppc/build,
+	  lib/libportaudio/osxppc/include, lib/libportaudio/osxppc/lib,
+	  makefile.osx, makefile.osxppc, makefile.osxppc-padev,
+	  patches/build-portaudio-osxppc.patch: Updated OSX makefiles to
+	  include padev build support.
+	  Renamed makefile.osx to makefile.osxppc.
+	  Added osxppc libportaudio build directories.
+
+2009-10-28 16:41  paddockd
+
+	* [r88] makefile.osxintel, makefile.osxintel-padev: Fixed
+	  differences in osxintel makefiles between pastable and padev.
+
+2009-10-26 01:16  paddockd
+
+	* [r87] makefile.osx, makefile.osxintel, makefile.osxintel-padev,
+	  patches/build-portaudio-osxintel.patch,
+	  patches/libmad-i486.patch, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added patches needed to build
+	  development libportaudio.
+	  Added pa-dev OSX intel makefile.
+	  Added conditional compile to remove portmixer code if compiling
+	  against pa-dev library.
+	  Updates to OSX makefiles.
+
+2009-10-25 19:46  paddockd
+
+	* [r86] ChangeLog, lib/flac/osxintel, lib/flac/osxintel/build,
+	  lib/flac/osxintel/include, lib/flac/osxintel/include/FLAC,
+	  lib/flac/osxintel/lib, lib/libmad/osxintel,
+	  lib/libmad/osxintel/build, lib/libmad/osxintel/include,
+	  lib/libmad/osxintel/lib, lib/libportaudio/osxintel,
+	  lib/libportaudio/osxintel/build,
+	  lib/libportaudio/osxintel/include, lib/libportaudio/osxintel/lib,
+	  lib/vorbis/osxintel, lib/vorbis/osxintel/build,
+	  lib/vorbis/osxintel/include, lib/vorbis/osxintel/include/ogg,
+	  lib/vorbis/osxintel/include/vorbis, lib/vorbis/osxintel/lib,
+	  makefile.linux26-i64-alsa, makefile.linux26-i64-alsa-display,
+	  makefile.osxintel, sources/pa_snapshot-20091022.tar.gz: Added
+	  latest libportaudio snapshot r1420.
+	  Removed MacPorts libogg, libvorbis, libmad and flac dependancy.
+	  Added build directories for osxintel support libraries.
+	  Updated linux26 64-bit makefiles to use libportaudio r1420 which
+	  fixes dither for 64-bit targets.
+
 2009-10-07 20:04  paddockd
 
 	* [r85] InstallSVNTrunkAsService.wiki, SqueezeSlave.wiki, wiki,
