@@ -24,19 +24,26 @@
 extern char* version;
 extern int revision;
 
-// Print list of available audio devices
+/* Print list of audio devices which support 44.1KHz, 16-bit, stereo */
 void listAudioDevices(slimaudio_t * slimaudio, int output_device_id) {
 	int num_devices;
 	char **devices;
+	int default_device;
+
 	slimaudio_get_output_devices(slimaudio, &devices, &num_devices);
 
+	if ( output_device_id == PA_DEFAULT_DEVICE )
+		default_device = slimaudio->output_device_id;
+	else
+		default_device = output_device_id;
 
-	printf("Output devices:\n");	
+	printf("Output devices:\n");
+
 	int i;
 	for (i=0; i<num_devices; i++) {
 		if ( devices[i] != NULL )
 		{
-			if ( i == output_device_id  )
+			if ( i == default_device )
 				printf("*%2d: %s\n", i, devices[i]);
 			else
 				printf(" %2d: %s\n", i, devices[i]);

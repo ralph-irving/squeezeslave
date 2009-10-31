@@ -43,7 +43,7 @@ bool retry_connection = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 93;
+const int revision = 94;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -158,9 +158,9 @@ int main(int argc, char *argv[]) {
 	slimaudio_t slimaudio;
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
 #ifndef PORTAUDIO_DEV
-	int output_device_id = -1;
+	int output_device_id = PA_DEFAULT_DEVICE;
 #else
-	PaDeviceIndex output_device_id = 0;
+	PaDeviceIndex output_device_id = PA_DEFAULT_DEVICE;
 #endif
 	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
 	unsigned int output_predelay = 0;
@@ -463,7 +463,7 @@ int main(int argc, char *argv[]) {
  	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
 
-	if (output_device_id >= 0) {
+	if (output_device_id != PA_DEFAULT_DEVICE) {
 		slimaudio_set_output_device(&slimaudio, output_device_id);
 	}
 

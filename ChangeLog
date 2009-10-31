@@ -1,3 +1,11 @@
+2009-10-31 16:16  paddockd
+
+	* [r93] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added audio format supported
+	  check to default device and if not change the default to be the
+	  first available device that does.
+	  Increased version to 93.
+
 2009-10-31 13:19  paddockd
 
 	* [r92] src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,

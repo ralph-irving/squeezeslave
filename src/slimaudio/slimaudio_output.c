@@ -127,6 +127,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 
 #ifdef PORTAUDIO_DEV
 	audio->output_device_id = Pa_GetDefaultOutputDevice();
+
 	if ( audio->device_names[audio->output_device_id] == NULL )
 	{
 	        for ( i=0; i<audio->num_device_names; i++ )
