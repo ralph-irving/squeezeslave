@@ -34,10 +34,13 @@ void listAudioDevices(slimaudio_t * slimaudio, int output_device_id) {
 	printf("Output devices:\n");	
 	int i;
 	for (i=0; i<num_devices; i++) {
-		if ( i == output_device_id  )
-			printf("*%2d: %s\n", i, devices[i]);
-		else
-			printf(" %2d: %s\n", i, devices[i]);
+		if ( devices[i] != NULL )
+		{
+			if ( i == output_device_id  )
+				printf("*%2d: %s\n", i, devices[i]);
+			else
+				printf(" %2d: %s\n", i, devices[i]);
+		}
 	}
 }
 

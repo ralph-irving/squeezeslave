@@ -65,7 +65,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	
 	err = Pa_Initialize();
 	if (err != paNoError) {
-		printf("PortAudio error: %s\n", Pa_GetErrorText(err) );	
+		printf("PortAudio error4: %s Could not open any audio devices.\n", Pa_GetErrorText(err) );	
 		exit(-1);
 	}	
 	DEBUGF("slimaudio_output_init: PortAudio initialized\n");
@@ -78,22 +78,50 @@ int slimaudio_output_init(slimaudio_t *audio) {
 
 	if ( audio->num_device_names < 0 )
 	{
-		printf("PortAudio error: %s\n", Pa_GetErrorText(audio->num_device_names) );	
+		printf("PortAudio error5: %s\n", Pa_GetErrorText(audio->num_device_names) );	
 		exit(-1);
 	}
 
 	audio->device_names = (char **)malloc(sizeof(char *) * audio->num_device_names);
 	
 	const PaDeviceInfo *pdi;
+#ifdef PORTAUDIO_DEV
+	PaStreamParameters outputParameters;
+#endif
 	for(i=0; i<audio->num_device_names; i++ ) {
 		pdi = Pa_GetDeviceInfo( i );
 		if ( pdi->name == NULL )
 		{
-			printf("PortAudio error: GetDeviceInfo failed.\n" );	
+			printf("PortAudio error6: GetDeviceInfo failed.\n" );	
 			exit(-1);
 		}
+#ifdef PORTAUDIO_DEV
+		/* Device is not stereo or better, skip */
+		if (pdi->maxOutputChannels < 2)
+		{
+			audio->device_names[i] = NULL;
+			continue;
+		}
 
+		outputParameters.device = i;
+		outputParameters.channelCount = 2;
+		outputParameters.sampleFormat = paInt16;
+		outputParameters.suggestedLatency = pdi->defaultHighOutputLatency;
+		outputParameters.hostApiSpecificStreamInfo = NULL;
+
+		err = Pa_IsFormatSupported( NULL, &outputParameters, 44100.0 );
+		if ( err == paFormatIsSupported )
+		{
+			audio->device_names[i] = strdup(pdi->name);
+		}
+		else
+		{
+			audio->device_names[i] = NULL;
+		}
+
+#else
 		audio->device_names[i] = strdup(pdi->name);
+#endif
 	}
 
 #ifndef PORTAUDIO_DEV
@@ -104,7 +132,7 @@ int slimaudio_output_init(slimaudio_t *audio) {
 
 	if ( audio->output_device_id == paNoDevice )
 	{
-		printf("PortAudio error: No output devices found.\n" );	
+		printf("PortAudio error7: No output devices found.\n" );	
 		exit(-1);
 	}
 
@@ -224,7 +252,7 @@ static void *output_thread(void *ptr) {
 				2,			// output channels
 				paInt16,		// output sample format
 				NULL,			// output driver info
-				44100,			// sample rate
+				44100.0,		// sample rate
 				256,			// frames per buffer
 				0,			// number of buffers
 				0,			// stream flags
@@ -235,9 +263,15 @@ static void *output_thread(void *ptr) {
 	const PaDeviceInfo * paDeviceInfo;
 
 	paDeviceInfo = Pa_GetDeviceInfo(audio->output_device_id);
+	/* Device is not stereo or better, abort */
+	if (paDeviceInfo->maxOutputChannels < 2)
+	{
+		printf("output_thread: device does not support stereo or better.\n");
+		exit(-2);
+	}
 
 	outputParameters.device = audio->output_device_id;
-	outputParameters.channelCount = paDeviceInfo->maxOutputChannels >=2 ? 2 : paDeviceInfo->maxOutputChannels;
+	outputParameters.channelCount = 2;
 	outputParameters.sampleFormat = paInt16;
 	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
@@ -250,7 +284,7 @@ static void *output_thread(void *ptr) {
 	err = Pa_OpenStream (	&audio->pa_stream,				// stream
 				NULL,						// inputParameters
 				&outputParameters,				// outputParameters
-				44100,						// sample rate
+				44100.0,					// sample rate
 				0,						// framesPerBuffer
 				paPrimeOutputBuffersUsingStreamCallback,	// streamFlags
 				pa_callback,					// streamCallback
