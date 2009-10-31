@@ -43,7 +43,7 @@ bool retry_connection = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 92;
+const int revision = 93;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG

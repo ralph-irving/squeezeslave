@@ -88,7 +88,8 @@ int slimaudio_output_init(slimaudio_t *audio) {
 #ifdef PORTAUDIO_DEV
 	PaStreamParameters outputParameters;
 #endif
-	for(i=0; i<audio->num_device_names; i++ ) {
+	for ( i=0; i<audio->num_device_names; i++ )
+	{
 		pdi = Pa_GetDeviceInfo( i );
 		if ( pdi->name == NULL )
 		{
@@ -124,10 +125,21 @@ int slimaudio_output_init(slimaudio_t *audio) {
 #endif
 	}
 
-#ifndef PORTAUDIO_DEV
-	audio->output_device_id = Pa_GetDefaultOutputDeviceID();
-#else
+#ifdef PORTAUDIO_DEV
 	audio->output_device_id = Pa_GetDefaultOutputDevice();
+	if ( audio->device_names[audio->output_device_id] == NULL )
+	{
+	        for ( i=0; i<audio->num_device_names; i++ )
+		{
+			if ( audio->device_names[i] != NULL )
+			{
+				audio->output_device_id = i;
+				break;
+			}
+		}
+	}
+#else
+	audio->output_device_id = Pa_GetDefaultOutputDeviceID();
 #endif
 
 	if ( audio->output_device_id == paNoDevice )
@@ -266,7 +278,9 @@ static void *output_thread(void *ptr) {
 	/* Device is not stereo or better, abort */
 	if (paDeviceInfo->maxOutputChannels < 2)
 	{
-		printf("output_thread: device does not support stereo or better.\n");
+		printf("output_thread: PortAudio device does not support 44.1KHz, 16-bit, stereo audio.\n");
+		printf("output_thread: Use -L for a list of supported audio devices, then use -o followed\n");
+		printf("output_thread: by the device number listed before the colon.  See -h for details.\n");
 		exit(-2);
 	}
 

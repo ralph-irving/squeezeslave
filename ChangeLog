@@ -1,3 +1,24 @@
+2009-10-31 13:19  paddockd
+
+	* [r92] src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added pre-check to audio device
+	  listing -L option to confirm device supports 44.1KHz, 16-bit, 2
+	  channel audio. If not, the device is not listed in Output
+	  Devices. The -o<device> option still allows you to select any
+	  device number, but the subsequent audio device open call will
+	  most likely fail.
+	  Increased version to 92.
+
+2009-10-29 12:09  paddockd
+
+	* [r91] ChangeLog, makefile.linux24-alsa,
+	  makefile.linux24-alsa-display, makefile.linux26-alsa,
+	  makefile.linux26-alsa-display, makefile.linux26-ppc-alsa,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio,
+	  makefile.mingw32-padev, src/squeezeslave/squeezeslave.c: Updated
+	  all padev makefiles to use current 20091022 snapshot.
+	  Increased version to 91.
+
 2009-10-29 11:16  paddockd
 
 	* [r90] makefile.linux24-alsa, makefile.linux24-alsa-display,
