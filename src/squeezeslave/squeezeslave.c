@@ -39,11 +39,12 @@
 
 // For retry support
 bool retry_connection = false;
+bool output_change = false;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 94;
+const int revision = 95;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -366,6 +367,7 @@ int main(int argc, char *argv[]) {
 #endif
 		case 'o':
 			output_device_id = strtoul(optarg, NULL, 0);
+			output_change = true;
 			break;
 		case 'p':
 			output_predelay = strtoul(optarg, NULL, 0);
@@ -452,7 +454,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (listdevs) {
-	   listAudioDevices(&slimaudio, output_device_id);
+	   listAudioDevices(&slimaudio, output_device_id, output_change);
 	   exit(1);
 	}
 
@@ -463,7 +465,7 @@ int main(int argc, char *argv[]) {
  	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
 
-	if (output_device_id != PA_DEFAULT_DEVICE) {
+	if ((output_device_id != PA_DEFAULT_DEVICE) || output_change ) {
 		slimaudio_set_output_device(&slimaudio, output_device_id);
 	}
 
@@ -485,6 +487,11 @@ int main(int argc, char *argv[]) {
 #endif
 		exit(-1);
 	}
+
+#ifdef SLIMPROTO_DEBUG
+	if (slimaudio_debug)
+		fprintf ( stderr, "Using audio device index: %d\n", slimaudio.output_device_id );
+#endif
 
 #ifdef INTERACTIVE
         init_lirc();

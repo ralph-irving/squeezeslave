@@ -181,71 +181,67 @@ enum mad_flow mad_output(void *data,
 	mad_fixed_t const *left_ch, *right_ch;
 	char *buf, *ptr;
 	int i;
+	enum mad_flow retcode;
 
 	slimaudio_t *audio = (slimaudio_t *) data;
+	retcode = MAD_FLOW_CONTINUE;
 
-/*	pthread_mutex_lock(&audio->decoder_mutex);
-
-	if (audio->decoder_state != STREAM_PLAYING) {
-		pthread_mutex_unlock(&audio->decoder_mutex);
-		return MAD_FLOW_STOP;
-	}
-
-	pthread_mutex_unlock(&audio->decoder_mutex);
-*/
 	/* pcm->samplerate contains the sampling frequency */
 	nchannels = pcm->channels;
 	nsamples  = pcm->length;
 	left_ch   = pcm->samples[0];
 	right_ch  = pcm->samples[1];
 
-	VDEBUGF("decode_output state=%i nchannels=%i nsamples=%i\n", audio->decoder_state, nchannels, nsamples);
+	VDEBUGF("decode_output state=%i nfrequency=%i nchannels=%i nsamples=%i\n", audio->decoder_state, pcm->samplerate, nchannels, nsamples);
 
-	buf = (char *) malloc(nsamples * 2 * nchannels ); /* always stereo output */
-	ptr = buf;
+	/* Only play 44.1KHz stereo streams */
+	if ( (pcm->samplerate == 44100) && (nchannels == 2) )
+	{
+		buf = (char *) malloc(nsamples * 2 * nchannels ); /* always stereo output */
+		ptr = buf;
 
 #ifdef __BIG_ENDIAN__
-	for (i=0; i<nsamples; i++) {
-		signed int sample;
+		for (i=0; i<nsamples; i++)
+		{
+			signed int sample;
 
-		/* left */
-		sample = audio_linear_dither(16, *left_ch++,
-					&left_dither, &stats);
-	    *ptr++ = (sample >> 8) & 0xff;
-	    *ptr++ = (sample >> 0) & 0xff;
+			/* left */
+			sample = audio_linear_dither(16, *left_ch++, &left_dither, &stats);
+			*ptr++ = (sample >> 8) & 0xff;
+			*ptr++ = (sample >> 0) & 0xff;
 	    
-	    /* right */
-	    if (nchannels == 2) {
-			sample = audio_linear_dither(16, *right_ch++,
-				     	&right_dither, &stats);
-	    }	    
-		*ptr++ = (sample >> 8) & 0xff;
-		*ptr++ = (sample >> 0) & 0xff;
-	}
+			/* right */
+			sample = audio_linear_dither(16, *right_ch++, &right_dither, &stats);
+			*ptr++ = (sample >> 8) & 0xff;
+			*ptr++ = (sample >> 0) & 0xff;
+		}
 #else /* __LITTLE_ENDIAN__ */
-        for (i=0; i<nsamples; i++) {
-                signed int sample;
+		for (i=0; i<nsamples; i++)
+		{
+			signed int sample;
 
-                /* left */
-                sample = audio_linear_dither(16, *left_ch++,
-                                        &left_dither, &stats);
-            *ptr++ = (sample >> 0) & 0xff;
-            *ptr++ = (sample >> 8) & 0xff;
+			/* left */
+			sample = audio_linear_dither(16, *left_ch++, &left_dither, &stats);
+			*ptr++ = (sample >> 0) & 0xff;
+			*ptr++ = (sample >> 8) & 0xff;
 
-            /* right */
-            if (nchannels == 2) {
-                        sample = audio_linear_dither(16, *right_ch++,
-                                        &right_dither, &stats);
-            }
-                *ptr++ = (sample >> 0) & 0xff;
-                *ptr++ = (sample >> 8) & 0xff;
-        }
+			/* right */
+			sample = audio_linear_dither(16, *right_ch++, &right_dither, &stats);
+			*ptr++ = (sample >> 0) & 0xff;
+			*ptr++ = (sample >> 8) & 0xff;
+		}
 #endif
-	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
+		slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
 
-	free(buf);
+		if ( buf != NULL )
+			free(buf);
+	}
+	else
+	{
+		retcode = MAD_FLOW_STOP;
+	}
 	
-	return MAD_FLOW_CONTINUE;
+	return retcode;
 }
 
 /*
@@ -260,6 +256,10 @@ enum mad_flow mad_error(void *data,
 		    struct mad_stream *stream,
 		    struct mad_frame *frame)
 {
+  enum mad_flow retcode;
+
+  retcode = MAD_FLOW_CONTINUE;
+
   switch (stream->error)
   {
     /*
@@ -269,12 +269,15 @@ enum mad_flow mad_error(void *data,
     case MAD_ERROR_LOSTSYNC:
 	DEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error);
 	break;
+    case MAD_ERROR_BADDATAPTR:
+	fprintf(stderr, "libmad: (mp3) bad stream pointer (0x%04x)\n", stream->error);
+	/* retcode = MAD_FLOW_BREAK; */
+	break;
     default:
 	fprintf(stderr, "libmad: (mp3) decoding error (0x%04x)\n", stream->error); //FIXME
   }
-  /* return MAD_FLOW_BREAK here to stop decoding (and propagate an error) */
 
-  return MAD_FLOW_CONTINUE;
+  return retcode;
 }
 
 /*

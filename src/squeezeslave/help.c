@@ -25,14 +25,14 @@ extern char* version;
 extern int revision;
 
 /* Print list of audio devices which support 44.1KHz, 16-bit, stereo */
-void listAudioDevices(slimaudio_t * slimaudio, int output_device_id) {
+void listAudioDevices(slimaudio_t * slimaudio, int output_device_id, bool output_change) {
 	int num_devices;
 	char **devices;
 	int default_device;
 
 	slimaudio_get_output_devices(slimaudio, &devices, &num_devices);
 
-	if ( output_device_id == PA_DEFAULT_DEVICE )
+	if ( (output_device_id == PA_DEFAULT_DEVICE) && !output_change )
 		default_device = slimaudio->output_device_id;
 	else
 		default_device = output_device_id;
@@ -86,8 +86,8 @@ void print_version(void) {
 	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
 #else
 	fprintf(stdout, "portaudio:%d:asio ", Pa_GetVersion());
-#endif # PA_ASIO
-#endif # PORTAUDIO_DEV
+#endif /* PA_ASIO */
+#endif /* PORTAUDIO_DEV */
 #ifdef SLIMPROTO_DEBUG
 	fprintf(stdout, "debug ");
 #endif

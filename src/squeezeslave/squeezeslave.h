@@ -64,7 +64,7 @@
 #define LINE_COUNT 2
 
 int connect_callback(slimproto_t *, bool, void *);
-void listAudioDevices(slimaudio_t *, int);
+void listAudioDevices(slimaudio_t *, int, bool);
 int parse_macaddress(char *, const char *);
 void print_version(void);
 void print_help(void);

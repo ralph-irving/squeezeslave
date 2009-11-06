@@ -1,3 +1,12 @@
+2009-10-31 18:58  paddockd
+
+	* [r94] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Fixed -o option overriding padev
+	  device default.
+	  Fixed -L option display of * next to default device.
+	  Increased version to 94.
+
 2009-10-31 16:16  paddockd
 
 	* [r93] ChangeLog, src/slimaudio/slimaudio_output.c,
