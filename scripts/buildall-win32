@@ -1,0 +1,24 @@
+#!/bin/bash
+
+cd /cygdrive/h/source/squeezeslave
+#VER=`svnversion`
+VER=95
+
+make -f makefile.mingw32 realclean
+make -f makefile.mingw32-padev realclean
+cd bin;tar -xf 7z.tar;cd ..
+make -f makefile.mingw32-padev
+mv bin/squeezeslave bin/squeezeslave-win32-0.9-$VER
+make -f makefile.mingw32-padev realclean
+
+make -f makefile.mingw32-asio realclean
+cd bin;tar -xf 7z.tar;cd ..
+make -f makefile.mingw32-asio
+mv bin/squeezeslave bin/squeezeslave-win32-asio-0.9-$VER
+make -f makefile.mingw32-asio realclean
+
+make -f makefile.mingw32 realclean
+cd bin;tar -xf 7z.tar;cd ..
+make -f makefile.mingw32
+mv bin/squeezeslave bin/squeezeslave-win32-pastable-0.9-$VER
+

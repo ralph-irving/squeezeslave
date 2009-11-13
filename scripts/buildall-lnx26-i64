@@ -1,0 +1,13 @@
+#!/bin/bash
+VER=`svnversion`
+
+make -f makefile.linux26-i64-alsa realclean
+make -f makefile.linux26-i64-alsa
+mv bin/squeezeslave bin/squeezeslave-lnx26-i64-0.9-$VER
+make -f makefile.linux26-i64-alsa realclean
+
+make -f makefile.linux26-i64-alsa-display  realclean
+make -f makefile.linux26-i64-alsa-display
+mv bin/squeezeslave bin/squeezeslave-lnx26-i64-display-0.9-$VER
+make -f makefile.linux26-i64-alsa-display realclean
+

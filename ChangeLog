@@ -1,3 +1,18 @@
+2009-11-06 23:48  paddockd
+
+	* [r95] ChangeLog, src/slimaudio/slimaudio_decoder_mad.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: PORTAUDIO_DEV Additional fix for
+	  -L not selecting device 0 when specified from the command line.
+	  Added slim_audio_debug displaying actual output device opened by
+	  libportaudio.
+	  Fixed segmentation fault in mad_output when mp3 stream sample
+	  rate is not 44100 and channels are not 2. Advances to the next
+	  track. A long standing bug in the buffering code prevents
+	  squeezeslave from stopping so you have to stop it manually. It's
+	  better than crashing. See the TODO file for more details.
+	  Increased version to 95.
+
 2009-10-31 18:58  paddockd
 
 	* [r94] ChangeLog, src/slimaudio/slimaudio.h,
