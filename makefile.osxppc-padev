@@ -9,7 +9,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-Wall -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -D__BIG_ENDIAN__ -DPORTAUDIO_DEV -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc
+CFLAGS=-Wall -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -D__BIG_ENDIAN__ -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc
 LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc
 
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include

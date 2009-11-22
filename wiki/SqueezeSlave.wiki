@@ -1,6 +1,6 @@
 [[Category: Software players]]
 
-[[SqueezeSlave]] is a software music player that allows you to play music streamed from [[SqueezeCenter]] (formerly known as [[SlimServer]]) and [[SqueezeNetwork]].
+[[SqueezeSlave]] is a software music player that allows you to play music streamed from [[SqueezeCenter | Squeezebox Server]] (formerly known as [[SqueezeCenter]], [[SlimServer]]) and [[SqueezeNetwork]].
 
 [[SqueezeSlave]] is an alternative to [[SoftSqueeze]].  The main difference is that SqueezeSlave has no graphical interface (GUI), but rather is run from a command line.  This makes SqueezeSlave useful as a player for "headless" applications (e.g., server computer without display).  It's also useful as a background player where a display is not required, or as a player which uses the least computing resources.
 
@@ -8,13 +8,13 @@
 
 [[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
 
-Executable versions for Windows, Linux, OSX and Solaris SPARC/Intel can be downloaded from SourceForge.net at: https://sourceforge.net/project/showfiles.php?group_id=105169&package_id=176494
+Executable versions for Windows, Linux PPC/Intel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: https://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/
 
-The linux version as of May 31, 2009 supports alsa, IR remotes, USB displays and an on screen text mode display.
-The additional display features no longer require patching for Squeezecenter v7.4 r26720 or later.
-For older versions of Squeezecenter the replay gain patches below include the necessary changes for the display feature.
+The linux version supports ALSA, pulseaudio, OSS, IR remotes, USB displays and an on screen text mode display.
+The additional display features no longer require patching for [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
+For older versions of [[SqueezeCenter]] the replay gain patches below include the necessary changes for the display feature.
 
-Version 0.9 brings replay gain support with Squeezecenter v7.4 r26720 or later.
+Version 0.9 brings replay gain support with [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
 Positive dB replay gain values are ignored to prevent clipping.
 
 Patch files squeezecenter_squeezeslave_player3-7.3.patch and squeezecenter_squeezeslave_player3-7.2.patch are included in the binary packages if that build has the features enabled for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.  They are also available in the source tree under the patches subdirectory.
@@ -24,16 +24,20 @@ Patch files squeezecenter_squeezeslave_player3-7.3.patch and squeezecenter_squee
 
 === Mac OS X installation ===
 
-The Mac OS X version can be downloaded from SourceForge.net  as an "osx-intel.tar.gz". Unpacking the file gives a folder with
+The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-osx.tar.gz/download . Unpacking the file gives a folder with
 * A GNU <code>LICENSE.txt</code>
-* The <code>squeezeslave</code> executable
+* An <code>squeezeslave-ppc</code> and
+* a <code>squeezeslave-intel</code> executable.
 * A launchd <code>squeezeslave.plist</code> description file
+* There are several other squeezeslave binaries included but are not needed unless you run into problems.
 
-A look at the <code>plist</code> file indicates that the executable is to be moved to <code>/opt/local/bin/</code>.
+A look at the <code>plist</code> file indicates that the executable is to be renamed and moved to <code>/opt/local/bin/</code>.
 You might have to create the corresponding directory.
+
 Time to open the '''Terminal''' as an administrator, navigate to the place the downloaded files are located and
+
  mkdir -p /opt/local/bin/
- mv squeezeslave /opt/local/bin/
+ mv squeezeslave-intel /opt/local/bin/squeezeslave
 
 You can now check the command line options with 
  /opt/local/bin/squeezeslave -h
@@ -52,14 +56,15 @@ which gave me
 
 Now try to run it.
 If your Squeezecenter runs on the same machine and you want to send the audio to the line output
- /opt/local/bin/squeezeslave -o 4
+ /opt/local/bin/squeezeslave -o4
 If the Squeezecenter runs on another machine, add its host name to the command line
- /opt/local/bin/squeezeslave -o 4 macmini.mynet
+ /opt/local/bin/squeezeslave -o4 macmini.mynet
 
 Now open the SqueezeCenter control webpage and look at the players list. The new Squeezeslave should have appeared.
 
 If this works, you are ready to have Squeezeslave automatically launched at boot time.
-Edit <code>squeezeslave.plist</code> and customize it to your installation
+
+Lingon http://sourceforge.net/projects/lingon/ provides a gui to edit and create launchd configuration files or you can edit <code>squeezeslave.plist</code> with a text editor and customize it to your installation.
  <?xml version="1.0" encoding="UTF-8"?>
  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
  <plist version="1.0">
@@ -75,7 +80,8 @@ Edit <code>squeezeslave.plist</code> and customize it to your installation
  		<key>ProgramArguments</key>
  		<array>
  			<string>/opt/local/bin/squeezeslave</string>
- 			<string>-o 4</string>
+ 			<string>-o4</string>
+ 			<string>-r10</string>
  			<string>macmini.mynet</string>
  		</array>
  	</dict>
@@ -84,8 +90,9 @@ Edit <code>squeezeslave.plist</code> and customize it to your installation
 If you intend to use more than one Squeezeslave, you will need to provide a different mac address to each
  		<array>
  			<string>/opt/local/bin/squeezeslave</string>
- 			<string>-o 4</string>
- 			<string>-m 00:00:00:00:00:16</string>
+ 			<string>-o4</string>
+ 			<string>-r10</string>
+ 			<string>-m00:00:00:00:00:16</string>
  			<string>macmini.mynet</string>
  		</array>
 
@@ -106,24 +113,66 @@ Stop it
 
 The Squeezeslave should now automatically launch at login time.
 
-=== Linux build instructions (incomplete) ===
+=== Linux build instructions ===
+Prebuilt versions of squeezeslave for most platforms are available on SourceForge.net.  However, if you have problems with the precompiled binaries for linux, please checkout the source and build yourself. There have been many issues lately with system libraries and the linux binaries that have been solved by building your own.
 
-The original source for squeezeslave is available via the slimdevices svn server.  This source only includes protocol fixes required for squeezeslave to continue to work with newer versions of Squeezecenter.  This is the source up to version 0.7.5.
+The current source tree for squeezeslave is available on Google Code.
 
-svn checkout http://svn.slimdevices.com/repos/slim/7.4/trunk/softsqueeze/SlimProtoLib
+The current and all previous 0.8 releases are available for checkout.
 
-The source for version 0.8 is available as a tarball at SourceForge.net: https://sourceforge.net/project/showfiles.php?group_id=105169&package_id=176494
+ svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
 
-The current source tree for squeezeslave has been moved to Google Code.  The current and all previous 0.8 releases are available for checkout.
+The makefiles build all required support libraries; portaudio, flac, ogg, vorbis and mad.
 
-svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
+System libraries are still required for alsa (asound), curses (ncurses) and lirc_client and may require installing the "development" packages to compile successfully.
 
+On ubuntu linux the following commands run as root will install the additional requirements.
 
-make -f <makefile of your os flavor>
+ sudo apt-get install subversion
 
-Prebuilt versions of squeezeslave for most platforms are available on SourceForge.net.
+ sudo apt-get install libasound2-dev
+
+and these additional packages are only required to build the INTERACTIVE version, makefiles with "display" in the filename.  The INTERACTIVE (display) adds support for a text console display, much like the [[SliMP3]] player and the ability to control the display using the keyboard.  USB LCD displays and IR remotes can also be used with the display version.
+
+ sudo apt-get install libncurses5-dev
+
+ sudo apt-get install liblircclient-dev
+
+===Which makefile does what?===
+
+Most current linux distributions are based on the Linux 2.6 kernel so these makefiles should work for most current linux installs.
+
+*Linux 2.6 32-bit intel kernel, OSS, ALSA and pulseaudio audio drivers.
+
+makefile.linux26-alsa
+
+makefile.linux26-alsa-display
+
+*Linux 2.6 64-bit intel kernel, OSS, ALSA and pulseaudio audio drivers.
+
+makefile.linux26-i64-alsa
+
+makefile.linux26-i64-alsa-display
+
+*Linux 2.6 32-bit PowerPC kernel (PS3, PPC Mac), OSS, ALSA and pulseaudio audio drivers
+
+makefile.linux26-ppc-alsa
+
+makefile.linux26-ppc-alsa-display
+
+===A typical build===
+
+ svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
+ cd squeezeslave
+ make -f makefile.linux26-alsa realclean
+ make -f makefile.linux26-alsa
+
+Upon successfull completion, you'll find a file in the bin/ directory starting with squeezeslave.  Several makefiles append additional words to help identify the "flavour" of the build for packaging purposes.  You can safely rename the file to be called just squeezeslave.  This step is NOT necessary with the above build example.
+
+ cd bin; mv squeezeslave-alsa squeezeslave
 
 == Command Line Switches ==
+
 Command Line Switches (options) available (this list available by using the -h switch)
 
 If you experience problems using the --longer command line options, try the one letter equivalent.
@@ -131,10 +180,10 @@ For those options that require and additional argument, leave no space between t
 
 For example;
 
-squeezeslave -r15 -o3 -m00:00:00:00:00:02 schostname
+squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
 
-=== squeezeslave 0.9-65 (Windows) ===
-:compile flags: win32 portaudio:1810 debug
+=== squeezeslave 0.9-95 (Windows) ===
+:compile flags: win32 portaudio:1420 debug
 :
 :squeezeslave [options] [<squeezecenter address>]
 :
@@ -194,11 +243,10 @@ squeezeslave -r15 -o3 -m00:00:00:00:00:02 schostname
 :::                            desired interval in seconds. (ie. -r10)
 :::                            A value is required for this option.
 ::-V, --version:              Prints the squeezeslave version.
-::-v, --volume <on|sw|off>:   Enables/disables volume changes done by
+::-v, --volume <sw|off>:   Enables/disables volume changes done by
 :::                            SqueezeCenter during its operation, such as when
 :::                            changing the volume through the web interface or
 :::                            when applying replay gain.  Defaults to sw.
-::::                                    on:  volume changes performed on device.
 ::::                                    sw:  volume changes performed in software.
 ::::                                    off: volume changes ignored.
 ::-Y, --debuglog <logfile>:   Redirect debug output from stderr to <logfile>
@@ -217,8 +265,8 @@ squeezeslave -r15 -o3 -m00:00:00:00:00:02 schostname
 ::::                                    slimaudio_output
 ::::                                    slimaudio_output_v
 
-=== squeezeslave 0.9-65 (Linux) ===
-:compile flags: linux portaudio:1899 debug signals interactive
+=== squeezeslave 0.9-95 (Linux) ===
+:compile flags: linux portaudio:1420 debug signals interactive
 :squeezeslave [options] [<squeezecenter address>]
 :The SqueezeCenter address defaults to 127.0.0.1.
 :
@@ -306,11 +354,10 @@ squeezeslave -r15 -o3 -m00:00:00:00:00:02 schostname
 :::                            desired interval in seconds. (ie. -r10)
 :::                            A value is required for this option.
 ::-V, --version:              Prints the squeezeslave version.
-::-v, --volume <on|sw|off>:   Enables/disables volume changes done by
+::-v, --volume <sw|off>:   Enables/disables volume changes done by
 :::                            SqueezeCenter during its operation, such as when
 :::                            changing the volume through the web interface or
 :::                            when applying replay gain.  Defaults to sw.
-::::                                    on:  volume changes performed on device.
 ::::                                    sw:  volume changes performed in software.
 ::::                                    off: volume changes ignored.
 ::-Y, --debuglog <logfile>:   Redirect debug output from stderr to <logfile>.
