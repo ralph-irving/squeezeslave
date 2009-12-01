@@ -43,6 +43,7 @@
   #define CLOSESOCKET(s) close(s)
 #endif
 
+#include <errno.h>
 #include "slimproto/slimproto.h"
 
 #define BUF_LENGTH 4096
@@ -92,13 +93,16 @@ int slimproto_init(slimproto_t *p) {
 }
 
 void slimproto_destroy(slimproto_t *p) {
+	DEBUGF("proto_destroy: (01) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);					
+	DEBUGF("proto_destroy: (01) gotlock\n");
 	
 	p->state = PROTO_QUIT;
 	pthread_cond_broadcast(&p->slimproto_cond);	
 	
 	pthread_mutex_unlock(&p->slimproto_mutex);
-	
+	DEBUGF("proto_destroy: (01) unlocked\n");
+
 #ifndef __WIN32__
 	// This join causes the windows version to crash.  There is no
 	// satisfactory reason at this point, but avoiding the call
@@ -118,48 +122,65 @@ void slimproto_destroy(slimproto_t *p) {
 	pthread_cond_destroy(&(p->slimproto_cond));
 }
 
+/* PROTO_QUIT=0, PROTO_CLOSED=1, PROTO_CONNECT=2, PROTO_CONNECTED=3, PROTO_CLOSE=4 */
+
 static void *proto_thread(void *ptr) {
 	int r, i;
 
 	slimproto_t *p = (slimproto_t *) ptr;
 
+	DEBUGF("proto_thread: (02) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);				
+	DEBUGF("proto_thread: (02) gotlock\n");
 
 	while (p->state != PROTO_QUIT) {
-		DEBUGF("proto state=%i\n", p->state);
+		DEBUGF("proto_thread: state=%i\n", p->state);
 		
 		switch (p->state) {
 			case PROTO_CONNECT:
-				pthread_mutex_unlock(&p->slimproto_mutex);				
+				pthread_mutex_unlock(&p->slimproto_mutex);
+				DEBUGF("proto_thread: (02) unlocked\n");
 				proto_connect(p);
+				DEBUGF("proto_thread: (03) getlock\n");
 				pthread_mutex_lock(&p->slimproto_mutex);				
+				DEBUGF("proto_thread: (03) gotlock\n");
 				break;
 				
 			case PROTO_CONNECTED:
-				pthread_mutex_unlock(&p->slimproto_mutex);				
+				pthread_mutex_unlock(&p->slimproto_mutex);
+				DEBUGF("proto_thread: (03) unlocked\n");
 				for (i=0; i<p->num_connect_callbacks; i++) {
 					(p->connect_callbacks[i].callback)(p, true, p->connect_callbacks[i].user_data);
 				}
 
 				while (proto_recv(p) >= 0) {
+					DEBUGF("proto_thread: (04) getlock\n");
 					pthread_mutex_lock(&p->slimproto_mutex);
+					DEBUGF("proto_thread: (04) gotlock\n");
 					const bool disconnected = p->state != PROTO_CONNECTED;
 					pthread_mutex_unlock(&p->slimproto_mutex);
+					DEBUGF("proto_thread: (04) unlocked\n");
 					if (disconnected) {
+						DEBUGF("proto_thread: disconnected state:%i\n", p->state);
 						break;
 					}
 				}
 
+				DEBUGF("proto_thread: (03) calling close\n");
 				slimproto_close(p);
+				DEBUGF("proto_thread: (03) called close\n");
 
 				for (i=0; i<p->num_connect_callbacks; i++) {
 					(p->connect_callbacks[i].callback)(p, false, p->connect_callbacks[i].user_data);
 				}
+				DEBUGF("proto_thread: (05) getlock\n");
 				pthread_mutex_lock(&p->slimproto_mutex);				
+				DEBUGF("proto_thread: (05) gotlock\n");
 				break;	
 				
 			default:
 			case PROTO_CLOSED:
+				DEBUGF("proto_thread: PROTO_CLOSED cond_wait\n");
 				r = pthread_cond_wait(&p->slimproto_cond, &p->slimproto_mutex);
 				break;				
 				
@@ -170,12 +191,14 @@ static void *proto_thread(void *ptr) {
 	}
 
 	pthread_mutex_unlock(&p->slimproto_mutex);	
-	
+	DEBUGF("proto_thread: (05) unlocked\n");	
 	return 0;			
 }
 
 void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_command_callback_t *callback, void *user_data) {
+	DEBUGF("proto_addcmd: (06) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);				
+	DEBUGF("proto_addcmd: (06) gotlock\n");
 
 	int i = p->num_command_callbacks;
 	p->command_callbacks[i].cmd = strdup(cmd);
@@ -183,11 +206,14 @@ void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_c
 	p->command_callbacks[i].user_data = user_data;
 	p->num_command_callbacks++;
 
-	pthread_mutex_unlock(&p->slimproto_mutex);				
+	pthread_mutex_unlock(&p->slimproto_mutex);
+	DEBUGF("proto_addcmd: (06) unlocked\n");
 }
 
 void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t *callback, void *user_data) {
+	DEBUGF("proto_addcon: (07) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);				
+	DEBUGF("proto_addcon: (07) gotlock\n");
 
 	int i = p->num_connect_callbacks;
 	p->connect_callbacks[i].callback = (void *) callback; // FIXME
@@ -195,12 +221,13 @@ void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t
 	p->num_connect_callbacks++;
 
 	pthread_mutex_unlock(&p->slimproto_mutex);	
+	DEBUGF("proto_addcon: (07) unlocked\n");
 }
 
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	struct hostent *server;
 
-	DEBUGF("slimproto_connect(%s, %i)\n", server_addr, port);
+	DEBUGF("proto_connect: (%s, %i)\n", server_addr, port);
 
 	server = gethostbyname(server_addr);	
 	if (server == NULL) {
@@ -208,9 +235,13 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 		return -1;
 	}
 
+	DEBUGF("proto_connect: (01) calling close\n");
 	slimproto_close(p);
+	DEBUGF("proto_connect: (01) called close\n");
 
+	DEBUGF("proto_connect: (08) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);				
+	DEBUGF("proto_connect: (08) gotlock\n");
 
 	memset(&p->serv_addr, 0, sizeof(p->serv_addr));	
 	memcpy((char *)&p->serv_addr.sin_addr.s_addr,
@@ -235,16 +266,30 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	}
 
 	pthread_mutex_unlock(&p->slimproto_mutex);
+	DEBUGF("proto_connect: (08) unlocked\n");
+
 	return return_value;
 }	
 
 static int proto_connect(slimproto_t *p) {
+	struct timeval timeout;
+	timeout.tv_sec = 10;
+	timeout.tv_usec = 0;
+
+	DEBUGF("proto_connect: (09) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);					
+	DEBUGF("proto_connect: (09) gotlock\n");
 
 	p->sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (p->sockfd < 0) {
 		perror("Error opening socket");
 			goto proto_connect_err;
+	}
+
+	if (setsockopt(p->sockfd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout,  sizeof(timeout)))
+	{
+		perror("Error setting socket timeout");
+		goto proto_connect_err;
 	}
 
 	if (connect(p->sockfd, (struct sockaddr *)&p->serv_addr, sizeof(p->serv_addr)) != 0) {
@@ -254,7 +299,7 @@ static int proto_connect(slimproto_t *p) {
 	}
 	
 	int flag = 1;
-	if (setsockopt(p->sockfd, IPPROTO_TCP, TCP_NODELAY, (void*)&flag, sizeof(flag) ) != 0) {
+	if (setsockopt(p->sockfd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag, sizeof(flag) ) != 0) {
 		fprintf(stderr, "Couldn't setsockopt(TCP_NODELAY)\n");
 		CLOSESOCKET(p->sockfd);
 		goto proto_connect_err;
@@ -266,12 +311,13 @@ static int proto_connect(slimproto_t *p) {
 		goto proto_connect_err;
 	}
 
-	DEBUGF("Connected to %s\n", inet_ntoa(p->serv_addr.sin_addr));
+	DEBUGF("proto_connect: connected to %s\n", inet_ntoa(p->serv_addr.sin_addr));
 
 	p->state = PROTO_CONNECTED;
 	pthread_cond_broadcast(&p->slimproto_cond);	
 
 	pthread_mutex_unlock(&p->slimproto_mutex);						
+	DEBUGF("proto_connect: (09) unlocked\n");
 	return 0;
 	
 proto_connect_err:
@@ -280,16 +326,21 @@ proto_connect_err:
 	DEBUGF("proto_connect: broadcast.\n" );
 	pthread_cond_broadcast(&p->slimproto_cond);
 
-	DEBUGF("proto_connect: unlock.\n" );
 	pthread_mutex_unlock(&p->slimproto_mutex);
+	DEBUGF("proto_connect: (10) unlocked\n");
 	return -1;
 }
 
 int slimproto_close(slimproto_t *p) {
+	DEBUGF("proto_close: state %i\n", p->state);
+	DEBUGF("proto_close: (11) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);					
-	
-	if (p->state != PROTO_CONNECTED) {
-		pthread_mutex_unlock(&p->slimproto_mutex);					
+	DEBUGF("proto_close: (11) gotlock\n");
+
+	if ( p->state != PROTO_CONNECTED ) {
+		pthread_mutex_unlock(&p->slimproto_mutex);
+		DEBUGF("proto_close: (11) unlocked\n");
+		DEBUGF("proto_close: not connected\n");
 		return 0;
 	}
 	
@@ -300,6 +351,7 @@ int slimproto_close(slimproto_t *p) {
 	pthread_cond_broadcast(&p->slimproto_cond);
 
 	pthread_mutex_unlock(&p->slimproto_mutex);
+	DEBUGF("proto_close: (12) unlocked\n");
 
 	return 0;
 }
@@ -309,31 +361,35 @@ static int proto_recv(slimproto_t *p) {
 	unsigned char buf[BUF_LENGTH];
 	int r, n;		
 
-        // Fix receive error on quitting
+        /* Fix receive error on quiting */
 	if (p->state != PROTO_CONNECTED) return -1;
 
 	n = recv(p->sockfd, buf, 2, 0);
-	if (n <= 0) {
-		perror("Error in recv 1");
+
+	if (n <= 0)
+	{
+		DEBUGF("proto_recv: (1) n=%i msg=%s(%i)\n", n, strerror(errno), errno);
 		return -1;	
 	}
+
 	len = ntohs(*((u16_t *)buf)) + 2;
 
-        // Fix receive error on quitting
+        /* Fix receive error on quiting */
 	if (p->state != PROTO_CONNECTED) return -1;
 
 	r = 2;
-	while (r < len) {
+	while (r < len)
+	{
 		n = recv(p->sockfd, buf+r, len-r, 0);
-		if (n <= 0) {
-			perror("Error in recv");
+		if (n <= 0)
+		{
+			DEBUGF("proto_recv: (2) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
 			return -1;	
 		}	
-
 		r += n;
 	}
 	
-	DEBUGF("slimproto_recv cmd=%4.4s len=%i\n", buf+2, len);
+	DEBUGF("proto_recv: cmd=%4.4s len=%i\n", buf+2, len);
 
 	buf[len]=0;
 	int i;
@@ -416,18 +472,22 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 
 	}
 	else {
-		DEBUGF("Cannot parse %4.4s\n", buf+2);
+		DEBUGF("proto_parse: cannot parse %4.4s\n", buf+2);
 	}	
 }
 
 int slimproto_dsco(slimproto_t *p, int dscoCode) {
 
+	DEBUGF("proto_dsco: (15) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);
+	DEBUGF("proto_dsco: (15) gotlock\n");
 	if (p->state != PROTO_CONNECTED) {
   		pthread_mutex_unlock(&p->slimproto_mutex);
+		DEBUGF("proto_dsco: (15) unlocked\n");
 		return 0;
 	}
 	pthread_mutex_unlock(&p->slimproto_mutex);
+	DEBUGF("proto_dsco: (16) unlocked\n");
 
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
@@ -524,7 +584,7 @@ u16_t error_code;
 	packN4(msg, 55, server_timestamp);
 	packN2(msg, 59, 0); // error code
 
-	DEBUGF("slimproto_stat: code=%4.4s decoder_buffer_size=%i decoder_buffer_fullness=%i ",
+	DEBUGF("proto_stat: code=%4.4s decoder_buffer_size=%i decoder_buffer_fullness=%i ",
 		code, decoder_buffer_size, decoder_buffer_fullness);
 
 	DEBUGF("rbytes_high=%i rbytes_low=%i output_buffer_size=%i output_buffer_fullness=%i ",
@@ -552,12 +612,15 @@ u32_t slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr)
 }
 
 int slimproto_send(slimproto_t *p, unsigned char *msg) {
-	DEBUGF("slimproto_send: cmd=%4.4s len=%i\n", msg, unpackN4(msg, 4));
-	
+	DEBUGF("proto_send: cmd=%4.4s len=%i\n", msg, unpackN4(msg, 4));
+
+	DEBUGF("proto_send: (17) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);
+	DEBUGF("proto_send: (17) gotlock\n");
 
 	if (p->state != PROTO_CONNECTED) {
 		pthread_mutex_unlock(&p->slimproto_mutex);
+		DEBUGF("proto_send: (17) unlocked\n");
 		return -1;		
 	}
 
@@ -566,7 +629,10 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 		int i;
 		perror("slimproto_send: Error sending cmd");
 		pthread_mutex_unlock(&p->slimproto_mutex);
+		DEBUGF("proto_send: (18) unlocked\n");
+		DEBUGF("proto_send: (02) calling close\n");
 		slimproto_close(p);
+		DEBUGF("proto_send: (02) called close\n");
 
 		for (i=0; i<p->num_connect_callbacks; ++i) {
 			(p->connect_callbacks[i].callback)(p, false, p->connect_callbacks[i].user_data);
@@ -576,6 +642,7 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 	}
 
 	pthread_mutex_unlock(&p->slimproto_mutex);
+	DEBUGF("proto_send: (19) unlocked\n");
 	return 0;
 }
 

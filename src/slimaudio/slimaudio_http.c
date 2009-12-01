@@ -62,11 +62,15 @@ int slimaudio_http_open(slimaudio_t *audio) {
 	 * release it once it enters pthread_cond_wait inside its STOPPED
 	 * state.
 	 */
+#ifndef __FREEBSD__
 	pthread_mutex_lock(&audio->http_mutex);
+#endif
 
 	if (pthread_create( &audio->http_thread, NULL, http_thread, (void*) audio) != 0) {
 		fprintf(stderr, "Error creating http thread\n");
+#ifndef __FREEBSD__	
 		pthread_mutex_unlock(&audio->http_mutex);
+#endif		
 		return -1;
 	}
 
@@ -94,6 +98,10 @@ static void *http_thread(void *ptr) {
 	slimaudio_t *audio = (slimaudio_t *) ptr;
 #ifdef SLIMPROTO_DEBUG				
 	int last_state = 0;
+#endif
+
+#ifdef __FREEBSD__
+	pthread_mutex_lock(&audio->http_mutex);
 #endif
 
 	audio->http_state = STREAM_STOPPED;

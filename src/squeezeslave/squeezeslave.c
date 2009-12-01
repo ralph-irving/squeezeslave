@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 95;
+const int revision = 99;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -614,6 +614,7 @@ int main(int argc, char *argv[]) {
 #endif
 	slimaudio_close(&slimaudio);
 	slimproto_close(&slimproto);
+
 #ifdef INTERACTIVE
         exitcurses();
         close_lcd();
@@ -628,5 +629,4 @@ int main(int argc, char *argv[]) {
 	slimproto_destroy(&slimproto);
 	return 0;
 } 
-
 

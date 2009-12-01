@@ -1,0 +1,149 @@
+Index: squeezeslave/lib/portmixer/px_unix_oss/px_unix_oss.c
+===================================================================
+--- squeezeslave/lib/portmixer/px_unix_oss/px_unix_oss.c	(revision 85)
++++ squeezeslave/lib/portmixer/px_unix_oss/px_unix_oss.c	(working copy)
+@@ -38,7 +38,11 @@
+ #ifdef __linux__
+ #include <linux/soundcard.h>
+ #else
++ #ifdef __FREEBSD__
++#include <sys/soundcard.h>
++ #else
+ #include <machine/soundcard.h> /* JH20010905 */
++ #endif
+ #endif
+ 
+ #include <stdio.h>
+Index: squeezeslave/makefile.freebsd
+===================================================================
+--- squeezeslave/makefile.freebsd	(revision 0)
++++ squeezeslave/makefile.freebsd	(revision 0)
+@@ -0,0 +1,42 @@
++# This makefile is used to build squeezeslave for an old 133MHz Pentium MMX laptop.
++# As it is very slow to compile squeezeslave on it, the system installed support libraries
++# are used instead of compiling them as part of the build.
++
++CC=gcc
++
++CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DNDEBUG -DSO_NOSIGPIPE -DPORTAUDIO_ALSA  -D__FREEBSD__ -fomit-frame-pointer
++
++INCLUDE=-I/usr/local/include/portaudio2 -I/usr/local/include -Ilib/portmixer/px_common -Isrc
++
++PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
++
++SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
++
++SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
++
++.c.o:
++	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
++
++all : bin/squeezeslave
++
++lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
++	ar cru lib/libslimproto.a $>
++	ranlib lib/libslimproto.a
++
++bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a
++	${CC} -o bin/squeezeslave $> lib/libslimproto.a /usr/local/lib/portaudio2/libportaudio.a /usr/local/lib/libmad.a /usr/local/lib/libFLAC.a /usr/local/lib/libvorbisfile.a /usr/local/lib/libvorbis.a /usr/local/lib/libogg.a /usr/local/lib/liblirc_client.a -lncurses -lpthread -lm
++
++clean:
++	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \
++	               $(SLIMPROTOFILES:.c=.o) \
++	               $(PORTMIXERFILES:.c=.o) \
++	               $(SQUEEZESLAVEFILES:.c=.o) \
++	               lib/libportaudio.a \
++	               lib/libslimproto.a \
++	               bin/squeezeslave; do \
++	  test -e $$FILE && echo $$FILE || true; \
++	  test -e $$FILE && $(RM) $$FILE 2>/dev/null || true; \
++	done; } | xargs --no-run-if-empty echo $(RM)
++
++
++
+Index: squeezeslave/src/slimaudio/slimaudio_decoder.c
+===================================================================
+--- squeezeslave/src/slimaudio/slimaudio_decoder.c	(revision 85)
++++ squeezeslave/src/slimaudio/slimaudio_decoder.c	(working copy)
+@@ -63,11 +63,15 @@
+ 	 * as the decoder thread needs to enter its cond-variable wait before
+ 	 * any other thread starts interacting with it.
+ 	 */
++#ifndef __FREEBSD__
+ 	pthread_mutex_lock(&audio->decoder_mutex);
++#endif
+ 
+ 	if (pthread_create(&audio->decoder_thread, NULL, decoder_thread, (void*) audio) != 0) {
+ 		fprintf(stderr, "Error creating decoder thread\n");
++#ifndef __FREEBSD__
+ 		pthread_mutex_unlock(&audio->decoder_mutex);
++#endif
+ 		return -1;		
+ 	}
+ 	
+@@ -96,6 +100,9 @@
+ 
+ static void *decoder_thread(void *ptr) {
+ 	slimaudio_t *audio = (slimaudio_t *) ptr;
++#ifdef __FREEBSD__
++	pthread_mutex_lock(&audio->decoder_mutex);
++#endif
+ 	
+ 	audio->decoder_state = STREAM_STOPPED;
+ 	
+Index: squeezeslave/src/slimaudio/slimaudio_http.c
+===================================================================
+--- squeezeslave/src/slimaudio/slimaudio_http.c	(revision 85)
++++ squeezeslave/src/slimaudio/slimaudio_http.c	(working copy)
+@@ -62,11 +62,15 @@
+ 	 * release it once it enters pthread_cond_wait inside its STOPPED
+ 	 * state.
+ 	 */
++#ifndef __FREEBSD__
+ 	pthread_mutex_lock(&audio->http_mutex);
++#endif
+ 
+ 	if (pthread_create( &audio->http_thread, NULL, http_thread, (void*) audio) != 0) {
+ 		fprintf(stderr, "Error creating http thread\n");
++#ifndef __FREEBSD__	
+ 		pthread_mutex_unlock(&audio->http_mutex);
++#endif		
+ 		return -1;
+ 	}
+ 
+@@ -96,6 +100,10 @@
+ 	int last_state = 0;
+ #endif
+ 
++#ifdef __FREEBSD__
++	pthread_mutex_lock(&audio->http_mutex);
++#endif
++
+ 	audio->http_state = STREAM_STOPPED;
+ 	
+ 	while (true) {
+Index: squeezeslave/src/slimaudio/slimaudio_output.c
+===================================================================
+--- squeezeslave/src/slimaudio/slimaudio_output.c	(revision 85)
++++ squeezeslave/src/slimaudio/slimaudio_output.c	(working copy)
+@@ -161,7 +161,9 @@
+ 	 * other threads from using the audio output information while it is
+ 	 * being initialized.
+ 	 */
++#ifndef __FREEBSD__
+ 	pthread_mutex_lock(&audio->output_mutex);
++#endif
+ 
+ 	audio->output_state = STOPPED;
+ 
+@@ -252,6 +254,10 @@
+ 				audio);						// userData
+ #endif
+ 
++#ifdef __FREEBSD__
++	pthread_mutex_lock(&audio->output_mutex);
++#endif
++
+ 	if (err != paNoError) {
+ 		printf("output_thread: PortAudio error1: %s\n", Pa_GetErrorText(err) );	
+ 		exit(-1);

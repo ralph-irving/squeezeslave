@@ -63,11 +63,15 @@ int slimaudio_decoder_open(slimaudio_t *audio) {
 	 * as the decoder thread needs to enter its cond-variable wait before
 	 * any other thread starts interacting with it.
 	 */
+#ifndef __FREEBSD__
 	pthread_mutex_lock(&audio->decoder_mutex);
+#endif
 
 	if (pthread_create(&audio->decoder_thread, NULL, decoder_thread, (void*) audio) != 0) {
 		fprintf(stderr, "Error creating decoder thread\n");
+#ifndef __FREEBSD__
 		pthread_mutex_unlock(&audio->decoder_mutex);
+#endif
 		return -1;		
 	}
 	
@@ -96,6 +100,9 @@ int slimaudio_decoder_close(slimaudio_t *audio) {
 
 static void *decoder_thread(void *ptr) {
 	slimaudio_t *audio = (slimaudio_t *) ptr;
+#ifdef __FREEBSD__
+	pthread_mutex_lock(&audio->decoder_mutex);
+#endif
 	
 	audio->decoder_state = STREAM_STOPPED;
 	

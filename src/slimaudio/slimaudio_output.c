@@ -207,7 +207,9 @@ int slimaudio_output_open(slimaudio_t *audio) {
 	 * other threads from using the audio output information while it is
 	 * being initialized.
 	 */
+#ifndef __FREEBSD__
 	pthread_mutex_lock(&audio->output_mutex);
+#endif
 
 	audio->output_state = STOPPED;
 
@@ -304,6 +306,10 @@ static void *output_thread(void *ptr) {
 				paPrimeOutputBuffersUsingStreamCallback,	// streamFlags
 				pa_callback,					// streamCallback
 				audio);						// userData
+#endif
+
+#ifdef __FREEBSD__
+	pthread_mutex_lock(&audio->output_mutex);
 #endif
 
 	if (err != paNoError) {
