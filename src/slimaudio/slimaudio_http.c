@@ -33,6 +33,7 @@
   #include <netdb.h>
   #include <sys/socket.h>
   #include <sys/time.h>
+  #include <errno.h>
   #define CLOSESOCKET(s) close(s)
 #endif
 
