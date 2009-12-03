@@ -98,8 +98,8 @@ typedef int (slimproto_connect_callback_t)(slimproto_t *p, bool isConnected, voi
 struct slimproto {
 	slimproto_state_t state;
 	
-	int sockfd; 					// SqueezeCenter socket
-    struct sockaddr_in serv_addr;	// SqueezeCenter address
+	int sockfd; 				// SqueezeCenter socket
+	struct sockaddr_in serv_addr;		// SqueezeCenter address
 	
 	struct timeval epoch;
 	
@@ -157,6 +157,8 @@ int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 
 int slimproto_stat(slimproto_t *, const char *, int, int, u64_t, int, int, u32_t, u32_t);
 
+int slimproto_configure_socket(int sockfd);
+
 // This function configures the socket whose fd is passed in, in order
 // to disable the raise of SIGPIPE when writing to a closed socket.
 //
@@ -165,8 +167,8 @@ int slimproto_stat(slimproto_t *, const char *, int, int, u64_t, int, int, u32_t
 // include the flags returned by slimproto_get_socketsendflags (see
 // below).  Note that for certain platforms there is no other way than
 // to completely ignore SIGPIPE, which causes the whole process to
-// ignore it, not just this library.
-int slimproto_configure_socket(int sockfd);
+// ignore it.
+int slimproto_configure_socket_sigpipe(int sockfd);
 
 // This function returns the flags to be passed to the 'send' system
 // call in order to disable the raise of SIGPIPE in case the socket is

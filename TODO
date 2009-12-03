@@ -38,7 +38,8 @@ data as it relies on the decoder finishing.
 ---
 
 Fix playing of left over buffer after stopping play and changing songs.
-Appears to be related to buffering issue above.
+Appears to be related to buffering issue above.  Fixed in r95 with addition
+of flush command support in strm_callback.
 
 ---
 
@@ -108,18 +109,8 @@ Fix getopt_long_only options string handling removing multiple #if defines.
 
 ---
 
-Complete ASIO SDK integration in makefile.mingw32-asio removing current DirectX usage.
-Building a win32 version using portaudio v19 allows for testing before attempting ASIO support.
-The older portaudio v18.1 does not support ASIO which is currentlu used in all win32 binaries.
-
----
-
 Change -L to display output devices only.
 Research https://bugzilla.redhat.com/show_bug.cgi?id=445644 regarding base device array index
-
----
-
-Update makefile.osxintel to build all support libraries instead of using MacPorts.
 
 ---
 
@@ -158,22 +149,3 @@ data is available
 else if (n == 0)
 peer is disconnected
 
----
-
-OSX suspend, on resume squeezeslave stays in sigsuspend until tickled with SIGUSR1.
-
-(gdb) attach 427
-Attaching to process 427.
-Reading symbols for shared libraries . done
-Reading symbols for shared libraries .............................. done
-0x90005b1a in syscall ()
-(gdb) backtrace
-#0  0x90005b1a in syscall ()
-#1  0x9003b0df in sigsuspend ()
-#2  0x9003b0bd in sigpause ()
-#3  0x9003b07a in pause ()
-#4  0x00002eb9 in main (argc=5, argv=0xbffff1c4) at src/squeezeslave/squeezeslave.c:81
-
-kill -USR1 427
-
-squeezeslave starts running again.

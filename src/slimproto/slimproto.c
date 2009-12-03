@@ -40,10 +40,10 @@
   #include <netdb.h>
   #include <sys/socket.h>
   #include <sys/time.h>
+  #include <errno.h>
   #define CLOSESOCKET(s) close(s)
 #endif
 
-#include <errno.h>
 #include "slimproto/slimproto.h"
 
 #define BUF_LENGTH 4096
@@ -224,6 +224,62 @@ void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t
 	DEBUGF("proto_addcon: (07) unlocked\n");
 }
 
+int slimproto_configure_socket(int sockfd)
+{
+	int retcode = 0;
+	struct timeval timeout;
+	int flag = 1;
+
+#ifdef __WIN32__
+	timeout.tv_sec = 10000;
+#else
+	timeout.tv_sec = 10;
+#endif
+	timeout.tv_usec = 0;
+
+#if 0
+#ifdef __WIN32__
+	unsigned long nonblocking = 0;
+	if (ioctlsocket(sockfd, FIONBIO, (unsigned long*) &nonblocking) !=0)
+	{
+		fprintf(stderr, "Error setting blocking socket.\n");
+		retcode = -1;
+	}
+#endif
+#endif
+	if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag, sizeof(flag) ) != 0)
+	{
+		perror("Error setting TCP_NODELAY on socket");
+		retcode = -1;
+	}
+	else
+	{
+	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout,  sizeof(timeout)))
+	{
+		perror("Error setting receive socket timeout");
+		retcode = -1;
+	}
+       	else
+	{
+	if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (void *)&timeout,  sizeof(timeout)))
+	{
+		perror("Error setting send socket timeout");
+		retcode = -1;
+	}
+	else
+	{
+	if (slimproto_configure_socket_sigpipe(sockfd) != 0)
+	{
+		fprintf(stderr, "Couldn't configure socket for SIGPIPE.\n");
+		retcode = -1;
+	}
+	}
+	}
+	}
+
+	return (retcode);
+}
+
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	struct hostent *server;
 
@@ -272,45 +328,31 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 }	
 
 static int proto_connect(slimproto_t *p) {
-	struct timeval timeout;
-	timeout.tv_sec = 10;
-	timeout.tv_usec = 0;
-
 	DEBUGF("proto_connect: (09) getlock\n");
 	pthread_mutex_lock(&p->slimproto_mutex);					
 	DEBUGF("proto_connect: (09) gotlock\n");
 
 	p->sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (p->sockfd < 0) {
-		perror("Error opening socket");
+	if (p->sockfd < 0)
+	{
+		perror("Error creating socket");
 			goto proto_connect_err;
 	}
 
-	if (setsockopt(p->sockfd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout,  sizeof(timeout)))
+	if ( slimproto_configure_socket (p->sockfd) != 0 )
 	{
-		perror("Error setting socket timeout");
+		CLOSESOCKET(p->sockfd);
 		goto proto_connect_err;
 	}
 
-	if (connect(p->sockfd, (struct sockaddr *)&p->serv_addr, sizeof(p->serv_addr)) != 0) {
-	    fprintf(stderr, "Error connecting to %s:%i\n", inet_ntoa(p->serv_addr.sin_addr), ntohs(p->serv_addr.sin_port));
-	    CLOSESOCKET(p->sockfd);
-			goto proto_connect_err;
+	if (connect(p->sockfd, (struct sockaddr *)&p->serv_addr, sizeof(p->serv_addr)) != 0)
+	{
+		fprintf(stderr, "Error connecting to %s:%i\n", inet_ntoa(p->serv_addr.sin_addr), \
+			ntohs(p->serv_addr.sin_port));
+		CLOSESOCKET(p->sockfd);
+		goto proto_connect_err;
 	}
 	
-	int flag = 1;
-	if (setsockopt(p->sockfd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag, sizeof(flag) ) != 0) {
-		fprintf(stderr, "Couldn't setsockopt(TCP_NODELAY)\n");
-		CLOSESOCKET(p->sockfd);
-		goto proto_connect_err;
-	}
-
-	if (slimproto_configure_socket(p->sockfd) != 0) {
-		fprintf(stderr, "Couldn't configure socket for SIGPIPE.\n");
-		CLOSESOCKET(p->sockfd);
-		goto proto_connect_err;
-	}
-
 	DEBUGF("proto_connect: connected to %s\n", inet_ntoa(p->serv_addr.sin_addr));
 
 	p->state = PROTO_CONNECTED;
@@ -368,7 +410,12 @@ static int proto_recv(slimproto_t *p) {
 
 	if (n <= 0)
 	{
+#ifdef __WIN32__
+		/* Use WSAGetLastError instead of errno for WIN32 */
+		DEBUGF("proto_recv: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+#else
 		DEBUGF("proto_recv: (1) n=%i msg=%s(%i)\n", n, strerror(errno), errno);
+#endif
 		return -1;	
 	}
 
@@ -383,7 +430,12 @@ static int proto_recv(slimproto_t *p) {
 		n = recv(p->sockfd, buf+r, len-r, 0);
 		if (n <= 0)
 		{
+#ifdef __WIN32__
+			/* Use WSAGetLastError instead of errno for WIN32 */
+			DEBUGF("proto_recv: (2) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+#else
 			DEBUGF("proto_recv: (2) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
+#endif
 			return -1;	
 		}	
 		r += n;
@@ -646,7 +698,7 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 	return 0;
 }
 
-int slimproto_configure_socket(int fd) {
+int slimproto_configure_socket_sigpipe(int fd) {
 
 #if defined(MSG_NOSIGNAL)
 	// This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about

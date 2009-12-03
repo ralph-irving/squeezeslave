@@ -171,16 +171,14 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 		return;
 	}
 
-	if (connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
-		fprintf(stderr, "slimaudio_http_connect: "
-			"error connecting to server\n");
-		CLOSESOCKET(fd);
-		return;
-	}
+        if ( slimproto_configure_socket (fd) != 0 )
+        {
+                CLOSESOCKET(fd);
+                return;
+        }
 
-	if (slimproto_configure_socket(fd) != 0) {
-		fprintf(stderr, "slimaudio_http_connect: "
-			"error configuring socket.\n");
+	if (connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
+		perror("slimaudio_http_connect: error connecting to server");
 		CLOSESOCKET(fd);
 		return;
 	}
@@ -190,10 +188,15 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	int n = send(fd, msg->strm.http_hdr, strlen(msg->strm.http_hdr), 
 		     slimproto_get_socketsendflags());
-	if (n < 0) {
-		fprintf(stderr, "slimaudio_http_connect: "
-			"error reading from socket\n");
-		CLOSESOCKET(fd);	
+	if (n < 0)
+	{
+#ifdef __WIN32__
+		/* Use WSAGetLastError instead of errno for WIN32 */
+		DEBUGF("http_send: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+#else
+		DEBUGF("http_send: (1) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
+#endif
+		CLOSESOCKET(fd);
 	}
 
 	/* read http header */
@@ -203,10 +206,15 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	
 	do {
 		n = recv(fd, http_hdr+pos, 1, 0);
-		if (n < 0) {
-			fprintf(stderr, "slimaudio_http_connect: "
-				"error reading from socket\n");
-			CLOSESOCKET(fd);	
+		if (n < 0)
+		{
+#ifdef __WIN32__
+			/* Use WSAGetLastError instead of errno for WIN32 */
+			DEBUGF("http_recv: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+#else
+			DEBUGF("http_recv: (1) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
+#endif
+			CLOSESOCKET(fd);
 		}
 
 		switch (crlf) {
@@ -286,14 +294,14 @@ static void http_recv(slimaudio_t *audio) {
 
 	int n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, 0);
 
-	if (n == 0) {
-		DEBUGF("http_recv: http eof\n");
-		http_close(audio);
-		return;	
-	}
-
-	if (n < 0) {
-		fprintf(stderr, "http_recv: error reading from socket\n");
+	/* n == 0 http stream closed by server */
+	if (n <= 0) {
+#ifdef __WIN32__
+		/* Use WSAGetLastError instead of errno for WIN32 */
+		DEBUGF("http_recv: (2) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+#else
+		DEBUGF("http_recv: (2) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
+#endif
 		http_close(audio);
 		return;
 	}
