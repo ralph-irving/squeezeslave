@@ -254,6 +254,7 @@ int slimproto_configure_socket(int sockfd)
 	}
 	else
 	{
+#ifndef __SUNPRO_C
 	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout,  sizeof(timeout)))
 	{
 		perror("Error setting receive socket timeout");
@@ -268,13 +269,16 @@ int slimproto_configure_socket(int sockfd)
 	}
 	else
 	{
+#endif /* __SUNPRO_C */
 	if (slimproto_configure_socket_sigpipe(sockfd) != 0)
 	{
 		fprintf(stderr, "Couldn't configure socket for SIGPIPE.\n");
 		retcode = -1;
 	}
+#ifndef __SUNPRO_C
 	}
 	}
+#endif /* __SUNPRO_C */
 	}
 
 	return (retcode);
@@ -699,7 +703,7 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 }
 
 int slimproto_configure_socket_sigpipe(int fd) {
-
+	DEBUGF("proto_sigpipe: begin\n");
 #if defined(MSG_NOSIGNAL)
 	// This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
 	// others).  So we'll let the send() call deal with the SIGPIPE
