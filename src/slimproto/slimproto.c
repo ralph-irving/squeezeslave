@@ -231,9 +231,9 @@ int slimproto_configure_socket(int sockfd)
 	int flag = 1;
 
 #ifdef __WIN32__
-	timeout.tv_sec = 10000;
+	timeout.tv_sec = 15000;
 #else
-	timeout.tv_sec = 10;
+	timeout.tv_sec = 15;
 #endif
 	timeout.tv_usec = 0;
 
