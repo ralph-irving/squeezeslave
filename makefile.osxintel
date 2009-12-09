@@ -10,7 +10,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-Wall -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE
+CFLAGS=-Wall -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 

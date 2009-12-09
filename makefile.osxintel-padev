@@ -31,7 +31,7 @@ SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libma
 SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
-	$(CC) $(CFLAGS) -g -D__FREEBSD__ -c $(INCLUDE) $< -o $*.o
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
 all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 

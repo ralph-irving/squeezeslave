@@ -38,7 +38,7 @@ SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a l
 SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
-	$(CC) $(CFLAGS) -D__FREEBSD__ -c $(INCLUDE) $< -o $*.o
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
 all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 

@@ -207,7 +207,7 @@ int slimaudio_output_open(slimaudio_t *audio) {
 	 * other threads from using the audio output information while it is
 	 * being initialized.
 	 */
-#ifndef __FREEBSD__
+#ifndef BSD_THREAD_LOCKING
 	pthread_mutex_lock(&audio->output_mutex);
 #endif
 
@@ -308,7 +308,7 @@ static void *output_thread(void *ptr) {
 				audio);						// userData
 #endif
 
-#ifdef __FREEBSD__
+#ifdef BSD_THREAD_LOCKING
 	pthread_mutex_lock(&audio->output_mutex);
 #endif
 
@@ -824,7 +824,15 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		/* if we have underrun fill remaining buffer with silence */
 		if (data_len == 0) {
 			memset((char *)outputBuffer+off, 0, len-off);
-			off = len;
+			/* An email from Jan Niehusmann indicated that commenting out this line
+			 * fixes squeezeslave stopping at the end of a track as it prevents the
+			 * output buffer to fill up again once it is empty.
+			 * 
+			 * This whole code block may not be required, one change at a time. ;)
+			 *
+			 * off = len;
+			 *
+			 */
 		}
 	}
 

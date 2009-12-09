@@ -4,7 +4,7 @@
 
 CC=gcc
 
-CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DNDEBUG -DSO_NOSIGPIPE -DPORTAUDIO_ALSA  -D__FREEBSD__ -fomit-frame-pointer
+CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
 
 INCLUDE=-I/usr/local/include/portaudio2 -I/usr/local/include -Ilib/portmixer/px_common -Isrc
 
@@ -37,6 +37,4 @@ clean:
 	  test -e $$FILE && echo $$FILE || true; \
 	  test -e $$FILE && $(RM) $$FILE 2>/dev/null || true; \
 	done; } | xargs --no-run-if-empty echo $(RM)
-
-
 
