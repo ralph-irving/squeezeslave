@@ -97,6 +97,9 @@ void print_version(void) {
 #ifdef GETOPT_SUPPORTS_OPTIONAL
 	fprintf(stdout, "getopt ");
 #endif
+#ifdef BSD_THREAD_LOCKING
+	fprintf(stdout, "altlock ");
+#endif
 #ifdef INTERACTIVE
 	fprintf(stdout, "interactive ");
 #endif

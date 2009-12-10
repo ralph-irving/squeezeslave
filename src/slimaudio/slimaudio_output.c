@@ -753,17 +753,25 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	const int len = framesPerBuffer * frameSize; 
 	
 	int off = 0;
-	while (audio->output_state == PLAYING && (len - off) > 0 ) {
+	while ( (audio->output_state == PLAYING) && ((len - off) > 0) )
+	{
 		if (audio->output_predelay_frames > 0) {
-			off += produce_predelay_frames(
-				audio, (char*)outputBuffer + off, len - off);
+			off += produce_predelay_frames(audio, (char*)outputBuffer + off, len - off);
 			continue;
 		}
 		int data_len = len - off;
+
 		const slimaudio_buffer_status ok = 
 			slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
 
-		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
+		if ( data_len == 0 ) {
+				pthread_mutex_lock(&audio->output_mutex);
+				audio->output_STMu = true;
+				DEBUGF("pa_callback: DATA_LEN0:output_STMu:%i\n",audio->output_STMu);
+				pthread_cond_broadcast(&audio->output_cond);
+				pthread_mutex_unlock(&audio->output_mutex);
+		}
+		else if ( ok == SLIMAUDIO_BUFFER_STREAM_END ) {
 			/* stream closed */
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
@@ -823,19 +831,14 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 		/* if we have underrun fill remaining buffer with silence */
 		if (data_len == 0) {
-			memset((char *)outputBuffer+off, 0, len-off);
-			/* An email from Jan Niehusmann indicated that commenting out this line
-			 * fixes squeezeslave stopping at the end of a track as it prevents the
-			 * output buffer to fill up again once it is empty.
-			 * 
-			 * This whole code block may not be required, one change at a time. ;)
-			 *
-			 * off = len;
-			 *
-			 */
-		}
-	}
+			DEBUGF("pa_callback: DATA_LEN_IS_ZERO\n");
 
+			memset((char *)outputBuffer+off, 0, len-off);
+
+			off = len;
+		}
+
+	}
 
 	const int uninitSize = len - off;
 	if (uninitSize > 0) {

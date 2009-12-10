@@ -30,6 +30,10 @@
 # %d - samplerate: samples/s
 # %D - samplerate: ksamples/s
 
-mp3 flc * 00:00:00:00:00:01
+# For one player with this MAC address.
+# mp3 flc * 00:00:00:00:00:01
+
+# All squeezeslave players.
+mp3 flc squeezeslave *
     # FRT:{START=-ss %s}U:{DURATION=-endpos %w}
     [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -af volume=0,resample=44100:0:1,channels=2 -ao pcm:file=/dev/fd/3 $FILE$ | [flac] -cs --totally-silent --compression-level-0 -
