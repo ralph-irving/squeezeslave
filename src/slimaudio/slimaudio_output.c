@@ -410,6 +410,7 @@ static void *output_thread(void *ptr) {
 
 			case BUFFERING:
 				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
+				output_thread_stat(audio, "STMo");
 			case PLAYING:			
 				gettimeofday(&now, NULL);
 				timeout.tv_sec = now.tv_sec + 1;
@@ -428,23 +429,42 @@ static void *output_thread(void *ptr) {
 
 					DEBUGF("output_thread STMs-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMs");
-				}
+				} else
 
-				/* Data underrun */
-				/* on buffer underrun causes the server to switch to the next track */
+				/* Data underrun
+				** On buffer underrun causes the server to switch to the next track.
+				*/
 				if (audio->output_STMu) {
 					audio->output_STMu = false;
 
 					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
-				}
+				} else
 
-				/* Output buffer underflow */
-				/* XXX FIXME Does not implement rebuffering, disabled notification. */
+				/* Decoder underrun
+				** Pause audio output and inform the server
+				*/
+				if (audio->output_STMd) {
+					audio->output_STMd = false;
+					audio->output_state = PAUSE;
+					pthread_cond_broadcast(&audio->output_cond);
+
+					DEBUGF("output_thread STMd-PLAYING:%llu\n",audio->pa_streamtime_offset);
+					output_thread_stat(audio, "STMd");
+
+				} else
+
+				/* Output buffer underflow
+				** XXX FIXME Does not implement rebuffering, disabled notification.
+				** Remove after confirmation SLIMAUDIO_BUFFER_STREAM_CONTINUE can be removed
+				** from pa_callback.
+				** STMo does nothing more that update the player display with the buffering
+				** message.
+				*/
 				if (audio->output_STMo) {
 					audio->output_STMo = false;
 
-					DEBUGF("output_thread STMo-PLAYING FIXME: %llu\n",audio->pa_streamtime_offset);
+					DEBUGF("output_thread STMo-PLAYING FIXME:%llu\n",audio->pa_streamtime_offset);
 					// output_thread_stat(audio, "STMo");
 				}
 
@@ -766,8 +786,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 		if ( data_len == 0 ) {
 				pthread_mutex_lock(&audio->output_mutex);
-				audio->output_STMu = true;
-				DEBUGF("pa_callback: DATA_LEN0:output_STMu:%i\n",audio->output_STMu);
+				audio->output_STMd = true;
+				DEBUGF("pa_callback: DATA_LEN0:output_STMd:%i\n",audio->output_STMd);
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
 		}
@@ -831,9 +851,9 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 		/* if we have underrun fill remaining buffer with silence */
 		if (data_len == 0) {
-			DEBUGF("pa_callback: DATA_LEN_IS_ZERO\n");
+			DEBUGF("pa_callback: DATA_LEN0 off=len\n");
 
-			memset((char *)outputBuffer+off, 0, len-off);
+			/* memset((char *)outputBuffer+off, 0, len-off); */
 
 			off = len;
 		}

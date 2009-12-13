@@ -1,0 +1,18 @@
+--- portaudio/src/hostapi/alsa/pa_linux_alsa.c.orig	2009-06-03 14:57:56.000000000 -0400
++++ portaudio/src/hostapi/alsa/pa_linux_alsa.c	2009-12-10 14:18:14.000000000 -0500
+@@ -2938,6 +2938,15 @@
+         {
+             break;
+         }
++	if( pollPlayback && self->playback.pcm )
++	{
++		int state = snd_pcm_state( self->playback.pcm );
++		if( state != SND_PCM_STATE_RUNNING )
++		{
++			// bad state, restart alsa
++			AlsaRestart(self);
++		}
++	}
+ 
+         /* @concern FullDuplex If only one of two pcms is ready we may want to compromise between the two.
+          * If there is less than half a period's worth of samples left of frames in the other pcm's buffer we will
