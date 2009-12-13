@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 107;
+const int revision = 108;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -525,9 +525,7 @@ int main(int argc, char *argv[]) {
 				close_lirc();
 				close_lcd();
 #endif
-				fprintf(stderr, 
-					"Connection to SqueezeCenter %s failed.\n",
-					slimserver_address);
+				fprintf(stderr, "Connection to SqueezeCenter %s failed.\n", slimserver_address);
 				exit(-1);
 			}
 #ifdef INTERACTIVE

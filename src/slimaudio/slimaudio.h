@@ -111,10 +111,8 @@ typedef struct {
 	u64_t stream_samples;
 
 	bool output_STMd;
-	bool output_STMo;
 	bool output_STMs;
 	bool output_STMu;
-	bool output_EoS;
 	int keepalive_interval;
 	
 #ifndef PORTAUDIO_DEV

@@ -252,10 +252,8 @@ static void *output_thread(void *ptr) {
 	
 	slimaudio_t *audio = (slimaudio_t *) ptr;
 	audio->output_STMd = false;
-	audio->output_STMo = false;
 	audio->output_STMs = false;
 	audio->output_STMu = false;
-	audio->output_EoS  = false;
 
 #ifndef PORTAUDIO_DEV
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
@@ -452,20 +450,6 @@ static void *output_thread(void *ptr) {
 					DEBUGF("output_thread STMd-PLAYING:%llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMd");
 
-				} else
-
-				/* Output buffer underflow
-				** XXX FIXME Does not implement rebuffering, disabled notification.
-				** Remove after confirmation SLIMAUDIO_BUFFER_STREAM_CONTINUE can be removed
-				** from pa_callback.
-				** STMo does nothing more that update the player display with the buffering
-				** message.
-				*/
-				if (audio->output_STMo) {
-					audio->output_STMo = false;
-
-					DEBUGF("output_thread STMo-PLAYING FIXME:%llu\n",audio->pa_streamtime_offset);
-					// output_thread_stat(audio, "STMo");
 				}
 
 				break;
@@ -784,14 +768,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		const slimaudio_buffer_status ok = 
 			slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
 
-		if ( data_len == 0 ) {
-				pthread_mutex_lock(&audio->output_mutex);
-				audio->output_STMd = true;
-				DEBUGF("pa_callback: DATA_LEN0:output_STMd:%i\n",audio->output_STMd);
-				pthread_cond_broadcast(&audio->output_cond);
-				pthread_mutex_unlock(&audio->output_mutex);
-		}
-		else if ( ok == SLIMAUDIO_BUFFER_STREAM_END ) {
+		if ( ok == SLIMAUDIO_BUFFER_STREAM_END ) {
 			/* stream closed */
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
@@ -811,8 +788,9 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_START) {
 			pthread_mutex_lock(&audio->output_mutex);
 
-			// Send track start to SqueezeCenter. During normal play
-			// this advances the playlist.
+			/* Send track start to SqueezeCenter. During normal play
+			** this advances the playlist.
+			*/
 			audio->output_STMs = true;
 
 			audio->decode_num_tracks_started++;
@@ -831,14 +809,23 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			pthread_mutex_unlock(&audio->output_mutex);
 
 		}
+		else if ( data_len == 0 ) {
+				pthread_mutex_lock(&audio->output_mutex);
+				audio->output_STMd = true;
+				DEBUGF("pa_callback: DATA_LEN0:output_STMd:%i\n",audio->output_STMd);
+				pthread_cond_broadcast(&audio->output_cond);
+				pthread_mutex_unlock(&audio->output_mutex);
+		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
 
-				/* output buffer underrun */
-				audio->output_STMo = true;
+				/* Decoder buffer underrun
+				** we should never get here!
+				*/
+				audio->output_STMd = true;
 
-				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMo:%i\n",audio->output_STMo);
+				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMd:%i\n",audio->output_STMd);
 
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
