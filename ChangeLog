@@ -1,3 +1,147 @@
+2009-12-13 14:40  paddockd
+
+	* [r108] src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Removed verbose debugging from
+	  slimproto.c.
+	  Removed unused variables from slimaudio.
+	  Refactored slimaudio_output pa_callback decoder buffer underflow
+	  handling.
+	  Increased version to 108.
+
+2009-12-13 14:05  paddockd
+
+	* [r107] makefile.linux24-alsa, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa, makefile.linux26-alsa-display,
+	  makefile.linux26-i64-alsa, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa, makefile.linux26-ppc-alsa-display,
+	  patches/badstate-pa_linux_alsa.patch,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added libportaudio badstate
+	  patch for linux ALSA builds. Thanks to Jan Niehusmann for
+	  providing the patch.
+	  Additional slimaudio_output pa_callback changes for buffer issue
+	  testing.
+	  Added STMo status message to BUFFERING audio state.
+	  Removed memset in data_len is 0.
+	  Increased version to 107.
+
+2009-12-10 13:37  paddockd
+
+	* [r106] config/custom-convert.conf.441,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added compile display option for
+	  BSD_THREAD_LOCKING.
+	  Slimaudio_output pa_callback changes for buffer issue testing.
+	  Reverted r105 patch from Jan Niehusmann to fix squeezeslave
+	  stopping to play after an output buffer underrun.
+	  Increased version to 106.
+
+2009-12-09 12:40  paddockd
+
+	* [r105] makefile.freebsd, makefile.linux24-alsa,
+	  makefile.linux24-alsa-display, makefile.linux26-alsa,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa,
+	  makefile.linux26-i64-alsa-display, makefile.linux26-ppc-alsa,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio,
+	  makefile.mingw32-padev, makefile.osxintel,
+	  makefile.osxintel-padev, makefile.osxppc, makefile.osxppc-padev,
+	  makefile.s9sparc, src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Update makefiles to use 20091205
+	  pa_snapshot.
+	  Updated FREEBSD patch to use the more generic BSD_THREAD_LOCKING
+	  definition.
+	  Applied patch from Jan Niehusmann to fix squeezeslave stopping to
+	  play after an
+	  output buffer underrun.
+	  Enabled USE_SIGNALS_FOR_RESTART define for all OSX makefiles.
+	  Increased version to 105.
+
+2009-12-06 14:58  paddockd
+
+	* [r104] src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Increased send/recv socket
+	  timeout to 15 seconds.
+	  Increased version to 104.
+
+2009-12-05 14:15  paddockd
+
+	* [r103] makefile.osxintel-padev,
+	  sources/pa_snapshot-20091205.tar.gz,
+	  src/squeezeslave/squeezeslave.c: Added portaudio r1428 snapshot
+	  contains OSX 10.6 updates.
+	  Modified makefile.osxintel-padev to use pa_snapshot-20091205.
+	  Increased version to 103.
+
+2009-12-04 12:21  paddockd
+
+	* [r102] makefile.s9sparc, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Added conditional compile block
+	  to disable unsupported socket timeouts for solaris.
+	  Enabled alternate locking __FREEBSD__ in makefile.s9sparc.
+	  Increased version to 102.
+
+2009-12-03 16:42  paddockd
+
+	* [r101] src/slimaudio/slimaudio_http.c,
+	  src/squeezeslave/squeezeslave.c: Added errno.h include to
+	  slimaudio_http.c.
+	  Increased version to 101.
+
+2009-12-03 16:23  paddockd
+
+	* [r100] TODO, makefile.mingw32-padev,
+	  src/slimaudio/slimaudio_http.c, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/squeezeslave.c: Added
+	  SO_SNDTIMEO socket option to proto thread.
+	  Added SO_SNDTIMEO and SO_RCVTIMEO socket options to http thread.
+	  Added WSAGetLastError reporting for WIN32 builds as errno not
+	  populated in mingw.
+	  Renamed slimproto_configure_socket function to
+	  slimproto_configure_socket_sigpipe.
+	  Added slimproto_configure_socket function to setup socket options
+	  for both proto and http thread.
+	  Enabled alternate locking __FREEBSD__ in makefile.mingw32-padev.
+	  Increased version to 100.
+
+2009-12-01 12:23  paddockd
+
+	* [r99] TODO, lib/portmixer/px_unix_oss/px_unix_oss.c,
+	  makefile.freebsd, makefile.osxintel-padev, patches/freebsd.patch,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c: Added
+	  freebsd patch provided by Gummy35.
+	  http://forums.slimdevices.com/showpost.php?p=476422&postcount=19
+	  Added timeout to slimprotocol socket send/recv calls to fix
+	  lockup after suspend/resume and when the server machine is
+	  powered off.
+	  Updated makefile.osxintel-padev to use the freebsd placement of
+	  thread locking.
+	  Added a lot of DEBUG messages to slimproto.c, most will be
+	  removed once the send/recv lockup issue has been resolved.
+	  Increased version to 99.
+
+2009-11-22 14:51  paddockd
+
+	* [r98] makefile.osxintel-padev, makefile.osxppc-padev,
+	  wiki/InstallSVNTrunkAsService.wiki, wiki/SqueezeSlave.wiki: Added
+	  USE_SIGNALS_FOR_RESTART define to osx padev makefiles.
+	  Wiki updates.
+
+2009-11-13 19:28  paddockd
+
+	* [r96] ChangeLog, ReleaseNotes, makefile.linux24-i586,
+	  makefile.linux24-i586-display, scripts, scripts/buildall-lnx24,
+	  scripts/buildall-lnx24mmx, scripts/buildall-lnx26,
+	  scripts/buildall-lnx26-i64, scripts/buildall-osx,
+	  scripts/buildall-win32: Added scripts used to create binary
+	  releases.
+	  Updated ReleaseNotes from
+	  http://forums.slimdevices.com/showpost.php?p=428346&postcount=1
+	  Updated Pentium MMX makefiles CFLAGS.
+
 2009-11-06 23:48  paddockd
 
 	* [r95] ChangeLog, src/slimaudio/slimaudio_decoder_mad.c,
