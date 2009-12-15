@@ -402,37 +402,40 @@ static void *output_thread(void *ptr) {
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
 				audio->output_state = PLAYING;
-
 				pthread_cond_broadcast(&audio->output_cond);
+
 				break;
 
 			case BUFFERING:
 				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
 				output_thread_stat(audio, "STMo");
+
 			case PLAYING:			
 				gettimeofday(&now, NULL);
 				timeout.tv_sec = now.tv_sec + 1;
 				timeout.tv_nsec = now.tv_usec * 1000;
 				err = pthread_cond_timedwait(&audio->output_cond, &audio->output_mutex, &timeout);
 
-				if (err == ETIMEDOUT) {
+				if (err == ETIMEDOUT)
+				{
 					DEBUGF("output_thread ETIMEDOUT-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMt");
-					;;
 				}
 
 				/* Track started */				
-				if (audio->output_STMs) {
+				if (audio->output_STMs)
+				{
 					audio->output_STMs = false;
 
 					DEBUGF("output_thread STMs-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMs");
-				} else
+				}
 
 				/* Data underrun
 				** On buffer underrun causes the server to switch to the next track.
 				*/
-				if (audio->output_STMu) {
+				if (audio->output_STMu)
+				{
 					audio->output_STMu = false;
 
 					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
@@ -442,8 +445,14 @@ static void *output_thread(void *ptr) {
 				/* Decoder underrun
 				** Pause audio output and inform the server
 				*/
-				if (audio->output_STMd) {
+				if (audio->output_STMd)
+				{
 					audio->output_STMd = false;
+
+					/* Pause audio playback to clear blocked
+					** buffer read call in the decoder. STMd will unpause
+					** playback and continue with the next track in playlist.
+					*/
 					audio->output_state = PAUSE;
 					pthread_cond_broadcast(&audio->output_cond);
 
@@ -840,7 +849,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		if (data_len == 0) {
 			DEBUGF("pa_callback: DATA_LEN0 off=len\n");
 
-			/* memset((char *)outputBuffer+off, 0, len-off); */
+			/* Clear any remaining buffer so we don't hear it played out */
+			memset((char *)outputBuffer+off, 0, len-off);
 
 			off = len;
 		}

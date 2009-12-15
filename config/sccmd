@@ -1,0 +1,31 @@
+#!/bin/bash -x
+#
+# To control a player from fvwm add these lines to your .fvwm2rc configuration file,
+# removing the comment character from the beginning of each line and update the path
+# to the sccmd script file location.
+#
+# Key SunAudioLowerVolume A N Exec $HOME/scripts/sccmd "mixer volume -2.5"
+# Key SunAudioLowerVolume A S Exec $HOME/scripts/sccmd "button jump_rew"
+# Key SunAudioRaiseVolume A N Exec $HOME/scripts/sccmd "mixer volume +2.5"
+# Key SunAudioRaiseVolume A S Exec $HOME/scripts/sccmd "button jump_fwd"
+# Key SunAudioMute        A N Exec $HOME/scripts/sccmd pause
+#
+
+# Control player with this mac address
+SSMAC=00:00:00:00:00:01
+
+# We need to URLify the mac address by replacing all colons(:) with (%3A) for use with the cli interface
+MAC=00%3A00%3A00%3A00%3A00%3A01
+
+# The hostname or ip address of the system running Squeezebox Server
+SSHOST=sbshostname
+
+# Use the default cli port 9090
+SSTCP="/dev/tcp/$SSHOST/9090"
+
+# Replace sbsuserid and sbspasswd if you've enabled security.
+# If security is NOT enabled just leave sbsuserid and sbspasswd as is since SBS will ignore it.
+exec 8<>${SSTCP}
+echo -e "login sbsuserid sbspasswd\r\n$MAC $1\r\nexit\r\n" >&8
+RESPONSE=`cat <&8`
+
