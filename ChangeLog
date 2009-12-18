@@ -1,3 +1,20 @@
+2009-12-15 14:07  paddockd
+
+	* [r110] config/sccmd, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added config/sccmd bash script.
+	  sccmd can be mapped to multimedia keys to control for example;
+	  volume, play/pause, skip, etc. Script comments contain an example
+	  key mapping for fvwm.
+	  Updated audio_output PLAYING state to only handle STMu or STMd
+	  instead of the both.
+	  Restored original clearing of any remaining buffer when a decoder
+	  error occurs so we don't hear it played out.
+	  Increased version to 110.
+
+2009-12-13 20:21  paddockd
+
+	* [r109] ChangeLog: Updated ChangeLog.
+
 2009-12-13 14:40  paddockd
 
 	* [r108] src/slimaudio/slimaudio.h,

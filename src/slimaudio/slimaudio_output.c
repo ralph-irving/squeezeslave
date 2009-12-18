@@ -408,7 +408,7 @@ static void *output_thread(void *ptr) {
 
 			case BUFFERING:
 				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
-				output_thread_stat(audio, "STMo");
+				/* output_thread_stat(audio, "STMo"); */
 
 			case PLAYING:			
 				gettimeofday(&now, NULL);

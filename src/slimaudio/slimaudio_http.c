@@ -168,12 +168,13 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	
 	const int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 0) {
-		perror("Error opening socket");
+		perror("slimaudio_http_connect: Error opening socket");
 		return;
 	}
 
-        if ( slimproto_configure_socket (fd) != 0 )
+        if ( slimproto_configure_socket (fd, 45) != 0 )
         {
+		perror("slimaudio_http_connect: error configuring socket");
                 CLOSESOCKET(fd);
                 return;
         }
