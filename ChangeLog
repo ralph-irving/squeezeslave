@@ -1,3 +1,9 @@
+2009-12-18 00:15  paddockd
+
+	* [r112] ChangeLog, src/squeezeslave/squeezeslave.c: Updated
+	  ChangeLog
+	  Increased version to 112.
+
 2009-12-18 00:13  paddockd
 
 	* [r111] ChangeLog, makefile.mingw32-asio, makefile.mingw32-padev,
