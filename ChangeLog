@@ -1,3 +1,15 @@
+2009-12-18 00:13  paddockd
+
+	* [r111] ChangeLog, makefile.mingw32-asio, makefile.mingw32-padev,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/squeezeslave.c: Increased slimaudio_http.c
+	  timeout from 15 to 45 seconds.
+	  Increased slimproto.c timeout from 15 to 30 seconds.
+	  Rolled back libportaudio to 20091022 for makefile.mingw32-asio
+	  and makefile.mingw32-asio
+	  Increased version to 111.
+
 2009-12-15 14:07  paddockd
 
 	* [r110] config/sccmd, src/slimaudio/slimaudio_output.c,
