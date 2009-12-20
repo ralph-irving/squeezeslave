@@ -254,6 +254,7 @@ static void *output_thread(void *ptr) {
 	audio->output_STMd = false;
 	audio->output_STMs = false;
 	audio->output_STMu = false;
+	audio->output_EoS  = false;
 
 #ifndef PORTAUDIO_DEV
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
@@ -411,7 +412,6 @@ static void *output_thread(void *ptr) {
 
 			case BUFFERING:
 				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
-				/* output_thread_stat(audio, "STMo"); */
 
 			case PLAYING:			
 				gettimeofday(&now, NULL);
@@ -445,24 +445,13 @@ static void *output_thread(void *ptr) {
 
 					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
-				} else
+				}
 
-				/* Decoder underrun
-				** Pause audio output and inform the server
-				*/
-				if (audio->output_STMd)
+				if (audio->output_EoS)
 				{
-					audio->output_STMd = false;
+					audio->output_EoS = false;
 
-					/* Pause audio playback to clear blocked
-					** buffer read call in the decoder. STMd will unpause 
-					** playback and continue with the next track in playlist.
-					*/
-					audio->output_state = PAUSE;
-
-					DEBUGF("output_thread STMd-PLAYING:%llu\n",audio->pa_streamtime_offset);
-					output_thread_stat(audio, "STMd");
-
+					DEBUGF("output_thread EoS-PLAYING:%llu\n",audio->pa_streamtime_offset);
 				}
 
 				break;
@@ -769,9 +758,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	const int frameSize = 2 * 2;
 	const int len = framesPerBuffer * frameSize; 
 	
-	// Track streaming state so we know if the decoder is actually hung.
-	bool streamend = true;
-
 	int off = 0;
 
 	while ( (audio->output_state == PLAYING) && ((len - off) > 0) )
@@ -780,12 +766,13 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			off += produce_predelay_frames(audio, (char*)outputBuffer + off, len - off);
 			continue;
 		}
+
 		int data_len = len - off;
 
 		const slimaudio_buffer_status ok = 
 			slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
 
-		if ( ok == SLIMAUDIO_BUFFER_STREAM_END ) {
+		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 			/* stream closed */
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
@@ -795,8 +782,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				// playlist. During sync this starts the next 
 				// track.
 				audio->output_STMu = true;
-
-				streamend = true;
 
 				DEBUGF("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
 
@@ -811,8 +796,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			** this advances the playlist.
 			*/
 			audio->output_STMs = true;
-
-			streamend = false;
 
 			audio->decode_num_tracks_started++;
 
@@ -830,28 +813,14 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			pthread_mutex_unlock(&audio->output_mutex);
 
 		}
-		else if ( (data_len == 0) && (streamend == false) ) {
-				pthread_mutex_lock(&audio->output_mutex);
-
-				audio->output_STMd = true;
-
-				streamend = true;
-
-				DEBUGF("pa_callback: DATA_LEN0:output_STMd:%i\n",audio->output_STMd);
-
-				pthread_cond_broadcast(&audio->output_cond);
-				pthread_mutex_unlock(&audio->output_mutex);
-		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
-			if ( (slimaudio_buffer_available(audio->output_buffer) == 0) && (streamend == false)) {
+			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
 
 				/*
-				** Decoder buffer underrun.
+				** Decoder blocked in buffer_read.
 				*/
-				audio->output_STMd = true;
-
-				streamend = true;
+				audio->output_EoS = true;
 
 				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMd:%i\n",audio->output_STMd);
 
@@ -865,8 +834,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		off += data_len;
 
 		/* if we have underrun fill remaining buffer with silence */
-		if ( (data_len == 0) && (streamend == false) )
-		{
+		if (data_len == 0) {
 			DEBUGF("pa_callback: DATA_LEN0:off=len\n");
 
 			/* Clear any remaining buffer so we don't hear it played out */

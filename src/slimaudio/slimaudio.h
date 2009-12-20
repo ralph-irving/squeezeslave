@@ -113,6 +113,7 @@ typedef struct {
 	bool output_STMd;
 	bool output_STMs;
 	bool output_STMu;
+	bool output_EoS;
 	int keepalive_interval;
 	
 #ifndef PORTAUDIO_DEV

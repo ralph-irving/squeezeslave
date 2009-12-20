@@ -1,3 +1,17 @@
+2009-12-20 15:37  paddockd
+
+	* [r114] ChangeLog, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c:
+	  Disabled socket timeouts in slimaudio_http.c.
+	  Fixed DEBUG printf un/signed proto_stat info.
+	  Added STMf acknowledge to strm f message.
+	  Fixed non-zeroing of elapsed times in STMt message after stopped.
+	  Added STOP state change to STMu-PLAYING.
+	  Added stream state tracking to pa_callback.
+	  Increased version to 114.
+
 2009-12-18 12:35  paddockd
 
 	* [r113] ChangeLog, src/slimaudio/slimaudio_http.c,
