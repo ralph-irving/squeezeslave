@@ -590,13 +590,13 @@ u16_t error_code;
 	packN4(msg, 55, server_timestamp);
 	packN2(msg, 59, 0); // error code
 
-	DEBUGF("proto_stat: code=%4.4s decoder_buffer_size=%i decoder_buffer_fullness=%i ",
+	DEBUGF("proto_stat: code=%4.4s decoder_buffer_size=%u decoder_buffer_fullness=%u ",
 		code, decoder_buffer_size, decoder_buffer_fullness);
 
-	DEBUGF("rbytes_high=%i rbytes_low=%i output_buffer_size=%i output_buffer_fullness=%i ",
+	DEBUGF("rbytes_high=%u rbytes_low=%u output_buffer_size=%u output_buffer_fullness=%u ",
        		rbytes_high, rbytes_low, output_buffer_size, output_buffer_fullness);
 
-	DEBUGF("elapsed_seconds=%i elapsed_milliseconds=%i server_timestamp=%i\n",
+	DEBUGF("elapsed_seconds=%u elapsed_milliseconds=%u server_timestamp=%u\n",
        		elapsed_seconds, elapsed_milliseconds, server_timestamp);
 
 	return slimproto_send(p, msg);	

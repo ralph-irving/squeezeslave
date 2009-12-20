@@ -172,7 +172,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 		return;
 	}
 
-        if ( slimproto_configure_socket (fd, 60) != 0 )
+        if ( slimproto_configure_socket (fd, 0) != 0 )
         {
 		perror("slimaudio_http_connect: error configuring socket");
                 CLOSESOCKET(fd);

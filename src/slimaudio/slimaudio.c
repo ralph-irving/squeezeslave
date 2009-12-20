@@ -163,7 +163,7 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimaudio_t *audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
 
-	DEBUGF("strm cmd %c strm.replay_gain:%i ", msg.strm.command, msg.strm.replay_gain);
+	DEBUGF("strm cmd %c strm.replay_gain:%u ", msg.strm.command, msg.strm.replay_gain);
 
 	switch (msg.strm.command) {
 		case 's': /* start */
@@ -198,12 +198,14 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 		case 'q': /* stop */
 			DEBUGF("\n");
 			audio_stop(audio);
+			/* slimaudio_stat(audio, "STMf", (u32_t) 0); acknowledge stop cmd */
 			break;	
 		
 		case 'f': /* flush */
 			DEBUGF("\n");
 			slimaudio_buffer_flush(audio->decoder_buffer);
 			slimaudio_buffer_flush(audio->output_buffer);
+			slimaudio_stat(audio, "STMf", (u32_t) 0); /* acknowledge flush cmd */
 			break;			
 
 		case 'a': /* skip ahead */

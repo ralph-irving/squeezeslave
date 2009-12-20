@@ -348,9 +348,12 @@ static void *output_thread(void *ptr) {
 
 		switch (audio->output_state) {
 			case STOPPED:
+				audio->decode_num_tracks_started = 0L;
+				audio->stream_samples = 0UL;
+				audio->pa_streamtime_offset = audio->stream_samples;
+
 				DEBUGF("output_thread STOPPED: %llu\n",audio->pa_streamtime_offset);
 
-				audio->decode_num_tracks_started = 0L;
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_BLOCKING);
 
 			case PAUSED:
@@ -438,6 +441,8 @@ static void *output_thread(void *ptr) {
 				{
 					audio->output_STMu = false;
 
+					audio->output_state = STOP;
+
 					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
 				} else
@@ -450,11 +455,10 @@ static void *output_thread(void *ptr) {
 					audio->output_STMd = false;
 
 					/* Pause audio playback to clear blocked
-					** buffer read call in the decoder. STMd will unpause
+					** buffer read call in the decoder. STMd will unpause 
 					** playback and continue with the next track in playlist.
 					*/
 					audio->output_state = PAUSE;
-					pthread_cond_broadcast(&audio->output_cond);
 
 					DEBUGF("output_thread STMd-PLAYING:%llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMd");
@@ -765,7 +769,11 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	const int frameSize = 2 * 2;
 	const int len = framesPerBuffer * frameSize; 
 	
+	// Track streaming state so we know if the decoder is actually hung.
+	bool streamend = true;
+
 	int off = 0;
+
 	while ( (audio->output_state == PLAYING) && ((len - off) > 0) )
 	{
 		if (audio->output_predelay_frames > 0) {
@@ -788,6 +796,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				// track.
 				audio->output_STMu = true;
 
+				streamend = true;
+
 				DEBUGF("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
 
 				pthread_cond_broadcast(&audio->output_cond);
@@ -801,6 +811,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			** this advances the playlist.
 			*/
 			audio->output_STMs = true;
+
+			streamend = false;
 
 			audio->decode_num_tracks_started++;
 
@@ -818,21 +830,28 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			pthread_mutex_unlock(&audio->output_mutex);
 
 		}
-		else if ( data_len == 0 ) {
+		else if ( (data_len == 0) && (streamend == false) ) {
 				pthread_mutex_lock(&audio->output_mutex);
+
 				audio->output_STMd = true;
+
+				streamend = true;
+
 				DEBUGF("pa_callback: DATA_LEN0:output_STMd:%i\n",audio->output_STMd);
+
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
 		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
-			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
+			if ( (slimaudio_buffer_available(audio->output_buffer) == 0) && (streamend == false)) {
 				pthread_mutex_lock(&audio->output_mutex);
 
-				/* Decoder buffer underrun
-				** we should never get here!
+				/*
+				** Decoder buffer underrun.
 				*/
 				audio->output_STMd = true;
+
+				streamend = true;
 
 				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMd:%i\n",audio->output_STMd);
 
@@ -846,8 +865,9 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		off += data_len;
 
 		/* if we have underrun fill remaining buffer with silence */
-		if (data_len == 0) {
-			DEBUGF("pa_callback: DATA_LEN0 off=len\n");
+		if ( (data_len == 0) && (streamend == false) )
+		{
+			DEBUGF("pa_callback: DATA_LEN0:off=len\n");
 
 			/* Clear any remaining buffer so we don't hear it played out */
 			memset((char *)outputBuffer+off, 0, len-off);

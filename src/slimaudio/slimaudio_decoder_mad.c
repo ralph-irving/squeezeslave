@@ -108,7 +108,7 @@ enum mad_flow mad_input(void *data,
 
 	pthread_mutex_lock(&audio->decoder_mutex);
 
-	DEBUGF("decode_input state=%i\n", audio->decoder_state);
+	VDEBUGF("decode_input state=%i\n", audio->decoder_state);
 	if (audio->decoder_state != STREAM_PLAYING) {
 		pthread_mutex_unlock(&audio->decoder_mutex);
 		DEBUGF("mad: decode_state != STREAM_PLAYING\n");
@@ -138,7 +138,8 @@ enum mad_flow mad_input(void *data,
 	}
 
 	mad_stream_buffer(stream, (const unsigned char *)audio->decoder_data, data_len + remainder);
-	DEBUGF("mad: mad_input: CONTINUE\n");
+
+	VDEBUGF("mad: mad_input: CONTINUE\n");
 	return MAD_FLOW_CONTINUE;
 }
 

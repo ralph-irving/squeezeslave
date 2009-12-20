@@ -1,3 +1,11 @@
+2009-12-18 12:35  paddockd
+
+	* [r113] ChangeLog, src/slimaudio/slimaudio_http.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c:
+	  Increased slimaudio_http.c timeout from 45 to 60 seconds.
+	  Decreased slimproto.c timeout from 30 to 20 seconds.
+	  Increased version to 113.
+
 2009-12-18 00:15  paddockd
 
 	* [r112] ChangeLog, src/squeezeslave/squeezeslave.c: Updated
