@@ -822,7 +822,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 				*/
 				audio->output_EoS = true;
 
-				DEBUGF("pa_callback: STREAM_CONTINUE:output_STMd:%i\n",audio->output_STMd);
+				DEBUGF("pa_callback: STREAM_CONTINUE:output_EoS:%i\n",audio->output_EoS);
 
 				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);

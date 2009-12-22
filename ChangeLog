@@ -1,3 +1,13 @@
+2009-12-20 16:11  paddockd
+
+	* [r115] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Reverted pa_callback code to
+	  r95.
+	  Reverted slimaudio_output PLAYING state code to r95 except for
+	  the addition of the STOP state change in STMu.
+	  Increased version to 115.
+
 2009-12-20 15:37  paddockd
 
 	* [r114] ChangeLog, src/slimaudio/slimaudio.c,
