@@ -46,7 +46,13 @@
 
 #ifdef INTERACTIVE
 #include <sys/types.h>
+#ifdef __WIN32__
+#include <sys/fcntl.h>
+#include <winsock.h>
+#define MSG_DONTWAIT 0
+#else
 #include <sys/socket.h>
+#endif
 #include <sys/time.h>
 #include <unistd.h>
 #include <locale.h>
@@ -54,7 +60,9 @@
 #include <curses.h>
 #include <fcntl.h>
 #include <lirc/lirc_client.h>
+#ifndef __WIN32__
 #include <netinet/tcp.h> 
+#endif
 #endif
 
 #include "slimproto/slimproto.h"
@@ -99,6 +107,9 @@ bool read_lcd(void);
 int setNonblocking(int);
 void close_lirc(void);
 void close_lcd(void);
+#ifdef __WIN32__
+int inet_pton (int, const char *, void *);
+#endif
 #endif
 
 #endif /* _SQUEEZESLAVE_H_ */

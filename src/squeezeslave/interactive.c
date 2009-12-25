@@ -65,11 +65,24 @@ void close_lirc(void){
 
 // Set fd to non-blocking mode
 int setNonblocking(int fd) {
+#ifdef __WIN32__
+    int iretcode;
+    unsigned long flags;
+
+    iretcode = 0;
+    flags = 1;
+
+    if ( ioctlsocket( fd, FIONBIO, &flags ) == SOCKET_ERROR )
+	    iretcode = -1;
+
+    return (iretcode);
+#else
     int flags;
 
     if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
        flags = 0;
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+#endif
 } 
 
 // Read response from LCDd and update our line length is one is supplied
@@ -128,6 +141,7 @@ void init_lirc(void) {
 // If it fails, print a message, disable support and continue
 void init_lcd (void) {
      if (!use_lcdd_menu) return;
+
      use_lcdd_menu = false;
      lcd_fd = socket(AF_INET, SOCK_STREAM, 0);
      if (lcd_fd > 0) {

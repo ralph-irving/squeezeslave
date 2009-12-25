@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 116;
+const int revision = 117;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -103,7 +103,9 @@ static void send_restart_signal() {
 
 // Used to toggle IR/LCD support on and off
 static void install_toggle_handler() {
+#ifndef __WIN32__
 	signal(SIGUSR2, &toggle_handler);
+#endif
 }
 #endif /* INTERACTIVE */
 
@@ -181,7 +183,8 @@ int main(int argc, char *argv[]) {
         int key = 0;
         unsigned long ir = 0;
 	int maxfd = 0;
-	char * home;
+	char *home;
+	int WSAerrno;
 	struct timeval timeout;
 	timeout.tv_usec = 0;
 
@@ -556,10 +559,22 @@ int main(int argc, char *argv[]) {
                       }
 		      timeout.tv_sec = 5;
                       if(select(maxfd + 1, &read_fds, NULL, NULL, &timeout) == -1) {
-    	                 if (errno != EINTR) {
-		           fprintf(stderr,"Select Error\n");
+#ifndef __WIN32__
+    	                 if (errno != EINTR)
+			 {
+		           fprintf(stderr,"Select Error:%d\n", errno);
+#else
+			 WSAerrno = WSAGetLastError();
+			 if ( (WSAerrno != WSAEINTR) && (WSAerrno != WSAENOTSOCK) )
+			 {	
+		           fprintf(stderr,"Select Error:%d\n", WSAerrno);
+#endif
    	                   abort();
-	                 } 
+	                 }
+#ifdef __WIN32__
+			 else
+				 Pa_Sleep(1000);
+#endif
                       }
 		      if (FD_ISSET(0, &read_fds)) {
                          while ((key = getch()) != ERR) {

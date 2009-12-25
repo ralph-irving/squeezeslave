@@ -1,0 +1,10 @@
+--- curses.h.orig	2008-07-15 13:13:25.000000000 -0400
++++ curses.h	2009-12-21 16:45:45.000000000 -0500
+@@ -150,6 +150,7 @@
+ #define PDC_MOUSE_WHEEL_DOWN    0x0040
+ 
+ #define A_BUTTON_CHANGED        (Mouse_status.changes & 7)
++#undef MOUSE_MOVED
+ #define MOUSE_MOVED             (Mouse_status.changes & PDC_MOUSE_MOVED)
+ #define MOUSE_POS_REPORT        (Mouse_status.changes & PDC_MOUSE_POSITION)
+ #define BUTTON_CHANGED(x)       (Mouse_status.changes & (1 << ((x) - 1)))

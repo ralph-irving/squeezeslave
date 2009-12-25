@@ -1,0 +1,66 @@
+--- lirc-0.8.6/tools/lirc_client.h.orig	2008-05-20 14:54:37.000000000 -0400
++++ lirc-0.8.6/tools/lirc_client.h	2009-12-21 12:27:46.000000000 -0500
+@@ -101,4 +101,17 @@
+ }
+ #endif
+ 
++#define WEXITSTATUS(w)		(((w) >> 8) & 0xff)
++
++#define DEVDIR			"/dev"
++#define SYSCONFDIR		"/etc"
++#define DEV_LIRCD		"lircd"
++#define LIRCD			DEVDIR "/" DEV_LIRCD
++
++#define CFG_LIRCRC		"lircrc"
++#define LIRCRC_USER_FILE	"." CFG_LIRCRC
++
++#define LIRCRC_ROOT_FILE	SYSCONFDIR "/" CFG_LIRCRC
++#define LIRCRC_OLD_ROOT_FILE	SYSCONFDIR "/" CFG_LIRCRC
++
+ #endif
+--- lirc-0.8.6/tools/lirc_client.c.orig	2009-07-08 15:38:22.000000000 -0400
++++ lirc-0.8.6/tools/lirc_client.c	2009-12-21 09:11:51.000000000 -0500
+@@ -12,8 +12,8 @@
+  * System wide LIRCRC support by Michal Svec <rebel@atrey.karlin.mff.cuni.cz>
+  */ 
+ 
+-#ifdef HAVE_CONFIG_H
+-# include <config.h>
++#ifdef __WIN32__
++  #include <windows.h>
+ #endif
+ 
+ #include <errno.h>
+@@ -23,11 +23,28 @@
+ #include <stdarg.h>
+ #include <string.h>
+ #include <limits.h>
+-#include <sys/socket.h>
+-#include <sys/un.h>
+-#include <sys/stat.h>
+ #include <sys/types.h>
+-#include <sys/wait.h>
++
++#ifdef __WIN32__
++  #include <winsock.h>
++
++/* We need to prefix the structure with a sockaddr_in header so we can
++   use it later for sendto and recvfrom. */
++struct sockaddr_un
++{
++  short          sun_family;
++  unsigned short sun_port;
++  struct         in_addr sun_addr;
++  char           sun_path[108-2-4]; /* Path name.  */
++};
++
++#else
++  #include <sys/socket.h>
++  #include <sys/un.h>
++  #include <sys/stat.h>
++  #include <sys/wait.h>
++#endif
++
+ 
+ #include "lirc_client.h"
+ 
