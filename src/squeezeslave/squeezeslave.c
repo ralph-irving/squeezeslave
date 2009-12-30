@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 117;
+const int revision = 118;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -55,7 +55,7 @@ bool debug_logfile = false;
 #ifdef INTERACTIVE
 struct lirc_config *lircconfig;
 int linelen = 40;
-char * lircrc;
+char *lircrc;
 int lirc_fd = 0;
 bool using_lirc = false;
 int using_curses = 0;
@@ -217,9 +217,9 @@ int main(int argc, char *argv[]) {
 			{"volume",             required_argument, 0, 'v'},
 #ifdef INTERACTIVE
 			{"lircrc",             required_argument, 0, 'c'},
-			{"display",            no_argument,       0, 'D'},
 			{"lirc",               no_argument,       0, 'i'},
 			{"lcd",                no_argument,       0, 'l'},
+			{"display",            no_argument,       0, 'D'},
 			{"width",              required_argument, 0, 'w'},
 #endif
 			{0, 0, 0, 0}
@@ -392,14 +392,16 @@ int main(int argc, char *argv[]) {
 		        free(lircrc);
 			lircrc = optarg;
 			break;
-		case 'D':
-			using_curses = 1;
-			break;
+#ifndef __WIN32__
 		case 'i':
 			using_lirc = true;
 			break;
 		case 'l':
 			use_lcdd_menu = true;
+			break;
+#endif
+		case 'D':
+			using_curses = 1;
 			break;
 		case 'w':
 			linelen = strtoul(optarg, NULL, 0);
@@ -573,7 +575,7 @@ int main(int argc, char *argv[]) {
 	                 }
 #ifdef __WIN32__
 			 else
-				 Pa_Sleep(1000);
+				 WaitForSingleObject( GetStdHandle(STD_INPUT_HANDLE), 5000 );
 #endif
                       }
 		      if (FD_ISSET(0, &read_fds)) {

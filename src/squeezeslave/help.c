@@ -368,12 +368,14 @@ void print_help(void) {
 "                            and 0s for a <6.5.x server, which means no\n"
 "                            keepalive.\n"
 #ifdef INTERACTIVE
+#ifndef __WIN32__
 "-l, --lcd                   Enable LCDd (lcdproc) text display.\n"
 "                            Requires LCDd running on local host.\n"
 "-i, --lirc                  Enable lirc remote control support.\n"
 "                            Requires lirc running on local host.\n"
 "-c, --lircrc <filename>:    Location of lirc client configuration file.\n"
 "                            Default: ~/.lircrc\n"
+#endif
 "-D, --display               Enable slimp3 style text display and\n"
 "                            keyboard input.\n"
 "                            Keys: 0-9:             0-9\n"
@@ -393,7 +395,9 @@ void print_help(void) {
 "                                  Z                Sleep\n"
 "                                  +,-              Vol up,down\n"
 "-w, --width <chars>         Set the display width to <chars> characters\n"
+#ifndef __WIN32__
 "                            If using LCDd, width is detected.\n"
+#endif
 #endif
 #ifdef DAEMONIZE
 "-M, --daemonize <logfile>   Run squeezeslave as a daemon.\n"
