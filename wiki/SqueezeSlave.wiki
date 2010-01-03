@@ -171,6 +171,136 @@ Upon successfull completion, you'll find a file in the bin/ directory starting w
 
  cd bin; mv squeezeslave-alsa squeezeslave
 
+=== Windows build instructions ===
+
+Download Cygwin setup from http://www.cygwin.com/setup.exe
+
+Setup.exe version 2.674 was used for this install.
+
+Root Directory: C:\cygwin<br />
+All Users (Recommended)<br />
+Local Package Directory C:\cygwin\pkgs<br />
+Choose a mirror close to your location.<br />
+
+Install the following packages.  Note that most are "core" required packages and will already be selected for installation.
+
+ alternatives
+ apache2
+ apache2-devel
+ base-cygwin
+ base-files
+ base-passwd
+ bash
+ binutils
+ bzip2
+ coreutils
+ crypt
+ csih
+ cygrunsrv
+ cygutils
+ cygwin
+ cygwin-doc
+ dash
+ diffutils
+ editrights
+ findutils
+ gawk
+ gcc-core
+ gcc-g++
+ gcc-mingw-core
+ gcc-mingw-g++
+ gdb
+ gettext
+ grep
+ groff
+ gzip
+ ipc-utils
+ less
+ libX11_6
+ libXau6
+ libXdmcp6
+ libXext6
+ libXmuu1
+ libXtst6
+ libapr1
+ libaprutil1
+ libbz2_1
+ libdb4.2
+ libexpat1
+ libgcc1
+ libgdbm4
+ libgmp3
+ libiconv2
+ libintl2
+ libintl3
+ libintl8
+ libncurses8
+ libncurses9
+ libneon27
+ libopenldap2_3_0
+ libpcre0
+ libpopt0
+ libpq5
+ libreadline6
+ libreadline7
+ libsasl2
+ libserf0_0
+ libsqlite3_0
+ libssp0
+ libstdc++6
+ libwrap0
+ libxcb1
+ login
+ make
+ man
+ mingw-runtime
+ minires
+ openssh
+ openssl
+ patch
+ popt
+ rebase
+ run
+ sed
+ subversion
+ tar
+ tcltk
+ termcap
+ terminfo
+ terminfo0
+ texinfo
+ tzcode
+ vim
+ w32api
+ wget
+ which
+ zlib
+ zlib-devel
+ zlib0
+
+If you'd like to be able to ssh to your windows machine, instructions on setting up cygwin sshd can be found at http://pigtail.net/LRP/printsrv/cygwin-sshd.html  This step is not required to build squeezeslave.
+
+To build an ASIO binary you need to obtain Steinberg's ASIO SDK asiosdk2.2.zip file from http://www.steinberg.net/en/company/3rd_party_developer/sdk_download_portal.html as it cannot be included in the repository.  Registration is required.  The ASIO SDK is not needed for the DirectX build.
+
+You'll need to download the DirectX SDK file DXSDK_Mar09.exe or older from http://www.microsoft.com/downloads/details.aspx?FamilyID=24A541D6-0486-4453-8641-1EEE9E21B282&displaylang=en as it's not included in the repository.  The currently available DXSDK_Aug09.exe does NOT compile with squeezeslave.  If the version of the SDK you're using is not DXSDK_Mar09.exe you'll need to update the filename in the makefile as well.  The DirectX SDK is not needed for the ASIO build.
+
+Launch a 'Cygwin Bash Shell" command prompt window.  The icon should be on your Desktop.
+
+ svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
+ cd squeezeslave
+
+ <i>Direct sound build</i>
+ <i>Copy DXSDK_Mar09.exe file into the sources subdirectory using Windows explorer.</i>
+ make -f makefile.mingw32 realclean
+ make -f makefile.mingw32
+
+ <i>ASIO build</i>
+ <i>Copy asiosdk2.2.zip file into the sources subdirectory using Windows explorer.</i>
+ make -f makefile.mingw32-asio realclean
+ make -f makefile.mingw32-asio
+
+Upon successfull completion, you'll find a file in the bin/ directory called squeezeslave.exe.  Several makefiles append a hyphen and an additional word to help identify the "flavour" of the build for packaging purposes.
+
 == Command Line Switches ==
 
 Command Line Switches (options) available (this list available by using the -h switch)
@@ -227,7 +357,7 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
 :::                                squeezeplay
 ::-o, --output <device_id>:   Sets the output device id.
 :::                            The default id is 0.
-:::                            The output device ids can be listed with -L.
+:::                            The output device ids can be found with -L.
 ::-p, --predelay <msec>:      Sets a delay before any playback is started.  This
 :::                            is useful if the DAC used for output is slow to
 :::                            wake-up/lock, causing the first few samples to be
@@ -338,7 +468,7 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
 :::                                squeezeplay
 ::-o, --output <device_id>:   Sets the output device id.
 :::                            The default id is 0.
-:::                            The output device ids can be listed with -L.
+:::                            The output device ids can be found with -L.
 ::-p, --predelay <msec>:      Sets a delay before any playback is started.  This
 :::                            is useful if the DAC used for output is slow to
 :::                            wake-up/lock, causing the first few samples to be

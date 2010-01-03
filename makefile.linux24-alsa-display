@@ -14,7 +14,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=libvorbis-1.2.3
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=pa_snapshot-20091205
+LIBPORTAUDIO=pa_snapshot-20091022
 
 PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
 

@@ -339,7 +339,7 @@ void print_version(void) {
 	);
 
 	fprintf(stdout, "Copyright (c) 2004-2007 Richard Titmuss,\n");
-	fprintf(stdout, "              2008-2009 Duane Paddock.\n");
+	fprintf(stdout, "              2008-2010 Duane Paddock.\n");
 }
 
 void print_help(void) {
@@ -422,7 +422,7 @@ void print_help(void) {
 "                                squeezeplay\n"
 "-o, --output <device_id>:   Sets the output device id.\n"
 "                            The default id is 0.\n"
-"                            The output device ids can be listed with -L.\n"
+"                            The output device ids can be found with -L.\n"
 "-p, --predelay <msec>:      Sets a delay before any playback is started.  This\n"
 "                            is useful if the DAC used for output is slow to\n"
 "                            wake-up/lock, causing the first few samples to be\n"

@@ -1,9 +1,7 @@
-# Windows 32-bit makefile using Cygwin 2.573.2.3 setup.exe
-# Requires Windows DirectX SDK Nov 2008.  You must download DXSDK_Nov08.exe from
-# http://www.microsoft.com and place the file in sources/
+# Windows 32-bit makefile using Cygwin 2.674 setup.exe
+# See http://wiki.slimdevices.com/index.php/SqueezeSlave for details  
 # Builds libportaudio v19 to support Steinberg's ASIO SDK
 # http://www.steinberg.net/en/company/3rd_party_developer/sdk_download_portal.html
-# ASIO NOT Complete, currently still uses DirectX.
 #
 OS=mingw32
 CC=gcc

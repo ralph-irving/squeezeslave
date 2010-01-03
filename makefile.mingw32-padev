@@ -1,9 +1,6 @@
-# Windows 32-bit makefile using Cygwin 2.573.2.3 setup.exe
-# Requires Windows DirectX SDK Nov 2008.  You must download DXSDK_Nov08.exe from
-# http://www.microsoft.com and place the file in sources/
-# Builds libportaudio v19 to support Steinberg's ASIO SDK
-# http://www.steinberg.net/en/company/3rd_party_developer/sdk_download_portal.html
-# ASIO NOT Complete, currently still uses DirectX.
+# Windows 32-bit makefile using Cygwin 2.674 setup.exe
+# Requires Windows DirectX SDK.  
+# See http://wiki.slimdevices.com/index.php/SqueezeSlave for details  
 #
 OS=mingw32
 CC=gcc
@@ -23,6 +20,7 @@ LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
 LIBPORTAUDIO=pa_snapshot-20091022
+DIRECTXSDK=DXSDK_Mar09
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
@@ -55,7 +53,7 @@ $(7ZIP):
 	cp -pr lib/7z/$(OS)/build/$(7ZIPSRC)/bin/{7z.exe,7z.so,Codecs} bin/
 
 lib/dxsdk/$(OS)/lib/dsound.lib: $(7ZIP)
-	cd lib/dxsdk/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/DXSDK_Nov08.exe DXSDK/Lib/x86/dsound.lib DXSDK/Include/dsound.h > /dev/null
+	cd lib/dxsdk/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(DIRECTXSDK).exe DXSDK/Lib/x86/dsound.lib DXSDK/Include/dsound.h > /dev/null
 	cp -f lib/dxsdk/$(OS)/build/DXSDK/Lib/x86/dsound.lib lib/dxsdk/$(OS)/lib
 	cp -f lib/dxsdk/$(OS)/build/DXSDK/Include/dsound.h lib/dxsdk/$(OS)/include
 	cd lib/dxsdk/$(OS)/include && chmod 644 dsound.h && $(SED) -i "s:^typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;$$:// typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;:" dsound.h

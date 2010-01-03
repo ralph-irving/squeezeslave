@@ -186,3 +186,73 @@ bool iskeypressed( unsigned timeout_ms = 0 )
 used identically to the one above.
 
 ---
+
+Try playing with this:
+#include <windows.h>
+#include <stdio.h>
+
+int main()
+{
+printf("->");
+static HANDLE stdinHandle;
+// Get the IO handles
+// getc(stdin);
+stdinHandle = GetStdHandle(STD_INPUT_HANDLE);
+
+while (1)
+{
+DWORD rc = WaitForSingleObject(stdinHandle, 1000);
+
+if( rc == WAIT_TIMEOUT )
+{
+printf("Timeout...");
+}
+else if( rc == WAIT_ABANDONED )
+{
+printf("WAIT_ABANDONED");
+}
+else if( rc == WAIT_OBJECT_0 )
+{
+printf("WAIT_OBJECT_0");
+INPUT_RECORD r[512];
+DWORD read;
+ReadConsoleInput(stdinHandle, r, 512, &read);
+printf("Read: %d", read);
+}
+else if( rc == WAIT_FAILED )
+{
+printf("Error:%d.", GetLastError());
+}
+}
+
+return 0;
+}
+
+---
+
+read() and recv() are interchangable...on sockets... But, on other non-socket FDs,
+read() should be used... Lots of recv() semantics (MSG_OOB, MSG_PEEK, etc.) make
+no sense with non-socket FDs... For socket FDs, read() is essentially the same thing
+as recv() with flags of 0... But, I think you'll find that trying to use recv() on a non-socket
+FD will result in failure with errno ENOTSOCK...
+
+In short, read() works on anything (including sockets), but recv() (and relatives)
+work only on sockets... 
+
+---
+
+File Descriptors And Multithreaded Programs
+Putting the "rev" back in "revocation"
+http://www.ddj.com/architect/212001285
+
+---
+
+Windows Sockets
+An Open Interface for
+Network Programming under
+Microsoft Windows
+http://www.sockets.com/winsock.htm#Deviation_Select
+
+---
+
+

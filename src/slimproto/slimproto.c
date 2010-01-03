@@ -618,6 +618,8 @@ u32_t slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr)
 }
 
 int slimproto_send(slimproto_t *p, unsigned char *msg) {
+	int n;
+
 	DEBUGF("proto_send: cmd=%4.4s len=%i\n", msg, unpackN4(msg, 4));
 
 	pthread_mutex_lock(&p->slimproto_mutex);
@@ -627,10 +629,18 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 		return -1;		
 	}
 
-	if (send(p->sockfd, msg, unpackN4(msg, 4) + 8, 
-		 slimproto_get_socketsendflags()) < 0) {
+	n = send(p->sockfd, msg, unpackN4(msg, 4) + 8, slimproto_get_socketsendflags());
+
+	if (n < 0)
+	{
 		int i;
-		perror("slimproto_send: Error sending cmd");
+#ifdef __WIN32__
+                /* Use WSAGetLastError instead of errno for WIN32 */
+                DEBUGF("proto_send: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+#else
+                DEBUGF("proto_send: (1) n=%i msg=%s(%i)\n", n, strerror(errno), errno);
+#endif
+
 		pthread_mutex_unlock(&p->slimproto_mutex);
 		slimproto_close(p);
 

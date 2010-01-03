@@ -1,3 +1,24 @@
+2009-12-25 17:54  paddockd
+
+	* [r117] TODO, bin, lib/curses, lib/curses/mingw32,
+	  lib/curses/mingw32/build, lib/curses/mingw32/include,
+	  lib/curses/mingw32/lib, lib/lirc, lib/lirc/mingw32,
+	  lib/lirc/mingw32/build, lib/lirc/mingw32/include,
+	  lib/lirc/mingw32/include/lirc, lib/lirc/mingw32/lib,
+	  makefile.mingw32-display, patches/lirc_client.patch,
+	  patches/pdcurses.patch, sources, sources/PDCurses-3.4.tar.gz,
+	  sources/lirc-0.8.6.tar.bz2, src/squeezeslave/help.c,
+	  src/squeezeslave/interactive.c, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Initial INTERACTIVE version for
+	  win32.
+	  Increased version to 117.
+
+2009-12-22 21:40  paddockd
+
+	* [r116] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Fixed debug message.
+	  Increased version to 116.
+
 2009-12-20 16:11  paddockd
 
 	* [r115] ChangeLog, src/slimaudio/slimaudio.h,
