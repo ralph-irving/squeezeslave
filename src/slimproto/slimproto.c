@@ -303,7 +303,7 @@ static int proto_connect(slimproto_t *p) {
 			goto proto_connect_err;
 	}
 
-	if ( slimproto_configure_socket (p->sockfd, 20) != 0 )
+	if ( slimproto_configure_socket (p->sockfd, 30) != 0 )
 	{
 		CLOSESOCKET(p->sockfd);
 		goto proto_connect_err;

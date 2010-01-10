@@ -1,3 +1,30 @@
+2010-01-03 22:22  paddockd
+
+	* [r119] ChangeLog, TODO, makefile.linux24-alsa,
+	  makefile.linux24-alsa-display, makefile.linux26-alsa,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa,
+	  makefile.linux26-i64-alsa-display, makefile.linux26-ppc-alsa,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32,
+	  makefile.mingw32-asio, makefile.mingw32-display,
+	  makefile.mingw32-padev, sources, src/slimaudio/slimaudio_http.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, wiki/SqueezeSlave.wiki: Initial
+	  INTERACTIVE support for win32 directx builds.
+	  First win32 binary releases using updated Cygwin build
+	  environment setup.exe version 2.674.
+	  Rolled back all linux makefiles to use libportaudio 20091022
+	  snapshot after several reports of no audio devices using th
+	  e 20091205 snapshot.
+	  Increased version to 119.
+
+2009-12-30 12:24  paddockd
+
+	* [r118] src/squeezeslave/help.c, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c: Fixed delay between keypresses
+	  for win32 interactive builds.
+	  Disabled lirc and lcdd support for win32 interactive builds.
+	  Increased version to 118.
+
 2009-12-25 17:54  paddockd
 
 	* [r117] TODO, bin, lib/curses, lib/curses/mingw32,

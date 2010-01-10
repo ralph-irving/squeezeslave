@@ -24,6 +24,7 @@
 #include <string.h>
 #include <assert.h>
 
+#define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
 #include "slimproto/slimproto.h"

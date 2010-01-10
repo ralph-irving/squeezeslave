@@ -193,55 +193,52 @@ enum mad_flow mad_output(void *data,
 	left_ch   = pcm->samples[0];
 	right_ch  = pcm->samples[1];
 
-	VDEBUGF("decode_output state=%i nfrequency=%i nchannels=%i nsamples=%i\n", audio->decoder_state, pcm->samplerate, nchannels, nsamples);
+	VDEBUGF("decode_output state=%i nfrequency=%i nchannels=%i nsamples=%i\n",
+			audio->decoder_state, pcm->samplerate, nchannels, nsamples);
 
-	/* Only play 44.1KHz stereo streams */
-	if ( (pcm->samplerate == 44100) && (nchannels == 2) )
-	{
-		buf = (char *) malloc(nsamples * 2 * nchannels ); /* always stereo output */
-		ptr = buf;
+	buf = (char *) malloc(nsamples * 2 * 2 ); /* always stereo output */
+	ptr = buf;
 
 #ifdef __BIG_ENDIAN__
-		for (i=0; i<nsamples; i++)
-		{
-			signed int sample;
-
-			/* left */
-			sample = audio_linear_dither(16, *left_ch++, &left_dither, &stats);
-			*ptr++ = (sample >> 8) & 0xff;
-			*ptr++ = (sample >> 0) & 0xff;
-	    
-			/* right */
-			sample = audio_linear_dither(16, *right_ch++, &right_dither, &stats);
-			*ptr++ = (sample >> 8) & 0xff;
-			*ptr++ = (sample >> 0) & 0xff;
-		}
-#else /* __LITTLE_ENDIAN__ */
-		for (i=0; i<nsamples; i++)
-		{
-			signed int sample;
-
-			/* left */
-			sample = audio_linear_dither(16, *left_ch++, &left_dither, &stats);
-			*ptr++ = (sample >> 0) & 0xff;
-			*ptr++ = (sample >> 8) & 0xff;
-
-			/* right */
-			sample = audio_linear_dither(16, *right_ch++, &right_dither, &stats);
-			*ptr++ = (sample >> 0) & 0xff;
-			*ptr++ = (sample >> 8) & 0xff;
-		}
-#endif
-		slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
-
-		if ( buf != NULL )
-			free(buf);
-	}
-	else
+	for (i=0; i<nsamples; i++)
 	{
-		retcode = MAD_FLOW_STOP;
+		signed int sample;
+
+		/* left */
+		sample = audio_linear_dither(16, *left_ch++, &left_dither, &stats);
+		*ptr++ = (sample >> 8) & 0xff;
+		*ptr++ = (sample >> 0) & 0xff;
+    
+		/* right */
+		if (nchannels == 2) {
+			sample = audio_linear_dither(16, *right_ch++, &right_dither, &stats);
+		}
+		*ptr++ = (sample >> 8) & 0xff;
+		*ptr++ = (sample >> 0) & 0xff;
 	}
-	
+#else /* __LITTLE_ENDIAN__ */
+	for (i=0; i<nsamples; i++)
+	{
+		signed int sample;
+
+		/* left */
+		sample = audio_linear_dither(16, *left_ch++, &left_dither, &stats);
+		*ptr++ = (sample >> 0) & 0xff;
+		*ptr++ = (sample >> 8) & 0xff;
+
+		/* right */
+		if (nchannels == 2) {
+			sample = audio_linear_dither(16, *right_ch++, &right_dither, &stats);
+		}
+		*ptr++ = (sample >> 0) & 0xff;
+		*ptr++ = (sample >> 8) & 0xff;
+	}
+#endif
+	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * 2);
+
+	if ( buf != NULL )
+		free(buf);
+
 	return retcode;
 }
 

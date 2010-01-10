@@ -134,7 +134,7 @@ static FLAC__StreamDecoderWriteStatus flac_write_callback(const FLAC__StreamDeco
 	int nchannels = frame->header.channels;
 	int bits_per_sample = frame->header.bits_per_sample;
 	
-	char * buf = (char *) malloc(nsamples * 2 * nchannels);
+	char * buf = (char *) malloc(nsamples * 2 * 2);
 	char * ptr = buf;
 
 #ifdef __BIG_ENDIAN__
@@ -170,7 +170,7 @@ static FLAC__StreamDecoderWriteStatus flac_write_callback(const FLAC__StreamDeco
             *ptr++ = (sample >> 8) & 0xff;
         }
 #endif
-	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * nchannels);
+	slimaudio_buffer_write(audio->output_buffer, buf, nsamples * 2 * 2);
 
 	free(buf);
 	

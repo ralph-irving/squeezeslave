@@ -198,7 +198,7 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 		case 'q': /* stop */
 			DEBUGF("\n");
 			audio_stop(audio);
-			/* slimaudio_stat(audio, "STMf", (u32_t) 0); acknowledge stop cmd */
+			slimaudio_stat(audio, "STMf", (u32_t) 0); /* acknowledge stop cmd */
 			break;	
 		
 		case 'f': /* flush */

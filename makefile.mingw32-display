@@ -8,7 +8,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DPORTAUDIO_DEV  -DINTERACTIVE -Wall -O2 -mno-cygwin -march=i586
+CFLAGS=-DSLIMPROTO_DEBUG -DPORTAUDIO_DEV -DINTERACTIVE -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
 INCLUDE=-Ilib/dxsdk/$(OS)/include -Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include

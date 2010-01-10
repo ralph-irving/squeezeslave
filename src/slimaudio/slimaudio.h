@@ -32,6 +32,7 @@
 
 #include <mad.h>
 #include <FLAC/stream_decoder.h>
+#define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
 #include "slimproto/slimproto.h"
