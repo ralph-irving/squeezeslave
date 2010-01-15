@@ -32,9 +32,11 @@
 
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
+  #define RDEBUGF(...) if (slimaudio_decoder_debug_r) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
+  #define RDEBUGF(...)
   #define VDEBUGF(...)
 #endif
 
@@ -42,8 +44,6 @@ static size_t vorbis_read_func(void *ptr, size_t size, size_t nmemb, void *datas
 static int vorbis_seek_func(void *datasource, ogg_int64_t offset, int whence);
 static int vorbis_close_func(void *datasource);
 static long vorbis_tell_func(void *datasource);
-
-
 
 int slimaudio_decoder_vorbis_init(slimaudio_t *audio) {
 	return 0;
@@ -85,7 +85,7 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 		switch (bytes_read) {
 		case OV_HOLE:
 		case OV_EBADLINK:
-	    	fprintf(stderr, "Error decoding vorbis stream\n");
+	    		RDEBUGF("Error decoding vorbis stream\n");
 			goto vorbis_error;
 		
 		case 0: // End of file	
@@ -109,7 +109,6 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 vorbis_error:
 	if ((err = ov_clear(&audio->oggvorbis_file)) < 0) {
 		fprintf(stderr, "Error in ov_clear %i\n", err);
-		return -1;	
 	}
 
 	return -1;

@@ -50,6 +50,19 @@
 
 #define AUDIO_CHUNK_SIZE 8192
 
+#ifdef SLIMPROTO_DEBUG
+  extern bool slimaudio_debug;
+  extern bool slimaudio_buffer_debug;
+  extern bool slimaudio_buffer_debug_v;
+  extern bool slimaudio_decoder_debug;
+  extern bool slimaudio_decoder_debug_r;
+  extern bool slimaudio_decoder_debug_v;
+  extern bool slimaudio_http_debug;
+  extern bool slimaudio_http_debug_v;
+  extern bool slimaudio_output_debug;
+  extern bool slimaudio_output_debug_v;
+#endif
+
 typedef enum { STREAM_QUIT=0, STREAM_STOP, STREAM_STOPPED, STREAM_PLAYING } slimaudio_stream_state_t;
 
 typedef enum { QUIT=0, PLAY, BUFFERING, PLAYING, PAUSE, PAUSED, STOP, STOPPED } slimaudio_output_state_t;
@@ -141,16 +154,6 @@ typedef struct {
 	// WMA decoder
 	// IWMReader*  wma_reader;
 } slimaudio_t;
-
-extern bool slimaudio_debug;
-extern bool slimaudio_buffer_debug;
-extern bool slimaudio_buffer_debug_v;
-extern bool slimaudio_decoder_debug;
-extern bool slimaudio_decoder_debug_v;
-extern bool slimaudio_http_debug;
-extern bool slimaudio_http_debug_v;
-extern bool slimaudio_output_debug;
-extern bool slimaudio_output_debug_v;
 
 int slimaudio_init(slimaudio_t *audio, slimproto_t *proto);
 void slimaudio_destroy(slimaudio_t *audio);

@@ -27,16 +27,16 @@
 
 #include <FLAC/stream_decoder.h>
 
-
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
-
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
+  #define RDEBUGF(...) if (slimaudio_decoder_debug_r) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
+  #define RDEBUGF(...)
   #define VDEBUGF(...)
 #endif
 
@@ -186,7 +186,8 @@ static void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLA
 }
 
 static void flac_error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data) {
-	fprintf(stderr, "libflac: decoding error (%i)\n", status);
+	RDEBUGF("libflac: decoding error (%i)\n", status);
+	;;
 }
 
 

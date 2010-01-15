@@ -30,15 +30,13 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
-
 #ifdef SLIMPROTO_DEBUG
   bool slimaudio_decoder_debug;
+  bool slimaudio_decoder_debug_r;
   bool slimaudio_decoder_debug_v;
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
-  #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
-  #define VDEBUGF(...)
 #endif
 
 static void *decoder_thread(void *ptr);

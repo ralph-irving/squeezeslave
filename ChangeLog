@@ -1,3 +1,24 @@
+2010-01-10 21:50  paddockd
+
+	* [r120] ChangeLog, makefile.mingw32-asio,
+	  makefile.mingw32-display, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c: Fixed
+	  OV_CALLBACKS not defined warnings.
+	  Increased slimproto.c recv timeout to 30 seconds since
+	  disconnects are still happening once in a while.
+	  Fixed MONO stream playback for WAV, MP3 and FLAC which I broke at
+	  r56. OGG still has "chipmunk" effect as there's no easy way to
+	  determine the stream is only 1 channel in
+	  slimaudio_decoder_vorbis.c
+	  Added STOP acknowledgement via STMf status notification to
+	  strm.q.
+	  Added INTERACTIVE support to win32 asio makefile.
+	  Increased version to 120.
+
 2010-01-03 22:22  paddockd
 
 	* [r119] ChangeLog, TODO, makefile.linux24-alsa,
@@ -9,12 +30,12 @@
 	  makefile.mingw32-padev, sources, src/slimaudio/slimaudio_http.c,
 	  src/slimproto/slimproto.c, src/squeezeslave/help.c,
 	  src/squeezeslave/squeezeslave.c, wiki/SqueezeSlave.wiki: Initial
-	  INTERACTIVE support for win32 directx builds.
+	  INTERACTIVE support for win32 directx builds released.
 	  First win32 binary releases using updated Cygwin build
 	  environment setup.exe version 2.674.
 	  Rolled back all linux makefiles to use libportaudio 20091022
-	  snapshot after several reports of no audio devices using th
-	  e 20091205 snapshot.
+	  snapshot after several reports of no audio devices using the
+	  20091205 snapshot.
 	  Increased version to 119.
 
 2009-12-30 12:24  paddockd

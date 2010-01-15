@@ -30,9 +30,11 @@
 
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
+  #define RDEBUGF(...) if (slimaudio_decoder_debug_r) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
+  #define RDEBUGF(...)
   #define VDEBUGF(...)
 #endif
 
@@ -265,14 +267,15 @@ enum mad_flow mad_error(void *data,
      * unless debug is enabled, then we display the error.
      */
     case MAD_ERROR_LOSTSYNC:
-	DEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error);
+	RDEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error);
 	break;
     case MAD_ERROR_BADDATAPTR:
-	fprintf(stderr, "libmad: (mp3) bad stream pointer (0x%04x)\n", stream->error);
+	RDEBUGF("libmad: (mp3) bad stream pointer (0x%04x)\n", stream->error);
 	/* retcode = MAD_FLOW_BREAK; */
 	break;
     default:
-	fprintf(stderr, "libmad: (mp3) decoding error (0x%04x)\n", stream->error); //FIXME
+	RDEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error); //FIXME
+	break;
   }
 
   return retcode;

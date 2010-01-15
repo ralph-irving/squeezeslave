@@ -44,7 +44,9 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 120;
+const int revision = 121;
+static int port = 3483;
+static int firmware = 1;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG
@@ -132,7 +134,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 #endif
 
 	if (isConnected) {
-		if (slimproto_helo(p, player_type, 1, (char*) user_data, 0, 0) < 0) {
+		if (slimproto_helo(p, player_type, firmware, (char*) user_data, 0, 0) < 0) {
 			fprintf(stderr, "Could not send helo to SqueezeCenter\n");
 		        send_restart_signal();
 		}
@@ -184,10 +186,12 @@ int main(int argc, char *argv[]) {
         unsigned long ir = 0;
 	int maxfd = 0;
 	char *home;
-	int WSAerrno;
 	struct timeval timeout;
 	timeout.tv_usec = 0;
 
+#ifdef __WIN32__
+	int WSAerrno;
+#endif
         // default lircrc file ($HOME/.lircrc)
 	home = getenv("HOME");
 	if (home == NULL) home = "";
@@ -210,6 +214,8 @@ int main(int argc, char *argv[]) {
 #endif
 			{"output",             required_argument, 0, 'o'},
 			{"playerid",           required_argument, 0, 'e'},
+			{"firmware",           required_argument, 0, 'f'},
+			{"port",               required_argument, 0, 'P'},
 			{"predelay",           required_argument, 0, 'p'},
 			{"retry",              no_argument,       0, 'R'},
 			{"intretry",           required_argument, 0, 'r'},
@@ -227,15 +233,15 @@ int main(int argc, char *argv[]) {
 	
 #if defined(DAEMONIZE)	
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:M:o:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:Y:e:f:hk:Lm:M:o:P:p:Rr:Vv:",
 					 long_options, NULL);
 #elif defined(INTERACTIVE)
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:o:p:Rr:Vv:c:Dilw:",
+			getopt_long_only(argc, argv, "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:c:Dilw:",
 					 long_options, NULL);
 #else
 		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:hk:Lm:o:p:Rr:Vv:",
+			getopt_long_only(argc, argv, "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:",
 					 long_options, NULL);
 #endif
 
@@ -256,6 +262,7 @@ int main(int argc, char *argv[]) {
 				slimaudio_buffer_debug = true;
 				slimaudio_buffer_debug_v = true;
 				slimaudio_decoder_debug = true;
+				slimaudio_decoder_debug_r = true;
 				slimaudio_decoder_debug_v = true;
 				slimaudio_http_debug = true;
 				slimaudio_http_debug_v = true;
@@ -272,6 +279,8 @@ int main(int argc, char *argv[]) {
 				slimaudio_buffer_debug_v = true;
 			else if (strcmp(optarg, "slimaudio_decoder") == 0)
 				slimaudio_decoder_debug = true;
+			else if (strcmp(optarg, "slimaudio_decoder_r") == 0)
+				slimaudio_decoder_debug_r = true;
 			else if (strcmp(optarg, "slimaudio_decoder_v") == 0)
 				slimaudio_decoder_debug_v = true;
 			else if (strcmp(optarg, "slimaudio_http") == 0)
@@ -305,7 +314,7 @@ int main(int argc, char *argv[]) {
 #endif
 			break;
 
-// From server/Slim/Networking/Slimproto.pm from 7.4r24879
+// From server/Slim/Networking/Slimproto.pm from 7.5r28596
 // squeezebox(2)
 // softsqueeze(3)
 // squeezebox2(4)
@@ -317,30 +326,23 @@ int main(int argc, char *argv[]) {
 // boom(10)
 // softboom(11)
 // squeezeplay(12)
+// radio(13)
+// touch(14)
 
 		case 'e':
-			if (strcmp(optarg, "softsqueeze") == 0)
-				player_type = 3;
-			else if (strcmp(optarg, "squeezebox2") == 0)
-				player_type = 4;
-			else if (strcmp(optarg, "transporter") == 0)
-				player_type = 5;
-			else if (strcmp(optarg, "softsqueeze3") == 0)
-				player_type = 6;
-			else if (strcmp(optarg, "receiver") == 0)
-				player_type = 7;
-			else if (strcmp(optarg, "controller") == 0)
-				player_type = 9;
-			else if (strcmp(optarg, "boom") == 0)
-				player_type = 10;
-			else if (strcmp(optarg, "softboom") == 0)
-				player_type = 11;
-			else if (strcmp(optarg, "squeezeplay") == 0)
-				player_type = 12;
-			else
+			player_type = strtoul(optarg, NULL, 0);
+			if ( (player_type < 2) || (player_type > 14) )
 			{
-				fprintf(stderr, "%s: Unknown player type %s\n", argv[0], optarg);
 				player_type = 8;
+				fprintf(stderr, "%s: Unknown player type, using (%d)\n", argv[0], player_type);
+			}
+			break;
+		case 'f':
+			firmware = strtoul(optarg, NULL, 0);
+			if ( (firmware < 0) || (firmware > 254) )
+			{
+				firmware = 1;
+				fprintf(stderr, "%s: Invalid firmware value, using (%d)\n", argv[0], firmware);
 			}
 			break;
 		case 'h':
@@ -374,6 +376,15 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'p':
 			output_predelay = strtoul(optarg, NULL, 0);
+			break;
+		case 'P':
+			port = strtoul(optarg, NULL, 0);
+			if ( (port < 0) || (port > 65535) )
+			{
+				port = 3483;
+				fprintf(stderr, "%s: Invalid port value, using (%d)\n", argv[0], port);
+			}
+			break;
 			break;
 		case 'R':
 			retry_connection = true;
@@ -513,7 +524,7 @@ int main(int argc, char *argv[]) {
 	// until we succeed, unless the signal handler tells us to give up.
 	do {
 		while (slimproto_connect(
-			&slimproto, slimserver_address, 3483) < 0) {
+			&slimproto, slimserver_address, port) < 0) {
 			if (!retry_connection || signal_exit_flag) {
 				if (signal_exit_flag) {
 					// No message when the exit is triggered

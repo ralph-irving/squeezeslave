@@ -29,9 +29,11 @@
 
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
+  #define RDEBUGF(...) if (slimaudio_decoder_debug_r) fprintf(stderr, __VA_ARGS__)
   #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
+  #define RDEBUGF(...)
   #define VDEBUGF(...)
 #endif
 
