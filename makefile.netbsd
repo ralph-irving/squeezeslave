@@ -1,0 +1,46 @@
+# makefile for NetBSD (tested on NetBSD-5.99.22)
+# modified for netbsd by jym at baaz.fr (don't hesitate to contact me)
+#
+# from pkgsrc, you will need:
+# multimedia/libogg
+# audio/libvorbis
+# audio/libmad
+# audio/flac
+# audio/portaudio-devel
+#
+# Not tested: -DINTERACTIVE 
+# In this case, add -llirc_client 
+
+
+CC=gcc
+
+CFLAGS=-Wall -s -O2 -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
+
+# If you want debug:
+#CFLAGS+=-DSLIMPROTO_DEBUG
+
+INCLUDE=-I/usr/pkg/include/portaudio2 -I/usr/pkg/include -Ilib/portmixer/px_common -Isrc
+
+PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c lib/getopt/getopt.c lib/getopt/getopt1.c
+
+.c.o:
+	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+all : bin/squeezeslave
+
+lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
+	ar cru lib/libslimproto.a $>
+	ranlib lib/libslimproto.a
+
+bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a
+	${CC} -o bin/squeezeslave $> lib/libslimproto.a -Wl,-rpath,/usr/pkg/lib -Wl,-rpath,/usr/pkg/lib/portaudio2 -L/usr/pkg/lib -L/usr/pkg/lib/portaudio2 -lportaudio -lmad -lFLAC -lvorbisfile -lvorbis -logg -lcurses -lpthread -lm
+
+
+clean:
+	rm $(PORTAUDIOFILES:.c=.o) $(SLIMPROTOFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(SQUEEZESLAVEFILES:.c=.o) lib/libportaudio.a lib/libslimproto.a bin/squeezeslave
+
+

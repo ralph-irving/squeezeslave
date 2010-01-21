@@ -1,3 +1,18 @@
+2010-01-15 13:47  paddockd
+
+	* [r121] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Moved
+	  recoverable decoder error messages to slimaudio_decoder_r debug
+	  option.
+	  Added squeezebox server --port/-P option.
+	  Removed obsolete --playerid/-e option.
+	  Increased version to 121.
+
 2010-01-10 21:50  paddockd
 
 	* [r120] ChangeLog, makefile.mingw32-asio,
