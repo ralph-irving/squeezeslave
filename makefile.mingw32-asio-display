@@ -9,10 +9,10 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DPORTAUDIO_DEV -DPA_ASIO -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
+CFLAGS=-DSLIMPROTO_DEBUG -DPORTAUDIO_DEV -DINTERACTIVE -DPA_ASIO -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
-INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
+INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
@@ -21,6 +21,8 @@ LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
 LIBPORTAUDIO=pa_snapshot-20091022
+LIBCURSES=PDCurses-3.4
+LIBLIRC=lirc-0.8.6
 ASIOSDK=asiosdk2.2
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
@@ -34,7 +36,7 @@ LIBSLIMPROTO=lib/libslimproto.a
 
 LIBGETOPT=lib/libgetopt.a
 
-SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/pthread/$(OS)/lib/libpthreadGC2.a
+SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/pthread/$(OS)/lib/libpthreadGC2.a lib/curses/$(OS)/lib/libcurses.a lib/lirc/$(OS)/lib/liblirc_client.a
 
 7ZIP=bin/7z.exe
 
@@ -101,6 +103,24 @@ lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
 
+lib/curses/$(OS)/lib/libcurses.a:
+	cd lib/curses/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBCURSES).tar.gz
+	cd lib/curses/$(OS)/build/$(LIBCURSES) && ${PATCH} -p0 -i ../../../../../patches/pdcurses.patch
+	cd lib/curses/$(OS)/build/$(LIBCURSES)/win32 && $(SED) -i "s:-copy:-cp:" mingwin32.mak
+	cd lib/curses/$(OS)/build/$(LIBCURSES)/win32 && $(SED) -i "s:-del:-rm:" mingwin32.mak
+	cd lib/curses/$(OS)/build/$(LIBCURSES)/win32 && $(SED) -i "s:-O2 -Wall:$(CFLAGS):" mingwin32.mak
+	cd lib/curses/$(OS)/build/$(LIBCURSES)/win32 && make -f mingwin32.mak clean && make -f mingwin32.mak DEBUG=N DLL=N pdcurses.a
+	cp -p lib/curses/$(OS)/build/$(LIBCURSES)/win32/pdcurses.a lib/curses/$(OS)/lib/libcurses.a
+	cp -p lib/curses/$(OS)/build/$(LIBCURSES)/curses.h lib/curses/$(OS)/include
+
+lib/lirc/$(OS)/lib/liblirc_client.a:
+	cd lib/lirc/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBLIRC).tar.bz2
+	cd lib/lirc/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/lirc_client.patch
+	cd lib/lirc/$(OS)/build/$(LIBLIRC)/tools && $(CC) $(CFLAGS) -I.. -I. -c -o lirc_client.o lirc_client.c
+	ar cru lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.o
+	ranlib lib/lirc/$(OS)/lib/liblirc_client.a
+	cp -p lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.h lib/lirc/$(OS)/include/lirc
+
 $(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
 	ar cru $(LIBSLIMPROTO) $^
 	ranlib $(LIBSLIMPROTO)
@@ -130,6 +150,8 @@ realclean: clean
 	-@rm -rf lib/7z/$(OS)/build/$(7ZIPSRC)
 	-@rm -rf bin/{7z.exe,7z.so,Codecs}
 	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
+	-@rm -rf lib/curses/$(OS)/build/$(LIBCURSES)
+	-@rm -rf lib/lirc/$(OS)/build/$(LIBLIRC)
 	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
 	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
 	-@rm -f lib/vorbis/$(OS)/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
@@ -138,4 +160,6 @@ realclean: clean
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 	-@rm -f lib/pthread/$(OS)/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/include/{semaphore.h,pthread.h,sched.h} bin/pthreadGC2.dll
 	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
+	-@rm -f lib/curses/$(OS)/lib/libcurses.a lib/curses/$(OS)/include/curses.h
+	-@rm -f lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/include/lirc/lirc_client.h
 

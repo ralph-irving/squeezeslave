@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 122;
+const int revision = 123;
 static int port = 3483;
 static int firmware = 1;
 static int player_type = 8;
@@ -139,12 +139,15 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 		        send_restart_signal();
 		}
 #ifdef INTERACTIVE
+	if ( using_curses || using_lirc || use_lcdd_menu )
+	{
                 memset(&msg, 0, SLIMPROTO_MSG_SIZE);
                 packA4(msg, 0, "SETD");
                 packN4(msg, 4, 2);
                 packC(msg, 8, 0xfe);
                 packC(msg, 9, linelen);
                	slimproto_send(p, msg);
+	}
 #endif
 	}
 	else {
@@ -478,7 +481,8 @@ int main(int argc, char *argv[]) {
 
 #ifdef INTERACTIVE
 	// Process VFD (display) commands
- 	slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
+	if ( using_curses || using_lirc || use_lcdd_menu )
+		slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
 
 	if ((output_device_id != PA_DEFAULT_DEVICE) || output_change ) {
