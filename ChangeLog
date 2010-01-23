@@ -1,3 +1,20 @@
+2010-01-23 14:06  paddockd
+
+	* [r123] ChangeLog, lib/lirc/s10intel, lib/lirc/s10intel/build,
+	  lib/lirc/s10intel/include, lib/lirc/s10intel/include/lirc,
+	  lib/lirc/s10intel/lib, lib/lirc/s10sparc,
+	  lib/lirc/s10sparc/build, lib/lirc/s10sparc/include,
+	  lib/lirc/s10sparc/include/lirc, lib/lirc/s10sparc/lib,
+	  makefile.mingw32-asio, makefile.mingw32-asio-display,
+	  makefile.s10intel-display, makefile.s10sparc-display,
+	  src/squeezeslave/squeezeslave.c: Added makefile.s10intel-display
+	  and makefile.s10sparc-display.
+	  Added makefile.mingw32-asio-display.
+	  Removed INTERACTIVE from makefile.mingw32-asio.
+	  Only add vfdc callback and set display width via SETD if one of
+	  the interactive modes are enabled.
+	  Increased version to 123.
+
 2010-01-21 18:59  paddockd
 
 	* [r122] ChangeLog, lib/lirc/s9sparc, lib/lirc/s9sparc/build,

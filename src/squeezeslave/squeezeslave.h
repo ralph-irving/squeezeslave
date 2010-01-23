@@ -22,10 +22,6 @@
 #ifndef _SQUEEZESLAVE_H_
 #define _SQUEEZESLAVE_H_
 
-#if defined(DAEMONIZE) && defined(INTERACTIVE)
-#error "DAEMONIZE and INTERACTIVE cannot be defined at the same time."
-#endif
-
 #if defined(DAEMONIZE) && defined(__WIN32__)
 #error "DAEMONIZE not supported on WIN32 version of squeezeslave."
 #endif
@@ -69,7 +65,8 @@
 #include "slimaudio/slimaudio.h"
 
 #define RETRY_DEFAULT	5
-#define LINE_COUNT 2
+#define LINE_COUNT	2
+#define OPTLEN		40
 
 int connect_callback(slimproto_t *, bool, void *);
 void listAudioDevices(slimaudio_t *, int, bool);

@@ -1,26 +1,6 @@
-Marsden theatre christmas special ~300MB ogg
-
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error in ov_open_callbacks -132
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-Error decoding vorbis stream
-
----
-
-This has been my reasoning as well, I have been adding debuging
-information through squeezeslave to watch the buffers and they seem
-okay the http-> decoder-> output.  I have tried increasing them to no
-avail.
+I have been adding debuging information through squeezeslave to watch
+the buffers and they seem okay the http-> decoder-> output.  I have
+tried increasing them to no avail.
 
 The place it blocks is writing to the decoder buffer (just read off
 http and trying to write to decoders buffer.
@@ -34,12 +14,6 @@ More investigations into this shows that read_buffer is not returning
 eof when there's no data available in the http buffer, it blocks waiting
 for http to get more but the trigger STMd is not being sent to get more
 data as it relies on the decoder finishing.
-
----
-
-Fix playing of left over buffer after stopping play and changing songs.
-Appears to be related to buffering issue above.  Fixed in r95 with addition
-of flush command support in strm_callback.
 
 ---
 
@@ -102,15 +76,6 @@ stream where a sync word was expected.
 Usually this error is an indication that something else is in the 
 bitstream, such as an ID3 tag. In this case you might call id3_tag_query() 
 to see if it really is a tag and either read or skip it.
-
----
-
-Fix getopt_long_only options string handling removing multiple #if defines.
-
----
-
-Change -L to display output devices only.
-Research https://bugzilla.redhat.com/show_bug.cgi?id=445644 regarding base device array index
 
 ---
 
@@ -254,5 +219,4 @@ Microsoft Windows
 http://www.sockets.com/winsock.htm#Deviation_Select
 
 ---
-
 

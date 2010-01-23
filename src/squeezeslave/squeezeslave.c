@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 123;
+const int revision = 124;
 static int port = 3483;
 static int firmware = 1;
 static int player_type = 8;
@@ -165,6 +165,7 @@ int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:";
 #ifndef PORTAUDIO_DEV
 	int output_device_id = PA_DEFAULT_DEVICE;
 #else
@@ -212,9 +213,6 @@ int main(int argc, char *argv[]) {
 			{"keepalive",          required_argument, 0, 'k'},
 			{"list",               no_argument,       0, 'L'},
 			{"mac",	               required_argument, 0, 'm'},
-#ifdef DAEMONIZE
-			{"daemonize",          required_argument, 0, 'M'},
-#endif
 			{"output",             required_argument, 0, 'o'},
 			{"playerid",           required_argument, 0, 'e'},
 			{"firmware",           required_argument, 0, 'f'},
@@ -224,6 +222,9 @@ int main(int argc, char *argv[]) {
 			{"intretry",           required_argument, 0, 'r'},
 			{"version",            no_argument,       0, 'V'},
 			{"volume",             required_argument, 0, 'v'},
+#ifdef DAEMONIZE
+			{"daemonize",          required_argument, 0, 'M'},
+#endif
 #ifdef INTERACTIVE
 			{"lircrc",             required_argument, 0, 'c'},
 			{"lirc",               no_argument,       0, 'i'},
@@ -234,19 +235,15 @@ int main(int argc, char *argv[]) {
 			{0, 0, 0, 0}
 		};
 	
-#if defined(DAEMONIZE)	
-		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:f:hk:Lm:M:o:P:p:Rr:Vv:",
-					 long_options, NULL);
-#elif defined(INTERACTIVE)
-		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:c:Dilw:",
-					 long_options, NULL);
-#else
-		const char shortopt =
-			getopt_long_only(argc, argv, "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:",
-					 long_options, NULL);
+#ifdef DAEMONIZE	
+		strncat (getopt_options, "M:", (OPTLEN-1));
 #endif
+#ifdef INTERACTIVE
+		strncat (getopt_options, "c:Dilw:", (OPTLEN-1));
+#endif
+		const char shortopt =
+			getopt_long_only(argc, argv, getopt_options, long_options, NULL);
+
 
 		if (shortopt == (char) -1) {
 			break;
@@ -448,7 +445,15 @@ int main(int argc, char *argv[]) {
 
 #ifdef DAEMONIZE
 	if ( should_daemonize ) {
-		init_daemonize();
+#ifdef INTERACTIVE
+		if ( using_curses || using_lirc || use_lcdd_menu )
+		{
+			fprintf(stderr, "Daemonize not supported with lirc or display modes.\n");
+			exit(-1);
+		}
+		else
+#endif
+			init_daemonize();
 	}
 #endif
 

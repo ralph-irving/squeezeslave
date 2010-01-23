@@ -6,17 +6,6 @@ make -f makefile.osxppc-padev
 mv bin/squeezeslave bin/squeezeslave-ppc-0.9-$VER
 make -f makefile.osxppc-padev realclean
 
-make -f makefile.osxppc realclean
-make -f makefile.osxppc
-mv bin/squeezeslave bin/squeezeslave-ppc-pastable-0.9-$VER
-make -f makefile.osxppc realclean
-
-make -f makefile.osxintel realclean
-make -f makefile.osxintel
-mv bin/squeezeslave bin/squeezeslave-intel-pastable-0.9-$VER
-make -f makefile.osxintel realclean
-
 make -f makefile.osxintel-padev realclean
 make -f makefile.osxintel-padev
 mv bin/squeezeslave bin/squeezeslave-intel-0.9-$VER
-make -f makefile.osxintel-padev realclean

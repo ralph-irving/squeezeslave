@@ -6,7 +6,7 @@ TAR=tar
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -O2
+CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -O2
 LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include

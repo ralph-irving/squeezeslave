@@ -292,8 +292,17 @@ void print_version(void) {
 	fprintf(stdout, "win32 ");
 #elif defined(__SUNPRO_C)
 	fprintf(stdout, "solaris ");
+#elif defined(__FreeBSD__)
+	fprintf(stdout, "freebsd ");
+#elif defined(__OpenBSD__)
+	fprintf(stdout, "openbsd ");
+#elif defined(__NetBSD__)
+	fprintf(stdout, "netbsd ");
 #else
 	fprintf(stdout, "linux ");
+#endif
+#ifdef __BIG_ENDIAN__
+	fprintf(stdout, "bigendian ");
 #endif
 #ifndef PORTAUDIO_DEV
 	fprintf(stdout, "portaudio:1810 ");
@@ -321,9 +330,6 @@ void print_version(void) {
 #endif
 #ifdef DAEMONIZE
 	fprintf(stdout, "daemon ");
-#endif
-#ifdef __BIG_ENDIAN__
-	fprintf(stdout, "bigendian ");
 #endif
 	fprintf(stdout, "\n\n");
 
@@ -402,6 +408,7 @@ void print_help(void) {
 #ifdef DAEMONIZE
 "-M, --daemonize <logfile>   Run squeezeslave as a daemon.\n"
 "                            Messages written to specified file.\n"
+"                            Not supported with lirc and display modes.\n"
 #endif
 "-L, --list                  List available audio devices and exit.\n"
 "-m, --mac <mac_address>:    Sets the mac address for this instance.\n"
