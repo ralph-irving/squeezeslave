@@ -1,3 +1,27 @@
+2010-01-24 15:21  paddockd
+
+	* [r125] src/squeezeslave/squeezeslave.c: Fixed segmentation fault
+	  in getopt_options.
+	  Increased version to 125.
+
+2010-01-23 18:55  paddockd
+
+	* [r124] ChangeLog, TODO, makefile.linux24-alsa-display,
+	  makefile.linux24-display, makefile.linux24-i586-display,
+	  makefile.linux26-alsa-display, makefile.linux26-display,
+	  makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.s10intel-display,
+	  makefile.s10sparc-display, makefile.s9sparc-display,
+	  scripts/buildall-osx, scripts/buildall-win32,
+	  src/squeezeslave/help.c, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Merged DAEMONIZE and INTERACTIVE options to remove the need to
+	  build a separate binary for display.
+	  Fixed the '2' key in display, it was being identified as a '1'.
+	  Added BSD to compile options information.
+	  Increased version to 124.
+
 2010-01-23 14:06  paddockd
 
 	* [r123] ChangeLog, lib/lirc/s10intel, lib/lirc/s10intel/build,

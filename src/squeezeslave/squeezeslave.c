@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 125;
+const int revision = 126;
 static int port = 3483;
 static int firmware = 1;
 static int player_type = 8;
@@ -356,8 +356,6 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "%s: Cannot parse mac address %s\n", argv[0], optarg);
 				exit(-1);	
 			}
-			else
-				fprintf(stderr, "%s: Parsed mac address %s\n", argv[0], optarg);
 			break;
 #ifdef DAEMONIZE
 		case 'M':
