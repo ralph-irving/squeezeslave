@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 124;
+const int revision = 125;
 static int port = 3483;
 static int firmware = 1;
 static int player_type = 8;
@@ -165,7 +165,6 @@ int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:";
 #ifndef PORTAUDIO_DEV
 	int output_device_id = PA_DEFAULT_DEVICE;
 #else
@@ -204,46 +203,47 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	while (true) {
-		static struct option long_options[] = {
-			{"predelay_amplitude", required_argument, 0, 'a'},
-			{"debug",              required_argument, 0, 'd'},
-			{"debuglog",           required_argument, 0, 'Y'},
-			{"help",               no_argument,       0, 'h'},
-			{"keepalive",          required_argument, 0, 'k'},
-			{"list",               no_argument,       0, 'L'},
-			{"mac",	               required_argument, 0, 'm'},
-			{"output",             required_argument, 0, 'o'},
-			{"playerid",           required_argument, 0, 'e'},
-			{"firmware",           required_argument, 0, 'f'},
-			{"port",               required_argument, 0, 'P'},
-			{"predelay",           required_argument, 0, 'p'},
-			{"retry",              no_argument,       0, 'R'},
-			{"intretry",           required_argument, 0, 'r'},
-			{"version",            no_argument,       0, 'V'},
-			{"volume",             required_argument, 0, 'v'},
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:";
+	static struct option long_options[] = {
+		{"predelay_amplitude", required_argument, 0, 'a'},
+		{"debug",              required_argument, 0, 'd'},
+		{"debuglog",           required_argument, 0, 'Y'},
+		{"help",               no_argument,       0, 'h'},
+		{"keepalive",          required_argument, 0, 'k'},
+		{"list",               no_argument,       0, 'L'},
+		{"mac",	               required_argument, 0, 'm'},
+		{"output",             required_argument, 0, 'o'},
+		{"playerid",           required_argument, 0, 'e'},
+		{"firmware",           required_argument, 0, 'f'},
+		{"port",               required_argument, 0, 'P'},
+		{"predelay",           required_argument, 0, 'p'},
+		{"retry",              no_argument,       0, 'R'},
+		{"intretry",           required_argument, 0, 'r'},
+		{"version",            no_argument,       0, 'V'},
+		{"volume",             required_argument, 0, 'v'},
 #ifdef DAEMONIZE
-			{"daemonize",          required_argument, 0, 'M'},
+		{"daemonize",          required_argument, 0, 'M'},
 #endif
 #ifdef INTERACTIVE
-			{"lircrc",             required_argument, 0, 'c'},
-			{"lirc",               no_argument,       0, 'i'},
-			{"lcd",                no_argument,       0, 'l'},
-			{"display",            no_argument,       0, 'D'},
-			{"width",              required_argument, 0, 'w'},
+		{"lircrc",             required_argument, 0, 'c'},
+		{"lirc",               no_argument,       0, 'i'},
+		{"lcd",                no_argument,       0, 'l'},
+		{"display",            no_argument,       0, 'D'},
+		{"width",              required_argument, 0, 'w'},
 #endif
-			{0, 0, 0, 0}
-		};
+		{0, 0, 0, 0}
+	};
 	
 #ifdef DAEMONIZE	
-		strncat (getopt_options, "M:", (OPTLEN-1));
+	strcat (getopt_options, "M:");
 #endif
 #ifdef INTERACTIVE
-		strncat (getopt_options, "c:Dilw:", (OPTLEN-1));
+	strcat (getopt_options, "c:Dilw:");
 #endif
+
+	while (true) {
 		const char shortopt =
 			getopt_long_only(argc, argv, getopt_options, long_options, NULL);
-
 
 		if (shortopt == (char) -1) {
 			break;
@@ -356,6 +356,8 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "%s: Cannot parse mac address %s\n", argv[0], optarg);
 				exit(-1);	
 			}
+			else
+				fprintf(stderr, "%s: Parsed mac address %s\n", argv[0], optarg);
 			break;
 #ifdef DAEMONIZE
 		case 'M':
