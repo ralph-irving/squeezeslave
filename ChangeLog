@@ -1,3 +1,9 @@
+2010-01-24 16:00  paddockd
+
+	* [r126] ChangeLog, src/squeezeslave/squeezeslave.c: Removed
+	  debugging statement.
+	  Increased version to 126.
+
 2010-01-24 15:21  paddockd
 
 	* [r125] src/squeezeslave/squeezeslave.c: Fixed segmentation fault
