@@ -1,8 +1,7 @@
 #!/bin/bash
 
 cd /cygdrive/h/source/squeezeslave
-#VER=`svnversion`
-VER=124
+VER=`svnversion`
 
 make -f makefile.mingw32-asio-display realclean
 cd bin;tar -xf 7z.tar;cd ..

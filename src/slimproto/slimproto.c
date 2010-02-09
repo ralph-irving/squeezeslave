@@ -580,7 +580,7 @@ u16_t error_code;
 	packN4(msg, 19, decoder_buffer_fullness);
 	packN4(msg, 23, rbytes_high );
 	packN4(msg, 27, rbytes_low );
-	packN2(msg, 31, 65535); // signal strength
+	packN2(msg, 31, 65534); // signal strength
 	client_timestamp = slimproto_set_jiffies(p, msg, 33); // Keep both values close, not used
 	packN4(msg, 37, output_buffer_size);
 	packN4(msg, 41, output_buffer_fullness);
