@@ -8,6 +8,8 @@
 
 [[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
 
+If you have problems with [[SqueezeSlave]] read the support thread at http://forums.slimdevices.com/showthread.php?t=63966 for additional help.
+
 Executable versions for Windows, Linux PPC/Intel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: https://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/
 
 The linux version supports ALSA, pulseaudio, OSS, IR remotes, USB displays and an on screen text mode display.
@@ -170,6 +172,28 @@ makefile.linux26-ppc-alsa-display
 Upon successfull completion, you'll find a file in the bin/ directory starting with squeezeslave.  Several makefiles append additional words to help identify the "flavour" of the build for packaging purposes.  You can safely rename the file to be called just squeezeslave.  This step is NOT necessary with the above build example.
 
  cd bin; mv squeezeslave-alsa squeezeslave
+
+=== FreeBSD build instructions ===
+
+You need the following ports packages: audio/libogg, audio/libvorbis, audio/libmad, audio/flac, audio/portaudio2 and optionaly comms/lirc.
+
+If you don't want lirc, you need to remove '-DINTERACTIVE' from makefile (line 7).
+
+Then, type:
+
+ make -f makefile.freebsd
+
+=== NetBSD build instructions ===
+
+You need the following pkgsrc packages: multimedia/libogg, audio/libvorbis, audio/libmad, audio/flac and audio/portaudio-devel.
+
+Then use the following makefile [[http://www.baaz.fr/makefile.netbsd]].
+
+and:
+
+ make -f makefile.netbsd
+
+This makefile doesn't build squeezeslave with INTERACTIVE (lirc and screen). This should work (you need to install wip/lirc) but I didn't test.
 
 === Windows build instructions ===
 
@@ -505,3 +529,4 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
 ::::                                    slimaudio_http_v
 ::::                                    slimaudio_output
 ::::                                    slimaudio_output_v
+

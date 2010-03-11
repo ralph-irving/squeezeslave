@@ -1,3 +1,15 @@
+2010-02-09 13:02  paddockd
+
+	* [r129] ChangeLog, lib/lirc/osxintel, lib/lirc/osxintel/build,
+	  lib/lirc/osxintel/include, lib/lirc/osxintel/include/lirc,
+	  lib/lirc/osxintel/lib, lib/lirc/osxppc, lib/lirc/osxppc/build,
+	  lib/lirc/osxppc/include, lib/lirc/osxppc/include/lirc,
+	  lib/lirc/osxppc/lib, makefile.osxintel-display,
+	  makefile.osxppc-display, scripts/buildall-osx,
+	  src/squeezeslave/squeezeslave.c: Added INTERACTIVE support to OSX
+	  PPC and Intel builds.
+	  Increased version to 129.
+
 2010-02-09 12:01  paddockd
 
 	* [r128] ChangeLog, scripts/buildall-win32,

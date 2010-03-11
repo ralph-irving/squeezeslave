@@ -1,0 +1,64 @@
+Squeezeslave 0.9-95 is now available at
+
+[url]http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/[/url]
+
+[b]Direct Download[/b]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-win32.zip/download]Windows 32-bit Direct Sound and ASIO[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-osx.tar.gz/download]Mac OSX 32-bit PowerPC and Intel[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-lnx26.tar.gz/download]Linux v2.6 kernel Pentium II or better 32/64-bit ALSA, Pulseaudio and OSS[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-lnx24.tar.gz/download]Linux v2.4 kernel Pentium II or better 32-bit ALSA and OSS[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.95/squeezeslave-0.9-95-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MXX or better OSS statically linked[/url]
+
+[b]What's new in Squeezeslave 0.9-95[/b]
+
+Added pre-check to audio device listing -L option to confirm device supports 44.1KHz, 16-bit, 2 channel audio playback.
+If not, the device is not listed in Output Devices.
+The -o<device> option still allows you to select any device number, but the subsequent audio device open call will most likely fail.
+
+Fixed a solaris segmentation fault in Pa_QueryDevice audioctl device name creation.
+
+Fixed a segmentation fault in the mp3 decoder.
+
+All binaries use the r1420 development version of the portaudio library, except the Solaris and Linux v2.4.
+A version using the stable portaudio library is also included, those filenames that end in -pastable.
+
+An ASIO version is now included in the win32 zip file.
+
+Makefiles now build all required support libraries; portaudio, flac, ogg, vorbis and mad.
+There are Linux PPC Makefiles available in the source repository to build squeezeslave for PS3 and Linux based Macs.
+
+If you have problems with the precompiled binaries for linux, please checkout the source and build yourself.
+There have been many issues lately with system libraries and the linux binaries that have been solved by building your own.
+
+Linux and Windows build instructions are on the [url=http://wiki.slimdevices.com/index.php/SqueezeSlave]wiki[/url].
+
+
+[b]What changed in Squeezeslave 0.9-65[/b]
+
+Replay gain now supported with Squeezecenter v7.4 r26720 or later. Positive dB replay gain values are ignored to prevent clipping.  Patches are included for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.  Enabling replay gain for a squeezeslave player without the appropriate patch applied to squeezecenter is not recommended or supported.
+
+Slimp3 style display and keyboard support for linux with Squeezecenter v7.4 r26720 or later.  Support for External LCD displays and IR remotes are provided using LCDd and lirc respectively (linux only). A .lircrc config file for the slimdevices remote is included. See --help for details.  Patches are included for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.
+
+Thanks to Adrian Smith for getting the display and replay gain changes into Squeezecenter 7.4.
+
+Stream position reporting no longer resets to zero after a pause/unpause.
+
+--oldplayer/-O option has been removed as the latest versions of Squeezecenter's softsqueeze playertype fails to advance to the next track in the playlist.  The --playerid/-e option can be used to force squeezeslave to connect using the softsqueeze player type if needed.
+
+--debuglog/-Y option added to send all message to the given filename instead of the current display.  Useful when running squeezeslave in interactive (display) mode to keep any error messages from corrupting the display output.
+
+Source code has been moved to Google Code.  It will no longer be available as a tarball.
+
+You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/trunk/squeezeslave]here[/url] or download it with subversion.
+[code]
+svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
+[/code]
+
+Known Bugs
+
+Playing an ogg or mp3 file with a duration of less than 30 seconds as the first track in a playlist prevents switching to the next track in the playlist. You need to advance to the next track manually.  This bug appears to be deeply rooted in the buffering code.  See the TODO file in the source tree for more info.
+
+Changing playlist after pausing causes the playback of a short piece of the previously playing song at pause before the new playlist begins. [b]Should be fixed in r95[/b]
+
+Pandora doesn't work using the default hardware device/MAC address 00:00:00:00:00:01.  You need to start squeezeslave using the -m00:04:20:00:00:01 command line option to set the MAC address to the slimdevices hardware range. The last three octets (00:00:01) may need to be increased depending on the range Pandora is checking for.  Pandora is not available in my area to test the minimum range required.
