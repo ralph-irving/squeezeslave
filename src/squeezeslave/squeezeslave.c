@@ -44,9 +44,9 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 129;
+const int revision = 131;
 static int port = 3483;
-static int firmware = 1;
+static int firmware = 2;
 static int player_type = 8;
 
 #ifdef SLIMPROTO_DEBUG

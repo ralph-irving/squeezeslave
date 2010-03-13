@@ -175,6 +175,8 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 
 			DEBUGF("start_replay_gain:%f\n", audio->start_replay_gain);
 
+			slimaudio_stat(audio, "STMc", (u32_t) 0); /* connect, acknowledge strm-s */
+
 			slimaudio_http_connect(audio, &msg);
 			slimaudio_decoder_connect(audio, &msg);
 			slimaudio_output_connect(audio, &msg);

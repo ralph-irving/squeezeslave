@@ -185,6 +185,8 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 		return;
 	}
 
+	slimaudio_stat(audio, "STMe", (u32_t) 0); /* Stream connection established */
+
 	/* send http request to server */
 	DEBUGF("slimaudio_http_connect: http request %s\n", msg->strm.http_hdr);
 
@@ -250,6 +252,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	DEBUGF("slimaudio_http_connect: http connected hdr %s\n", http_hdr);
 	
 	pthread_mutex_lock(&audio->http_mutex);
+	slimaudio_stat(audio, "STMh", (u32_t) 0); /* acknowledge HTTP headers have been received */
 
 	slimaudio_buffer_open(audio->decoder_buffer, NULL);	
 	
@@ -319,6 +322,8 @@ static void http_recv(slimaudio_t *audio) {
 	if (audio->autostart && (audio->http_stream_bytes > audio->autostart_threshold)) {
 		DEBUGF("http_recv: AUTOSTART at %i\n", audio->http_stream_bytes);
 		audio->autostart = false;
+
+		slimaudio_stat(audio, "STMl", (u32_t) 0); /* Notify buffer threshold has been reached */
 		pthread_mutex_unlock(&audio->http_mutex);
 		
 		slimaudio_output_unpause(audio);
