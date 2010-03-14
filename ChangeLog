@@ -1,3 +1,18 @@
+2010-03-13 21:59  paddockd
+
+	* [r131] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio_http.c,
+	  src/squeezeslave/squeezeslave.c: Added STMc, STMh, STMl and STMe
+	  slimprotocol status messages.
+	  Incrased firmware version to 3.
+	  Increased version to 131.
+
+2010-03-11 12:59  paddockd
+
+	* [r130] ChangeLog, makefile.s10intel-display,
+	  wiki/SqueezeSlave.wiki, wiki/SupportThread.wiki: Fixed
+	  makefile.s10intel-display compile error.
+	  Captured wiki updates.
+
 2010-02-09 13:02  paddockd
 
 	* [r129] ChangeLog, lib/lirc/osxintel, lib/lirc/osxintel/build,
