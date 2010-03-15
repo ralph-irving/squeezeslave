@@ -296,6 +296,19 @@ void slimaudio_http_disconnect(slimaudio_t *audio) {
 
 static void http_recv(slimaudio_t *audio) {
 	char buf[AUDIO_CHUNK_SIZE];
+	struct timeval timeOut; 
+	fd_set fdread;
+
+	timeOut.tv_sec  = 0; 
+	timeOut.tv_usec = 100*1000; /* wait for up to 100ms */
+
+	FD_ZERO(&fdread); 
+	FD_SET(audio->streamfd, &fdread);  
+
+	if (select(audio->streamfd + 1, &fdread, NULL, &fdread, &timeOut) == 0)
+	{
+		return;
+	}
 
 	int n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, 0);
 
