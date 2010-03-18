@@ -226,12 +226,7 @@ Fix 7.4 remote stream hang
 7.4 r28672 reported broken http://forums.slimdevices.com/showthread.php?t=69338
 http_recv (2): timesout after 5 minutes and retry loop reconnects successfully.
 
-23958 good
-27123 good
-27893 good
-27983 good
 28008 good
-
 28009 bad
 
 ------------------------------------------------------------------------
@@ -261,14 +256,25 @@ Index: Slim/Web/HTTP.pm
                 # otherwise we might kill the timer related to the next connection too.
                 Slim::Utils::Timers::killTimers($client, \&tryStreamingLater);
 ------------------------------------------------------------------------
+Fix from Adrian for r28009 change.  Not checked in as of March 16, 2010.
 
-28034 bad
-28086 bad fullness starting working after 25 seconds, elapsed fractional
-28282 bad fullness correct, elapsed fractional
-28672 bad
-28731 bad
-29056 bad
-30324 bad
+Index: Slim/Web/HTTP.pm
+===================================================================
+--- Slim/Web/HTTP.pm	(revision 30377)
++++ Slim/Web/HTTP.pm	(working copy)
+@@ -2199,9 +2199,10 @@
+ 		# only kill the timer if we were called for the active streaming connection;
+ 		# otherwise we might kill the timer related to the next connection too.
+ 		Slim::Utils::Timers::killTimers($client, \&tryStreamingLater);
+-		
+-		Slim::Networking::Select::addWrite($httpClient, \&sendStreamingResponse, 1);
+ 	}
++
++	# Always call sendStreamingResponse so we ensure the socket gets closed
++	Slim::Networking::Select::addWrite($httpClient, \&sendStreamingResponse, 1);
+ }
+ 
+ sub forgetClient {
 ---
 
 Investigate no audio after resume from sleep on windows 7 asio

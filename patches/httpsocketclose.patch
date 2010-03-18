@@ -1,0 +1,17 @@
+Index: Slim/Web/HTTP.pm
+===================================================================
+--- Slim/Web/HTTP.pm	(revision 30377)
++++ Slim/Web/HTTP.pm	(working copy)
+@@ -2199,9 +2199,10 @@
+ 		# only kill the timer if we were called for the active streaming connection;
+ 		# otherwise we might kill the timer related to the next connection too.
+ 		Slim::Utils::Timers::killTimers($client, \&tryStreamingLater);
+-		
+-		Slim::Networking::Select::addWrite($httpClient, \&sendStreamingResponse, 1);
+ 	}
++
++	# Always call sendStreamingResponse so we ensure the socket gets closed
++	Slim::Networking::Select::addWrite($httpClient, \&sendStreamingResponse, 1);
+ }
+ 
+ sub forgetClient {

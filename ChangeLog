@@ -1,3 +1,14 @@
+2010-03-14 16:50  paddockd
+
+	* [r132] ChangeLog, TODO, patches/SqueezeSlave.pm-20100313.patch,
+	  patches/revert-28009-http-pm.patch, scripts/wmadec.sh: Created
+	  patch to bring SqueezeSlave.pm in line with changes to
+	  Squeezebox2.pm.
+	  Created patch to revert r28009 checkin which broke remote
+	  streaming in 7.4. Currently trying to work with the developers to
+	  find a proper fix but reverting the r28009 change means we can
+	  use squeezeslave with 7.4 again.
+
 2010-03-13 21:59  paddockd
 
 	* [r131] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio_http.c,
