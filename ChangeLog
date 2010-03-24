@@ -1,3 +1,21 @@
+2010-03-18 14:21  paddockd
+
+	* [r134] ChangeLog, TODO, logs/downloads.log,
+	  patches/httpsocketclose.patch,
+	  patches/revert-28009-http-pm.patch,
+	  sources/portaudio-r1483.tar.gz: Removed r28009 reversion patch.
+	  Added Adrian's proposed server side fix to close the http socket.
+
+2010-03-15 01:54  paddockd
+
+	* [r133] patches/squeezebox-close-http-socket.patch,
+	  src/slimaudio/slimaudio_http.c, src/squeezeslave/squeezeslave.c:
+	  Applied patch provided by Adrian Smith in bug 14740 to fix
+	  squeezeslave hanging on remote streams using 7.4 r28009 and
+	  above.
+	  Added proposed server side fix as a patch for completeness.
+	  Increased version to 133.
+
 2010-03-14 16:50  paddockd
 
 	* [r132] ChangeLog, TODO, patches/SqueezeSlave.pm-20100313.patch,

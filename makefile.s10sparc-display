@@ -8,7 +8,7 @@ TAR=gtar
 SED=gsed
 PATCH=gpatch
 SHELL=/bin/bash
-CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -D_POSIX_PTHREAD_SEMANTICS -s -xO4 -xarch=v9 -xthreadvar=no%dynamic
+CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -xO4 -xarch=v9 -xthreadvar=no%dynamic
 LDFLAGS=-s -xarch=v9
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include

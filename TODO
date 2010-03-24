@@ -280,3 +280,11 @@ Index: Slim/Web/HTTP.pm
 Investigate no audio after resume from sleep on windows 7 asio
 
 ---
+
+Fix linux makefiles current requirement for ogg header files be installed in /usr/include
+
+---
+
+Confirm STMf is still enabled
+
+---

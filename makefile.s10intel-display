@@ -8,7 +8,7 @@ TAR=gtar
 SED=gsed
 PATCH=gpatch
 SHELL=/bin/bash
-CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DINTERACTIVE -D_POSIX_PTHREAD_SEMANTICS -s -xO4 -fast -xtarget=pentium4 -xthreadvar=no%dynamic
+CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -xO4 -fast -xtarget=pentium4 -xthreadvar=no%dynamic
 LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
