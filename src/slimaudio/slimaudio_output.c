@@ -26,6 +26,9 @@
 #include <limits.h>
 
 #include <portaudio.h>
+#ifdef PA_WASAPI
+#include <pa_win_wasapi.h>
+#endif
 #ifndef PORTAUDIO_DEV
 #include <portmixer.h>
 #endif
@@ -70,10 +73,10 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	}	
 	DEBUGF("slimaudio_output_init: PortAudio initialized\n");
 	
-#ifndef PORTAUDIO_DEV
-	audio->num_device_names = Pa_CountDevices();
-#else
+#ifdef PORTAUDIO_DEV
 	audio->num_device_names = Pa_GetDeviceCount();
+#else
+	audio->num_device_names = Pa_CountDevices();
 #endif
 
 	if ( audio->num_device_names < 0 )
@@ -87,6 +90,9 @@ int slimaudio_output_init(slimaudio_t *audio) {
 	const PaDeviceInfo *pdi;
 #ifdef PORTAUDIO_DEV
 	PaStreamParameters outputParameters;
+#ifdef PA_WASAPI
+        PaWasapiStreamInfo streamInfo;
+#endif
 #endif
 	for ( i=0; i<audio->num_device_names; i++ )
 	{
@@ -108,7 +114,16 @@ int slimaudio_output_init(slimaudio_t *audio) {
 		outputParameters.channelCount = 2;
 		outputParameters.sampleFormat = paInt16;
 		outputParameters.suggestedLatency = pdi->defaultHighOutputLatency;
+#ifdef PA_WASAPI
+		streamInfo.size = sizeof(PaWasapiStreamInfo);
+		streamInfo.hostApiType = paWASAPI;
+		streamInfo.version = 1;
+		streamInfo.flags = paWinWasapiExclusive;
+		outputParameters.hostApiSpecificStreamInfo = &streamInfo;
+		outputParameters.suggestedLatency = pdi->defaultLowOutputLatency;
+#else
 		outputParameters.hostApiSpecificStreamInfo = NULL;
+#endif
 
 		err = Pa_IsFormatSupported( NULL, &outputParameters, 44100.0 );
 		if ( err == paFormatIsSupported )
@@ -274,6 +289,9 @@ static void *output_thread(void *ptr) {
 				audio);			// user data
 #else
 	PaStreamParameters outputParameters;
+#ifdef PA_WASAPI
+	PaWasapiStreamInfo streamInfo;
+#endif
 	const PaDeviceInfo * paDeviceInfo;
 
 	paDeviceInfo = Pa_GetDeviceInfo(audio->output_device_id);
@@ -290,8 +308,18 @@ static void *output_thread(void *ptr) {
 	outputParameters.channelCount = 2;
 	outputParameters.sampleFormat = paInt16;
 	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
+#ifdef PA_WASAPI
+	streamInfo.size = sizeof(PaWasapiStreamInfo);
+	streamInfo.hostApiType = paWASAPI;
+	streamInfo.version = 1;
+	streamInfo.flags = paWinWasapiExclusive;
+	outputParameters.hostApiSpecificStreamInfo = &streamInfo;
+	outputParameters.suggestedLatency = paDeviceInfo->defaultLowOutputLatency;
+#else
 	outputParameters.hostApiSpecificStreamInfo = NULL;
+#endif
 
+	DEBUGF("paDeviceInfo->deviceid %d\n", outputParameters.device);
 	DEBUGF("paDeviceInfo->maxOutputChannels %i\n", paDeviceInfo->maxOutputChannels);
 	DEBUGF("paDeviceInfo->defaultHighOutputLatency %i\n", (int) paDeviceInfo->defaultHighOutputLatency);
 	DEBUGF("paDeviceInfo->defaultLowhOutputLatency %i\n", (int) paDeviceInfo->defaultLowOutputLatency);

@@ -130,12 +130,12 @@ typedef struct {
 	bool output_EoS;
 	int keepalive_interval;
 	
-#ifndef PORTAUDIO_DEV
-	int output_device_id;
-	int num_device_names;
-#else
+#ifdef PORTAUDIO_DEV
 	PaDeviceIndex output_device_id;
 	PaDeviceIndex num_device_names;
+#else
+	int output_device_id;
+	int num_device_names;
 #endif
 	char **device_names;
 

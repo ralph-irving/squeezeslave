@@ -306,12 +306,12 @@ void print_version(void) {
 #endif
 #ifndef PORTAUDIO_DEV
 	fprintf(stdout, "portaudio:1810 ");
-#else
-#ifndef PA_ASIO
-	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
-#else
+#elif defined(PA_ASIO)
 	fprintf(stdout, "portaudio:%d:asio ", Pa_GetVersion());
-#endif /* PA_ASIO */
+#elif defined(PA_WASAPI)
+	fprintf(stdout, "portaudio:%d:wasapi ", Pa_GetVersion());
+#else
+	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
 #endif /* PORTAUDIO_DEV */
 #ifdef SLIMPROTO_DEBUG
 	fprintf(stdout, "debug ");
@@ -352,8 +352,8 @@ void print_help(void) {
 	print_version();      
 	fprintf(stdout,
 "\n"
-"squeezeslave [options] [<squeezecenter address>]\n"
-"The SqueezeCenter address defaults to 127.0.0.1.\n"
+"squeezeslave [options] [<server address>]\n"
+"The Squeezebox Server address defaults to 127.0.0.1.\n"
 "Options:\n"
 "-h, --help:                 Prints this message.\n"
 "-a,                         Sets the amplitude of a high-frequency tone\n"
@@ -446,10 +446,10 @@ void print_help(void) {
 "                            changing the volume through the web interface or\n"
 "                            when applying replay gain.  Defaults to sw.\n"
 #ifndef PORTAUDIO_DEV
-"                                    on:  volume changes performed on device.\n"
+"                                  on:  volume changes performed on device.\n"
 #endif
-"                                    sw:  volume changes performed in software.\n"
-"                                    off: volume changes ignored.\n"
+"                                  sw:  volume changes performed in software.\n"
+"                                  off: volume changes ignored.\n"
 #ifdef SLIMPROTO_DEBUG
 "-Y, --debuglog <logfile>:   Redirect debug output from stderr to <logfile>.\n"
 #endif
@@ -460,18 +460,18 @@ void print_help(void) {
 #ifndef SLIMPROTO_DEBUG
 "                            (disabled, recompile with \"-DSLIMPROTO_DEBUG\")\n"
 #endif
-"                                    all\n"
-"                                    slimproto\n"
-"                                    slimaudio\n"
-"                                    slimaudio_buffer\n"
-"                                    slimaudio_buffer_v\n"
-"                                    slimaudio_decoder\n"
-"                                    slimaudio_decoder_r\n"
-"                                    slimaudio_decoder_v\n"
-"                                    slimaudio_http\n"
-"                                    slimaudio_http_v\n"
-"                                    slimaudio_output\n"
-"                                    slimaudio_output_v\n",
+"                                  all\n"
+"                                  slimproto\n"
+"                                  slimaudio\n"
+"                                  slimaudio_buffer\n"
+"                                  slimaudio_buffer_v\n"
+"                                  slimaudio_decoder\n"
+"                                  slimaudio_decoder_r\n"
+"                                  slimaudio_decoder_v\n"
+"                                  slimaudio_http\n"
+"                                  slimaudio_http_v\n"
+"                                  slimaudio_output\n"
+"                                  slimaudio_output_v\n",
 RETRY_DEFAULT);
 }
 

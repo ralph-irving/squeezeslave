@@ -1,3 +1,9 @@
+2010-03-24 14:42  paddockd
+
+	* [r135] ChangeLog, TODO, makefile.s10intel-display,
+	  makefile.s10sparc-display: Removed PORTAUDIO_DEV usage in Solaris
+	  10 display makefiles.
+
 2010-03-18 14:21  paddockd
 
 	* [r134] ChangeLog, TODO, logs/downloads.log,
