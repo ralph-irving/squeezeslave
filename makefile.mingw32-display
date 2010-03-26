@@ -61,7 +61,6 @@ lib/dxsdk/$(OS)/lib/dsound.lib: $(7ZIP)
 	cd lib/dxsdk/$(OS)/include && chmod 644 dsound.h && $(SED) -i "s:^typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;$$:// typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;:" dsound.h
 
 lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
-	# cd lib/pthread/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBPTHREAD)-release.exe
 	cd lib/pthread/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(LIBPTHREAD)-release.exe Pre-built.2/lib/libpthreadGC2.a Pre-built.2/lib/pthreadGC2.dll Pre-built.2/include/semaphore.h Pre-built.2/include/pthread.h Pre-built.2/include/sched.h > /dev/null
 	cp -f lib/pthread/$(OS)/build/Pre-built.2/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/lib
 	cp -f lib/pthread/$(OS)/build/Pre-built.2/lib/pthreadGC2.dll bin/

@@ -288,3 +288,105 @@ Fix linux makefiles current requirement for ogg header files be installed in /us
 Confirm STMf is still enabled
 
 ---
+
+Investigate buffering message remaining at 0% when starting remote streams.
+
+
+[10-03-13 06:55:54.9399] Slim::Player::StreamingController::play (1954) 00:17:31:7b:88:7b
+[10-03-13 06:55:54.9407] Slim::Player::Squeezebox::stream (980) strm-q
+[10-03-13 06:55:54.9427] Slim::Player::StreamingController::_Stop (607) Song queue is now 0
+[10-03-13 06:55:54.9432] Slim::Player::StreamingController::_setPlayingState (2222) new playing state STOPPED
+[10-03-13 06:55:54.9436] Slim::Player::StreamingController::_setStreamingState (2235) new streaming state IDLE
+[10-03-13 06:55:54.9445] Slim::Player::Song::new (107) index 0 -> http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:54.9450] Slim::Player::StreamingController::_setStreamingState (2235) new streaming state TRACKWAIT
+[10-03-13 06:55:54.9456] Slim::Player::Song::getNextSong (228) http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:54.9461] Slim::Player::Song::getNextSong (250) scanning URL http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:54.9535] Slim::Player::StreamingController::_playersMessage (777) Getting stream info...: http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:54.9617] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMf: fullness=0, output_fullness=-1, elapsed=0.000
+[10-03-13 06:55:55.3918] Slim::Player::Song::getNextSong (228) http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:55.3923] Slim::Player::StreamingController::_nextTrackReady (733) 00:17:31:7b:88:7b: nextTrack will be index 0
+[10-03-13 06:55:55.3927] Slim::Player::StreamingController::_Stream (1160) Song queue is now 0
+[10-03-13 06:55:55.3931] Slim::Player::StreamingController::_Stream (1163) 00:17:31:7b:88:7b: preparing to stream song index 0
+[10-03-13 06:55:55.3935] Slim::Player::Song::open (362) http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:55.3954] Slim::Player::TranscodingHelper::getConvertCommand2 (430) Error: Didn't find any command matches for type: ogg
+[10-03-13 06:55:55.3958] Slim::Player::Song::open (382) seek=false time=0 canSeek=0SEEK_ERROR_TYPE_NOT_SUPPORTEDogg
+[10-03-13 06:55:55.3965] Slim::Player::TranscodingHelper::getConvertCommand2 (433) Matched: ogg->ogg via: -
+[10-03-13 06:55:55.3969] Slim::Player::Song::open (403) Transcoder: streamMode=I, streamformat=ogg
+[10-03-13 06:55:55.3973] Slim::Player::Song::open (451) Opening stream (no direct streaming) using Slim::Player::Protocols::HTTP [http://dual:9100/O94.9/radio.ogg]
+[10-03-13 06:55:56.1791] Slim::Player::Song::open (472) URL is a song (audio): http://dual:9100/O94.9/radio.ogg, type=ogg
+[10-03-13 06:55:56.1802] Slim::Player::StreamingController::_Stream (1214) 00:17:31:7b:88:7b: stream
+[10-03-13 06:55:56.1827] Slim::Player::Squeezebox::stream_s (578) stream_s called: format: ogg url: http://dual:9100/O94.9/radio.ogg
+[10-03-13 06:55:56.1833] Slim::Player::Squeezebox::stream_s (851) Starting decoder with format: o autostart: 1 threshold: 48 samplesize: ? samplerate: ? endian: ? channels: ?
+[10-03-13 06:55:56.1847] Slim::Player::StreamingController::_Stream (1245) Song queue is now 0
+[10-03-13 06:55:56.1852] Slim::Player::StreamingController::_setPlayingState (2222) new playing state BUFFERING
+[10-03-13 06:55:56.1856] Slim::Player::StreamingController::_setStreamingState (2235) new streaming state STREAMING
+[10-03-13 06:55:56.1882] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMc: fullness=0, output_fullness=-1, elapsed=0.000
+[10-03-13 06:55:56.1941] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[10-03-13 06:55:56.3191] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:56.3227] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[10-03-13 06:55:56.6315] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:56.6352] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[10-03-13 06:55:56.9357] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:56.9393] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=-1, elapsed=0.000
+[10-03-13 06:55:57.1703] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=43776, elapsed=0.000
+[10-03-13 06:55:57.2325] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:57.2362] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=43776, elapsed=0.000
+[10-03-13 06:55:57.5303] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:57.5340] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=97024, elapsed=0.000
+[10-03-13 06:55:57.8272] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:57.8308] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=141056, elapsed=0.000
+[10-03-13 06:55:58.1338] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:58.1374] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=190208, elapsed=0.000
+[10-03-13 06:55:58.1809] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=190208, elapsed=0.000
+[10-03-13 06:55:58.4462] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:58.4496] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=240896, elapsed=0.000
+[10-03-13 06:55:58.7518] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:58.7552] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=294144, elapsed=0.000
+[10-03-13 06:55:59.0565] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:59.0599] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=343296, elapsed=0.000
+[10-03-13 06:55:59.1816] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=388352, elapsed=0.000
+[10-03-13 06:55:59.3688] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:59.3722] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=437504, elapsed=0.000
+[10-03-13 06:55:59.6728] Slim::Player::Player::_buffering (1135) Buffering... 0 / 49152
+[10-03-13 06:55:59.6762] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=488192, elapsed=0.000
+[10-03-13 06:55:59.9250] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMs: fullness=0, output_fullness=533240, elapsed=0.000
+[10-03-13 06:55:59.9254] Slim::Player::StreamingController::playerTrackStarted (2034) 00:17:31:7b:88:7b
+[10-03-13 06:55:59.9259] Slim::Player::StreamingController::_setPlayingState (2222) new playing state PLAYING
+[10-03-13 06:55:59.9263] Slim::Player::StreamingController::_Playing (361) Song 0 has now started playing
+[10-03-13 06:55:59.9270] Slim::Player::StreamingController::_Playing (391) Song queue is now 0
+[10-03-13 06:56:00.9484] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=501696, elapsed=0.985
+[10-03-13 06:56:01.0047] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=491136, elapsed=1.045
+[10-03-13 06:56:01.9459] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=527388, elapsed=1.973
+[10-03-13 06:56:02.9518] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=541148, elapsed=2.991
+[10-03-13 06:56:03.9629] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=509920, elapsed=3.980
+[10-03-13 06:56:04.9628] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=521852, elapsed=5.004
+[10-03-13 06:56:05.9528] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=536192, elapsed=5.994
+[10-03-13 06:56:05.9997] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=531260, elapsed=6.022
+[10-03-13 06:56:06.9631] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=500188, elapsed=6.982
+[10-03-13 06:56:07.9651] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=512928, elapsed=7.999
+[10-03-13 06:56:08.9596] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=523388, elapsed=8.995
+[10-03-13 06:56:09.9660] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=537216, elapsed=9.985
+[10-03-13 06:56:10.9762] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=498496, elapsed=11.002
+[10-03-13 06:56:11.0126] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=542876, elapsed=11.032
+[10-03-13 06:56:11.9780] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=514720, elapsed=11.990
+[10-03-13 06:56:12.9669] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=523584, elapsed=13.014
+[10-03-13 06:56:13.9660] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=538528, elapsed=14.002
+[10-03-13 06:56:14.9733] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=545860, elapsed=14.993
+[10-03-13 06:56:15.9646] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=509504, elapsed=16.015
+[10-03-13 06:56:15.9960] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=504928, elapsed=16.041
+[10-03-13 06:56:16.9735] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=520000, elapsed=17.005
+[10-03-13 06:56:17.9685] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=540476, elapsed=17.995
+[10-03-13 06:56:18.9788] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=498172, elapsed=19.012
+[10-03-13 06:56:19.9660] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=508928, elapsed=20.002
+[10-03-13 06:56:20.9775] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=527196, elapsed=20.990
+[10-03-13 06:56:21.0086] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=521212, elapsed=21.024
+[10-03-13 06:56:21.9764] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=515072, elapsed=22.013
+[10-03-13 06:56:22.9789] Slim::Networking::Slimproto::_stat_handler (803) 00:17:31:7b:88:7b: STAT-STMt: fullness=0, output_fullness=518140, elapsed=23.003
+[10-03-13 06:56:23.1708] Slim::Player::StreamingController::stop (1951) 00:17:31:7b:88:7b
+[10-03-13 06:56:23.1721] Slim::Player::Squeezebox::stream (980) strm-q
+[10-03-13 06:56:23.1730] Slim::Player::StreamingController::_Stop (607) Song queue is now 0
+[10-03-13 06:56:23.1744] Slim::Player::StreamingController::_setPlayingState (2222) new playing state STOPPED
+[10-03-13 06:56:23.1817] Slim::Player::StreamingController::_setStreamingState (2235) new streaming state IDLE
+[10-03-13 06:56:23.1830] Slim::Player::Source::playmode (93) 00:17:31:7b:88:7b: Current playmode: stop
+
+---

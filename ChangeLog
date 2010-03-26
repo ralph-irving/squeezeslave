@@ -1,3 +1,15 @@
+2010-03-25 21:23  paddockd
+
+	* [r137] ChangeLog, logs/downloads.log,
+	  makefile.mingw32-wasapi-display, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, wiki/SqueezeSlave.wiki,
+	  wiki/SupportThread.wiki: Initial WASAPI win32 build support
+	  added.
+	  Updated Cygwin build environment using setup.exe version 2.693.
+	  Capture wiki updates.
+	  Increased version to 137.
+
 2010-03-24 14:42  paddockd
 
 	* [r135] ChangeLog, TODO, makefile.s10intel-display,
