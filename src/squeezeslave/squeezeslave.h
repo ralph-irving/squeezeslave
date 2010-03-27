@@ -66,7 +66,10 @@
 
 #define RETRY_DEFAULT	5
 #define LINE_COUNT	2
-#define OPTLEN		40
+#define OPTLEN		48
+#define FIRMWARE_VERSION	2
+#define SLIMPROTOCOL_PORT	3483
+#define PLAYER_TYPE	8
 
 int connect_callback(slimproto_t *, bool, void *);
 void listAudioDevices(slimaudio_t *, int, bool);

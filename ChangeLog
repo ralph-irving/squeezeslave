@@ -1,3 +1,34 @@
+2010-03-27 13:49  paddockd
+
+	* [r139] TODO, deprecated, deprecated/makefile.mingw32,
+	  deprecated/makefile.mingw32-asio,
+	  deprecated/makefile.mingw32-padev, makefile.mingw32,
+	  makefile.mingw32-asio, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-padev,
+	  makefile.mingw32-wasapi-display,
+	  patches/build-portaudio-interlockedincrement.patch,
+	  patches/build-portaudio-time_kill_synchronous.patch, sources,
+	  sources/portaudio-r1483.tar.gz, sources/portaudio-r1485.tar.gz,
+	  src/squeezeslave/squeezeslave.c: Initial WASAPI win32 makefile
+	  added. Binary crashes on audio device open. Inquiry on portaudio
+	  mailing list posted March 21, 2010.
+	  First win32 builds to use latest cygwin 2.693 toolchain and
+	  latest PADEV r1485.
+	  Deprecated non-interactive win32 makefiles.
+	  Updated portaudio sources.
+	  Increased version to 139.
+
+2010-03-26 11:04  paddockd
+
+	* [r138] ChangeLog, TODO, makefile.mingw32,
+	  makefile.mingw32-display, makefile.mingw32-padev,
+	  sources/flac-1.2.1-devel-win.zip, sources/libogg-1.1.3.tar.bz2,
+	  sources/libvorbis-1.1.2.tar.bz2,
+	  sources/pa_snapshot-20081026.tar.gz,
+	  sources/pa_snapshot-20090419.tar.gz,
+	  sources/pthreads-w32-2-8-0-release.tar.gz: File cleanup. Deleted
+	  obsolete source tarballs.
+
 2010-03-25 21:23  paddockd
 
 	* [r137] ChangeLog, logs/downloads.log,
@@ -50,7 +81,7 @@
 	* [r131] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio_http.c,
 	  src/squeezeslave/squeezeslave.c: Added STMc, STMh, STMl and STMe
 	  slimprotocol status messages.
-	  Incrased firmware version to 3.
+	  Increased firmware version to 2.
 	  Increased version to 131.
 
 2010-03-11 12:59  paddockd

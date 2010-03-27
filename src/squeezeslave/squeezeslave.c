@@ -44,10 +44,10 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 139;
-static int port = 3483;
-static int firmware = 2;
-static int player_type = 8;
+const int revision = 140;
+static int port = SLIMPROTOCOL_PORT;
+static int firmware = FIRMWARE_VERSION;
+static int player_type = PLAYER_TYPE;
 
 #ifdef SLIMPROTO_DEBUG
 FILE *debuglog = NULL;
@@ -333,7 +333,7 @@ int main(int argc, char *argv[]) {
 			player_type = strtoul(optarg, NULL, 0);
 			if ( (player_type < 2) || (player_type > 14) )
 			{
-				player_type = 8;
+				player_type = PLAYER_TYPE;
 				fprintf(stderr, "%s: Unknown player type, using (%d)\n", argv[0], player_type);
 			}
 			break;
@@ -341,7 +341,7 @@ int main(int argc, char *argv[]) {
 			firmware = strtoul(optarg, NULL, 0);
 			if ( (firmware < 0) || (firmware > 254) )
 			{
-				firmware = 1;
+				firmware = FIRMWARE_VERSION;
 				fprintf(stderr, "%s: Invalid firmware value, using (%d)\n", argv[0], firmware);
 			}
 			break;
@@ -381,7 +381,7 @@ int main(int argc, char *argv[]) {
 			port = strtoul(optarg, NULL, 0);
 			if ( (port < 0) || (port > 65535) )
 			{
-				port = 3483;
+				port = SLIMPROTOCOL_PORT;
 				fprintf(stderr, "%s: Invalid port value, using (%d)\n", argv[0], port);
 			}
 			break;
@@ -478,8 +478,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (listdevs) {
-	   listAudioDevices(&slimaudio, output_device_id, output_change);
-	   exit(1);
+		listAudioDevices(&slimaudio, output_device_id, output_change);
+		exit(0);
 	}
 
 	slimproto_add_connect_callback(&slimproto, connect_callback, macaddress);
