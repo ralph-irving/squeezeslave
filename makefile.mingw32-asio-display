@@ -1,4 +1,4 @@
-# Windows 32-bit makefile using Cygwin 2.674 setup.exe
+# Windows 32-bit makefile using Cygwin 2.693 setup.exe
 # See http://wiki.slimdevices.com/index.php/SqueezeSlave for details  
 # Builds libportaudio v19 to support Steinberg's ASIO SDK
 # http://www.steinberg.net/en/company/3rd_party_developer/sdk_download_portal.html
@@ -9,7 +9,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPORTAUDIO_DEV -DPA_ASIO -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
+CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPORTAUDIO_DEV -DPA_ASIO -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
 INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -20,7 +20,7 @@ LIBVORBIS=libvorbis-1.2.3
 LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
-LIBPORTAUDIO=pa_snapshot-20091022
+LIBPORTAUDIO=portaudio-r1485
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
 ASIOSDK=asiosdk2.2
@@ -63,10 +63,7 @@ lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
 lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a $(7ZIP)
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && ../../../../../$(7ZIP) x -y ../../../../../sources/$(ASIOSDK).zip > /dev/null
-	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p0 -i ../../../../../patches/build-portaudio-asiosdk2.patch
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`../../../../pthread/$(OS)/include" CFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" CPPFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" LDFLAGS="$(LDFLAGS) -L`pwd`../../../../pthread/$(OS)/lib" ./configure --with-host_os=mingw --with-winapi=asio --with-asiodir=`pwd`/ASIOSDK2 --without-jack --enable-shared=no
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-asio.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include

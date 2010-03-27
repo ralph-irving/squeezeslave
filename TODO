@@ -289,6 +289,15 @@ Confirm STMf is still enabled
 
 ---
 
+Win32 ASIO version terminates at startup when run on system without ASIO driver.
+
+0.9-95 -L and -V work
+0.9-133 -L and -V crash
+
+Might in related to adding INTERACTIVE.
+
+---
+
 Investigate buffering message remaining at 0% when starting remote streams.
 
 

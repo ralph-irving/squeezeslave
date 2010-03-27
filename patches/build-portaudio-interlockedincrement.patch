@@ -1,0 +1,27 @@
+--- portaudio/src/hostapi/asio/pa_asio.cpp.orig	2009-12-10 03:09:21.000000000 -0500
++++ portaudio/src/hostapi/asio/pa_asio.cpp	2010-03-27 07:38:19.071875000 -0400
+@@ -124,6 +124,11 @@
+ //#include <values.h>
+ #include <new>
+ 
++#ifdef __GNUC__
++    #define _WIN32_WINNT 0x0501
++    #define WINVER 0x0501
++#endif
++
+ #include <windows.h>
+ #include <mmsystem.h>
+ 
+--- portaudio/src/hostapi/asio/iasiothiscallresolver.cpp.orig	2004-07-09 23:27:41.000000000 -0400
++++ portaudio/src/hostapi/asio/iasiothiscallresolver.cpp	2010-03-27 07:41:55.009375000 -0400
+@@ -152,6 +152,10 @@
+     recent versions of the gcc assembler.
+ */
+ 
++#ifdef __GNUC__
++    #define _WIN32_WINNT 0x0501
++    #define WINVER 0x0501
++#endif
+ 
+ // We only need IASIOThiscallResolver at all if we are on Win32. For other
+ // platforms we simply bypass the IASIOThiscallResolver definition to allow us

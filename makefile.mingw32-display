@@ -1,4 +1,4 @@
-# Windows 32-bit makefile using Cygwin 2.674 setup.exe
+# Windows 32-bit makefile using Cygwin 2.693 setup.exe
 # Requires Windows DirectX SDK.  
 # See http://wiki.slimdevices.com/index.php/SqueezeSlave for details  
 #
@@ -8,7 +8,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
+CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
 INCLUDE=-Ilib/dxsdk/$(OS)/include -Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -19,7 +19,7 @@ LIBVORBIS=libvorbis-1.2.3
 LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
-LIBPORTAUDIO=pa_snapshot-20091022
+LIBPORTAUDIO=portaudio-r1485
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
 DIRECTXSDK=DXSDK_Mar09
@@ -58,7 +58,6 @@ lib/dxsdk/$(OS)/lib/dsound.lib: $(7ZIP)
 	cd lib/dxsdk/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(DIRECTXSDK).exe DXSDK/Lib/x86/dsound.lib DXSDK/Include/dsound.h > /dev/null
 	cp -f lib/dxsdk/$(OS)/build/DXSDK/Lib/x86/dsound.lib lib/dxsdk/$(OS)/lib
 	cp -f lib/dxsdk/$(OS)/build/DXSDK/Include/dsound.h lib/dxsdk/$(OS)/include
-	cd lib/dxsdk/$(OS)/include && chmod 644 dsound.h && $(SED) -i "s:^typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;$$:// typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;:" dsound.h
 
 lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
 	cd lib/pthread/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(LIBPTHREAD)-release.exe Pre-built.2/lib/libpthreadGC2.a Pre-built.2/lib/pthreadGC2.dll Pre-built.2/include/semaphore.h Pre-built.2/include/pthread.h Pre-built.2/include/sched.h > /dev/null
@@ -68,7 +67,6 @@ lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
 
 lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a lib/dxsdk/$(OS)/lib/dsound.lib
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`../../../../pthread/$(OS)/include" CFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" CPPFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" LDFLAGS="$(LDFLAGS) -L`pwd`../../../../pthread/$(OS)/lib" ./configure --with-host_os=mingw --with-winapi=directx --with-dxdir=`pwd`/../../../../dxsdk/$(OS) --without-jack --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib

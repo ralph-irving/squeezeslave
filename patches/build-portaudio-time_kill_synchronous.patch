@@ -1,0 +1,16 @@
+--- portaudio/src/hostapi/dsound/pa_win_ds.c.orig	2010-02-02 19:28:29.000000000 -0500
++++ portaudio/src/hostapi/dsound/pa_win_ds.c	2010-03-26 09:27:23.900000000 -0400
+@@ -74,7 +74,12 @@
+ #include <stdio.h>
+ #include <string.h> /* strlen() */
+ 
+-#include <initguid.h> /* make sure ds guids get defined */
++#ifdef __GNUC__
++    #include <initguid.h>
++    #define _WIN32_WINNT 0x0501
++    #define WINVER 0x0501
++#endif
++
+ #include <windows.h>
+ #include <objbase.h>
+ 
