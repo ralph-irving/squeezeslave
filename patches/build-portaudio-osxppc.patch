@@ -1,6 +1,6 @@
---- portaudio/configure.orig	2008-03-06 17:14:06.000000000 +0000
-+++ portaudio/configure	2009-10-25 19:34:03.000000000 +0000
-@@ -21366,10 +21366,10 @@
+--- portaudio/configure.orig	2010-03-16 08:23:13.000000000 -0400
++++ portaudio/configure	2010-03-31 08:37:27.000000000 -0400
+@@ -19448,10 +19448,10 @@
          if test "x$enable_mac_universal" = "xyes" ; then
             mac_version_min="-mmacosx-version-min=10.3"
             if [ -d /Developer/SDKs/MacOSX10.5.sdk ] ; then

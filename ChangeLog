@@ -1,3 +1,10 @@
+2010-03-27 20:36  paddockd
+
+	* [r140] ChangeLog, TODO, makefile.mingw32-asio-display,
+	  makefile.mingw32-wasapi-display, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Added DEFINES for common values.
+	  Increased version to 140.
+
 2010-03-27 13:49  paddockd
 
 	* [r139] TODO, deprecated, deprecated/makefile.mingw32,
