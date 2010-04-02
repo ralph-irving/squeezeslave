@@ -1,0 +1,14 @@
+--- portaudio/src/hostapi/alsa/pa_linux_alsa.c.orig	2009-12-05 08:59:44.000000000 -0500
++++ portaudio/src/hostapi/alsa/pa_linux_alsa.c	2010-03-28 04:22:16.000000000 -0500
+@@ -53,6 +53,11 @@
+ #undef ALSA_PCM_NEW_HW_PARAMS_API
+ #undef ALSA_PCM_NEW_SW_PARAMS_API
+ 
++/* Support for old ALSA (less than 1.0.16) */
++#if SND_LIB_SUBMINOR < 16
++#define SND_PCM_TSTAMP_ENABLE SND_PCM_TSTAMP_MMAP
++#endif
++
+ #include <sys/poll.h>
+ #include <string.h> /* strlen() */
+ #include <limits.h>

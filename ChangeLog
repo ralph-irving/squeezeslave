@@ -1,3 +1,20 @@
+2010-04-01 13:34  paddockd
+
+	* [r141] ChangeLog, deprecated/makefile.osxintel,
+	  deprecated/makefile.osxintel-padev, deprecated/makefile.osxppc,
+	  deprecated/makefile.osxppc-padev, deprecated/makefile.s10intel,
+	  deprecated/makefile.s10sparc, deprecated/makefile.s9sparc,
+	  makefile.osxintel, makefile.osxintel-display,
+	  makefile.osxintel-padev, makefile.osxppc,
+	  makefile.osxppc-display, makefile.osxppc-padev,
+	  makefile.s10intel, makefile.s10sparc, makefile.s9sparc,
+	  patches/build-portaudio-osxppc.patch,
+	  src/squeezeslave/squeezeslave.c: Updated OSX makefiles to use
+	  PADEV r1485.
+	  Deprecated non-interactive OSX makefiles.
+	  Deprecated non-interactive Solaris makefiles.
+	  Increased version to 141.
+
 2010-03-27 20:36  paddockd
 
 	* [r140] ChangeLog, TODO, makefile.mingw32-asio-display,
