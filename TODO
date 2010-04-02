@@ -79,20 +79,6 @@ to see if it really is a tag and either read or skip it.
 
 ---
 
-Change line 1372 in lib-src/portaudio-v19/src/hostapi/alsa/pa_linux_alsa.c from
-
-SND_PCM_TSTAMP_ENABLE
-
-to
-
-SND_PCM_TSTAMP_MMAP.
-
-ALSA docs say that SND_PCM_TSTAMP_MMAP is:
-"Equivalent with SND_PCM_TSTAMP_ENABLE, just for compatibility with older
-versions"
-
----
-
 http://lists.apple.com/archives/macnetworkprog/2004/Mar/msg00021.html
 
 Recv will return 0 *only* to indicate that the socket was cleanly closed
@@ -278,10 +264,6 @@ Index: Slim/Web/HTTP.pm
 ---
 
 Investigate no audio after resume from sleep on windows 7 asio
-
----
-
-Fix linux makefiles current requirement for ogg header files be installed in /usr/include
 
 ---
 

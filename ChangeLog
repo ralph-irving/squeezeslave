@@ -1,3 +1,22 @@
+2010-04-02 10:19  paddockd
+
+	* [r142] ChangeLog, deprecated/makefile.linux24,
+	  deprecated/makefile.linux24-alsa,
+	  deprecated/makefile.linux24-i586, deprecated/makefile.linux26,
+	  deprecated/makefile.linux26-alsa,
+	  deprecated/makefile.linux26-i64-alsa,
+	  deprecated/makefile.linux26-ppc-alsa, makefile.linux24,
+	  makefile.linux24-alsa, makefile.linux24-alsa-display,
+	  makefile.linux24-i586, makefile.linux26, makefile.linux26-alsa,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa,
+	  makefile.linux26-i64-alsa-display, makefile.linux26-ppc-alsa,
+	  makefile.linux26-ppc-alsa-display,
+	  patches/build-portaudio-oldalsa.patch,
+	  src/squeezeslave/squeezeslave.c: Updated Linux ALSA makefiles to
+	  use PADEV r1485.
+	  Deprecated non-interactive Linux makefiles.
+	  Increased version to 142.
+
 2010-04-01 13:34  paddockd
 
 	* [r141] ChangeLog, deprecated/makefile.osxintel,

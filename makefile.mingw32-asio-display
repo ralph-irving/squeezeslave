@@ -86,8 +86,7 @@ lib/vorbis/$(OS)/lib/libvorbisfile.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
-	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=-L`pwd`/../../lib CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --host=i686-pc-mingw32 --build=i686-pc-cygwin --enable-shared=no
-	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && $(SED) -i "s:^LIBS =.*:LIBS = `pwd`/../../lib/libogg.a:" examples/Makefile
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --host=i686-pc-mingw32 --build=i686-pc-cygwin --enable-shared=no --with-ogg-includes=`pwd`/../../include --with-ogg-libraries=`pwd`/../../lib
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
 	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/$(OS)/lib
 	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/$(OS)/include/vorbis
