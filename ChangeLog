@@ -1,3 +1,17 @@
+2010-04-02 11:06  paddockd
+
+	* [r143] ChangeLog, TODO, makefile.linux24-alsa-display,
+	  makefile.linux24-display, makefile.linux26-alsa-display,
+	  makefile.linux26-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  makefile.osxintel-display, makefile.osxppc-display,
+	  makefile.s10intel-display, makefile.s10sparc-display,
+	  makefile.s9sparc-display, src/squeezeslave/squeezeslave.c: Fixed
+	  libvorbis build to use our libogg.a instead of system ogg
+	  library.
+	  Increased version to 143.
+
 2010-04-02 10:19  paddockd
 
 	* [r142] ChangeLog, deprecated/makefile.linux24,
@@ -14,6 +28,8 @@
 	  patches/build-portaudio-oldalsa.patch,
 	  src/squeezeslave/squeezeslave.c: Updated Linux ALSA makefiles to
 	  use PADEV r1485.
+	  Added patch to fix ALSA builds for library versions older than
+	  1.0.16.
 	  Deprecated non-interactive Linux makefiles.
 	  Increased version to 142.
 

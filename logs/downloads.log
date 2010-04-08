@@ -5,3 +5,5 @@ squeezeslave-0.9-126-win32-beta.zip 	Windows 32-bit Direct Sound-ASIO Interactiv
 squeezeslave-0.9-133-lnx26-beta.tar.gz	Linux v2.6 kernel i686 Alsa-OSS Interactive	Mar 23 	 519 KB	 7
 squeezeslave-0.9-133-osx-beta.tar.gz 	Mac OSX PowerPC-Intel Interactive includes fix for 7.4 remote stream hang 	Mar 15 	750 KB 	6
 squeezeslave-0.9-133-win32-beta.zip	Windows 32-bit Direct Sound-ASIO Interactive includes fix for 7.4 remote stream hang 	Mar 15 	581 KB 	41
+squeezeslave-0.9-139-win32-asio.zip 	Windows 32-bit ASIO Only Portaudio r1485 Cygwin 2.693	Mar 28	306 KB 	16
+squeezeslave-0.9-141-osx-intel.tar.gz	Mac OSX Intel Only Portaudio r1485	Apr  1 	 362 KB  	 1

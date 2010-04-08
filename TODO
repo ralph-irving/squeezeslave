@@ -377,3 +377,7 @@ Investigate buffering message remaining at 0% when starting remote streams.
 [10-03-13 06:56:23.1830] Slim::Player::Source::playmode (93) 00:17:31:7b:88:7b: Current playmode: stop
 
 ---
+
+Investigate missing /dev/dsp device from -L alsa version when snd-pcm-oss module loaded.
+
+---
