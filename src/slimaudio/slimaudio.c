@@ -243,7 +243,7 @@ static int vers_callback(slimproto_t *p, const unsigned char *buf,
 	DEBUGF("Server version: %x\n", msg.vers.version);
 
 	if ((msg.vers.version >= 0x00060500) && (msg.vers.version < 0x00070200)) {
-		// 6.5.0<->7.2.0 SqueezeCenter needs a player to send
+		// 6.5.0<->7.2.0 Squeezebox Server needs a player to send
 		// a keepalive message every 10 seconds or so before it declares
 		// it down.
 		slimaudio_set_keepalive_interval(audio, 10);

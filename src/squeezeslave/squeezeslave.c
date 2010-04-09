@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 144;
+const int revision = 145;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -118,7 +118,7 @@ void exit_handler(int signal_number) {
 }
 
 // Handles a signal coming from inside this process and that causes a restart
-// of the SqueezeCenter connection.
+// of the Squeezebox Server connection.
 void restart_handler(int signal_number) {
         if (retry_connection) {
 		signal_restart_flag = true;
@@ -135,7 +135,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 
 	if (isConnected) {
 		if (slimproto_helo(p, player_type, firmware, (char*) user_data, 0, 0) < 0) {
-			fprintf(stderr, "Could not send helo to SqueezeCenter\n");
+			fprintf(stderr, "Could not send helo to Squeezebox Server.\n");
 		        send_restart_signal();
 		}
 #ifdef INTERACTIVE
@@ -152,7 +152,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 	}
 	else {
 		// Send the restart signal, which calls restart_handler to tell
-		// the main thread to go back waiting for SqueezeCenter to be
+		// the main thread to go back waiting for Squeezebox Server to be
 		// available.
 		if (!signal_exit_flag)
 		    send_restart_signal();
@@ -529,7 +529,7 @@ int main(int argc, char *argv[]) {
 		daemonize(logfile);
 	}
 #endif
-	// When retry_connection is true, retry connecting to SqueezeCenter 
+	// When retry_connection is true, retry connecting to Squeezebox Server 
 	// until we succeed, unless the signal handler tells us to give up.
 	do {
 		while (slimproto_connect(
@@ -550,7 +550,7 @@ int main(int argc, char *argv[]) {
 				close_lirc();
 				close_lcd();
 #endif
-				fprintf(stderr, "Connection to SqueezeCenter %s failed.\n", slimserver_address);
+				fprintf(stderr, "Connection to Squeezebox Server %s failed.\n", slimserver_address);
 				exit(-1);
 			}
 #ifdef INTERACTIVE

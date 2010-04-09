@@ -98,8 +98,8 @@ typedef int (slimproto_connect_callback_t)(slimproto_t *p, bool isConnected, voi
 struct slimproto {
 	slimproto_state_t state;
 	
-	int sockfd; 				// SqueezeCenter socket
-	struct sockaddr_in serv_addr;		// SqueezeCenter address
+	int sockfd; 				// Squeezebox Server socket
+	struct sockaddr_in serv_addr;		// Squeezebox Server address
 	
 	struct timeval epoch;
 	

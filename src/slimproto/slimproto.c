@@ -277,7 +277,7 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	pthread_cond_broadcast(&p->slimproto_cond);	
 	
 	// Wait for confirmation that the connection opens correctly.  This
-	// will fail, for example, if SqueezeCenter is not running when the
+	// will fail, for example, if Squeezebox Server is not running when the
 	// connection attempt happens.
 	int return_value = 0; 
 	while (p->state != PROTO_CONNECTED) {

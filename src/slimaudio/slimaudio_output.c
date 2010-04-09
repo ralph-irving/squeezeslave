@@ -387,11 +387,11 @@ static void *output_thread(void *ptr) {
 
 			case PAUSED:
 				// We report ourselves to the server every few seconds
-				// as a keep-alive.  This is required for SqueezeCenter version 
-				// 6.5.x although technically, "stat" is not a valid event 
+				// as a keep-alive.  This is required for Squeezebox Server
+				// v6.5.x although technically, "stat" is not a valid event 
 				// code for the STAT Client->Server message.  This was 
 				// lifted by observing how a Squeezebox3 reports itself to 
-				// the server using SqueezeCenter's d_slimproto and 
+				// the server using Squeezebox Server's d_slimproto and 
 				// d_slimproto_v tracing services.  Note that Squeezebox3
 			  	// seems to report every 1 second or so, but the server only
 			  	// drops the connection after 15-20 seconds of inactivity.
@@ -805,7 +805,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
 				pthread_mutex_lock(&audio->output_mutex);
 
-				// Send buffer underrun to SqueezeCenter. During
+				// Send buffer underrun to Squeezebox Server. During
 				// normal play this indicates the end of the
 				// playlist. During sync this starts the next 
 				// track.
@@ -820,7 +820,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_START) {
 			pthread_mutex_lock(&audio->output_mutex);
 
-			/* Send track start to SqueezeCenter. During normal play
+			/* Send track start to Squeezebox Server. During normal play
 			** this advances the playlist.
 			*/
 			audio->output_STMs = true;

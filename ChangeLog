@@ -1,3 +1,11 @@
+2010-04-08 21:17  paddockd
+
+	* [r144] ChangeLog, TODO, logs/downloads.log,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c,
+	  wiki/SqueezeSlave.wiki: Replaced SqueezeCenter references with
+	  Squeezebox Server on help screens.
+	  Increased version to 144.
+
 2010-04-02 11:06  paddockd
 
 	* [r143] ChangeLog, TODO, makefile.linux24-alsa-display,

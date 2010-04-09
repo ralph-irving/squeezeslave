@@ -167,7 +167,7 @@ void slimaudio_set_output_device(slimaudio_t *audio, int device_id);
 // based on server version.
 void slimaudio_set_keepalive_interval(slimaudio_t *audio, int seconds);
 
-// Enables/disables volume control from SqueezeCenter.  Off means the
+// Enables/disables volume control from Squeezebox Server.  Off means the
 // volume will not be touched by squeezeslave.  This must be called
 // before alimaudio_open.
 void slimaudio_set_volume_control(slimaudio_t *audio, slimaudio_volume_t vol);
