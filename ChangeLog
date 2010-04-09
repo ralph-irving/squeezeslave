@@ -1,3 +1,12 @@
+2010-04-09 11:23  paddockd
+
+	* [r145] ChangeLog, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/squeezeslave.c: Replaced remaining SqueezeCenter
+	  references with Squeezebox Server.
+	  Increased version to 145.
+
 2010-04-08 21:17  paddockd
 
 	* [r144] ChangeLog, TODO, logs/downloads.log,

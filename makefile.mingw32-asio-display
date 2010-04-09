@@ -9,7 +9,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPA_ASIO -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
+CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPA_ASIO -DPTW32_STATIC_LIB -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
 INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -24,6 +24,7 @@ LIBPORTAUDIO=portaudio-r1485
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
 ASIOSDK=asiosdk2.2
+
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
@@ -36,7 +37,7 @@ LIBSLIMPROTO=lib/libslimproto.a
 
 LIBGETOPT=lib/libgetopt.a
 
-SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/pthread/$(OS)/lib/libpthreadGC2.a lib/curses/$(OS)/lib/libcurses.a lib/lirc/$(OS)/lib/liblirc_client.a
+SUPPORTLIBS=lib/pthread/$(OS)/lib/libpthreadGC2.a lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/curses/$(OS)/lib/libcurses.a lib/lirc/$(OS)/lib/liblirc_client.a
 
 7ZIP=bin/7z.exe
 
@@ -55,12 +56,13 @@ $(7ZIP):
 	cp -pr lib/7z/$(OS)/build/$(7ZIPSRC)/bin/{7z.exe,7z.so,Codecs} bin/
 
 lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
-	cd lib/pthread/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(LIBPTHREAD)-release.exe Pre-built.2/lib/libpthreadGC2.a Pre-built.2/lib/pthreadGC2.dll Pre-built.2/include/semaphore.h Pre-built.2/include/pthread.h Pre-built.2/include/sched.h > /dev/null
-	cp -f lib/pthread/$(OS)/build/Pre-built.2/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/lib
-	cp -f lib/pthread/$(OS)/build/Pre-built.2/lib/pthreadGC2.dll bin/
-	cp -f lib/pthread/$(OS)/build/Pre-built.2/include/{semaphore.h,pthread.h,sched.h} lib/pthread/$(OS)/include
+	cd lib/pthread/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(LIBPTHREAD)-release.exe pthreads.2 > /dev/null
+	cd lib/pthread/$(OS)/build/pthreads.2 && $(SED) -i "s:-Wall$$:-Wall -mno-cygwin -march=i686 -mtune=pentium4:" GNUmakefile
+	cd lib/pthread/$(OS)/build/pthreads.2 && make -f GNUmakefile GC-static
+	cp -p lib/pthread/$(OS)/build/pthreads.2/libpthreadGC2.a lib/pthread/$(OS)/lib
+	cp -p lib/pthread/$(OS)/build/pthreads.2/{semaphore.h,pthread.h,sched.h} lib/pthread/$(OS)/include
 
-lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a $(7ZIP)
+lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && ../../../../../$(7ZIP) x -y ../../../../../sources/$(ASIOSDK).zip > /dev/null
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`../../../../pthread/$(OS)/include" CFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" CPPFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" LDFLAGS="$(LDFLAGS) -L`pwd`../../../../pthread/$(OS)/lib" ./configure --with-host_os=mingw --with-winapi=asio --with-asiodir=`pwd`/ASIOSDK2 --without-jack --enable-shared=no
@@ -142,7 +144,7 @@ realclean: clean
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBOGG)
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
 	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
-	-@rm -rf lib/pthread/$(OS)/build/Pre-built.2
+	-@rm -rf lib/pthread/$(OS)/build/pthreads.2
 	-@rm -rf lib/7z/$(OS)/build/$(7ZIPSRC)
 	-@rm -rf bin/{7z.exe,7z.so,Codecs}
 	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
@@ -154,7 +156,7 @@ realclean: clean
 	-@rm -f lib/vorbis/$(OS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
-	-@rm -f lib/pthread/$(OS)/lib/{libpthreadGC2.a,pthreadGC2.dll} lib/pthread/$(OS)/include/{semaphore.h,pthread.h,sched.h} bin/pthreadGC2.dll
+	-@rm -f lib/pthread/$(OS)/lib/libpthreadGC2.a lib/pthread/$(OS)/include/{semaphore.h,pthread.h,sched.h}
 	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
 	-@rm -f lib/curses/$(OS)/lib/libcurses.a lib/curses/$(OS)/include/curses.h
 	-@rm -f lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/include/lirc/lirc_client.h

@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 145;
+const int revision = 146;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -194,6 +194,8 @@ int main(int argc, char *argv[]) {
 
 #ifdef __WIN32__
 	int WSAerrno;
+	int ptw32_processInitialize (void);
+	ptw32_processInitialize();
 #endif
         // default lircrc file ($HOME/.lircrc)
 	home = getenv("HOME");
