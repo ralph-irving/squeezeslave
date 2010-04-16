@@ -1,3 +1,12 @@
+2010-04-09 23:01  paddockd
+
+	* [r146] ChangeLog, ReleaseNotes, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  src/squeezeslave/squeezeslave.c: Mingw32 makefiles updated to
+	  build a static version of libpthreadGC2.a to remove the
+	  pthreadGC2.dll dependency.
+	  Increased version to 146.
+
 2010-04-09 11:23  paddockd
 
 	* [r145] ChangeLog, src/slimaudio/slimaudio.c,

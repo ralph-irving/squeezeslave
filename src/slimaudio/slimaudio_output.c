@@ -289,10 +289,23 @@ static void *output_thread(void *ptr) {
 				audio);			// user data
 #else
 	PaStreamParameters outputParameters;
+	const PaDeviceInfo * paDeviceInfo;
 #ifdef PA_WASAPI
 	PaWasapiStreamInfo streamInfo;
+	bool bCOMInitialized = false;
+	HRESULT hr;
+
+	hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+	if (FAILED(hr) && (hr != RPC_E_CHANGED_MODE))
+        {
+                printf("output_thread: failed CoInitialize.\n");
+		exit(-2);
+        }
+
+	if (hr != RPC_E_CHANGED_MODE)
+		bCOMInitialized = true;
 #endif
-	const PaDeviceInfo * paDeviceInfo;
 
 	paDeviceInfo = Pa_GetDeviceInfo(audio->output_device_id);
 	/* Device is not stereo or better, abort */
@@ -321,8 +334,8 @@ static void *output_thread(void *ptr) {
 
 	DEBUGF("paDeviceInfo->deviceid %d\n", outputParameters.device);
 	DEBUGF("paDeviceInfo->maxOutputChannels %i\n", paDeviceInfo->maxOutputChannels);
-	DEBUGF("paDeviceInfo->defaultHighOutputLatency %i\n", (int) paDeviceInfo->defaultHighOutputLatency);
-	DEBUGF("paDeviceInfo->defaultLowhOutputLatency %i\n", (int) paDeviceInfo->defaultLowOutputLatency);
+	DEBUGF("paDeviceInfo->defaultHighOutputLatency %f\n", (float) paDeviceInfo->defaultHighOutputLatency);
+	DEBUGF("paDeviceInfo->defaultLowhOutputLatency %f\n", (float) paDeviceInfo->defaultLowOutputLatency);
 	DEBUGF("paDeviceInfo->defaultSampleRate %f\n", paDeviceInfo->defaultSampleRate);
 
 	err = Pa_OpenStream (	&audio->pa_stream,				// stream
@@ -553,6 +566,14 @@ static void *output_thread(void *ptr) {
 #endif
 
 	err = Pa_CloseStream(audio->pa_stream);
+
+#ifdef	PA_WASAPI
+	if ( bCOMInitialized )
+	{	
+		CoUninitialize();
+		bCOMInitialized = false;
+	}
+#endif
 	if (err != paNoError) {
 		printf("output_thread[exit]: PortAudio error3: %s\n", Pa_GetErrorText(err) );
 		exit(-1);

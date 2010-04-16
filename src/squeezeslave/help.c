@@ -281,7 +281,7 @@ inet_pton6 (const char *src, unsigned char *dst)
   return (1);
 }
 #endif
-#endif
+#endif /*  __WIN32__ */
 
 void print_version(void) {
 	fprintf(stdout, "squeezeslave %s-%d\n", version, revision);
