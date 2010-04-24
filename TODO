@@ -381,3 +381,50 @@ Investigate buffering message remaining at 0% when starting remote streams.
 Investigate missing /dev/dsp device from -L alsa version when snd-pcm-oss module loaded.
 
 ---
+
+;PortAudio device enumeration program
+;chris319
+;Updated on 3/21/2010
+
+XIncludeFile "PortAudio.pb"
+
+;- Variables
+Dim *Devices.PaDeviceInfo(0)
+DeviceCount.i
+
+Procedure.s Pae_PaHostApiIndexToString(Ind)
+  *info.PaHostApiInfo = Pa_GetHostApiInfo(Ind)
+  ProcedureReturn PeekS(*info\name)
+EndProcedure
+
+Procedure.s DeviceString(*dev.PaDeviceInfo)
+  ProcedureReturn PeekS(*dev\name) + " (" + Pae_PaHostApiIndexToString(*dev\hostApi) + ")"
+EndProcedure
+
+OpenConsole()
+
+;- PA Initialization
+Pa_Initialize()
+
+;- Enumerate devices
+DeviceCount = Pa_GetDeviceCount()
+PrintN("There are " + Str(DeviceCount) + " devices." + #CRLF$)
+
+Dim *Devices(DeviceCount)
+
+For I = 0 To DeviceCount - 1
+  *Devices(I) = Pa_GetDeviceInfo(i)
+Next
+
+For I = 0 To DeviceCount - 1
+  ;DESTINATION DEVICES
+  If *Devices(I)\maxOutputChannels > 0
+    PrintN(Str(I) + " " + "Dest " + DeviceString(*Devices(I)))
+  ;INPUT DEVICES
+  ElseIf *Devices(I)\maxInputChannels > 0
+    PrintN(Str(I) + " " + "Source " + DeviceString(*Devices(I)))
+  EndIf
+Next
+
+Pa_Terminate()
+Repeat: Delay(10): ForEver

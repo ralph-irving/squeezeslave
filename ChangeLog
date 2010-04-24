@@ -1,3 +1,14 @@
+2010-04-16 13:13  paddockd
+
+	* [r147] ChangeLog, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  scripts/buildall-win32, sources/portaudio-r1493.tar.gz,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, wiki/SqueezeSlave.wiki: Updated
+	  all win32 makefiles to portaudio dev r1493.
+	  Portaudio WASAPI support added for win32.
+	  Increased version to 147.
+
 2010-04-09 23:01  paddockd
 
 	* [r146] ChangeLog, ReleaseNotes, makefile.mingw32-asio-display,
