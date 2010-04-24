@@ -277,12 +277,16 @@ unsigned long getircode(int key) {
     case KEY_IC: ir = 0x7689609f; break; /* add */
     case 0x01: ir = 0x7689609f; break; /* add IR */
     case KEY_DOWN: ir = 0x7689b04f; break; /* arrow_down */
+    case 'B': ir = 0x7689b04f; break; /* arrow_down  OSX 10.6.3 bug */
     case 0x02: ir = 0x7689b04f; break; /* arrow_down IR */
     case KEY_LEFT: ir = 0x7689906f; break; /* arrow_left */
+    case 'D': ir = 0x7689906f; break; /* arrow_left OSX 10.6.3 bug */
     case 0x03: ir = 0x7689906f; break; /* arrow_left IR */
     case KEY_RIGHT: ir = 0x7689d02f; break; /* arrow_right */
+    case 'C': ir = 0x7689d02f; break; /* arrow_right OSX 10.6.3 bug */
     case 0x04: ir = 0x7689d02f; break; /* arrow_right IR */
     case KEY_UP: ir = 0x7689e01f; break; /* arrow_up */
+    case 'A': ir = 0x7689e01f; break; /* arrow_up OSX 10.6.3 bug */
     case 0x05: ir = 0x7689e01f; break; /* arrow_up IR*/
     case '<': ir = 0x7689c03f; break; /* rew */
     case ',': ir = 0x7689c03f; break; /* rew */
@@ -303,7 +307,6 @@ unsigned long getircode(int key) {
     case '?': ir = 0x768958a7; break; /* search */
     case '/': ir = 0x768958a7; break; /* search */
     case 'b': ir = 0x7689708f; break; /* browse */
-    case 'B': ir = 0x7689708f; break; /* browse */
     case 'f': ir = 0x768918e7; break; /* favourites */
     case 'F': ir = 0x768918e7; break; /* favourites */
     case '%': ir = 0x7689f807; break; /* size */
@@ -316,7 +319,9 @@ unsigned long getircode(int key) {
     case '\f': wrefresh(curscr); break; /* repaint screen */
     case 'q': ir=0x01 ;/* quit */
     case 'Q': ir=0x01 ;/* quit */
+#if ! defined(__APPLE__) && ! defined(__MACH__)
     case '\e': ir=0x01 ;/* quit */
+#endif
   }
 
   return (unsigned long)ir;

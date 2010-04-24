@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 147;
+const int revision = 150;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -603,7 +603,7 @@ int main(int argc, char *argv[]) {
 		      if (FD_ISSET(0, &read_fds)) {
                          while ((key = getch()) != ERR) {
                             ir = getircode(key);
-	                    if (ir == 0x01) {
+	                    if (ir == (unsigned long) 0x01) {
   		               signal_exit_flag = 1;
                             }else{
 			       if (ir != 0) slimproto_ir(&slimproto, 1, 1, ir);

@@ -392,6 +392,7 @@ void print_help(void) {
 "                                  End              Now Playing\n"
 "                                  Space or P       Pause\n"
 "                                  Enter            Play\n"
+"                                  Q                Quit\n" 
 "                                  R                Repeat\n" 
 "                                  S                Shuffle\n" 
 "                                  ?                Search\n"

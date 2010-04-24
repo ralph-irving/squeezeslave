@@ -18,7 +18,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=libvorbis-1.2.3
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1485
+LIBPORTAUDIO=portaudio-r1495
 LIBLIRC=lirc-0.8.6
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
