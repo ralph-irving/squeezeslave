@@ -1,3 +1,24 @@
+2010-04-25 16:20  paddockd
+
+	* [r151] ChangeLog, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h,
+	  wiki/SqueezeSlave.wiki, wiki/SupportThread.wiki: Replaced list
+	  output audio device code.
+	  Removed obsolete functions slimaudio_get_output_devices,
+	  slimaudio_set_output_device and listAudioDevices and associated
+	  variables from slimaudio_t structure.
+	  Moved Pa_Initialize/Pa_Terminate inside output_thread to remove
+	  the need to call CoInitializeEx/CoUninitialize for WASAPI.
+	  Added PaDeviceIndex typedef for portaudio stable library to make
+	  code a bit easier to read.
+	  Updated all PortAudio development makefile to use r1495.
+	  Increased version to 151.
+
 2010-04-24 17:06  paddockd
 
 	* [r150] makefile.osxintel-display, makefile.osxppc-display,

@@ -206,73 +206,11 @@ http://www.sockets.com/winsock.htm#Deviation_Select
 
 ---
 
-Fix 7.4 remote stream hang
-
-7.4 r23955 initial branch  http://svn.slimdevices.com/slim/7.4/trunk/
-7.4 r28672 reported broken http://forums.slimdevices.com/showthread.php?t=69338
-http_recv (2): timesout after 5 minutes and retry loop reconnects successfully.
-
-28008 good
-28009 bad
-
-------------------------------------------------------------------------
-r28009 | adrian | 2009-08-03 09:38:28 -0400 (Mon, 03 Aug 2009) | 3 lines
- 
-Bug: 10085
-Description: change fix for this bug to check if the callback is for the active streaming socket rather than just a connected socket.  When moving from one track using a pipeline to another it is possible for the new streaming connection to be created before the old one is closed, so make sure we only kill timers if we are the active socket.
-
-------------------------------------------------------------------------
-$ svn -r28008:28009 diff
-Index: Slim/Web/HTTP.pm
-===================================================================
---- Slim/Web/HTTP.pm    (revision 28008)
-+++ Slim/Web/HTTP.pm    (revision 28009)
-@@ -2176,11 +2176,11 @@
-        my $client     = shift;
-        my $httpClient = shift;
- 
--       if ( $httpClient->connected() ) {
--
-+       if ( $httpClient == $client->streamingsocket() ) {
-+
-                # Bug 10085 - This might be a callback for an old connection  
-                # which we decided to close after establishing the timer, so
--               # only kill the timer if we were called for an active connection;
-+               # only kill the timer if we were called for the active streaming connection;
-                # otherwise we might kill the timer related to the next connection too.
-                Slim::Utils::Timers::killTimers($client, \&tryStreamingLater);
-------------------------------------------------------------------------
-Fix from Adrian for r28009 change.  Not checked in as of March 16, 2010.
-
-Index: Slim/Web/HTTP.pm
-===================================================================
---- Slim/Web/HTTP.pm	(revision 30377)
-+++ Slim/Web/HTTP.pm	(working copy)
-@@ -2199,9 +2199,10 @@
- 		# only kill the timer if we were called for the active streaming connection;
- 		# otherwise we might kill the timer related to the next connection too.
- 		Slim::Utils::Timers::killTimers($client, \&tryStreamingLater);
--		
--		Slim::Networking::Select::addWrite($httpClient, \&sendStreamingResponse, 1);
- 	}
-+
-+	# Always call sendStreamingResponse so we ensure the socket gets closed
-+	Slim::Networking::Select::addWrite($httpClient, \&sendStreamingResponse, 1);
- }
- 
- sub forgetClient {
----
-
 Investigate no audio after resume from sleep on windows 7 asio
 
 ---
 
 Confirm STMf is still enabled
-
----
-
-Win32 ASIO/WASAPI versions terminate at startup with the error 'Application failed to initialize 0xc00000022'
-Windows permissions problem.  Google for the error, there's lots of information available.
 
 ---
 
@@ -378,10 +316,6 @@ Investigate buffering message remaining at 0% when starting remote streams.
 
 ---
 
-Investigate missing /dev/dsp device from -L alsa version when snd-pcm-oss module loaded.
-
----
-
 ;PortAudio device enumeration program
 ;chris319
 ;Updated on 3/21/2010
@@ -428,3 +362,5 @@ Next
 
 Pa_Terminate()
 Repeat: Delay(10): ForEver
+
+---
