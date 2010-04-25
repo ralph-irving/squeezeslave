@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 150;
+const int revision = 151;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -165,11 +165,7 @@ int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
-#ifndef PORTAUDIO_DEV
-	int output_device_id = PA_DEFAULT_DEVICE;
-#else
 	PaDeviceIndex output_device_id = PA_DEFAULT_DEVICE;
-#endif
 	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
@@ -445,6 +441,11 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	if (listdevs) {
+		GetAudioDevices(output_device_id, output_change, true);
+		exit(0);
+	}
+
 #ifdef DAEMONIZE
 	if ( should_daemonize ) {
 #ifdef INTERACTIVE
@@ -474,14 +475,9 @@ int main(int argc, char *argv[]) {
 		exit(-1);	
 	}
 
-	if (slimaudio_init(&slimaudio, &slimproto) < 0) {
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_change) < 0) {
 		fprintf(stderr, "Failed to initialize slimaudio\n");
 		exit(-1);
-	}
-
-	if (listdevs) {
-		listAudioDevices(&slimaudio, output_device_id, output_change);
-		exit(0);
 	}
 
 	slimproto_add_connect_callback(&slimproto, connect_callback, macaddress);
@@ -491,10 +487,6 @@ int main(int argc, char *argv[]) {
 	if ( using_curses || using_lirc || use_lcdd_menu )
 		slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
-
-	if ((output_device_id != PA_DEFAULT_DEVICE) || output_change ) {
-		slimaudio_set_output_device(&slimaudio, output_device_id);
-	}
 
 	slimaudio_set_volume_control(&slimaudio, volume_control);
 	slimaudio_set_output_predelay(&slimaudio, output_predelay, output_predelay_amplitude);

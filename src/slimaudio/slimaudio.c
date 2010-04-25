@@ -60,14 +60,14 @@ static void audio_stop(slimaudio_t *audio);
  * - allocate the internal state
  * - register callbacks with slimproto
  */
-int slimaudio_init(slimaudio_t *audio, slimproto_t *proto) {
+int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex default_device, bool output_change) {
 	memset(audio, 0, sizeof(slimaudio_t));
 	
 	audio->proto = proto;
 	audio->decoder_buffer = slimaudio_buffer_init(DECODER_BUFFER_SIZE);
 	audio->output_buffer = slimaudio_buffer_init(OUTPUT_BUFFER_SIZE);
 	
-	if (slimaudio_output_init(audio) != 0)
+	if (slimaudio_output_init(audio, default_device, output_change) != 0)
 		return -1;
 	
 	slimproto_add_command_callback(proto, "strm", &strm_callback, audio);

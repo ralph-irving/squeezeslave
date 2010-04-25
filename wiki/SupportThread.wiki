@@ -4,7 +4,7 @@ Squeezeslave 0.9-133 is now available at
 
 [b]Direct Download[/b]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-win32.zip/download]Windows 32-bit Direct Sound and ASIO[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-osx.tar.gz/download]Mac OSX 32-bit PowerPC and Intel[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133.1-osx.tar.gz/download]Mac OSX 32-bit PowerPC and Intel[/url] *Updated with workaround for 10.6.3 curses library bug.
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-lnx26.tar.gz/download]Linux v2.6 kernel Pentium II or better 32/64-bit ALSA, Pulseaudio and OSS[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-lnx24.tar.gz/download]Linux v2.4 kernel Pentium II or better 32-bit ALSA and OSS[/url]
@@ -35,6 +35,7 @@ Home             Home
 End              Now Playing
 Space or P       Pause
 Enter            Play
+Q                Quit
 R                Repeat
 S                Shuffle
 ?                Search

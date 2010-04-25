@@ -34,7 +34,7 @@ Makefiles are available for NetBSD and FreeBSD, see build instructions below.
 
 === Mac OS X installation ===
 
-The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-osx.tar.gz/download . Unpacking the file gives a folder with
+The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133.1-osx.tar.gz/download . Unpacking the file gives a folder with
 * A GNU <code>LICENSE.txt</code>
 * An <code>squeezeslave-ppc</code> and
 * a <code>squeezeslave-intel</code> executable.

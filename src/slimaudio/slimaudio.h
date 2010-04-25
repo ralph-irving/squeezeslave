@@ -38,14 +38,15 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio_buffer.h"
 
-#ifndef PORTAUDIO_DEV
-#define DECODER_BUFFER_SIZE	(3072*1024)
-#define OUTPUT_BUFFER_SIZE	(10*2*44100*4)
-#define PA_DEFAULT_DEVICE	(-1)
-#else
+#ifdef PORTAUDIO_DEV
 #define DECODER_BUFFER_SIZE	(3072*1024)
 #define OUTPUT_BUFFER_SIZE	(10*2*44100*4)
 #define PA_DEFAULT_DEVICE	(0)
+#else
+#define DECODER_BUFFER_SIZE	(3072*1024)
+#define OUTPUT_BUFFER_SIZE	(10*2*44100*4)
+#define PA_DEFAULT_DEVICE	(-1)
+typedef int	PaDeviceIndex;
 #endif
 
 #define AUDIO_CHUNK_SIZE 8192
@@ -106,10 +107,11 @@ typedef struct {
 	pthread_cond_t output_cond;
 	
 	slimaudio_output_state_t output_state;
-#ifndef PORTAUDIO_DEV
-	PortAudioStream *pa_stream;
-#else
+#ifdef PORTAUDIO_DEV
 	PaStream *pa_stream;
+#else
+	PortAudioStream *pa_stream;
+	PxMixer *px_mixer;
 #endif
 	slimaudio_volume_t volume_control;
 	float volume;
@@ -118,9 +120,7 @@ typedef struct {
 	unsigned int output_predelay_msec;
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
-#ifndef PORTAUDIO_DEV
-	PxMixer *px_mixer;
-#endif
+
 	u64_t pa_streamtime_offset;
 	u64_t stream_samples;
 
@@ -130,14 +130,7 @@ typedef struct {
 	bool output_EoS;
 	int keepalive_interval;
 	
-#ifdef PORTAUDIO_DEV
 	PaDeviceIndex output_device_id;
-	PaDeviceIndex num_device_names;
-#else
-	int output_device_id;
-	int num_device_names;
-#endif
-	char **device_names;
 
 	u32_t decode_num_tracks_started;
 
@@ -155,13 +148,11 @@ typedef struct {
 	// IWMReader*  wma_reader;
 } slimaudio_t;
 
-int slimaudio_init(slimaudio_t *audio, slimproto_t *proto);
+int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, bool);
 void slimaudio_destroy(slimaudio_t *audio);
 int slimaudio_open(slimaudio_t *audio);
 int slimaudio_close(slimaudio_t *audio);
 int slimaudio_stat(slimaudio_t *, const char *, u32_t);
-void slimaudio_get_output_devices(slimaudio_t *audio, char ***device_names, int *num_device_names);
-void slimaudio_set_output_device(slimaudio_t *audio, int device_id);
 // Sets the interval between keepalive signals sent to the server
 // while playback is stopped.  Defaults to -1, which means auto-select
 // based on server version.
@@ -191,7 +182,7 @@ void slimaudio_decoder_connect(slimaudio_t *a, slimproto_msg_t *msg);
 void slimaudio_decoder_disconnect(slimaudio_t *a);
 
 
-int slimaudio_output_init(slimaudio_t *a);
+int slimaudio_output_init(slimaudio_t *a, PaDeviceIndex, bool);
 void slimaudio_output_destroy(slimaudio_t *a);
 int slimaudio_output_open(slimaudio_t *a);
 int slimaudio_output_close(slimaudio_t *audio);

@@ -72,7 +72,7 @@
 #define PLAYER_TYPE	8
 
 int connect_callback(slimproto_t *, bool, void *);
-void listAudioDevices(slimaudio_t *, int, bool);
+PaDeviceIndex GetAudioDevices(PaDeviceIndex, bool, bool);
 int parse_macaddress(char *, const char *);
 void print_version(void);
 void print_help(void);

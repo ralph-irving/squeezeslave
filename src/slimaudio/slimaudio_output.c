@@ -62,101 +62,93 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 static int audg_callback(slimproto_t *p, const unsigned char *buf, int buf_len, void *user_data);
 
+/* Find audio devices which support stereo */
+PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, bool show_list)
+{
+	int i;
+	int err;
+	bool bValidDev = false;
+	const PaDeviceInfo *pdi;
+	PaDeviceIndex DefaultDevice;
+	PaDeviceIndex DeviceCount;
 
-int slimaudio_output_init(slimaudio_t *audio) {
-	int i, err;
-	
 	err = Pa_Initialize();
 	if (err != paNoError) {
-		printf("PortAudio error4: %s Could not open any audio devices.\n", Pa_GetErrorText(err) );	
+		printf("PortAudio error4: %s Could not open any audio devices.\n", Pa_GetErrorText(err) );
 		exit(-1);
-	}	
-	DEBUGF("slimaudio_output_init: PortAudio initialized\n");
-	
+        }
+
 #ifdef PORTAUDIO_DEV
-	audio->num_device_names = Pa_GetDeviceCount();
+	DeviceCount = Pa_GetDeviceCount();
 #else
-	audio->num_device_names = Pa_CountDevices();
+	DeviceCount = Pa_CountDevices();
 #endif
 
-	if ( audio->num_device_names < 0 )
+	if ( DeviceCount < 0 )
 	{
-		printf("PortAudio error5: %s\n", Pa_GetErrorText(audio->num_device_names) );	
+		printf("PortAudio error5: %s\n", Pa_GetErrorText(DeviceCount) );
 		exit(-1);
 	}
 
-	audio->device_names = (char **)malloc(sizeof(char *) * audio->num_device_names);
-	
-	const PaDeviceInfo *pdi;
+	if ( output_change )
+		DefaultDevice = default_device;
+	else
+		DefaultDevice = PA_DEFAULT_DEVICE;
+
+	if ( DefaultDevice >= DeviceCount || ((DefaultDevice == PA_DEFAULT_DEVICE) && !output_change) )
+	{
 #ifdef PORTAUDIO_DEV
-	PaStreamParameters outputParameters;
-#ifdef PA_WASAPI
-        PaWasapiStreamInfo streamInfo;
+		DefaultDevice = Pa_GetDefaultOutputDevice();
+#else
+		DefaultDevice = Pa_GetDefaultOutputDeviceID();
 #endif
-#endif
-	for ( i=0; i<audio->num_device_names; i++ )
+	}
+
+	if ( DefaultDevice == paNoDevice )
+	{
+		printf("PortAudio error7: No output devices found.\n" );
+		exit(-1);
+	}
+	
+	if ( show_list )
+		printf("Output devices:\n");
+
+	for ( i = 0; i < DeviceCount; i++ )
 	{
 		pdi = Pa_GetDeviceInfo( i );
-		if ( pdi->name == NULL )
-		{
-			printf("PortAudio error6: GetDeviceInfo failed.\n" );	
-			exit(-1);
-		}
-#ifdef PORTAUDIO_DEV
-		/* Device is not stereo or better, skip */
-		if (pdi->maxOutputChannels < 2)
-		{
-			audio->device_names[i] = NULL;
-			continue;
-		}
+                if ( pdi->name == NULL )
+       	        {
+               	        printf("PortAudio error6: GetDeviceInfo failed.\n" );
+                       	exit(-1);
+                }
 
-		outputParameters.device = i;
-		outputParameters.channelCount = 2;
-		outputParameters.sampleFormat = paInt16;
-		outputParameters.suggestedLatency = pdi->defaultHighOutputLatency;
-#ifdef PA_WASAPI
-		streamInfo.size = sizeof(PaWasapiStreamInfo);
-		streamInfo.hostApiType = paWASAPI;
-		streamInfo.version = 1;
-		streamInfo.flags = paWinWasapiExclusive;
-		outputParameters.hostApiSpecificStreamInfo = &streamInfo;
-		outputParameters.suggestedLatency = pdi->defaultLowOutputLatency;
-#else
-		outputParameters.hostApiSpecificStreamInfo = NULL;
-#endif
-
-		err = Pa_IsFormatSupported( NULL, &outputParameters, 44100.0 );
-		if ( err == paFormatIsSupported )
+		if ( pdi->maxOutputChannels >= 2 )
 		{
-			audio->device_names[i] = strdup(pdi->name);
-		}
-		else
-		{
-			audio->device_names[i] = NULL;
-		}
-
-#else
-		audio->device_names[i] = strdup(pdi->name);
-#endif
-	}
-
-#ifdef PORTAUDIO_DEV
-	audio->output_device_id = Pa_GetDefaultOutputDevice();
-
-	if ( audio->device_names[audio->output_device_id] == NULL )
-	{
-	        for ( i=0; i<audio->num_device_names; i++ )
-		{
-			if ( audio->device_names[i] != NULL )
+               	        if ( i == DefaultDevice )
 			{
-				audio->output_device_id = i;
-				break;
+				bValidDev = true;
+				if ( show_list )
+	                       	        printf("*%2d: %s\n", i, pdi->name);
+			}
+                        else
+			{
+				if ( show_list )
+       	                	        printf(" %2d: %s\n", i, pdi->name);
 			}
 		}
 	}
-#else
-	audio->output_device_id = Pa_GetDefaultOutputDeviceID();
-#endif
+
+	Pa_Terminate();
+
+	if ( !bValidDev )
+		DefaultDevice = paNoDevice;
+
+	return (DefaultDevice) ;
+}
+
+int slimaudio_output_init(slimaudio_t *audio, PaDeviceIndex output_device_id, bool output_change)
+{
+	audio->output_device_id = GetAudioDevices(output_device_id, output_change, false);
 
 	if ( audio->output_device_id == paNoDevice )
 	{
@@ -193,27 +185,7 @@ void slimaudio_output_destroy(slimaudio_t *audio) {
 	pthread_mutex_destroy(&(audio->output_mutex));
 	pthread_cond_destroy(&(audio->output_cond));
 
-	int i;
-	
 	// FIXME remove slimproto callback
-	
-	for (i=0; i<audio->num_device_names; i++) {
-		free(audio->device_names[i]);	
-	}
-	free(audio->device_names);
-	audio->num_device_names = 0;
-	audio->device_names = NULL;
-	
-	Pa_Terminate();
-}
-
-void slimaudio_get_output_devices(slimaudio_t *audio, char ***device_names, int *num_device_names) {
-	*device_names = audio->device_names;
-	*num_device_names = audio->num_device_names;
-}
-
-void slimaudio_set_output_device(slimaudio_t *audio, int device_id) {
-	audio->output_device_id = device_id;
 }
 
 int slimaudio_output_open(slimaudio_t *audio) {
@@ -271,6 +243,14 @@ static void *output_thread(void *ptr) {
 	audio->output_STMu = false;
 	audio->output_EoS  = false;
 
+        err = Pa_Initialize();
+        if (err != paNoError) {
+                printf("PortAudio error4: %s Could not open any audio devices.\n", Pa_GetErrorText(err) );
+                exit(-1);
+        }
+
+        DEBUGF("output_thread: PortAudio initialized\n");
+	
 #ifndef PORTAUDIO_DEV
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
 				paNoDevice,		// input device
@@ -290,21 +270,9 @@ static void *output_thread(void *ptr) {
 #else
 	PaStreamParameters outputParameters;
 	const PaDeviceInfo * paDeviceInfo;
+
 #ifdef PA_WASAPI
 	PaWasapiStreamInfo streamInfo;
-	bool bCOMInitialized = false;
-	HRESULT hr;
-
-	hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-
-	if (FAILED(hr) && (hr != RPC_E_CHANGED_MODE))
-        {
-                printf("output_thread: failed CoInitialize.\n");
-		exit(-2);
-        }
-
-	if (hr != RPC_E_CHANGED_MODE)
-		bCOMInitialized = true;
 #endif
 
 	paDeviceInfo = Pa_GetDeviceInfo(audio->output_device_id);
@@ -567,18 +535,15 @@ static void *output_thread(void *ptr) {
 
 	err = Pa_CloseStream(audio->pa_stream);
 
-#ifdef	PA_WASAPI
-	if ( bCOMInitialized )
-	{	
-		CoUninitialize();
-		bCOMInitialized = false;
-	}
-#endif
 	if (err != paNoError) {
 		printf("output_thread[exit]: PortAudio error3: %s\n", Pa_GetErrorText(err) );
 		exit(-1);
 	}
+
 	audio->pa_stream = NULL;
+	Pa_Terminate();
+
+	DEBUGF("output_thread: PortAudio terminated\n");
 
 	return 0;
 }

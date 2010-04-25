@@ -1,3 +1,21 @@
+2010-04-24 17:06  paddockd
+
+	* [r150] makefile.osxintel-display, makefile.osxppc-display,
+	  src/squeezeslave/help.c, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c: Fix to workaround an OSX 10.6.3
+	  curses library arrow keys bug when running in Interactive (-D)
+	  mode.
+	  Updated portaudio library to r1495.
+	  Increased version to 150.
+
+2010-04-24 15:55  paddockd
+
+	* [r149] ChangeLog, TODO, logs/downloads.log,
+	  makefile.linux26-mips-oss, sources/portaudio-r1495.tar.gz: Added
+	  Xtreamer Mips OSS makefile contributed by arztde. Requires
+	  Xtreamer cross platform development tools.
+	  Added portaudio development r1495 library source.
+
 2010-04-16 13:13  paddockd
 
 	* [r147] ChangeLog, makefile.mingw32-asio-display,
