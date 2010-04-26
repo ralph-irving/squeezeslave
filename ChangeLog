@@ -1,3 +1,11 @@
+2010-04-25 19:29  paddockd
+
+	* [r152] ChangeLog, TODO, lib/libportaudio/linux24,
+	  lib/popt/build-popt-linux24, lib/popt/build-popt-s9,
+	  lib/popt/linux24, lib/popt/s9sparc,
+	  sources/portaudio-r1493.tar.gz: Cleaned up obsolete files and
+	  directories.
+
 2010-04-25 16:20  paddockd
 
 	* [r151] ChangeLog, makefile.linux24-alsa-display,

@@ -295,7 +295,6 @@ static void *output_thread(void *ptr) {
 	streamInfo.version = 1;
 	streamInfo.flags = paWinWasapiExclusive;
 	outputParameters.hostApiSpecificStreamInfo = &streamInfo;
-	outputParameters.suggestedLatency = paDeviceInfo->defaultLowOutputLatency;
 #else
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 #endif
