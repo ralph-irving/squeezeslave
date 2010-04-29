@@ -1,0 +1,72 @@
+Index: src/hostapi/asio/iasiothiscallresolver.cpp
+===================================================================
+--- src/hostapi/asio/iasiothiscallresolver.cpp	(revision 1488)
++++ src/hostapi/asio/iasiothiscallresolver.cpp	(revision 1487)
+@@ -276,7 +276,6 @@
+                           "call *"#funcOffset"(%%edx)\n\t"                  \
+                           :"=a"(resultName) /* Output Operands */           \
+                           :"c"(thisPtr)     /* Input Operands */            \
+-                          : "%edx" /* Clobbered Registers */                \
+                          );                                                 \
+ 
+ 
+@@ -287,7 +286,6 @@
+                           :                 /* Output Operands */           \
+                           :"r"(param1),     /* Input Operands */            \
+                            "c"(thisPtr)                                     \
+-                          : "%edx" /* Clobbered Registers */                \
+                          );                                                 \
+ 
+ 
+@@ -298,25 +296,20 @@
+                           :"=a"(resultName) /* Output Operands */           \
+                           :"r"(param1),     /* Input Operands */            \
+                            "c"(thisPtr)                                     \
+-                          : "%edx" /* Clobbered Registers */                \
+                           );                                                \
+ 
+ 
+ #define CALL_THISCALL_1_DOUBLE( resultName, thisPtr, funcOffset, param1 )   \
+-    do {                                                                    \
+-    double param1f64 = param1; /* Cast explicitly to double */              \
+-    double *param1f64Ptr = &param1f64; /* Make pointer to address */        \
+-     __asm__ __volatile__ ("pushl 4(%1)\n\t"                                \
+-                           "pushl (%1)\n\t"                                 \
+-                           "movl (%2), %%edx\n\t"                           \
+-                           "call *"#funcOffset"(%%edx);\n\t"                \
+-                           : "=a"(resultName) /* Output Operands */         \
+-                           : "r"(param1f64Ptr),  /* Input Operands */       \
+-                           "c"(thisPtr),                                    \
+-                           "m"(*param1f64Ptr) /* Using address */           \
+-                           : "%edx" /* Clobbered Registers */               \
+-                           );                                               \
+-    } while (0);                                                            \
++    __asm__ __volatile__ ("pushl 4(%1)\n\t"                                 \
++                          "pushl (%1)\n\t"                                  \
++                          "movl (%2), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx);\n\t"                 \
++                          :"=a"(resultName) /* Output Operands */           \
++                          :"a"(&param1),    /* Input Operands */            \
++                           /* Note: Using "r" above instead of "a" fails */ \
++                           /* when using GCC 3.3.3, and maybe later versions*/\
++                           "c"(thisPtr)                                     \
++                          );                                                \
+ 
+ 
+ #define CALL_THISCALL_2( resultName, thisPtr, funcOffset, param1, param2 )  \
+@@ -328,7 +321,6 @@
+                           :"r"(param2),     /* Input Operands */            \
+                            "r"(param1),                                     \
+                            "c"(thisPtr)                                     \
+-                          : "%edx" /* Clobbered Registers */                \
+                           );                                                \
+ 
+ 
+@@ -345,7 +337,6 @@
+                            "r"(param2),                                     \
+                            "r"(param1),                                     \
+                            "c"(thisPtr)                                     \
+-                          : "%edx" /* Clobbered Registers */                \
+                           );                                                \
+ 
+ #endif

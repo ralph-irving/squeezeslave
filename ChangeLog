@@ -1,3 +1,12 @@
+2010-04-26 10:52  paddockd
+
+	* [r153] ChangeLog, logs/downloads.log,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Changed portaudio latency to
+	  high for WASAPI, as several users have reported "ticks" in the
+	  audio stream.
+	  Increased version to 153.
+
 2010-04-25 19:29  paddockd
 
 	* [r152] ChangeLog, TODO, lib/libportaudio/linux24,
