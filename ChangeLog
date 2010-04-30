@@ -1,3 +1,13 @@
+2010-04-29 17:43  paddockd
+
+	* [r154] ChangeLog, makefile.mingw32-asio-display,
+	  patches/build-portaudio-asio-gcc34.patch,
+	  src/squeezeslave/squeezeslave.c: Added patch to windows asio
+	  build to revert portaudio r1488 gcc 4.x changes which causes
+	  CALL_THISCALL_1_DOUBLE to return 0 instead of the expected
+	  floating point values. First discovered on WinXP Pro SP3 32-bit.
+	  Increased version to 154.
+
 2010-04-26 10:52  paddockd
 
 	* [r153] ChangeLog, logs/downloads.log,

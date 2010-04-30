@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 154;
+const int revision = 155;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -178,6 +178,7 @@ int main(int argc, char *argv[]) {
 	char *logfile = NULL;
 #endif
 
+
 #ifdef INTERACTIVE
         fd_set read_fds;
         fd_set write_fds;
@@ -201,7 +202,7 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:";
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hHk:Lm:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 		{"debug",              required_argument, 0, 'd'},
@@ -221,6 +222,9 @@ int main(int argc, char *argv[]) {
 		{"volume",             required_argument, 0, 'v'},
 #ifdef DAEMONIZE
 		{"daemonize",          required_argument, 0, 'M'},
+#endif
+#ifdef __WIN32__
+		{"highpriority",       no_argument,       0, 'H'},
 #endif
 #ifdef INTERACTIVE
 		{"lircrc",             required_argument, 0, 'c'},
@@ -368,6 +372,19 @@ int main(int argc, char *argv[]) {
 			should_daemonize = true;
 			break;
 #endif
+
+#ifdef __WIN32__
+		case 'H':
+			/* Change Window process priority class to HIGH */
+			if ( !SetPriorityClass ( GetCurrentProcess(), HIGH_PRIORITY_CLASS ) )
+			{
+				int dwError = GetLastError();
+				fprintf(stderr, "%s: Failed to set priority (%d), using default.\n", argv[0],
+					dwError);
+			} 
+			break;
+#endif
+
 		case 'o':
 			output_device_id = strtoul(optarg, NULL, 0);
 			output_change = true;

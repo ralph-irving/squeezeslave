@@ -346,6 +346,9 @@ void print_help(void) {
 "                            chooses the right value: 10s for a >=6.5.x server\n"
 "                            and 0s for a <6.5.x server, which means no\n"
 "                            keepalive.\n"
+#ifdef __WIN32__
+"-H, --highpriority          Change process priority class to high.\n"
+#endif
 #ifdef INTERACTIVE
 #ifndef __WIN32__
 "-l, --lcd                   Enable LCDd (lcdproc) text display.\n"
