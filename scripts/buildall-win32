@@ -8,7 +8,7 @@ make -f makefile.mingw32-wasapi-display realclean
 cd bin;tar -xf 7z.tar;cd ..
 make -f makefile.mingw32-wasapi-display
 mv bin/squeezeslave-wasapi.exe bin/squeezeslave-wasapi-0.9-$VER.exe
-make -f makefile.mingw32-asio-wasapi realclean
+make -f makefile.mingw32-wasapi-wasapi realclean
 
 make -f makefile.mingw32-asio-display realclean
 cd bin;tar -xf 7z.tar;cd ..

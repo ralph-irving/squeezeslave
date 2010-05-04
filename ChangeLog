@@ -1,3 +1,11 @@
+2010-04-30 12:49  paddockd
+
+	* [r155] ChangeLog, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added option to increase the
+	  process priority class to high for windows using
+	  -H/--highpriority. Thanks to Uri Savoray for the enhancement.
+	  Increased version to 155.
+
 2010-04-29 17:43  paddockd
 
 	* [r154] ChangeLog, makefile.mingw32-asio-display,
