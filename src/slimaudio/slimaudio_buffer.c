@@ -144,8 +144,12 @@ void slimaudio_buffer_flush(slimaudio_buffer_t *buf) {
 
 void slimaudio_buffer_set_readopt(slimaudio_buffer_t *buf, int opt) {
 	assert(buf);
+
+	pthread_mutex_lock(&buf->buffer_mutex);
 	
 	buf->read_opt = opt;
+
+	pthread_mutex_unlock(&buf->buffer_mutex);
 }
 
 void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
@@ -304,17 +308,26 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		DEBUGF("slimaudio_buffer_read EOF\n");
 		status = SLIMAUDIO_BUFFER_STREAM_END;
 	}
-
-	pthread_mutex_unlock(&buf->buffer_mutex);
 	
 	VDEBUGF("buffer_read_end: %p write_ptr=%p read_ptr=%p read_avail=%i reader_blocked=%i writer_blocked=%i read_count=%i len=%i eof=%i opt=%0x\n",
 		buf, buf->write_ptr, buf->read_ptr, buf->read_stream->available, buf->reader_blocked,
 		buf->writer_blocked, buf->read_stream->read_count, *data_len, buf->read_stream->eof, buf->read_opt);
+
+	pthread_mutex_unlock(&buf->buffer_mutex);
 	
 	return status;
 }
 
-int slimaudio_buffer_available(slimaudio_buffer_t *buf) {
-	return buf->total_available;
+int slimaudio_buffer_available(slimaudio_buffer_t *buf)
+{
+	int available;
+
+	pthread_mutex_lock(&buf->buffer_mutex);
+
+	available = buf->total_available;
+
+	pthread_mutex_unlock(&buf->buffer_mutex);
+
+	return available;
 }
 
