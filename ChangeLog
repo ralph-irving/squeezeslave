@@ -1,3 +1,28 @@
+2010-05-09 20:04  paddockd
+
+	* [r157] lib/portaudio/pa_common/pa_convert.c,
+	  lib/portaudio/pa_common/pa_host.h,
+	  lib/portaudio/pa_common/pa_lib.c,
+	  lib/portaudio/pa_common/pa_trace.h,
+	  lib/portaudio/pa_common/portaudio.h,
+	  lib/portaudio/pa_unix_oss/pa_unix.c,
+	  lib/portaudio/pa_unix_oss/pa_unix.h,
+	  lib/portaudio/pa_unix_oss/pa_unix_solaris.c,
+	  lib/portaudio/pablio/ringbuffer.c,
+	  lib/portaudio/pablio/ringbuffer.h,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/squeezeslave/squeezeslave.c: Fixed datarace in
+	  slimaudio_buffer_set_readopt and slimaudio_buffer_available
+	  functions.
+	  Changed portaudio v18.1 files from dos to unix format.
+	  Increased version to 157.
+
+2010-05-04 14:12  paddockd
+
+	* [r156] ChangeLog, logs/downloads.log, scripts/buildall-win32,
+	  sources/pa_snapshot-20090724.tar.gz: Cleaned up obsolete files.
+	  Fixed windows build script.
+
 2010-04-30 12:49  paddockd
 
 	* [r155] ChangeLog, src/squeezeslave/help.c,
