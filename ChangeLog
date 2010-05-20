@@ -1,3 +1,15 @@
+2010-05-16 19:54  paddockd
+
+	* [r158] ChangeLog, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  makefile.osxintel-display, makefile.osxppc-display,
+	  sources/portaudio-r1496.tar.gz, src/squeezeslave/squeezeslave.c:
+	  First win builds to use latest cygwin 2.697 toolchain.
+	  Updated all makefiles to use latest PADEV r1496.
+	  Increased version to 158.
+
 2010-05-09 20:04  paddockd
 
 	* [r157] lib/portaudio/pa_common/pa_convert.c,

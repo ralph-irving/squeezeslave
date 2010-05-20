@@ -364,3 +364,7 @@ Pa_Terminate()
 Repeat: Delay(10): ForEver
 
 ---
+
+Add command line option to use shared mode vs exclusive mode for WASAPI version.
+
+---
