@@ -1,3 +1,16 @@
+2010-05-20 12:52  paddockd
+
+	* [r159] ChangeLog, TODO, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  makefile.osxintel-display, makefile.osxppc-display,
+	  sources/portaudio-r1495.tar.gz, sources/portaudio-r1496.tar.gz,
+	  sources/portaudio-r1500.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Deleted obsolete portaudio sources.
+	  Updated all makefiles to use latest PADEV r1500.
+	  Increased version to 159.
+
 2010-05-16 19:54  paddockd
 
 	* [r158] ChangeLog, makefile.linux24-alsa-display,
