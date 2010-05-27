@@ -368,3 +368,8 @@ Repeat: Delay(10): ForEver
 Add command line option to use shared mode vs exclusive mode for WASAPI version.
 
 ---
+
+Investigate adding command line option to specify output and decoder buffer sizes.
+
+---
+

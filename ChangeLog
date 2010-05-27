@@ -1,3 +1,10 @@
+2010-05-22 12:40  paddockd
+
+	* [r160] ChangeLog, scripts/buildall-win32,
+	  sources/portaudio-r1485.tar.gz: Deleted obsolete portaudio
+	  source.
+	  Fixed windows build script.
+
 2010-05-20 12:52  paddockd
 
 	* [r159] ChangeLog, TODO, makefile.linux24-alsa-display,
