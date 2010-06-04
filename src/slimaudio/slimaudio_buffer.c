@@ -145,11 +145,11 @@ void slimaudio_buffer_flush(slimaudio_buffer_t *buf) {
 void slimaudio_buffer_set_readopt(slimaudio_buffer_t *buf, int opt) {
 	assert(buf);
 
-	pthread_mutex_lock(&buf->buffer_mutex);
+	/* pthread_mutex_lock(&buf->buffer_mutex); FIXME */
 	
 	buf->read_opt = opt;
 
-	pthread_mutex_unlock(&buf->buffer_mutex);
+	/* pthread_mutex_unlock(&buf->buffer_mutex); FIXME */
 }
 
 void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
@@ -322,11 +322,11 @@ int slimaudio_buffer_available(slimaudio_buffer_t *buf)
 {
 	int available;
 
-	pthread_mutex_lock(&buf->buffer_mutex);
+	/* pthread_mutex_lock(&buf->buffer_mutex); FIXME */
 
 	available = buf->total_available;
 
-	pthread_mutex_unlock(&buf->buffer_mutex);
+	/* pthread_mutex_unlock(&buf->buffer_mutex); FIXME */
 
 	return available;
 }

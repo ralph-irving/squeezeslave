@@ -373,3 +373,16 @@ Investigate adding command line option to specify output and decoder buffer size
 
 ---
 
+recv timeout
+http://www.gidforums.com/t-16791.html
+
+---
+
+winsock urls
+
+http://tangentsoft.net/wskfaq/newbie.html
+http://oldwiki.mingw.org/index.php/sockets
+http://old.nabble.com/socket-and-version-can%27t-be-linked-td16026957.html
+
+---
+

@@ -1,3 +1,20 @@
+2010-06-04 11:28  paddockd
+
+	* [r162] ChangeLog, makefile.linux24-alsa-display,
+	  makefile.linux24-display, makefile.linux26-alsa-display,
+	  makefile.linux26-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-mips-oss, makefile.linux26-ppc-alsa-display,
+	  makefile.mingw32-asio-display, makefile.mingw32-display,
+	  makefile.mingw32-wasapi-display, makefile.osxintel-display,
+	  makefile.osxppc-display, makefile.s10intel-display,
+	  makefile.s10sparc-display, makefile.s9sparc-display,
+	  sources/libogg-1.2.0.tar.bz2, sources/libvorbis-1.3.1.tar.bz2,
+	  sources/portaudio-r1508.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Upgraded libogg to v1.2.0.
+	  Upgraded libvorbis to v1.3.1.
+	  Upgraded PADEV to r1508.
+	  Increased version to 162.
+
 2010-05-27 11:43  paddockd
 
 	* [r161] ChangeLog, TODO, makefile.s10sparc-display,
