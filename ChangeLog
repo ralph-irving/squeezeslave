@@ -1,3 +1,11 @@
+2010-05-27 11:43  paddockd
+
+	* [r161] ChangeLog, TODO, makefile.s10sparc-display,
+	  src/squeezeslave/squeezeslave.c: Reverted r135
+	  makefile.s10sparc-display as change caused compile of libvorbis
+	  example directory to fail.
+	  Increased version to 161.
+
 2010-05-22 12:40  paddockd
 
 	* [r160] ChangeLog, scripts/buildall-win32,

@@ -15,10 +15,10 @@ LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc -mmacosx-versi
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.1.4
-LIBVORBIS=libvorbis-1.2.3
+LIBOGG=libogg-1.2.0
+LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1500
+LIBPORTAUDIO=portaudio-r1508
 LIBLIRC=lirc-0.8.6
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
