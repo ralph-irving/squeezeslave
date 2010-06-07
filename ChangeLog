@@ -1,3 +1,12 @@
+2010-06-04 12:39  paddockd
+
+	* [r163] ChangeLog, TODO, src/slimaudio/slimaudio_buffer.c,
+	  src/squeezeslave/squeezeslave.c: Reverted r157 datarace fixes in
+	  slimaudio_buffer.c after strange behaviour when stopping and
+	  starting playback twice in succession. Further investigation
+	  required.
+	  Increased version to 163.
+
 2010-06-04 11:28  paddockd
 
 	* [r162] ChangeLog, makefile.linux24-alsa-display,
