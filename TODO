@@ -388,7 +388,6 @@ http://old.nabble.com/socket-and-version-can%27t-be-linked-td16026957.html
 
 Add PA API printing to Audio Device List output function.
 Move int data_len definition outside pa_callback loop.
-Rename mips makefile to mipsel.
 Investigate buffer close call position and mutex locking states within state change code.
 Investigate holding in audio_output BUFFERING state change until enough data is in the pipeline.
 

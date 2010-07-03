@@ -1,3 +1,18 @@
+2010-07-03 11:51  paddockd
+
+	* [r165] ChangeLog, TODO, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c:
+	  Renabled pthread_join call in slimproto_destroy for windows
+	  builds. Disabled in 0.7.5 after testing revealed it was causing
+	  the application to crash on exit.
+	  Changed all mutex lock->broadcast->unlock code to
+	  lock->unlock->broadcast.
+	  Debug messages cleanup.
+	  Increased version to 165.
+
 2010-06-07 13:37  paddockd
 
 	* [r164] ChangeLog, src/slimaudio/slimaudio_buffer.c,
