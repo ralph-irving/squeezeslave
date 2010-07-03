@@ -107,23 +107,23 @@ int slimaudio_open(slimaudio_t *audio) {
 void slimaudio_set_keepalive_interval(slimaudio_t *audio, int seconds) {
 	pthread_mutex_lock(&audio->output_mutex);
 	audio->keepalive_interval = seconds;
-	pthread_cond_broadcast(&audio->output_cond);
 	pthread_mutex_unlock(&audio->output_mutex);
+	pthread_cond_broadcast(&audio->output_cond);
 }
 
 void slimaudio_set_volume_control(slimaudio_t *audio, slimaudio_volume_t vol) {
 	pthread_mutex_lock(&audio->output_mutex);
 	audio->volume_control = vol;
-	pthread_cond_broadcast(&audio->output_cond);
 	pthread_mutex_unlock(&audio->output_mutex);
+	pthread_cond_broadcast(&audio->output_cond);
 }
 
 void slimaudio_set_output_predelay(slimaudio_t *audio, unsigned int msec, unsigned int amplitude) {
 	pthread_mutex_lock(&audio->output_mutex);
 	audio->output_predelay_msec = msec;
 	audio->output_predelay_amplitude = amplitude;
-	pthread_cond_broadcast(&audio->output_cond);
 	pthread_mutex_unlock(&audio->output_mutex);
+	pthread_cond_broadcast(&audio->output_cond);
 }
 
 /*
@@ -256,7 +256,7 @@ static int vers_callback(slimproto_t *p, const unsigned char *buf,
 
 static void audio_stop(slimaudio_t *audio) {
 	if (slimaudio_output_disconnect(audio) == -1) {
-		DEBUGF("audio_stop early out.\n");
+		DEBUGF("slimaudio: audio_stop early out.\n");
 		return;
 	}
 
@@ -268,21 +268,22 @@ static void audio_stop(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->http_mutex);
 	
 	audio->decoder_state = STREAM_STOP;
-	audio->http_state = STREAM_STOP;
-	
 	pthread_cond_broadcast(&audio->decoder_cond);
+
+	audio->http_state = STREAM_STOP;
 	pthread_cond_broadcast(&audio->http_cond);
 	
 	slimaudio_buffer_flush(audio->output_buffer);
 	slimaudio_buffer_flush(audio->decoder_buffer);
-
+	
 	while (audio->decoder_state != STREAM_STOPPED) {
 		pthread_cond_wait(&audio->decoder_cond, &audio->decoder_mutex);
 	}
+
 	while (audio->http_state != STREAM_STOPPED) {
 		pthread_cond_wait(&audio->http_cond, &audio->http_mutex);
 	}
-	
+
 	pthread_mutex_unlock(&audio->http_mutex);	
 	pthread_mutex_unlock(&audio->decoder_mutex);	
 }

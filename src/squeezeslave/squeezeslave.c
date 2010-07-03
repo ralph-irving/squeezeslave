@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 164;
+const int revision = 165;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -164,13 +164,20 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 int main(int argc, char *argv[]) {
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
-	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
+
 	PaDeviceIndex output_device_id = PA_DEFAULT_DEVICE;
-	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
+
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
+
+	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
+
 	unsigned int retry_interval = RETRY_DEFAULT;
+
+	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
+
 	int keepalive_interval = -1;
+
 	bool listdevs = false;
 
 #ifdef DAEMONIZE

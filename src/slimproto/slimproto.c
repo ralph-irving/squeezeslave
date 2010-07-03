@@ -94,22 +94,17 @@ int slimproto_init(slimproto_t *p) {
 
 void slimproto_destroy(slimproto_t *p) {
 	pthread_mutex_lock(&p->slimproto_mutex);					
-	
 	p->state = PROTO_QUIT;
-	pthread_cond_broadcast(&p->slimproto_cond);	
-	
+
 	pthread_mutex_unlock(&p->slimproto_mutex);
 
-#ifndef __WIN32__
-	// This join causes the windows version to crash.  There is no
-	// satisfactory reason at this point, but avoiding the call
-	// causes the application to terminate properly rather than
-	// crashing.
+	pthread_cond_broadcast(&p->slimproto_cond);	
+
 	pthread_join(p->slimproto_thread, NULL);
-#else
+
+#ifdef __WIN32__
 	WSACleanup();
 #endif
-
 	p->sockfd = -1;
 	
 	p->num_connect_callbacks = 0;
@@ -254,7 +249,7 @@ int slimproto_configure_socket(int sockfd, int socktimeout)
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	struct hostent *server;
 
-	DEBUGF("proto_connect: (%s, %i)\n", server_addr, port);
+	DEBUGF("slimproto_connect: (%s, %i)\n", server_addr, port);
 
 	server = gethostbyname(server_addr);	
 	if (server == NULL) {
@@ -274,7 +269,8 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	p->serv_addr.sin_port = htons(port);
 	
 	p->state = PROTO_CONNECT;
-	pthread_cond_broadcast(&p->slimproto_cond);	
+
+	pthread_cond_broadcast(&p->slimproto_cond);
 	
 	// Wait for confirmation that the connection opens correctly.  This
 	// will fail, for example, if Squeezebox Server is not running when the
@@ -320,24 +316,27 @@ static int proto_connect(slimproto_t *p) {
 	DEBUGF("proto_connect: connected to %s\n", inet_ntoa(p->serv_addr.sin_addr));
 
 	p->state = PROTO_CONNECTED;
-	pthread_cond_broadcast(&p->slimproto_cond);	
 
 	pthread_mutex_unlock(&p->slimproto_mutex);						
+	pthread_cond_broadcast(&p->slimproto_cond);
+
 	return 0;
 	
 proto_connect_err:
 	p->state = PROTO_CLOSED;
 	p->sockfd = -1;
-	DEBUGF("proto_connect: broadcast.\n" );
-	pthread_cond_broadcast(&p->slimproto_cond);
 
 	pthread_mutex_unlock(&p->slimproto_mutex);
+
+	pthread_cond_broadcast(&p->slimproto_cond);
+	DEBUGF("proto_connect: broadcast.\n" );
+
 	return -1;
 }
 
 int slimproto_close(slimproto_t *p) {
-	DEBUGF("proto_close: state %i\n", p->state);
 	pthread_mutex_lock(&p->slimproto_mutex);					
+	DEBUGF("proto_close: state %i\n", p->state);
 
 	if ( p->state != PROTO_CONNECTED ) {
 		pthread_mutex_unlock(&p->slimproto_mutex);
@@ -349,9 +348,10 @@ int slimproto_close(slimproto_t *p) {
 
 	p->sockfd = -1;
 	p->state = PROTO_CLOSED;
-	pthread_cond_broadcast(&p->slimproto_cond);
 
 	pthread_mutex_unlock(&p->slimproto_mutex);
+
+	pthread_cond_broadcast(&p->slimproto_cond);
 
 	return 0;
 }

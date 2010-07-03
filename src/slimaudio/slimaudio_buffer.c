@@ -47,7 +47,7 @@ slimaudio_buffer_t *slimaudio_buffer_init(int size) {
 	buf->buffer_end = buf->buffer_start + size;
 	buf->buffer_size = size;
 	buf->read_ptr = buf->write_ptr = buf->buffer_start;
-	
+
 	pthread_mutex_init(&(buf->buffer_mutex), NULL);
 	pthread_cond_init(&(buf->read_cond), NULL);
 	pthread_cond_init(&(buf->write_cond), NULL);

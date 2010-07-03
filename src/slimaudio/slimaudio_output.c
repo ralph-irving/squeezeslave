@@ -48,15 +48,15 @@
 
 static void *output_thread(void *ptr);
 
-#ifndef PORTAUDIO_DEV
-static int pa_callback(  void *inputBuffer, void *outputBuffer,
-                     unsigned long framesPerBuffer,
-                     PaTimestamp outTime, void *userData );
-#else
+#ifdef PORTAUDIO_DEV
 static int pa_callback(  const void *inputBuffer, void *outputBuffer,
-		unsigned long framesPerBuffer,
-		const PaStreamCallbackTimeInfo * callbackTime,
-		PaStreamCallbackFlags statusFlags, void *userData );
+	unsigned long framesPerBuffer,
+	const PaStreamCallbackTimeInfo * callbackTime,
+	PaStreamCallbackFlags statusFlags, void *userData );
+#else
+static int pa_callback(  void *inputBuffer, void *outputBuffer,
+	unsigned long framesPerBuffer,
+	PaTimestamp outTime, void *userData );
 #endif
 
 
@@ -210,11 +210,12 @@ int slimaudio_output_open(slimaudio_t *audio) {
 int slimaudio_output_close(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->output_mutex);
 
-	audio->output_state = QUIT;	
-	pthread_cond_broadcast(&audio->output_cond);
-	
+	audio->output_state = QUIT;
+
 	pthread_mutex_unlock(&audio->output_mutex);
-	
+
+	pthread_cond_broadcast(&audio->output_cond);
+
 	pthread_join(audio->output_thread, NULL);
 
 	return 0;
@@ -414,6 +415,7 @@ static void *output_thread(void *ptr) {
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
 
 				audio->output_state = PLAYING;
+
 				pthread_cond_broadcast(&audio->output_cond);
 
 				break;
@@ -453,6 +455,8 @@ static void *output_thread(void *ptr) {
 
 					DEBUGF("output_thread STMu-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMu");
+
+					pthread_cond_broadcast(&audio->output_cond);
 				}
 
 				if (audio->output_EoS)
@@ -489,6 +493,7 @@ static void *output_thread(void *ptr) {
 
 				DEBUGF("output_thread STOP: %llu\n",audio->pa_streamtime_offset);
 				pthread_cond_broadcast(&audio->output_cond);
+
 				break;
 				
 			case PAUSE:
@@ -512,9 +517,11 @@ static void *output_thread(void *ptr) {
 					exit(-1);
 				}
 #endif
+				audio->output_state = PAUSED;
+
 				DEBUGF("output_thread PAUSE: %llu\n",audio->pa_streamtime_offset);
-				audio->output_state = PAUSED;	
 				pthread_cond_broadcast(&audio->output_cond);
+
 				break;
 
 			case QUIT:
@@ -594,10 +601,12 @@ void slimaudio_output_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	}
 	
 	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
+
 	audio->output_state = BUFFERING;
-	pthread_cond_broadcast(&audio->output_cond);
 
 	pthread_mutex_unlock(&audio->output_mutex);	
+
+	pthread_cond_broadcast(&audio->output_cond);
 }
 
 
@@ -611,14 +620,16 @@ int slimaudio_output_disconnect(slimaudio_t *audio) {
 		return -1;	
 	}	
 
-	audio->output_state = STOP;	
+	audio->output_state = STOP;
+
 	pthread_cond_broadcast(&audio->output_cond);
 
 	while (audio->output_state == STOP) {				
 		pthread_cond_wait(&audio->output_cond, &audio->output_mutex);
 	}
 
-	pthread_mutex_unlock(&audio->output_mutex);	
+	pthread_mutex_unlock(&audio->output_mutex);
+
 	return 0;
 }
 
@@ -628,14 +639,15 @@ void slimaudio_output_pause(slimaudio_t *audio) {
 	
 	DEBUGF("slimaudio_output_pause: state=%i\n", audio->output_state);
 
-	audio->output_state = PAUSE;	
+	audio->output_state = PAUSE;
+
 	pthread_cond_broadcast(&audio->output_cond);
 
 	while (audio->output_state == PAUSE) {				
 		pthread_cond_wait(&audio->output_cond, &audio->output_mutex);
 	}
 
-	pthread_mutex_unlock(&audio->output_mutex);	
+	pthread_mutex_unlock(&audio->output_mutex);
 }
 
 
@@ -650,13 +662,14 @@ void slimaudio_output_unpause(slimaudio_t *audio) {
 	DEBUGF("slimaudio_output_unpause: state=%i\n", audio->output_state);
 
 	audio->output_state = PLAY;
+
 	pthread_cond_broadcast(&audio->output_cond);
 
 	while (audio->output_state == PLAY) {
 		pthread_cond_wait(&audio->output_cond, &audio->output_mutex);
 	}
 
-	pthread_mutex_unlock(&audio->output_mutex);	
+	pthread_mutex_unlock(&audio->output_mutex);
 }
 
 // Applies software volume to buffers being sent to the output device.  It is
@@ -798,8 +811,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 				DEBUGF("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
 
-				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
+				pthread_cond_broadcast(&audio->output_cond);
 			}
 		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_START) {
@@ -822,8 +835,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 			DEBUGF("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
 
-			pthread_cond_broadcast(&audio->output_cond);
 			pthread_mutex_unlock(&audio->output_mutex);
+			pthread_cond_broadcast(&audio->output_cond);
 
 		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
@@ -837,8 +850,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 				DEBUGF("pa_callback: STREAM_CONTINUE:output_EoS:%i\n",audio->output_EoS);
 
-				pthread_cond_broadcast(&audio->output_cond);
 				pthread_mutex_unlock(&audio->output_mutex);
+				pthread_cond_broadcast(&audio->output_cond);
 			}
 		}
 
@@ -868,7 +881,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		apply_software_volume(audio, outputBuffer, framesPerBuffer);
 	}
 
-	VDEBUGF("pa_callback complete framePerBuffer=%lu\n", framesPerBuffer);
+	VDEBUGF("pa_callback complete framesPerBuffer=%lu\n", framesPerBuffer);
 
 	return 0;
 }

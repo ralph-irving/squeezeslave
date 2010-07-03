@@ -83,9 +83,10 @@ int slimaudio_http_close(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->http_mutex);
 
 	audio->http_state = STREAM_QUIT;	
-	pthread_cond_broadcast(&audio->http_cond);
-	
+
 	pthread_mutex_unlock(&audio->http_mutex);
+	
+	pthread_cond_broadcast(&audio->http_cond);
 	
 	pthread_join(audio->http_thread, NULL);	
 
@@ -128,7 +129,9 @@ static void *http_thread(void *ptr) {
 				slimaudio_buffer_close(audio->decoder_buffer);
 				
 				audio->http_state = STREAM_STOPPED;
+
 				pthread_cond_broadcast(&audio->http_cond);
+
 				break;
 				
 			case STREAM_STOPPED:
@@ -141,6 +144,7 @@ static void *http_thread(void *ptr) {
 				http_recv(audio);
 				
 				pthread_mutex_lock(&audio->http_mutex);
+
 				break;
 				
 			case STREAM_QUIT:
@@ -269,29 +273,34 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 		audio->autostart, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);
 	
 	audio->http_state = STREAM_PLAYING;
-	pthread_cond_broadcast(&audio->http_cond);
 
 	pthread_mutex_unlock(&audio->http_mutex);	
+
+	pthread_cond_broadcast(&audio->http_cond);
 }
 
 void slimaudio_http_disconnect(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->http_mutex);
 
-	if (audio->http_state == STREAM_PLAYING) {
+	if (audio->http_state == STREAM_PLAYING)
+	{
 		DEBUGF("slimaudio_http_disconnect: state=%i\n", audio->http_state);
 
 		audio->http_state = STREAM_STOP;
-		pthread_cond_broadcast(&audio->http_cond);
-		
+
 		/* closing socket and buffer will wake the http thread */
 		CLOSESOCKET(audio->streamfd);
-		slimaudio_buffer_close(audio->decoder_buffer);		
-		
-		while (audio->http_state == STREAM_STOP) {
+		slimaudio_buffer_close(audio->decoder_buffer);
+
+		pthread_cond_broadcast(&audio->http_cond);
+
+		while (audio->http_state == STREAM_STOP)
+		{
 			pthread_cond_wait(&audio->http_cond, &audio->http_mutex);
 		}
 	}
-	pthread_mutex_unlock(&audio->http_mutex);	
+
+	pthread_mutex_unlock(&audio->http_mutex);
 }
 
 static void http_recv(slimaudio_t *audio) {
@@ -318,7 +327,7 @@ static void http_recv(slimaudio_t *audio) {
 		/* Use WSAGetLastError instead of errno for WIN32 */
 		DEBUGF("http_recv: (2) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
 #else
-		DEBUGF("http_recv: (2) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
+		DEBUGF("http_recv: (2) n=%i msg=%s(%i)\n", n, strerror(errno), errno);
 #endif
 		http_close(audio);
 		return;
@@ -337,21 +346,24 @@ static void http_recv(slimaudio_t *audio) {
 		audio->autostart = false;
 
 		slimaudio_stat(audio, "STMl", (u32_t) 0); /* Notify buffer threshold has been reached */
-		pthread_mutex_unlock(&audio->http_mutex);
 		
+		pthread_mutex_unlock(&audio->http_mutex);
+		pthread_cond_broadcast(&audio->http_cond);				
 		slimaudio_output_unpause(audio);
 	}
 	else {
 		pthread_mutex_unlock(&audio->http_mutex);
+		pthread_cond_broadcast(&audio->http_cond);				
 	}
 }
-
 
 static void http_close(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->http_mutex);
 	
 	audio->http_state = STREAM_STOP;		
-	pthread_cond_broadcast(&audio->http_cond);						
 	
-	pthread_mutex_unlock(&audio->http_mutex);	
+	pthread_mutex_unlock(&audio->http_mutex);
+	
+	pthread_cond_broadcast(&audio->http_cond);				
 }
+

@@ -80,9 +80,10 @@ int slimaudio_decoder_close(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->decoder_mutex);
 	
 	audio->decoder_state = STREAM_QUIT;
-	pthread_cond_broadcast(&audio->decoder_cond);
 	
 	pthread_mutex_unlock(&audio->decoder_mutex);
+	
+	pthread_cond_broadcast(&audio->decoder_cond);
 	
 	pthread_join(audio->decoder_thread, NULL);	
 	slimaudio_decoder_mad_free(audio);
@@ -166,11 +167,13 @@ static void *decoder_thread(void *ptr) {
 				pthread_mutex_lock(&audio->decoder_mutex);
 				
 				audio->decoder_state = STREAM_STOPPED;
-				pthread_cond_broadcast(&audio->decoder_cond);
 
 				slimaudio_buffer_close(audio->output_buffer);
-				
+
 				pthread_mutex_unlock(&audio->decoder_mutex);
+
+				pthread_cond_broadcast(&audio->decoder_cond);
+
 				break;
 			
 			case STREAM_QUIT:
@@ -194,9 +197,9 @@ void slimaudio_decoder_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	audio->decoder_state = STREAM_PLAYING;
 
-	pthread_cond_broadcast(&audio->decoder_cond);
-
 	pthread_mutex_unlock(&audio->decoder_mutex);
+
+	pthread_cond_broadcast(&audio->decoder_cond);
 }
 
 
@@ -213,10 +216,11 @@ void slimaudio_decoder_disconnect(slimaudio_t *audio) {
 
 	/* closing buffer will wake the decoder thread */
 	slimaudio_buffer_flush(audio->output_buffer);
-	
-	while (audio->decoder_state == STREAM_STOP) {				
+
+	while (audio->decoder_state == STREAM_STOP) {
 		pthread_cond_wait(&audio->decoder_cond, &audio->decoder_mutex);
 	}
 
-	pthread_mutex_unlock(&audio->decoder_mutex);	
+	pthread_mutex_unlock(&audio->decoder_mutex);
 }
+
