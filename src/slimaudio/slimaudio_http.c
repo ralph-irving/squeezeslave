@@ -307,6 +307,7 @@ static void http_recv(slimaudio_t *audio) {
 	char buf[AUDIO_CHUNK_SIZE];
 	struct timeval timeOut; 
 	fd_set fdread;
+	u32_t decode_bytes_available;
 
 	timeOut.tv_sec  = 0; 
 	timeOut.tv_usec = 100*1000; /* wait for up to 100ms */
@@ -335,14 +336,15 @@ static void http_recv(slimaudio_t *audio) {
 
 	VDEBUGF("http_recv: audio n=%i\n", n);
 	slimaudio_buffer_write(audio->decoder_buffer, buf, n);
-	
+	decode_bytes_available = slimaudio_buffer_available(audio->decoder_buffer) ;
+
 	pthread_mutex_lock(&audio->http_mutex);
 	
 	audio->http_total_bytes += n;
 	audio->http_stream_bytes += n;
 	
-	if (audio->autostart && (audio->http_stream_bytes > audio->autostart_threshold)) {
-		DEBUGF("http_recv: AUTOSTART at %i\n", audio->http_stream_bytes);
+	if (audio->autostart && (decode_bytes_available >= audio->autostart_threshold)) {
+		DEBUGF("http_recv: AUTOSTART at %u\n", decode_bytes_available);
 		audio->autostart = false;
 
 		slimaudio_stat(audio, "STMl", (u32_t) 0); /* Notify buffer threshold has been reached */

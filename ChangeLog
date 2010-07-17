@@ -1,3 +1,10 @@
+2010-07-17 18:36  paddockd
+
+	* [r168] ChangeLog, TODO, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added portaudio hostapi name to
+	  output device listings.
+	  Increases version to 168.
+
 2010-07-17 17:13  paddockd
 
 	* [r167] ChangeLog, TODO, makefile.linux24-alsa-display,
