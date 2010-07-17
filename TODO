@@ -316,55 +316,6 @@ Investigate buffering message remaining at 0% when starting remote streams.
 
 ---
 
-;PortAudio device enumeration program
-;chris319
-;Updated on 3/21/2010
-
-XIncludeFile "PortAudio.pb"
-
-;- Variables
-Dim *Devices.PaDeviceInfo(0)
-DeviceCount.i
-
-Procedure.s Pae_PaHostApiIndexToString(Ind)
-  *info.PaHostApiInfo = Pa_GetHostApiInfo(Ind)
-  ProcedureReturn PeekS(*info\name)
-EndProcedure
-
-Procedure.s DeviceString(*dev.PaDeviceInfo)
-  ProcedureReturn PeekS(*dev\name) + " (" + Pae_PaHostApiIndexToString(*dev\hostApi) + ")"
-EndProcedure
-
-OpenConsole()
-
-;- PA Initialization
-Pa_Initialize()
-
-;- Enumerate devices
-DeviceCount = Pa_GetDeviceCount()
-PrintN("There are " + Str(DeviceCount) + " devices." + #CRLF$)
-
-Dim *Devices(DeviceCount)
-
-For I = 0 To DeviceCount - 1
-  *Devices(I) = Pa_GetDeviceInfo(i)
-Next
-
-For I = 0 To DeviceCount - 1
-  ;DESTINATION DEVICES
-  If *Devices(I)\maxOutputChannels > 0
-    PrintN(Str(I) + " " + "Dest " + DeviceString(*Devices(I)))
-  ;INPUT DEVICES
-  ElseIf *Devices(I)\maxInputChannels > 0
-    PrintN(Str(I) + " " + "Source " + DeviceString(*Devices(I)))
-  EndIf
-Next
-
-Pa_Terminate()
-Repeat: Delay(10): ForEver
-
----
-
 Add command line option to use shared mode vs exclusive mode for WASAPI version.
 
 ---
@@ -386,7 +337,6 @@ http://old.nabble.com/socket-and-version-can%27t-be-linked-td16026957.html
 
 ---
 
-Add PA API printing to Audio Device List output function, see above basic code example.
 Move int data_len definition outside PA callback loop.
 Investigate buffer close call position and mutex locking states within state change code.
 Investigate holding in audio_output BUFFERING state change until enough data is in the pipeline.

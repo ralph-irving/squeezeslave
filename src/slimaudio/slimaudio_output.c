@@ -69,6 +69,9 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 	int err;
 	bool bValidDev = false;
 	const PaDeviceInfo *pdi;
+#ifdef PORTAUDIO_DEV
+	const PaHostApiInfo *info;
+#endif
 	PaDeviceIndex DefaultDevice;
 	PaDeviceIndex DeviceCount;
 
@@ -119,21 +122,37 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
                 if ( pdi->name == NULL )
        	        {
                	        printf("PortAudio error6: GetDeviceInfo failed.\n" );
-                       	exit(-1);
+			exit(-1);
                 }
 
+#ifdef PORTAUDIO_DEV
+		info = Pa_GetHostApiInfo ( pdi->hostApi );
+		if ( info->name == NULL )
+		{
+			printf("PortAudio error8: GetHostApiInfo failed.\n" );
+			exit(-1);
+		}
+#endif
 		if ( pdi->maxOutputChannels >= 2 )
 		{
                	        if ( i == DefaultDevice )
 			{
 				bValidDev = true;
 				if ( show_list )
-	                       	        printf("*%2d: %s\n", i, pdi->name);
+#ifdef PORTAUDIO_DEV
+	                       	        printf("*%2d: (%s) %s\n", i, info->name, pdi->name);
+#else
+					printf("*%2d: %s\n", i, pdi->name);
+#endif
 			}
                         else
 			{
 				if ( show_list )
-       	                	        printf(" %2d: %s\n", i, pdi->name);
+#ifdef PORTAUDIO_DEV
+	                       	        printf(" %2d: (%s) %s\n", i, info->name, pdi->name);
+#else
+					printf("*%2d: %s\n", i, pdi->name);
+#endif
 			}
 		}
 	}

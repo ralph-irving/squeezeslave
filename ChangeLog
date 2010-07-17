@@ -1,3 +1,14 @@
+2010-07-17 17:13  paddockd
+
+	* [r167] ChangeLog, TODO, makefile.linux24-alsa-display,
+	  makefile.mingw32-asio-display, makefile.mingw32-display,
+	  makefile.mingw32-wasapi-display, sources/portaudio-r1526.tar.gz,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Updated windows and linux 2.4
+	  makefiles to use PADEV r1526.
+	  Use define for framesPerBuffer parameter in Pa_OpenStream call.
+	  Increased version to 167.
+
 2010-07-03 11:59  paddockd
 
 	* [r166] ChangeLog, TODO, makefile.linux26-mips-oss,
