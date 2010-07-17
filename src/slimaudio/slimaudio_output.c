@@ -302,15 +302,16 @@ static void *output_thread(void *ptr) {
 
 	DEBUGF("paDeviceInfo->deviceid %d\n", outputParameters.device);
 	DEBUGF("paDeviceInfo->maxOutputChannels %i\n", paDeviceInfo->maxOutputChannels);
+	DEBUGF("outputParameters.suggestedLatency %f\n", outputParameters.suggestedLatency);
 	DEBUGF("paDeviceInfo->defaultHighOutputLatency %f\n", (float) paDeviceInfo->defaultHighOutputLatency);
-	DEBUGF("paDeviceInfo->defaultLowhOutputLatency %f\n", (float) paDeviceInfo->defaultLowOutputLatency);
+	DEBUGF("paDeviceInfo->defaultLowOutputLatency %f\n", (float) paDeviceInfo->defaultLowOutputLatency);
 	DEBUGF("paDeviceInfo->defaultSampleRate %f\n", paDeviceInfo->defaultSampleRate);
 
 	err = Pa_OpenStream (	&audio->pa_stream,				// stream
 				NULL,						// inputParameters
 				&outputParameters,				// outputParameters
 				44100.0,					// sample rate
-				0,						// framesPerBuffer
+				paFramesPerBufferUnspecified,			// framesPerBuffer
 				paPrimeOutputBuffersUsingStreamCallback,	// streamFlags
 				pa_callback,					// streamCallback
 				audio);						// userData

@@ -1,3 +1,9 @@
+2010-07-03 11:59  paddockd
+
+	* [r166] ChangeLog, TODO, makefile.linux26-mips-oss,
+	  makefile.linux26-mipsel-oss: Renamed makefile.linux26-mips-oss to
+	  makefile.linux26-mipsel-oss.
+
 2010-07-03 11:51  paddockd
 
 	* [r165] ChangeLog, TODO, src/slimaudio/slimaudio.c,
