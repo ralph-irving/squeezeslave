@@ -44,7 +44,7 @@ bool output_change = false;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 169;
+const int revision = 170;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -52,6 +52,10 @@ static int player_type = PLAYER_TYPE;
 #ifdef SLIMPROTO_DEBUG
 FILE *debuglog = NULL;
 bool debug_logfile = false;
+#endif
+
+#ifdef PA_WASAPI
+bool wasapi_exclusive = true;
 #endif
 
 #ifdef INTERACTIVE
@@ -209,7 +213,7 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hHk:Lm:o:P:p:Rr:Vv:";
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 		{"debug",              required_argument, 0, 'd'},
@@ -232,6 +236,9 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef __WIN32__
 		{"highpriority",       no_argument,       0, 'H'},
+#ifdef PA_WASAPI
+		{"noexclusive",        no_argument,       0, 'X'},
+#endif
 #endif
 #ifdef INTERACTIVE
 		{"lircrc",             required_argument, 0, 'c'},
@@ -249,7 +256,12 @@ int main(int argc, char *argv[]) {
 #ifdef INTERACTIVE
 	strcat (getopt_options, "c:Dilw:");
 #endif
-
+#ifdef __WIN32__
+	strcat (getopt_options, "H");
+#ifdef PA_WASAPI
+	strcat (getopt_options, "X");
+#endif
+#endif
 	while (true) {
 		const char shortopt =
 			getopt_long_only(argc, argv, getopt_options, long_options, NULL);
@@ -390,8 +402,12 @@ int main(int argc, char *argv[]) {
 					dwError);
 			} 
 			break;
+#ifdef PA_WASAPI
+		case 'X':
+			wasapi_exclusive = false;
+			break;
 #endif
-
+#endif
 		case 'o':
 			output_device_id = strtoul(optarg, NULL, 0);
 			output_change = true;

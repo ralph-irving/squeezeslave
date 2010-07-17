@@ -316,10 +316,6 @@ Investigate buffering message remaining at 0% when starting remote streams.
 
 ---
 
-Add command line option to use shared mode vs exclusive mode for WASAPI version.
-
----
-
 Investigate adding command line option to specify output and decoder buffer sizes.
 
 ---

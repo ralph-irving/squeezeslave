@@ -262,7 +262,7 @@ void print_version(void) {
 #if defined(__APPLE__) && defined(__MACH__)
 	fprintf(stdout, "osx ");
 #elif defined(__WIN32__)
-	fprintf(stdout, "win32 ");
+	fprintf(stdout, "windows ");
 #elif defined(__SUNPRO_C)
 	fprintf(stdout, "solaris ");
 #elif defined(__FreeBSD__)
@@ -304,21 +304,14 @@ void print_version(void) {
 #ifdef DAEMONIZE
 	fprintf(stdout, "daemon ");
 #endif
-	fprintf(stdout, "\n\n");
+	fprintf(stdout, "\n");
+
+	fprintf(stdout, "Copyright 2004-2007 Richard Titmuss, 2008-2010 Duane Paddock.\n");
 
 	fprintf (stdout,
-	"Squeezeslave is licensed free of charge. There is NO WARRANTY for\n"
-	"the program. This program is provided \"as is\" without warranty of\n"
-	"any kind, either expressed or implied, including, but not limited\n"
-       	"to, the implied warranties of merchantability and fitness for a\n"
-       	"particular purpose.  The entire risk as to the quality and\n"
-       	"performance of the program is with you.  Should the program prove\n"
-       	"defective, you assume the cost of all necessary servicing, repair\n"
-       	"or correction.\n\n"
+	"This is free software; see the source for copying conditions. There is NO\n"
+	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 	);
-
-	fprintf(stdout, "Copyright (c) 2004-2007 Richard Titmuss,\n");
-	fprintf(stdout, "              2008-2010 Duane Paddock.\n");
 }
 
 void print_help(void) {
@@ -348,6 +341,11 @@ void print_help(void) {
 "                            keepalive.\n"
 #ifdef __WIN32__
 "-H, --highpriority          Change process priority class to high.\n"
+#ifdef PA_WASAPI
+"-X, --noexclusive           Use shared mode for a WasApi device.\n"
+"                            Settings in Control Panel for the shared device\n"
+"                            must be set to 44100Hz, 2 channel audio.\n"
+#endif
 #endif
 #ifdef INTERACTIVE
 #ifndef __WIN32__

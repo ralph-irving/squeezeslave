@@ -1,3 +1,10 @@
+2010-07-17 18:44  paddockd
+
+	* [r169] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/squeezeslave/squeezeslave.c:
+	  Fixed autostart_threshold calculation in slimaudio_http.c.
+	  Increased version to 169.
+
 2010-07-17 18:36  paddockd
 
 	* [r168] ChangeLog, TODO, src/slimaudio/slimaudio_output.c,

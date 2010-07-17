@@ -46,6 +46,10 @@
   #define VDEBUGF(...)
 #endif
 
+#ifdef PA_WASAPI
+extern bool wasapi_exclusive;
+#endif
+
 static void *output_thread(void *ptr);
 
 #ifdef PORTAUDIO_DEV
@@ -140,7 +144,8 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 				bValidDev = true;
 				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf("*%2d: (%s) %s\n", i, info->name, pdi->name);
+	                       	        printf("*%2d: (%s) %s (%f:%f)\n", i, info->name, pdi->name, \
+							pdi->defaultLowOutputLatency, pdi->defaultHighOutputLatency );
 #else
 					printf("*%2d: %s\n", i, pdi->name);
 #endif
@@ -149,9 +154,10 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 			{
 				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf(" %2d: (%s) %s\n", i, info->name, pdi->name);
+	                       	        printf(" %2d: (%s) %s (%f:%f)\n", i, info->name, pdi->name, \
+							pdi->defaultLowOutputLatency, pdi->defaultHighOutputLatency );
 #else
-					printf("*%2d: %s\n", i, pdi->name);
+					printf(" %2d: %s\n", i, pdi->name);
 #endif
 			}
 		}
@@ -309,12 +315,21 @@ static void *output_thread(void *ptr) {
 	outputParameters.channelCount = 2;
 	outputParameters.sampleFormat = paInt16;
 	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
+
 #ifdef PA_WASAPI
-	streamInfo.size = sizeof(PaWasapiStreamInfo);
-	streamInfo.hostApiType = paWASAPI;
-	streamInfo.version = 1;
-	streamInfo.flags = paWinWasapiExclusive;
-	outputParameters.hostApiSpecificStreamInfo = &streamInfo;
+	/* Use exclusive mode for WasApi device, default is shared */
+	if (wasapi_exclusive)
+	{
+		streamInfo.size = sizeof(PaWasapiStreamInfo);
+		streamInfo.hostApiType = paWASAPI;
+		streamInfo.version = 1;
+		streamInfo.flags = paWinWasapiExclusive;
+		outputParameters.hostApiSpecificStreamInfo = &streamInfo;
+	}
+	else
+	{
+		outputParameters.hostApiSpecificStreamInfo = NULL;
+	}
 #else
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 #endif
