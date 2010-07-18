@@ -1,3 +1,15 @@
+2010-07-18 13:11  paddockd
+
+	* [r171] ChangeLog, makefile.linux26-alsa-display,
+	  makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.osxintel-display,
+	  makefile.osxppc-display, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Added -y/--latency option.
+	  Fixed default device identification in -L option.
+	  Updated remaining makefiles to use PADEV r1526
+	  Increased version to 171.
+
 2010-07-17 20:29  paddockd
 
 	* [r170] ChangeLog, TODO, src/slimaudio/slimaudio_output.c,

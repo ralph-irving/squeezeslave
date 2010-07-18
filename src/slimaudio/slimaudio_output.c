@@ -147,8 +147,9 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 				bValidDev = true;
 				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf("*%2d: (%s) %s (%f/%f)\n", i, info->name, pdi->name, \
-							pdi->defaultLowOutputLatency, pdi->defaultHighOutputLatency );
+	                       	        printf("*%2d: (%s) %s (%i/%i)\n", i, info->name, pdi->name, \
+							(unsigned int) (pdi->defaultLowOutputLatency * 1000.0),
+							(unsigned int) (pdi->defaultHighOutputLatency * 1000.0) );
 #else
 					printf("*%2d: %s\n", i, pdi->name);
 #endif
@@ -157,8 +158,9 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 			{
 				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf(" %2d: (%s) %s (%f/%f)\n", i, info->name, pdi->name, \
-							pdi->defaultLowOutputLatency, pdi->defaultHighOutputLatency );
+	                       	        printf(" %2d: (%s) %s (%i/%i)\n", i, info->name, pdi->name, \
+							(unsigned int) (pdi->defaultLowOutputLatency * 1000.0),
+							(unsigned int) (pdi->defaultHighOutputLatency * 1000.0) );
 #else
 					printf(" %2d: %s\n", i, pdi->name);
 #endif
