@@ -53,6 +53,9 @@ extern bool wasapi_exclusive;
 static void *output_thread(void *ptr);
 
 #ifdef PORTAUDIO_DEV
+extern bool modify_latency;
+extern unsigned int user_latency;
+
 static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	unsigned long framesPerBuffer,
 	const PaStreamCallbackTimeInfo * callbackTime,
@@ -144,7 +147,7 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 				bValidDev = true;
 				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf("*%2d: (%s) %s (%f:%f)\n", i, info->name, pdi->name, \
+	                       	        printf("*%2d: (%s) %s (%f/%f)\n", i, info->name, pdi->name, \
 							pdi->defaultLowOutputLatency, pdi->defaultHighOutputLatency );
 #else
 					printf("*%2d: %s\n", i, pdi->name);
@@ -154,7 +157,7 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 			{
 				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf(" %2d: (%s) %s (%f:%f)\n", i, info->name, pdi->name, \
+	                       	        printf(" %2d: (%s) %s (%f/%f)\n", i, info->name, pdi->name, \
 							pdi->defaultLowOutputLatency, pdi->defaultHighOutputLatency );
 #else
 					printf(" %2d: %s\n", i, pdi->name);
@@ -296,6 +299,7 @@ static void *output_thread(void *ptr) {
 #else
 	PaStreamParameters outputParameters;
 	const PaDeviceInfo * paDeviceInfo;
+	float newLatency;
 
 #ifdef PA_WASAPI
 	PaWasapiStreamInfo streamInfo;
@@ -315,6 +319,18 @@ static void *output_thread(void *ptr) {
 	outputParameters.channelCount = 2;
 	outputParameters.sampleFormat = paInt16;
 	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
+
+	if ( modify_latency )
+	{
+		newLatency = (float) user_latency / 1000.0;
+		if ( ( newLatency > 1.0 ) || ( newLatency <= paDeviceInfo->defaultLowOutputLatency ) )
+		{
+			fprintf (stderr, "User defined latency %f out of range %f-1.0, using default.\n",
+					newLatency, paDeviceInfo->defaultLowOutputLatency );
+			newLatency = paDeviceInfo->defaultHighOutputLatency;
+		}
+		outputParameters.suggestedLatency = newLatency ;
+	}
 
 #ifdef PA_WASAPI
 	/* Use exclusive mode for WasApi device, default is shared */

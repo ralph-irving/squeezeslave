@@ -37,14 +37,20 @@
 
 #include "squeezeslave.h"
 
-// For retry support
+// Retry support
 bool retry_connection = false;
 bool output_change = false;
+
+#ifdef PORTAUDIO_DEV
+// User suggested latency
+bool modify_latency = false;
+unsigned int user_latency = 0L;
+#endif
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "0.9";
-const int revision = 170;
+const int revision = 171;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -231,6 +237,9 @@ int main(int argc, char *argv[]) {
 		{"intretry",           required_argument, 0, 'r'},
 		{"version",            no_argument,       0, 'V'},
 		{"volume",             required_argument, 0, 'v'},
+#ifdef PORTAUDIO_DEV
+		{"latency",            required_argument, 0, 'y'},
+#endif
 #ifdef DAEMONIZE
 		{"daemonize",          required_argument, 0, 'M'},
 #endif
@@ -249,7 +258,9 @@ int main(int argc, char *argv[]) {
 #endif
 		{0, 0, 0, 0}
 	};
-	
+#ifdef PORTAUDIO_DEV
+	strcat (getopt_options, "y:");
+#endif	
 #ifdef DAEMONIZE	
 	strcat (getopt_options, "M:");
 #endif
@@ -476,6 +487,18 @@ int main(int argc, char *argv[]) {
 				volume_control = VOLUME_NONE;
 			}
 			break;
+#ifdef PORTAUDIO_DEV
+		case 'y':
+			modify_latency = true;
+			user_latency = strtoul(optarg, NULL, 0);
+
+			if ( user_latency > 1000 )
+			{
+				fprintf (stderr, "Suggested latency invalid, using device default.\n");
+				modify_latency = false;
+			}
+			break;
+#endif
 		default:
 			break;
 		}

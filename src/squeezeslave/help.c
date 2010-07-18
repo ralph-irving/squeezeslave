@@ -425,6 +425,11 @@ void print_help(void) {
 #endif
 "                                  sw:  volume changes performed in software.\n"
 "                                  off: volume changes ignored.\n"
+#ifdef PORTAUDIO_DEV
+"-y, --latency <msec>:       Modify the default latency for the audio device.\n"
+"                            Useful if you experience drop outs during playback.\n"
+"                            Values between 120-200 ms are recommended.\n"
+#endif
 #ifdef SLIMPROTO_DEBUG
 "-Y, --debuglog <logfile>:   Redirect debug output from stderr to <logfile>.\n"
 #endif

@@ -1,3 +1,12 @@
+2010-07-17 20:29  paddockd
+
+	* [r170] ChangeLog, TODO, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  -X/--noexclusive option for WASAPI devices. AKA Shared Mode.
+	  Added display of low/high latency info in device listing.
+	  Rewrote copyright notice.
+	  Increased version to 170.
+
 2010-07-17 18:44  paddockd
 
 	* [r169] ChangeLog, src/slimaudio/slimaudio.h,
