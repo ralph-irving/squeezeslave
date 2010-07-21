@@ -1,3 +1,10 @@
+2010-07-18 17:22  paddockd
+
+	* [r172] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Display latency low/high in
+	  device using same scale as -y/--latency option.
+	  Increased version to 172.
+
 2010-07-18 13:11  paddockd
 
 	* [r171] ChangeLog, makefile.linux26-alsa-display,

@@ -342,9 +342,9 @@ void print_help(void) {
 #ifdef __WIN32__
 "-H, --highpriority          Change process priority class to high.\n"
 #ifdef PA_WASAPI
-"-X, --noexclusive           Use shared mode for a WasApi device.\n"
-"                            Settings in Control Panel for the shared device\n"
-"                            must be set to 44100Hz, 2 channel audio.\n"
+"-S, --shared                Use shared mode for a WasApi device.\n"
+"                            Settings in Control Panel for a shared device\n"
+"                            must be set to 16-bit, 44100 Hz (CD Quality).\n"
 #endif
 #endif
 #ifdef INTERACTIVE
