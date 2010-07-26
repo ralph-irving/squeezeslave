@@ -1,8 +1,23 @@
+2010-07-21 11:59  paddockd
+
+	* [r173] ChangeLog, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  sources/portaudio-r1500.tar.gz, sources/portaudio-r1528.tar.gz,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c, tests,
+	  tests/patest_sine.c, tests/patest_sine.sh: Renamed
+	  -X/--noexclusive option to -S/--shared.
+	  Updated windows makefiles to use PADEV r1528 which fixes WASAPI
+	  exclusive mode AUDCLNT_E_BUFFER_TOO_LARGE errors. Could limit
+	  number of failures of Pa_StartStream to avoid deadlocking in
+	  similar situations.
+	  Deleted obsolete source portaudio-r1500.tar.gz.
+	  Increased version to 173.
+
 2010-07-18 17:22  paddockd
 
 	* [r172] ChangeLog, src/slimaudio/slimaudio_output.c,
 	  src/squeezeslave/squeezeslave.c: Display latency low/high in
-	  device using same scale as -y/--latency option.
+	  device list using same scale as -y/--latency option.
 	  Increased version to 172.
 
 2010-07-18 13:11  paddockd
@@ -38,7 +53,7 @@
 	* [r168] ChangeLog, TODO, src/slimaudio/slimaudio_output.c,
 	  src/squeezeslave/squeezeslave.c: Added portaudio hostapi name to
 	  output device listings.
-	  Increases version to 168.
+	  Increased version to 168.
 
 2010-07-17 17:13  paddockd
 
