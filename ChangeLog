@@ -1,3 +1,10 @@
+2010-07-26 18:54  paddockd
+
+	* [r174] ChangeLog, makefile.linux24-display,
+	  makefile.linux26-display, makefile.linux26-mipsel-oss: Fixed
+	  missing PORTAUDIOFILES deletion in clean section of OSS
+	  makefiles.
+
 2010-07-21 11:59  paddockd
 
 	* [r173] ChangeLog, makefile.mingw32-asio-display,
