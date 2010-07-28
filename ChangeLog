@@ -1,3 +1,8 @@
+2010-07-27 22:26  paddockd
+
+	* [r175] ChangeLog, makefile.linux26-arm-oss: Added a Marvel 6281
+	  ARM Makefile for the Synology DS-109. Contributed by Jonas K.
+
 2010-07-26 18:54  paddockd
 
 	* [r174] ChangeLog, makefile.linux24-display,
