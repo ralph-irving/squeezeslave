@@ -341,3 +341,9 @@ Investigate replacing buffering code with pa_ringbuffer code.
 Investigate removing non-blocking socket code from http recv setup.  Adrian's patch might be all we need.
 
 ---
+
+r1526 no badstate patch after 7 songs on hera
+Expression 'paTimedOut' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2926
+Expression 'PaAlsaStream_WaitForFrames( stream, &framesAvail, &xrun )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 3328
+
+---

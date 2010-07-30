@@ -257,7 +257,7 @@ inet_pton6 (const char *src, unsigned char *dst)
 #endif /*  __WIN32__ */
 
 void print_version(void) {
-	fprintf(stdout, "squeezeslave %s-%d\n", version, revision);
+	fprintf(stdout, "squeezeslave %s-%d %s %s\n", version, revision, __DATE__, __TIME__);
 	fprintf(stdout, "compile flags: ");
 #if defined(__APPLE__) && defined(__MACH__)
 	fprintf(stdout, "osx ");

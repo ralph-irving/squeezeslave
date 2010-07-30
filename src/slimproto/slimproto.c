@@ -661,18 +661,21 @@ int slimproto_configure_socket_sigpipe(int fd) {
 	// This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
 	// others).  So we'll let the send() call deal with the SIGPIPE
 	// avoidance.
+	DEBUGF("proto_sigpipe: MSG_NOSIGNAL\n");
 	return 0;
 #elif defined(SO_NOSIGPIPE)
 	// This platform doesn't have MSG_NOSIGNAL but has a similar
 	// configuration option that lets one change the SIGPIPE behavior for
 	// the socket instead of for each send() call.  BSD-based OSes are said
 	// to have this flag, including OSX and Solaris.
+	DEBUGF("proto_sigpipe: SO_NOSIGPIPE\n");
 	int enable = 1;
 	return setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, (void*)&enable, 
 			  sizeof(enable));
 #elif !defined(SIGPIPE)
 	// Some platforms, such as win32+mingw, don't even have SIGPIPE, so
 	// there is nothing to deal with in terms of signals here.
+	DEBUGF("proto_sigpipe: No SIGPIPE\n");
 	return 0;
 #else
 	// This platform has no mechanism to prevent SIGPIPE from being emitted
@@ -685,6 +688,7 @@ int slimproto_configure_socket_sigpipe(int fd) {
 		first_time = false;
 		return signal(SIGPIPE, SIG_IGN) == SIG_ERR ? -1 : 0;
 	}
+	DEBUGF("proto_sigpipe: SIGPIPE no-op signal handler\n");
 	return 0;
 #endif
 }

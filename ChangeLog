@@ -1,3 +1,9 @@
+2010-07-28 13:20  paddockd
+
+	* [r176] ChangeLog, makefile.linux26-arm-oss,
+	  makefile.linux26-armel-oss: Renamed arm makefile to better
+	  reflect the fact that it is for little endian based CPUs.
+
 2010-07-27 22:26  paddockd
 
 	* [r175] ChangeLog, makefile.linux26-arm-oss: Added a Marvel 6281
