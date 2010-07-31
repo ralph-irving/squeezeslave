@@ -1,3 +1,11 @@
+2010-07-30 12:47  paddockd
+
+	* [r177] ChangeLog, TODO, src/slimproto/slimproto.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  SIGPIPE debug messages.
+	  Added build date/time to version info.
+	  Increased version to 177.
+
 2010-07-28 13:20  paddockd
 
 	* [r176] ChangeLog, makefile.linux26-arm-oss,
