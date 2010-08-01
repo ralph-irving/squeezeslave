@@ -6,7 +6,7 @@
 
 [[SqueezeSlave]] is an alternative to [[SqueezePlay]] and [[SoftSqueeze]].  The main difference is that SqueezeSlave has no graphical interface (GUI), but rather is run from a command line. A text based display is supported as of version 0.9-133 on all platforms similar to the [[SLIMP3]].  This mode is disabled by default. This makes SqueezeSlave useful as a player for "headless" applications (e.g., server computer without display).  It's also useful as a background player where a display is not required, or as a player which uses the least computing resources.
 
-[[SqueezeSlave]] was written by Richard Titmuss with contributions from Duane Paddock, Adrian Smith, Dominique Leroux, Graham Chapman, Ivor Bosloper, Jason Melvin, Sam Gupta and Luke Redpath.
+[[SqueezeSlave]] was written by Richard Titmuss with contributions from Adrian Smith, Alan Young, Dominique Leroux, Duane Paddock, Graham Chapman, Ivor Bosloper, Jason Melvin, Luke Redpath, Sam Gupta and Uri Savoray.
 
 [[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
 
@@ -29,6 +29,8 @@ Patch files squeezecenter_squeezeslave_player3-7.3.patch and squeezecenter_squee
 Executable versions for Windows, Linux Intel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/
 
 Makefiles are available for NetBSD and FreeBSD, see build instructions below.
+
+[https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=LL5P6365KQEXN&lc=CA&item_name=Squeezeslave&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted Donations] to the squeezeslave project always appreciated.
 
 == Installation ==
 
@@ -127,7 +129,7 @@ There are two known issues running squeezeslave under launchctl.
 # The system can take up to 20 seconds to enter sleep mode.
 # If squeezeslave is playing when sleep mode is activated, no audio will be heard after system resume.  Stop and restart the player to restore audio.
 
-=== Linux build instructions ===
+===Linux build instructions===
 Prebuilt versions of squeezeslave for most platforms are available on SourceForge.net.  However, if you have problems with the precompiled binaries for linux, please checkout the source and build yourself. There have been many issues lately with system libraries and the linux binaries that have been solved by building your own.
 
 The current source tree for squeezeslave is available on Google Code.
@@ -158,32 +160,38 @@ Most current linux distributions are based on the Linux 2.6 kernel so these make
 
 *Linux 2.6 32-bit intel kernel, OSS, ALSA and pulseaudio audio drivers.
 
-deprecated/makefile.linux26-alsa
-
 makefile.linux26-alsa-display
 
 *Linux 2.6 64-bit intel kernel, OSS, ALSA and pulseaudio audio drivers.
-
-deprecated/makefile.linux26-i64-alsa
 
 makefile.linux26-i64-alsa-display
 
 *Linux 2.6 32-bit PowerPC kernel (PS3, PPC Mac), OSS, ALSA and pulseaudio audio drivers
 
-deprecated/makefile.linux26-ppc-alsa
-
 makefile.linux26-ppc-alsa-display
 
-===A typical build===
+*Linux 2.4 32-bit intel kernel, OSS.
+
+makefile.linux24-display
+
+All deprecated linux makefiles without the -display postfix have been removed and the abilitiy to build squeezeslave without interactive (aka DISPLAY) support is now provided by commenting out two lines from the linux*-display makefiles.
+
+<code>
+ # Comment out these two lines to remove display support
+ # CFLAGS+=-DINTERACTIVE
+ # LIBS+=-lcurses -llirc_client
+</code>
+
+For more details see deprecated/README.txt in the source repository.
+
+===A typical Linux build===
 
  svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
  cd squeezeslave
- make -f deprecated/makefile.linux26-alsa realclean
- make -f deprecated/makefile.linux26-alsa
+ make -f makefile.linux26-alsa-display realclean
+ make -f makefile.linux26-alsa-display
 
 Upon successfull completion, you'll find a file in the bin/ directory starting with squeezeslave.  Several makefiles append additional words to help identify the "flavour" of the build for packaging purposes.  You can safely rename the file to be called just squeezeslave.  This step is NOT necessary with the above build example.
-
- cd bin; mv squeezeslave-alsa squeezeslave
 
 === FreeBSD build instructions ===
 
@@ -200,6 +208,8 @@ Then, type:
 You need the following pkgsrc packages: multimedia/libogg, audio/libvorbis, audio/libmad, audio/flac and audio/portaudio-devel.
 
 Then use the following makefile [[http://www.baaz.fr/makefile.netbsd]].
+
+The NetBSD makefile is now available in the source repository.
 
 and:
 
@@ -445,7 +455,7 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_output_v
 </code>
 
-=== Squeezeslave 0.9-133 (Linux) ===
+=== Squeezeslave 0.9-133 (Unix) ===
 <code>
  squeezeslave 0.9-133
  compile flags: linux portaudio:1420 debug interactive daemon 
@@ -552,3 +562,4 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_output_v
 
 </code>
+

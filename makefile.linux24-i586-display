@@ -8,7 +8,7 @@ CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE
 
 # Comment out these two lines to remove display support
 CFLAGS+=-DINTERACTIVE
-LIBS+=lcurses -llirc_client
+LIBS+=lncurses -llirc_client
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 
