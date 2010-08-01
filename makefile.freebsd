@@ -1,7 +1,8 @@
-# This makefile is used to build squeezeslave for an old 133MHz Pentium MMX laptop.
-# As it is very slow to compile squeezeslave on it, the system installed support libraries
-# are used instead of compiling them as part of the build.
-
+#
+# FreeBSD makefile for squeezeslave.
+# Uses system installed support libraries instead of compiling them as part of the build.
+# Provided by Gummy35
+#
 CC=gcc
 
 CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer

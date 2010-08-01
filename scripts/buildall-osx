@@ -1,11 +1,13 @@
 #!/bin/bash
 VER=`svnversion`
 
-make -f makefile.osxppc-display realclean
-make -f makefile.osxppc-display
-mv bin/squeezeslave bin/squeezeslave-ppc-0.9-$VER
-make -f makefile.osxppc-display realclean
+make -f makefile.osx-intel-display realclean
 
-make -f makefile.osxintel-display realclean
-make -f makefile.osxintel-display
+make -f makefile.osx-ppc-display realclean
+make -f makefile.osx-ppc-display
+mv bin/squeezeslave bin/squeezeslave-ppc-0.9-$VER
+make -f makefile.osx-ppc-display realclean
+
+make -f makefile.osx-intel-display realclean
+make -f makefile.osx-intel-display
 mv bin/squeezeslave bin/squeezeslave-intel-0.9-$VER

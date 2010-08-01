@@ -1,3 +1,10 @@
+2010-07-31 18:59  paddockd
+
+	* [r178] ChangeLog, makefile.osxi64-display,
+	  makefile.osxintel-display, makefile.osxppc-display: Added OSX
+	  64bit Intel makefile.
+	  Updated OSX makefiles.
+
 2010-07-30 12:47  paddockd
 
 	* [r177] ChangeLog, TODO, src/slimproto/slimproto.c,
