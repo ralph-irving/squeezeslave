@@ -1,3 +1,15 @@
+2010-08-01 13:55  paddockd
+
+	* [r179] ChangeLog, makefile.freebsd, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display,
+	  makefile.osxi64-display, makefile.osxintel-display,
+	  makefile.osxppc-display, makefile.s10intel-display,
+	  makefile.s10sparc-display, makefile.s9sparc-display,
+	  makefile.sol10-intel-display, makefile.sol10-sparc-display,
+	  makefile.sol9-sparc-display, scripts/buildall-osx: Renamed OSX
+	  and Solaris makefiles.
+	  Updated OSX build script.
+
 2010-07-31 18:59  paddockd
 
 	* [r178] ChangeLog, makefile.osxi64-display,

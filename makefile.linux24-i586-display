@@ -4,7 +4,11 @@
 
 CC=gcc
 
-CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -fomit-frame-pointer
+CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -fomit-frame-pointer
+
+# Comment out these two lines to remove display support
+CFLAGS+=-DINTERACTIVE
+LIBS+=lcurses -llirc_client
 
 INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc
 
@@ -30,7 +34,7 @@ lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
 	ranlib lib/libslimproto.a
 
 bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a lib/libportaudio.a
-	${CC} -o bin/squeezeslave $^ /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -llirc_client -lncurses -lpthread -lm
+	${CC} -o bin/squeezeslave $^ /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lpthread -lm $(LIBS)
 
 clean:
 	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \

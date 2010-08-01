@@ -5,8 +5,12 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -Wall -O2 -march=i686
+CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DPORTAUDIO_DEV -Wall -O2 -march=i686
 LDFLAGS=-s
+
+# Comment out these two lines to remove display support
+CFLAGS+=-DINTERACTIVE
+LIBS+=-lcurses -llirc_client
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
@@ -14,7 +18,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.0
 LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1526
+LIBPORTAUDIO=portaudio-r1532
 
 PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
 
@@ -86,7 +90,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lasound -lrt -lpthread -lm -lcurses -llirc_client
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lasound -lrt -lpthread -lm $(LIBS)
 
 clean:
 	-@rm -f $(SLIMPROTOFILES:.c=.o)

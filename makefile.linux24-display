@@ -6,8 +6,12 @@ TAR=tar
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -Wall -O2 -march=i686
+CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -Wall -O2 -march=i686
 LDFLAGS=-s
+
+# Comment out these two lines to remove display support
+CFLAGS+=-DINTERACTIVE
+LIBS+=-lcurses -llirc_client
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
@@ -85,7 +89,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm -lcurses -llirc_client
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm $(LIBS)
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)
