@@ -1,3 +1,14 @@
+2010-08-01 17:03  paddockd
+
+	* [r181] ChangeLog, deprecated/README.txt,
+	  deprecated/makefile.linux26, deprecated/makefile.linux26-alsa,
+	  deprecated/makefile.linux26-i64-alsa,
+	  makefile.linux24-i586-display, makefile.linux26-alsa-display,
+	  makefile.linux26-display, makefile.linux26-i64-alsa-display,
+	  wiki/SqueezeSlave.wiki: Deleted deprecated linux26
+	  non-interactive makefiles. Functionality now provided by -display
+	  makefiles. See deprecated/README.txt for details.
+
 2010-08-01 15:43  paddockd
 
 	* [r180] ChangeLog, deprecated/README.txt,
