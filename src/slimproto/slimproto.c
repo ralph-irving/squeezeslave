@@ -656,7 +656,6 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 }
 
 int slimproto_configure_socket_sigpipe(int fd) {
-	DEBUGF("proto_sigpipe: begin\n");
 #if defined(MSG_NOSIGNAL)
 	// This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
 	// others).  So we'll let the send() call deal with the SIGPIPE
