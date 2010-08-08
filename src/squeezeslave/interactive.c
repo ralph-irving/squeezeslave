@@ -275,6 +275,8 @@ unsigned long getircode(int key) {
     case '8': ir = 0x76896897; break;
     case '9': ir = 0x7689e817; break;
     case KEY_IC: ir = 0x7689609f; break; /* add */
+    case 'I': ir = 0x7689609f; break; /* add */
+    case 'i': ir = 0x7689609f; break; /* add */
     case 0x01: ir = 0x7689609f; break; /* add IR */
     case KEY_DOWN: ir = 0x7689b04f; break; /* arrow_down */
     case 'B': ir = 0x7689b04f; break; /* arrow_down  OSX 10.6.3 bug */
@@ -293,8 +295,12 @@ unsigned long getircode(int key) {
     case '>': ir = 0x7689a05f; break; /* fwd */
     case '.': ir = 0x7689a05f; break; /* fwd */
     case KEY_HOME: ir = 0x768922DD; break; /* home */
+    case 'H': ir = 0x768922DD; break; /* home */
+    case 'h': ir = 0x768922DD; break; /* home */
     case 0x06: ir = 0x768922DD; break; /* home IR*/
     case KEY_END: ir = 0x76897887; break; /* now_playing */
+    case 'N': ir = 0x76897887; break; /* now_playing */
+    case 'n': ir = 0x76897887; break; /* now_playing */
     case 0x07: ir = 0x76897887; break; /* now_playing IR*/
     case ' ': ir = 0x768920df; break; /* pause */
     case 'p': ir = 0x768920df; break; /* pause */

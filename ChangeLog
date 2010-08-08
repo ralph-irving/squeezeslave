@@ -1,3 +1,18 @@
+2010-08-04 14:02  paddockd
+
+	* [r183] ChangeLog, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  makefile.osx-i64-display, makefile.osx-intel-display,
+	  makefile.osx-ppc-display, sources/portaudio-r1508.tar.gz,
+	  sources/portaudio-r1532.tar.gz, sources/portaudio-r1534.tar.gz,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c:
+	  Updated makefiles to use PADEV r1534 to fix WASAPI compilation
+	  error with mingw gcc 3.4.4.
+	  Deleted obsolete portaudio sources.
+	  Increased version to 183.
+
 2010-08-01 17:58  paddockd
 
 	* [r182] ChangeLog, makefile.linux24-i586-display: Fixed broken
