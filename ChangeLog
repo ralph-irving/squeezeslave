@@ -1,3 +1,13 @@
+2010-08-08 15:54  paddockd
+
+	* [r184] ChangeLog, scripts/buildall-osx, src/squeezeslave/help.c,
+	  src/squeezeslave/interactive.c, src/squeezeslave/squeezeslave.c,
+	  tests/testCurses.mak, tests/testCursesKeypadFalse.c,
+	  tests/testCursesKeypadTrue.c: Added workaround for unavailable
+	  keys Insert, Home and End with an Apple keyboard in OSX terminal
+	  interactive mode.
+	  Increased version to 184.
+
 2010-08-04 14:02  paddockd
 
 	* [r183] ChangeLog, makefile.linux24-alsa-display,

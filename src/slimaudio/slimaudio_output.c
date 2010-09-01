@@ -269,10 +269,8 @@ static void *output_thread(void *ptr) {
 	struct timespec timeout;
 	
 	slimaudio_t *audio = (slimaudio_t *) ptr;
-	audio->output_STMd = false;
 	audio->output_STMs = false;
 	audio->output_STMu = false;
-	audio->output_EoS  = false;
 
         err = Pa_Initialize();
         if (err != paNoError) {
@@ -464,9 +462,9 @@ static void *output_thread(void *ptr) {
 				}
 
 				DEBUGF("output_thread PLAY: %llu\n",audio->pa_streamtime_offset);
-
+#if 0
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
-
+#endif
 				audio->output_state = PLAYING;
 
 				pthread_cond_broadcast(&audio->output_cond);
@@ -510,13 +508,6 @@ static void *output_thread(void *ptr) {
 					output_thread_stat(audio, "STMu");
 
 					pthread_cond_broadcast(&audio->output_cond);
-				}
-
-				if (audio->output_EoS)
-				{
-					audio->output_EoS = false;
-
-					DEBUGF("output_thread EoS-PLAYING:%llu\n",audio->pa_streamtime_offset);
 				}
 
 				break;
@@ -648,14 +639,16 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 void slimaudio_output_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	pthread_mutex_lock(&audio->output_mutex);
 
-	if (audio->output_state == PLAYING) {
+	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
+
+	if ( (audio->output_state == PLAYING) || (audio->output_state == PAUSED) ) {
 		pthread_mutex_unlock(&audio->output_mutex);
 		return;
 	}
 	
-	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
+	audio->output_state = PAUSE;
 
-	audio->output_state = BUFFERING;
+	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
 
 	pthread_mutex_unlock(&audio->output_mutex);	
 
@@ -674,6 +667,8 @@ int slimaudio_output_disconnect(slimaudio_t *audio) {
 	}	
 
 	audio->output_state = STOP;
+
+	DEBUGF("slimaudio_output_disconnect: state=%i\n", audio->output_state);
 
 	pthread_cond_broadcast(&audio->output_cond);
 
@@ -832,6 +827,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 #endif
 {
 	slimaudio_t * const audio = (slimaudio_t *) userData;
+	slimaudio_buffer_status ok = SLIMAUDIO_BUFFER_STREAM_CONTINUE ;
 
 	// FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes)
 	const int frameSize = 2 * 2;
@@ -848,8 +844,10 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 		int data_len = len - off;
 
-		const slimaudio_buffer_status ok = 
-			slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
+		if (slimaudio_buffer_available(audio->output_buffer) > 0)
+			ok = slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
+		else
+			ok = SLIMAUDIO_BUFFER_STREAM_UNDERRUN;
 
 		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 			/* stream closed */
@@ -891,21 +889,6 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			pthread_mutex_unlock(&audio->output_mutex);
 			pthread_cond_broadcast(&audio->output_cond);
 
-		}
-		else if (ok == SLIMAUDIO_BUFFER_STREAM_CONTINUE) {
-			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
-				pthread_mutex_lock(&audio->output_mutex);
-
-				/*
-				** Decoder blocked in buffer_read.
-				*/
-				audio->output_EoS = true;
-
-				DEBUGF("pa_callback: STREAM_CONTINUE:output_EoS:%i\n",audio->output_EoS);
-
-				pthread_mutex_unlock(&audio->output_mutex);
-				pthread_cond_broadcast(&audio->output_cond);
-			}
 		}
 
 		audio->stream_samples += framesPerBuffer;

@@ -347,7 +347,9 @@ static void http_recv(slimaudio_t *audio) {
 		DEBUGF("http_recv: AUTOSTART at %u\n", decode_bytes_available);
 		audio->autostart = false;
 
-		slimaudio_stat(audio, "STMl", (u32_t) 0); /* Notify buffer threshold has been reached */
+		/* Notify buffer threshold has been reached */
+		/* Only send when autostart=0/2 */
+		// slimaudio_stat(audio, "STMl", (u32_t) 0);
 		
 		pthread_mutex_unlock(&audio->http_mutex);
 		pthread_cond_broadcast(&audio->http_cond);				

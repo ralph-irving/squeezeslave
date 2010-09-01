@@ -124,10 +124,9 @@ typedef struct {
 	u64_t pa_streamtime_offset;
 	u64_t stream_samples;
 
-	bool output_STMd;
 	bool output_STMs;
 	bool output_STMu;
-	bool output_EoS;
+
 	int keepalive_interval;
 	
 	PaDeviceIndex output_device_id;
