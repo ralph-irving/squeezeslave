@@ -225,19 +225,19 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	while (buf->total_available == 0) {
 		if (buf->read_stream == NULL)
 		{
-			pthread_mutex_unlock(&buf->buffer_mutex);
 			DEBUGF("buffer_read: read_stream=NULL total_available=0 len=%i SLIMAUDIO_BUFFER_STREAM_END\n", len );
 
 			*data_len = 0;
+			pthread_mutex_unlock(&buf->buffer_mutex);
 			return SLIMAUDIO_BUFFER_STREAM_END;			
 		}
 
-		if ( (buf->read_opt & BUFFER_NONBLOCKING) > 0) {
-			pthread_mutex_unlock(&buf->buffer_mutex);
-
+		if ( (buf->read_opt & BUFFER_NONBLOCKING) > 0)
+		{
 			DEBUGF("buffer_read: read_stream=%p, total_available=%i read_avail=%i read_count=%i len=%i eof=%i opt=%0x SLIMAUDIO_BUFFER_STREAM_CONTINUE\n",buf->read_stream,buf->total_available,buf->read_stream->available,buf->read_stream->read_count, len, buf->read_stream->eof, buf->read_opt);
 
 			*data_len = 0;
+			pthread_mutex_unlock(&buf->buffer_mutex);
 			return SLIMAUDIO_BUFFER_STREAM_CONTINUE;
 		}
 

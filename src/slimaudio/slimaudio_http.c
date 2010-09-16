@@ -25,7 +25,10 @@
 
 #ifdef __WIN32__
   #include <winsock.h>
+  #define SHUT_WR SD_SEND
+  typedef SOCKET socket_t;
   #define CLOSESOCKET(s) closesocket(s)
+  #define SOCKETERROR WSAGetLastError()
 #else
   #include <arpa/inet.h>
   #include <unistd.h>
@@ -34,7 +37,9 @@
   #include <sys/socket.h>
   #include <sys/time.h>
   #include <errno.h>
+  typedef int socket_t;
   #define CLOSESOCKET(s) close(s)
+  #define SOCKETERROR errno
 #endif
 
 #include "slimaudio/slimaudio.h"
@@ -170,7 +175,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	DEBUGF("slimaudio_http_connect: http connect %s:%i\n", 
 	       inet_ntoa(serv_addr.sin_addr), msg->strm.server_port);
 	
-	const int fd = socket(AF_INET, SOCK_STREAM, 0);
+	const socket_t fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 0) {
 		perror("slimaudio_http_connect: Error opening socket");
 		return;
@@ -198,13 +203,16 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	if (n < 0)
 	{
-#ifdef __WIN32__
-		/* Use WSAGetLastError instead of errno for WIN32 */
-		DEBUGF("http_send: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
-#else
-		DEBUGF("http_send: (1) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
-#endif
+		DEBUGF("http_send: (1) n=%i  msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
 		CLOSESOCKET(fd);
+		return;
+	}
+
+	if (shutdown(fd, SHUT_WR) != 0)
+	{
+		perror("slimaudio_http_connect: error shutting down socket writes");
+		CLOSESOCKET(fd);
+		return;
 	}
 
 	/* read http header */
@@ -216,13 +224,9 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 		n = recv(fd, http_hdr+pos, 1, 0);
 		if (n < 0)
 		{
-#ifdef __WIN32__
-			/* Use WSAGetLastError instead of errno for WIN32 */
-			DEBUGF("http_recv: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
-#else
-			DEBUGF("http_recv: (1) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
-#endif
+			DEBUGF("http_recv: (1) n=%i  msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
 			CLOSESOCKET(fd);
+			return;
 		}
 
 		switch (crlf) {
@@ -323,13 +327,9 @@ static void http_recv(slimaudio_t *audio) {
 	int n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, 0);
 
 	/* n == 0 http stream closed by server */
-	if (n <= 0) {
-#ifdef __WIN32__
-		/* Use WSAGetLastError instead of errno for WIN32 */
-		DEBUGF("http_recv: (2) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
-#else
-		DEBUGF("http_recv: (2) n=%i msg=%s(%i)\n", n, strerror(errno), errno);
-#endif
+	if (n <= 0)
+	{
+		DEBUGF("http_recv: (2) n=%i msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
 		http_close(audio);
 		return;
 	}
