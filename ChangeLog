@@ -1,3 +1,14 @@
+2010-09-17 12:25  paddockd
+
+	* [r188] ChangeLog, src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_buffer.h, src/slimaudio/slimaudio_http.c,
+	  src/squeezeslave/squeezeslave.c: Fix for buffer_read remaining
+	  blocked after the buffer has been closed.
+	  Temporarily hard coded autostart_threshold to 40000 as the
+	  default returned from SBS causes the player to skip a track if
+	  the first song played is less than ~23 seconds in duration.
+	  Increased version to 188.
+
 2010-09-16 17:37  paddockd
 
 	* [r187] src/slimaudio/slimaudio_buffer.c,

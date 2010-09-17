@@ -106,78 +106,7 @@ http://tangentsoft.net/wskfaq/articles/bsd-compatibility.html
 
 Under BSD Unixes, if the remote peer closes its connection and your program is blocking on recv(), you will get a 0 back from recv(). Winsock behaves the same way, except that it can also return -1, with WSAGetLastError() returning WSAECONNRESET, WSAECONNABORTED or WSAESHUTDOWN, to signal the detectable flavors of abnormal disconnections.
 
-Under Unix, if you\u2019re blocking on send() and your program is ignoring the SIGPIPE signal, it will return with a -1 when the remote peer disconnects, and errno will be EPIPE. Otherwise, your program will be sent the SIGPIPE signal, which will terminate your program if you don\u2019t handle it. Under Winsock, the SIGPIPE/EPIPE functionality does not exist at all: send() will either return 0 for a normal disconnect or -1 for an abnormal disconnect, with WSAGetLastError() returning the same errors as in the recv() discussion above.
-
----
-
-http://www.cplusplus.com/forum/general/5304/
-
-#define INFINITE (-1)
-
-bool iskeypressed( unsigned timeout_ms = 0 )
-  {
-  struct pollfd pls[ 1 ];
-  pls[ 0 ].fd     = STDIN_FILENO;
-  pls[ 0 ].events = POLLIN | POLLPRI;
-  return poll( pls, 1, timeout_ms ) > 0;
-  }
-
-For the equivalent to poll()ing the keyboard on Windows, use:
-
-bool iskeypressed( unsigned timeout_ms = 0 )
-  {
-  return WaitForSingleObject(
-    GetStdHandle( STD_INPUT_HANDLE ),
-    timeout_ms
-    ) == WAIT_OBJECT_0;
-  }
-
-
-<windows.h> #includes the necessary headers to #define INFINITE as the appropriate value, so this function can be
-used identically to the one above.
-
----
-
-Try playing with this:
-#include <windows.h>
-#include <stdio.h>
-
-int main()
-{
-printf("->");
-static HANDLE stdinHandle;
-// Get the IO handles
-// getc(stdin);
-stdinHandle = GetStdHandle(STD_INPUT_HANDLE);
-
-while (1)
-{
-DWORD rc = WaitForSingleObject(stdinHandle, 1000);
-
-if( rc == WAIT_TIMEOUT )
-{
-printf("Timeout...");
-}
-else if( rc == WAIT_ABANDONED )
-{
-printf("WAIT_ABANDONED");
-}
-else if( rc == WAIT_OBJECT_0 )
-{
-printf("WAIT_OBJECT_0");
-INPUT_RECORD r[512];
-DWORD read;
-ReadConsoleInput(stdinHandle, r, 512, &read);
-printf("Read: %d", read);
-}
-else if( rc == WAIT_FAILED )
-{
-printf("Error:%d.", GetLastError());
-}
-}
-
-return 0;
-}
+Under Unix, if you're blocking on send() and your program is ignoring the SIGPIPE signal, it will return with a -1 when the remote peer disconnects, and errno will be EPIPE. Otherwise, your program will be sent the SIGPIPE signal, which will terminate your program if you don't handle it. Under Winsock, the SIGPIPE/EPIPE functionality does not exist at all: send() will either return 0 for a normal disconnect or -1 for an abnormal disconnect, with WSAGetLastError() returning the same errors as in the recv() discussion above.
 
 ---
 
@@ -333,8 +262,6 @@ http://old.nabble.com/socket-and-version-can%27t-be-linked-td16026957.html
 
 ---
 
-Move int data_len definition outside PA callback loop.
-Investigate buffer close call position and mutex locking states within state change code.
 Investigate holding in audio_output BUFFERING state change until enough data is in the pipeline.
 Should not be using pthread_mutex_lock in PA callback nothing more than pthread_mutex_trylock see http://ptgmedia.pearsoncmg.com/images/0201633922/sourcecode/trylock.c for details.
 Investigate replacing buffering code with pa_ringbuffer code.
