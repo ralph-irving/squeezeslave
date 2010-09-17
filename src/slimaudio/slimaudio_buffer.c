@@ -46,6 +46,7 @@ slimaudio_buffer_t *slimaudio_buffer_init(int size) {
 	buf->buffer_start = (char *) malloc(size);
 	buf->buffer_end = buf->buffer_start + size;
 	buf->buffer_size = size;
+	buf->buffer_closed = false;
 	buf->read_ptr = buf->write_ptr = buf->buffer_start;
 
 	pthread_mutex_init(&(buf->buffer_mutex), NULL);
@@ -94,6 +95,14 @@ void slimaudio_buffer_close(slimaudio_buffer_t *buf) {
 	{
 		buf->write_stream->eof = true;
 		DEBUGF("write_stream->eof:%i ",buf->write_stream->eof);
+
+		if (buf->reader_blocked)
+		{
+			DEBUGF("reader_blocked:%i ",buf->reader_blocked);
+			buf->reader_blocked = false;
+			buf->buffer_closed = true;
+			pthread_cond_signal(&buf->write_cond);
+		}
 	}
 
 	if (buf->writer_blocked) {
@@ -239,6 +248,17 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 			*data_len = 0;
 			pthread_mutex_unlock(&buf->buffer_mutex);
 			return SLIMAUDIO_BUFFER_STREAM_CONTINUE;
+		}
+
+		/* Don't block if the buffer closed, exit with EOS */
+		if ( buf->buffer_closed )
+		{
+			DEBUGF("buffer_read: buffer_closed=%d\n", buf->buffer_closed );
+			buf->buffer_closed = false;
+			buf->read_stream->eof = true;
+
+			pthread_mutex_unlock(&buf->buffer_mutex);
+			return SLIMAUDIO_BUFFER_STREAM_END;
 		}
 
 		buf->reader_blocked = true;

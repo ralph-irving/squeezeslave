@@ -1,3 +1,26 @@
+2010-09-16 17:37  paddockd
+
+	* [r187] src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_http.c, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Changed
+	  slimproto_configure_socket socktimeout parameter to use
+	  milliseconds for finer timeout control.
+	  Added socket shutdown call after http_send.
+	  Cleaned up http thread DEBUGF calls.
+	  Fixed unlocking of buffer_mutex before data_len update.
+	  Increased version to 187.
+
+2010-09-01 11:27  paddockd
+
+	* [r185] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Removed STMl Notify buffer
+	  threshold has been reached, should only send when autostart=0/2
+	  not 1/3.
+	  Fixed PA audio callback blocking when in output buffer underrun
+	  situation.
+	  Increased version to 185.
+
 2010-08-08 15:54  paddockd
 
 	* [r184] ChangeLog, scripts/buildall-osx, src/squeezeslave/help.c,

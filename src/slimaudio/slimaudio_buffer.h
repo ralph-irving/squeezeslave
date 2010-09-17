@@ -55,6 +55,7 @@ typedef struct {
 	pthread_cond_t read_cond;
 	bool writer_blocked;
 	bool reader_blocked;
+	bool buffer_closed;
 } slimaudio_buffer_t;
 
 typedef enum { SLIMAUDIO_BUFFER_STREAM_START=0, SLIMAUDIO_BUFFER_STREAM_CONTINUE, SLIMAUDIO_BUFFER_STREAM_END, SLIMAUDIO_BUFFER_STREAM_UNDERRUN } slimaudio_buffer_status;

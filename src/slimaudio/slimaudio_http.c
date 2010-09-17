@@ -342,8 +342,10 @@ static void http_recv(slimaudio_t *audio) {
 	
 	audio->http_total_bytes += n;
 	audio->http_stream_bytes += n;
-	
-	if (audio->autostart && (decode_bytes_available >= audio->autostart_threshold)) {
+
+	/* if (audio->autostart && (decode_bytes_available >= audio->autostart_threshold)) */
+	if (audio->autostart && (decode_bytes_available >= 40000L))
+	{
 		DEBUGF("http_recv: AUTOSTART at %u\n", decode_bytes_available);
 		audio->autostart = false;
 
