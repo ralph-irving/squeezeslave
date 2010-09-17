@@ -255,7 +255,6 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		{
 			DEBUGF("buffer_read: buffer_closed=%d\n", buf->buffer_closed );
 			buf->buffer_closed = false;
-			buf->read_stream->eof = true;
 
 			pthread_mutex_unlock(&buf->buffer_mutex);
 			return SLIMAUDIO_BUFFER_STREAM_END;

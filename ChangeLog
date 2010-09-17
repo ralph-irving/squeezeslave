@@ -1,3 +1,10 @@
+2010-09-17 15:23  paddockd
+
+	* [r189] ChangeLog, TODO, src/slimaudio/slimaudio_http.c,
+	  src/squeezeslave/squeezeslave.c: Use autostart_threshold of 40000
+	  instead of server threshold for the first track only.
+	  Increased version to 189.
+
 2010-09-17 12:25  paddockd
 
 	* [r188] ChangeLog, src/slimaudio/slimaudio_buffer.c,

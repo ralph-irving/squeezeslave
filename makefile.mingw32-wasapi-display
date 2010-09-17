@@ -19,7 +19,7 @@ LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
-LIBPORTAUDIO=portaudio-r1534
+LIBPORTAUDIO=portaudio-r1539
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
 
