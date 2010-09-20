@@ -1,3 +1,17 @@
+2010-09-17 21:24  paddockd
+
+	* [r190] ChangeLog, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  makefile.osx-i64-display, makefile.osx-intel-display,
+	  makefile.osx-ppc-display, sources/portaudio-r1539.tar.gz,
+	  src/slimaudio/slimaudio_buffer.c,
+	  src/squeezeslave/squeezeslave.c: Removed setting read_stream eof
+	  to true in buffer_read blocking fix.
+	  Upgraded all makefiles to PADEV r1539.
+	  Increased versions to 190.
+
 2010-09-17 15:23  paddockd
 
 	* [r189] ChangeLog, TODO, src/slimaudio/slimaudio_http.c,

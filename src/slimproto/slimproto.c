@@ -196,15 +196,18 @@ void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t
 	pthread_mutex_unlock(&p->slimproto_mutex);	
 }
 
-/* socktimeout must be in milliseconds. */
 int slimproto_configure_socket(int sockfd, int socktimeout)
 {
 	int retcode = 0;
 	struct timeval timeout;
 	int flag = 1;
 
-	timeout.tv_sec = 0;
-	timeout.tv_usec = socktimeout * 1000;
+#ifdef __WIN32__
+	timeout.tv_sec = socktimeout * 1000;
+#else
+	timeout.tv_sec = socktimeout;
+#endif
+	timeout.tv_usec = 0;
 
 	if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag, sizeof(flag) ) != 0)
 	{
@@ -296,7 +299,7 @@ static int proto_connect(slimproto_t *p) {
 			goto proto_connect_err;
 	}
 
-	if ( slimproto_configure_socket (p->sockfd, 30000) != 0 )
+	if ( slimproto_configure_socket (p->sockfd, 30) != 0 )
 	{
 		CLOSESOCKET(p->sockfd);
 		goto proto_connect_err;
