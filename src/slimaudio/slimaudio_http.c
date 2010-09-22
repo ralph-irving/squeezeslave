@@ -25,7 +25,6 @@
 
 #ifdef __WIN32__
   #include <winsock.h>
-  #define SHUT_WR SD_SEND
   typedef SOCKET socket_t;
   #define CLOSESOCKET(s) closesocket(s)
   #define SOCKETERROR WSAGetLastError()
@@ -204,13 +203,6 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	if (n < 0)
 	{
 		DEBUGF("http_send: (1) n=%i  msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
-		CLOSESOCKET(fd);
-		return;
-	}
-
-	if (shutdown(fd, SHUT_WR) != 0)
-	{
-		perror("slimaudio_http_connect: error shutting down socket writes");
 		CLOSESOCKET(fd);
 		return;
 	}

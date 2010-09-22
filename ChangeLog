@@ -1,3 +1,14 @@
+2010-09-20 12:01  paddockd
+
+	* [r191] ChangeLog, sources/portaudio-r1528.tar.gz,
+	  src/slimproto/slimproto.c, src/squeezeslave/squeezeslave.c:
+	  Deleted obsolete source portaudio-r1528.tar.gz.
+	  Reverted r187 change slimproto_configure_socket socktimeout
+	  parameter to use milliseconds for finer timeout control as lnx26
+	  builds fail to connect with 'Error setting receive socket
+	  timeout: Numerical argument out of domain'
+	  Increased version to 191.
+
 2010-09-17 21:24  paddockd
 
 	* [r190] ChangeLog, makefile.linux24-alsa-display,

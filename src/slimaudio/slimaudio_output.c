@@ -462,9 +462,7 @@ static void *output_thread(void *ptr) {
 				}
 
 				DEBUGF("output_thread PLAY: %llu\n",audio->pa_streamtime_offset);
-#if 0
-				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_NONBLOCKING);
-#endif
+
 				audio->output_state = PLAYING;
 
 				pthread_cond_broadcast(&audio->output_cond);
@@ -641,12 +639,12 @@ void slimaudio_output_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
 
-	if ( (audio->output_state == PLAYING) || (audio->output_state == PAUSED) ) {
+	if ( audio->output_state == PLAYING ) {
 		pthread_mutex_unlock(&audio->output_mutex);
 		return;
 	}
 	
-	audio->output_state = PAUSE;
+	audio->output_state = BUFFERING;
 
 	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
 
