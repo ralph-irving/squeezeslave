@@ -67,13 +67,15 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 
 	audio->decoder_end_of_stream = false;
 	
-    if ((err = ov_open_callbacks(audio, &audio->oggvorbis_file, NULL, 0, callbacks)) < 0) {
-    	fprintf(stderr, "Error in ov_open_callbacks %i\n", err);
-    	return -1;	
-    }
+	if ((err = ov_open_callbacks(audio, &audio->oggvorbis_file, NULL, 0, callbacks)) < 0)
+	{
+		DEBUGF("libvorbis: (ogg) ov_open_callbacks failed (%i)\n", err);
+		return -1;
+	}
 	
 	int bytes_read;
 	int current_bitstream;
+	bool ogg_continue = true;
 	char buffer[AUDIO_CHUNK_SIZE];
 	
 	do {
@@ -83,35 +85,40 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, 0, 2, 1, &current_bitstream);
 #endif
 		switch (bytes_read) {
-		case OV_HOLE:
+
+		case OV_HOLE: /* Recoverable error in stream */
+			RDEBUGF("libvorbis: (ogg) decoding error OV_HOLE ((0x%04x)\n", bytes_read );
+			break ;
+
 		case OV_EBADLINK:
-	    		RDEBUGF("Error decoding vorbis stream\n");
-			goto vorbis_error;
+			DEBUGF("libvorbis: (ogg) decoding error OV_EBADLINK ((0x%04x)\n", bytes_read );
+			ogg_continue = false ;
+			break;
+
+		case OV_EINVAL:
+			DEBUGF("libvorbis: (ogg) decoding error OV_EINVAL ((0x%04x)\n", bytes_read );
+			ogg_continue = false ;
+			break ;
 		
-		case 0: // End of file	
+		case 0: // End of file
+			ogg_continue = false ;
 			break;
 			
 		default:
 			slimaudio_buffer_write(audio->output_buffer, buffer, bytes_read);
 		}
 
-	} while (bytes_read > 0);
+	} while ( ogg_continue || (bytes_read > 0) );
 	
-	if ((err = ov_clear(&audio->oggvorbis_file)) < 0) {
-		fprintf(stderr, "Error in ov_clear %i\n", err);
+	if ((err = ov_clear(&audio->oggvorbis_file)) < 0)
+	{
+		DEBUGF("libvorbis: (ogg) ov_clear failed (%i)\n", err);
 		return -1;	
 	}
 
 	DEBUGF("slimaudio_decoder_vorbis_process: end\n");
 
 	return 0;
-	
-vorbis_error:
-	if ((err = ov_clear(&audio->oggvorbis_file)) < 0) {
-		fprintf(stderr, "Error in ov_clear %i\n", err);
-	}
-
-	return -1;
 }
 
 
