@@ -1,3 +1,34 @@
+2010-09-23 11:58  paddockd
+
+	* [r194] logs/sb3take6somuch2say.log,
+	  makefile.linux24-alsa-display, makefile.linux26-alsa-display,
+	  makefile.linux26-i64-alsa-display,
+	  makefile.linux26-ppc-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  makefile.osx-i64-display, makefile.osx-intel-display,
+	  makefile.osx-ppc-display, sources/portaudio-r1541.tar.gz,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/squeezeslave/squeezeslave.c: Fixed ogg decoder handling for
+	  ov_read returning OV_HOLE. OGG stream positioning no longer fails
+	  when clicking the time bar in the default skin.
+	  Upgraded all makefiles to PADEV r1541. To fix excessive log
+	  messages when Pa_IsFormatSupported is used to test for supported
+	  sample rates and some of them are not supported by device.
+	  Increased version to 194.
+
+2010-09-22 11:27  paddockd
+
+	* [r193] ChangeLog, src/slimaudio/slimaudio_http.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Reverted r187 shutdown call
+	  addition in slimaudio_http as it was generating WSAError
+	  WSAECONNRESET (10054) errors. This caused the player to advance
+	  to the next track before it was finished playing the current one.
+	  Reverted r185 slimaudio_output_connect to r134 behaviour after
+	  observing constant connecting messages when opening internet
+	  streams.
+	  Increased version to 193.
+
 2010-09-20 12:01  paddockd
 
 	* [r191] ChangeLog, sources/portaudio-r1528.tar.gz,

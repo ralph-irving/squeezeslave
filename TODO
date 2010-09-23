@@ -1,81 +1,31 @@
-I have been adding debuging information through squeezeslave to watch
-the buffers and they seem okay the http-> decoder-> output.  I have
-tried increasing them to no avail.
+---
 
-The place it blocks is writing to the decoder buffer (just read off
-http and trying to write to decoders buffer.
-
-I have let portaudio ask for the number of frames to transfer on its
-call back and it seems to default to 1024 (it was hard coded as 256
-before), I have tried placing this back again to no avail, there is
-more buffer interaction, but the waits are still in the same place.
-
-More investigations into this shows that read_buffer is not returning
-eof when there's no data available in the http buffer, it blocks waiting
-for http to get more but the trigger STMd is not being sent to get more
-data as it relies on the decoder finishing.
+Investigate no audio after resume from sleep on windows 7 asio
 
 ---
 
-Need to look at supporting skip in calculations as well.
+Confirm STMf is still enabled
 
 ---
-http://forums.slimdevices.com/member.php?u=10044
 
-I've just started to use SS (and find it great to use as a virtual Squeezebox on a PC, espec combined with Moose as a front-end) - however I spotted a few of these errors on the cmd window:
+Squeezeslave currently locks after selecting a new time position using interactive mode via holding >< keys.
 
-libmad: (mp3) decoding error (0x0101)
-libmad: (mp3) decoding error (0x0101)
-libmad: (mp3) decoding error (0x0238)
+---
 
-I'm running SS 0.8-25 on Vista/32. I'm afraid I've no idea though which tracks the errors correlate to since the SS window is minimised and I don't recall any major issues - possibly some minor sound glitches.
+Investigate adding command line option to specify output and decoder buffer sizes.
 
-Any ideas what specifically I should be looking out for WRT mp3 files?
+---
 
-The 0x0101 (lost synchronization) error is returned by libmad when it fails to find the requisite sync word at the expected location in the bitstream. It usually indicates either (1) a corrupt bitstream, or (2) stream buffer mismanagement in your code. Since the error is fully recoverable, in the case of (1) the solution is simply to continue decoding.
+Investigate holding in audio_output BUFFERING state change until enough data is in the pipeline.
+Should not be using pthread_mutex_lock in PA callback nothing more than pthread_mutex_trylock see http://ptgmedia.pearsoncmg.com/images/0201633922/sourcecode/trylock.c for details.
+Investigate replacing buffering code with pa_ringbuffer code.
+Investigate removing non-blocking socket code from http recv setup.  Adrian's patch might be all we need.
 
-In the case of (2), the most common problem is a failure to copy the unconsumed portion of the bitstream to the beginning of the new buffer after receiving MAD_ERROR_BUFLEN. However, madplay does this correctly, so if you are actually running madplay under ARM unmodified, this should not be a problem.
+---
 
-If the error occurs with any MP3 file, especially at the same frame index (at the same bitrate), then buffer management is definitely a likely culprit.
-
-The 0x0238 error is a Huffman data overrun error. It happens when the actual big_values section of the bitstream occupies more space than was declared by the bitstream for it. This can happen because the Huffman code words are variable length and the actual length is learned implicitly during decoding.
-
-Most often this is an indication of an error made by an encoder, but it's also possible to happen if there is an error in MAD's Huffman code tables or the process of reading them. As the Huffman table union initialization macros are subject to portability issues, this is a possible source of the problem if you get a lot of these errors.
-
-> In file mad.h you have all the error codes:
->
->   MAD_ERROR_LOSTSYNC       = 0x0101,    /* lost synchronization */
->
-> I'm quite new to MAD too but I've experienced this one
-> already. You get this error when your input function
-> places other than MPEG Audio frames in the MAD input
-> buffer. I experienced this with some files that had
-> some ID tags in the beginning of the file. I had to
-> find the first frame (frame synchronization) and place
-> *that* in the MAD input buffer. In other words, try to
-> skip the something in the beginning of your file and
-> make sure you always give MAD MPEG Audio frames only.
-
-Just to clarify, libmad returns this error whenever it expected to find an 
-MPEG audio sync word (marking the beginning of a frame) but found 
-something else instead. It's mostly an informational error; when you call 
-the decoding routine again it will automatically search for the next sync 
-word in the stream and resynchronize.
-
-There are two cases when libmad expects to find a sync word:
-
-1. After a call to mad_stream_buffer(), a sync word is expected to be 
-found at the beginning of the buffer.
-
-2. After successfully decoding a frame header and calculating the frame's 
-size, another sync word is expected immediately to follow the frame.
-
-When this error is returned, stream->this_frame points to the place in the 
-stream where a sync word was expected.
-
-Usually this error is an indication that something else is in the 
-bitstream, such as an ID3 tag. In this case you might call id3_tag_query() 
-to see if it really is a tag and either read or skip it.
+r1526 no badstate patch after 7 songs on hera
+Expression 'paTimedOut' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2926
+Expression 'PaAlsaStream_WaitForFrames( stream, &framesAvail, &xrun )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 3328
 
 ---
 
@@ -132,14 +82,6 @@ An Open Interface for
 Network Programming under
 Microsoft Windows
 http://www.sockets.com/winsock.htm#Deviation_Select
-
----
-
-Investigate no audio after resume from sleep on windows 7 asio
-
----
-
-Confirm STMf is still enabled
 
 ---
 
@@ -245,10 +187,6 @@ Investigate buffering message remaining at 0% when starting remote streams.
 
 ---
 
-Investigate adding command line option to specify output and decoder buffer sizes.
-
----
-
 recv timeout
 http://www.gidforums.com/t-16791.html
 
@@ -259,18 +197,5 @@ winsock urls
 http://tangentsoft.net/wskfaq/newbie.html
 http://oldwiki.mingw.org/index.php/sockets
 http://old.nabble.com/socket-and-version-can%27t-be-linked-td16026957.html
-
----
-
-Investigate holding in audio_output BUFFERING state change until enough data is in the pipeline.
-Should not be using pthread_mutex_lock in PA callback nothing more than pthread_mutex_trylock see http://ptgmedia.pearsoncmg.com/images/0201633922/sourcecode/trylock.c for details.
-Investigate replacing buffering code with pa_ringbuffer code.
-Investigate removing non-blocking socket code from http recv setup.  Adrian's patch might be all we need.
-
----
-
-r1526 no badstate patch after 7 songs on hera
-Expression 'paTimedOut' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2926
-Expression 'PaAlsaStream_WaitForFrames( stream, &framesAvail, &xrun )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 3328
 
 ---
