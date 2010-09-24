@@ -1,0 +1,314 @@
+Index: src/slimaudio/slimaudio_http.c
+===================================================================
+--- src/slimaudio/slimaudio_http.c	(revision 186)
++++ src/slimaudio/slimaudio_http.c	(working copy)
+@@ -25,7 +25,10 @@
+ 
+ #ifdef __WIN32__
+   #include <winsock.h>
++  typedef SOCKET socket_t;
++  #define SHUT_WR SD_SEND
+   #define CLOSESOCKET(s) closesocket(s)
++  #define SOCKETERROR WSAGetLastError()
+ #else
+   #include <arpa/inet.h>
+   #include <unistd.h>
+@@ -33,8 +36,11 @@
+   #include <netdb.h>
+   #include <sys/socket.h>
+   #include <sys/time.h>
++  #include <fcntl.h>
+   #include <errno.h>
++  typedef int socket_t;
+   #define CLOSESOCKET(s) close(s)
++  #define SOCKETERROR errno
+ #endif
+ 
+ #include "slimaudio/slimaudio.h"
+@@ -132,6 +138,9 @@
+ 
+ 				pthread_cond_broadcast(&audio->http_cond);
+ 
++				/* Wake up decoder in case it's still waiting for data */
++				pthread_cond_broadcast(&audio->decoder_cond);
++
+ 				break;
+ 				
+ 			case STREAM_STOPPED:
+@@ -156,7 +165,47 @@
+ }
+ 
+ 
+-void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
++int socket_write (int fd, char *message)
++{
++	ssize_t n;
++	size_t len = strlen(message);
++	
++	/* send http request to server */
++	DEBUGF("slimaudio_http_connect: http request %s\n", message);
++
++	while ( len > 0 )
++	{	
++		n = send(fd, message, len, slimproto_get_socketsendflags());
++
++		if (n < 0
++#ifdef __WIN32__
++			&& (SOCKETERROR != WSAEINTR)
++#else
++			&& (SOCKETERROR != EAGAIN)
++#endif
++			)
++		{
++			DEBUGF("http_send: (1) n=%i  msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
++			CLOSESOCKET(fd);
++			return -1;
++		}
++		len -= n;
++	}
++
++
++        if (shutdown(fd, SHUT_WR) != 0)
++	{
++                CLOSESOCKET(fd);
++                return -2;
++        }
++
++	return (int) len;
++}
++
++int slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
++	int flags;
++	int err;
++
+ 	slimaudio_http_disconnect(audio);
+ 	
+ 	struct sockaddr_in serv_addr = audio->proto->serv_addr;
+@@ -170,58 +219,73 @@
+ 	DEBUGF("slimaudio_http_connect: http connect %s:%i\n", 
+ 	       inet_ntoa(serv_addr.sin_addr), msg->strm.server_port);
+ 	
+-	const int fd = socket(AF_INET, SOCK_STREAM, 0);
++	const socket_t fd = socket(AF_INET, SOCK_STREAM, 0);
+ 	if (fd < 0) {
+ 		perror("slimaudio_http_connect: Error opening socket");
+-		return;
++		return -1;
+ 	}
+ 
++	/* Make socket non-blocking */
++#ifdef __WIN32__
++        {
++                u_long iMode = 0;
++                flags = ioctlsocket(fd, FIONBIO, &iMode);
++        }
++#else
++        flags = fcntl(fd, F_GETFL, 0);
++        flags |= O_NONBLOCK;
++        fcntl(fd, F_SETFL, flags);
++#endif
++
++        /* Connect socket */
++        err = connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
++        if (err != 0
++#ifndef __WIN32__
++                &&  (SOCKETERROR != EINPROGRESS)
++#endif
++                )
++	{	/* TODO Handle error gracefully, currently hangs SS */
++		perror("slimaudio_http_connect: error connecting to server");
++                CLOSESOCKET(fd);
++                return -1;
++        }
++
++#if 0
+         if ( slimproto_configure_socket (fd, 0) != 0 )
+         {
+ 		perror("slimaudio_http_connect: error configuring socket");
+                 CLOSESOCKET(fd);
+-                return;
++                return -1;
+         }
+ 
+ 	if (connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
+ 		perror("slimaudio_http_connect: error connecting to server");
+ 		CLOSESOCKET(fd);
+-		return;
++		return -1;
+ 	}
+-
++#endif
+ 	slimaudio_stat(audio, "STMe", (u32_t) 0); /* Stream connection established */
+ 
+-	/* send http request to server */
+-	DEBUGF("slimaudio_http_connect: http request %s\n", msg->strm.http_hdr);
++	if ( socket_write (fd, msg->strm.http_hdr) )
++		return -1;
+ 
+-	int n = send(fd, msg->strm.http_hdr, strlen(msg->strm.http_hdr), slimproto_get_socketsendflags());
+-
+-	if (n < 0)
+-	{
+-#ifdef __WIN32__
+-		/* Use WSAGetLastError instead of errno for WIN32 */
+-		DEBUGF("http_send: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+-#else
+-		DEBUGF("http_send: (1) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
+-#endif
+-		CLOSESOCKET(fd);
+-	}
+-
+ 	/* read http header */
+ 	char http_hdr[HTTP_HEADER_LENGTH];
+ 	int pos = 0;
+ 	int crlf = 0;
++	ssize_t n = 0;
+ 	
+ 	do {
+ 		n = recv(fd, http_hdr+pos, 1, 0);
+-		if (n < 0)
+-		{
++                if (n < 0
+ #ifdef __WIN32__
+-			/* Use WSAGetLastError instead of errno for WIN32 */
+-			DEBUGF("http_recv: (1) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
++                        && (SOCKETERROR != WSAEINTR)
+ #else
+-			DEBUGF("http_recv: (1) n=%i  msg=%s(%i)\n", n, strerror(errno), errno);
++                        && (SOCKETERROR != EAGAIN)
+ #endif
++                        )
++		{
++			DEBUGF("http_recv: (1) n=%i  msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
+ 			CLOSESOCKET(fd);
+ 		}
+ 
+@@ -277,6 +341,8 @@
+ 	pthread_mutex_unlock(&audio->http_mutex);	
+ 
+ 	pthread_cond_broadcast(&audio->http_cond);
++
++	return 0;
+ }
+ 
+ void slimaudio_http_disconnect(slimaudio_t *audio) {
+@@ -305,45 +371,71 @@
+ 
+ static void http_recv(slimaudio_t *audio) {
+ 	char buf[AUDIO_CHUNK_SIZE];
+-	struct timeval timeOut; 
+-	fd_set fdread;
+ 	u32_t decode_bytes_available;
++        u32_t decode_num_tracks_started;
++        u32_t autostart_threshold;
+ 
++	struct timeval timeOut; 
++	fd_set fdread, fdexcept;
++	int retval;
++
+ 	timeOut.tv_sec  = 0; 
+ 	timeOut.tv_usec = 100*1000; /* wait for up to 100ms */
+ 
+-	FD_ZERO(&fdread); 
+-	FD_SET(audio->streamfd, &fdread);  
++	FD_ZERO(&fdread);
++	FD_ZERO(&fdexcept);
++	FD_SET(audio->streamfd, &fdread);
++	FD_SET(audio->streamfd, &fdexcept);
+ 
+-	if (select(audio->streamfd + 1, &fdread, NULL, &fdread, &timeOut) == 0)
++	retval = select(audio->streamfd + 1, &fdread, NULL, &fdexcept, &timeOut);
++
++	/* Timed out */
++	if ( retval == 0 )
+ 	{
+-		return;
++		DEBUGF("select: (2) retval=%i msg=%s(%i)\n", retval, strerror(SOCKETERROR), SOCKETERROR);
++		return ;
+ 	}
+ 
+-	int n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, 0);
+-
+-	/* n == 0 http stream closed by server */
+-	if (n <= 0) {
+-#ifdef __WIN32__
+-		/* Use WSAGetLastError instead of errno for WIN32 */
+-		DEBUGF("http_recv: (2) n=%i WSAGetLastError=(%i)\n", n, WSAGetLastError());
+-#else
+-		DEBUGF("http_recv: (2) n=%i msg=%s(%i)\n", n, strerror(errno), errno);
+-#endif
++	/* Socket error or some other TCP/IP error triggered select */
++	if ( (retval == -1) || (FD_ISSET(audio->streamfd, &fdexcept)) )
++	{
++		DEBUGF("select: (1) retval=%i  msg=%s(%i)\n", retval, strerror(SOCKETERROR), SOCKETERROR);
+ 		http_close(audio);
+-		return;
++		return ;
+ 	}
+ 
+-	VDEBUGF("http_recv: audio n=%i\n", n);
+-	slimaudio_buffer_write(audio->decoder_buffer, buf, n);
+-	decode_bytes_available = slimaudio_buffer_available(audio->decoder_buffer) ;
++	/* Data is available on the socket, get it */
++	if ( FD_ISSET(audio->streamfd, &fdread) )
++	{
++		int n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, MSG_DONTWAIT);
+ 
+-	pthread_mutex_lock(&audio->http_mutex);
++		/* n == 0 http stream closed by server */
++		if (n <= 0)
++		{
++			DEBUGF("http_recv: (2) n=%i  msg=%s(%i)\n", n, strerror(SOCKETERROR), SOCKETERROR);
++			http_close(audio);
++			return;
++		}
++
++		VDEBUGF("http_recv: audio n=%i\n", n);
++		slimaudio_buffer_write(audio->decoder_buffer, buf, n);
++		decode_bytes_available = slimaudio_buffer_available(audio->decoder_buffer) ;
++
++		pthread_mutex_lock(&audio->http_mutex);
+ 	
+-	audio->http_total_bytes += n;
+-	audio->http_stream_bytes += n;
+-	
+-	if (audio->autostart && (decode_bytes_available >= audio->autostart_threshold)) {
++		audio->http_total_bytes += n;
++		audio->http_stream_bytes += n;
++
++	}
++
++        /* If this is the first track ignore server autostart_threshold */
++        if ( ! decode_num_tracks_started )
++                autostart_threshold = 40000L;
++        else
++                autostart_threshold = audio->autostart_threshold;
++
++        if (audio->autostart && decode_bytes_available >= autostart_threshold)
++	{
+ 		DEBUGF("http_recv: AUTOSTART at %u\n", decode_bytes_available);
+ 		audio->autostart = false;
+ 
+@@ -355,7 +447,8 @@
+ 		pthread_cond_broadcast(&audio->http_cond);				
+ 		slimaudio_output_unpause(audio);
+ 	}
+-	else {
++	else
++	{
+ 		pthread_mutex_unlock(&audio->http_mutex);
+ 		pthread_cond_broadcast(&audio->http_cond);				
+ 	}
+Index: src/slimaudio/slimaudio.h
+===================================================================
+--- src/slimaudio/slimaudio.h	(revision 186)
++++ src/slimaudio/slimaudio.h	(working copy)
+@@ -171,7 +171,7 @@
+ 
+ int slimaudio_http_open(slimaudio_t *a);
+ int slimaudio_http_close(slimaudio_t *a);
+-void slimaudio_http_connect(slimaudio_t *a, slimproto_msg_t *msg);
++int slimaudio_http_connect(slimaudio_t *a, slimproto_msg_t *msg);
+ void slimaudio_http_disconnect(slimaudio_t *a);
+ 
+ 

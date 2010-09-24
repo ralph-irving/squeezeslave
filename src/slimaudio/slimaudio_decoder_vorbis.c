@@ -108,7 +108,7 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 			slimaudio_buffer_write(audio->output_buffer, buffer, bytes_read);
 		}
 
-	} while ( ogg_continue || (bytes_read > 0) );
+	} while ( ogg_continue );
 	
 	if ((err = ov_clear(&audio->oggvorbis_file)) < 0)
 	{

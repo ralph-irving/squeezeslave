@@ -4,22 +4,22 @@ Investigate no audio after resume from sleep on windows 7 asio
 
 ---
 
-Confirm STMf is still enabled
-
----
-
-Squeezeslave currently locks after selecting a new time position using interactive mode via holding >< keys.
-
----
-
 Investigate adding command line option to specify output and decoder buffer sizes.
 
 ---
 
-Investigate holding in audio_output BUFFERING state change until enough data is in the pipeline.
+Add AAC decoder support using faad2.
+
+---
+
+Add WMA decoder support using ffmpeg.
+
+---
+
+Add STMo No more decoded (uncompressed) data to play status message.
+
+---
 Should not be using pthread_mutex_lock in PA callback nothing more than pthread_mutex_trylock see http://ptgmedia.pearsoncmg.com/images/0201633922/sourcecode/trylock.c for details.
-Investigate replacing buffering code with pa_ringbuffer code.
-Investigate removing non-blocking socket code from http recv setup.  Adrian's patch might be all we need.
 
 ---
 
