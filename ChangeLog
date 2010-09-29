@@ -1,3 +1,11 @@
+2010-09-29 11:51  paddockd
+
+	* [r197] ChangeLog, ReleaseNotes, ReleaseNotes-0.9, TODO,
+	  config/custom-convert.conf.441, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added PA callback buffer
+	  underflow debug message.
+	  Increased version to 197.
+
 2010-09-24 12:41  paddockd
 
 	* [r196] ChangeLog, TODO, patches/httpnonblocking.patch,

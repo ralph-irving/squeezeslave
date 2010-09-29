@@ -360,14 +360,10 @@ unsigned char printable(unsigned char c) {
          return '@';
 	 break;;
       case 145: //note
-#ifdef __WIN32__
 	 return ' ';
-#else
-         return 182;
-#endif
 	 break;;
       case 152: //bell
-         return 229;
+         return 'o';
 	 break;;
       default:
          return c;
