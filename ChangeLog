@@ -1,3 +1,10 @@
+2010-09-24 12:41  paddockd
+
+	* [r196] ChangeLog, TODO, patches/httpnonblocking.patch,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/squeezeslave/squeezeslave.c: Cleaned up OGG fix from r194.
+	  Increased version to 196.
+
 2010-09-23 12:16  paddockd
 
 	* [r195] ChangeLog, TODO: TODO list updates.

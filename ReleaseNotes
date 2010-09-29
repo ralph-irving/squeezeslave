@@ -1,107 +1,37 @@
-Squeezeslave 0.9-133 is now available at
+Initial WASAPI win32 makefile added.
 
-[url]http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/[/url]
+Removed the windows pthreadGC2.dll dependency.
 
-[b]Direct Download[/b]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-win32.zip/download]Windows 32-bit Direct Sound and ASIO[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-osx.tar.gz/download]Mac OSX 32-bit PowerPC and Intel[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-lnx26.tar.gz/download]Linux v2.6 kernel Pentium II or better 32/64-bit ALSA, Pulseaudio and OSS[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-lnx24.tar.gz/download]Linux v2.4 kernel Pentium II or better 32-bit ALSA and OSS[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MXX or better OSS statically linked[/url]
+Added option to increase the process priority class to high for windows using -H/--highpriority.  Thanks to Uri Savoray for the enhancement.
 
-[b]What's new in Squeezeslave 0.9-133[/b]
+Fixed datarace in slimaudio_buffer_set_readopt and slimaudio_buffer_available functions.
 
-Fix for bug 14740 squeezeslave becomes unresponsive when playing remote streams with SBS 7.4r28009 and above.
-        Thanks to Adrian Smith for the patch.
+Upgraded libogg to v1.2.0.
 
-You can now interact with squeezeslave via the keyboard and control the player like the slimp3, sb2/3 and boom hardware players on all platforms.  Note that bit mapped graphics are not available, only text characters can be displayed.  Requires SBS v7.4 r26720+.  7.2/7.3 server patches are supplied in the binary package files.  See -D and -w options for usage details.
+Upgraded libvorbis to v1.3.1.
 
-LIRC and LCDd features are currently NOT available in the win32 release.
+Added portaudio hostapi name to output device listings.
 
-This [url=http://ralph_irving.users.sourceforge.net/ssdisp.jpeg]screen shot[/url] is an 80x4 command prompt window running squeezeslave with these parameters.
-[code]squeezeslave.exe -r15 -Ysqueezeslave.log -D -w78[/code]
+Added -S/--shared option for WASAPI devices. AKA Shared Mode.
+Added display of low/high latency info in device listing.
 
-Key mappings are listed in the --help/-h information as well.
+Added -y/--latency option.
 
-[code]
-Keyboard         Remote
+Added OSX 64bit Intel makefile.
 
-0-9              0-9
-Insert           Add               
-Cursor Keys      Arrows
->,<              Fwd,Rew
-Home             Home
-End              Now Playing
-Space or P       Pause
-Enter            Play
-R                Repeat
-S                Shuffle
-?                Search
-B                Browse
-F                Favourites
-%                Size
-Z                Sleep
-+,-              Vol up,down[/code]
+Deleted deprecated linux24 and linux26 non-interactive makefiles.  Functionality now provided by -display makefiles.  See deprecated/README.txt for details.
 
-The displayed information can be changed in the player settings for the squeezeslave player.
+Added workaround for unavailable keys Insert, Home and End with an Apple keyboard in OSX terminal interactive mode.
 
-Added squeezebox server --port/-P option.
+Fixed PA audio callback blocking when in output buffer underrun situation.
 
-Mono audio file and stream support added for FLAC, PCM and MP3.  OGG still exhibits the "chipmunk" effect.  Stream format supported is still only 44.1KHz 16-bit.
+Fixed unlocking of buffer_mutex before data_len update.
 
-Removed obsolete --playerid/-e option.
+Fixed buffer_read remaining blocked after the buffer has been closed.
 
-Merged DAEMONIZE and INTERACTIVE options to remove the need to build separate binaries.
+Use autostart_threshold of 40000 instead of server threshold for the first track only.
 
-New OpenSolaris Intel binary included in the solaris package.
+Fixed ogg decoder handling for ov_read returning OV_HOLE.  OGG stream positioning no longer fails when clicking the time bar in the default skin.
 
-[b]What changed in Squeezeslave 0.9-95[/b]
+Upgraded all makefiles to PADEV r1541. To fix excessive log messages when Pa_IsFormatSupported is used to test for supported sample rates and some of them are not supported by device.
 
-Added pre-check to audio device listing -L option to confirm device supports 44.1KHz, 16-bit, 2 channel audio playback.
-If not, the device is not listed in Output Devices.
-The -o<device> option still allows you to select any device number, but the subsequent audio device open call will most likely fail.
-
-Fixed a solaris segmentation fault in Pa_QueryDevice audioctl device name creation.
-
-Fixed a segmentation fault in the mp3 decoder.
-
-All binaries use the r1420 development version of the portaudio library, except the Solaris and Linux v2.4.
-A version using the stable portaudio library is also included, those filenames that end in -pastable.
-
-An ASIO version is now included in the win32 zip file.
-
-Makefiles now build all required support libraries; portaudio, flac, ogg, vorbis and mad.
-There are Linux PPC Makefiles available in the source repository to build squeezeslave for PS3 and Linux based Macs.
-
-If you have problems with the precompiled binaries for linux, please checkout the source and build yourself.
-There have been many issues lately with system libraries and the linux binaries that have been solved by building your own.
-
-Linux, NetBSD, FreeBSD and Windows build instructions are on the [url=http://wiki.slimdevices.com/index.php/SqueezeSlave]wiki[/url].
-
-Replay gain now supported with Squeezecenter v7.4 r26720 or later. Positive dB replay gain values are ignored to prevent clipping.  Patches are included for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.  Enabling replay gain for a squeezeslave player without the appropriate patch applied to squeezecenter is not recommended or supported.
-
-Slimp3 style display and keyboard support for linux with Squeezecenter v7.4 r26720 or later.  Support for External LCD displays and IR remotes are provided using LCDd and lirc respectively (linux only). A .lircrc config file for the slimdevices remote is included. See --help for details.  Patches are included for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.
-
-Thanks to Adrian Smith for getting the display and replay gain changes into Squeezecenter 7.4.
-
-Stream position reporting no longer resets to zero after a pause/unpause.
-
---oldplayer/-O option has been removed as the latest versions of Squeezecenter's softsqueeze playertype fails to advance to the next track in the playlist.  The --playerid/-e option can be used to force squeezeslave to connect using the softsqueeze player type if needed.
-
---debuglog/-Y option added to send all message to the given filename instead of the current display.  Useful when running squeezeslave in interactive (display) mode to keep any error messages from corrupting the display output.
-
-You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/trunk/squeezeslave]here[/url] or download it with subversion.
-[code]
-svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
-[/code]
-
-Known Bugs
-
-OSX systems can take up to 20 seconds to enter sleep mode when running squeezeslave under launchctl.
-
-If squeezeslave is playing when sleep mode is activated, no audio will be heard after system resume. Stop and restart the player from the web gui to restore audio. 
-
-Playing an ogg or mp3 file with a duration of less than 30 seconds as the first track in a playlist prevents switching to the next track in the playlist. You need to advance to the next track manually.  This bug appears to be deeply rooted in the buffering code.  See the TODO file in the source tree for more info.
-
-Changing playlist after pausing causes the playback of a short piece of the previously playing song at pause before the new playlist begins.

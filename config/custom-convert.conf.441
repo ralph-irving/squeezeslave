@@ -37,3 +37,7 @@
 mp3 flc squeezeslave *
     # FRT:{START=-ss %s}U:{DURATION=-endpos %w}
     [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -af volume=0,resample=44100:0:1,channels=2 -ao pcm:file=/dev/fd/3 $FILE$ | [flac] -cs --totally-silent --compression-level-0 -
+
+flc flc squeezeslave *
+	# FT:{START=--skip=%t}U:{END=--until=%v}
+	[flac] -dcs $START$ $END$ -- $FILE$ | [sox] -q -t wav - -t flac -C 0 -b 16 -r 44.1k -

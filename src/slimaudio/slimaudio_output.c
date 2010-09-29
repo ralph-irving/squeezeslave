@@ -843,9 +843,14 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		int data_len = len - off;
 
 		if (slimaudio_buffer_available(audio->output_buffer) > 0)
+		{
 			ok = slimaudio_buffer_read( audio->output_buffer, (char *) outputBuffer+off, &data_len);
+		}
 		else
+		{
 			ok = SLIMAUDIO_BUFFER_STREAM_UNDERRUN;
+			DEBUGF("pa_callback: SLIMAUDIO_BUFFER_STREAM_UNDERRUN\n");
+		}
 
 		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 			/* stream closed */

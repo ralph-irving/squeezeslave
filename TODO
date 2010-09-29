@@ -8,6 +8,10 @@ Investigate adding command line option to specify output and decoder buffer size
 
 ---
 
+Investigate toggle_handler usage of SIGUSR2 when USE_SIGNALS_FOR_RESTART not defined.
+
+---
+
 Add AAC decoder support using faad2.
 
 ---
@@ -18,7 +22,8 @@ Add WMA decoder support using ffmpeg.
 
 Add STMo No more decoded (uncompressed) data to play status message.
 
----
+___
+
 Should not be using pthread_mutex_lock in PA callback nothing more than pthread_mutex_trylock see http://ptgmedia.pearsoncmg.com/images/0201633922/sourcecode/trylock.c for details.
 
 ---
