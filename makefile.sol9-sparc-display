@@ -39,7 +39,7 @@ LIBGETOPT=lib/libgetopt.a
 
 SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a $(LIBCURSES) lib/lirc/$(OS)/lib/liblirc_client.a
 
-SQUEEZESLAVE=bin/squeezeslave-display
+SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o

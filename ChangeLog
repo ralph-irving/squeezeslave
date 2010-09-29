@@ -1,3 +1,11 @@
+2010-09-29 13:45  paddockd
+
+	* [r198] ChangeLog, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c: Changed interactive printable
+	  call to return 7-bit ascii only to avoid multibyte character
+	  locales messing up the display.
+	  Increased version to 198.
+
 2010-09-29 11:51  paddockd
 
 	* [r197] ChangeLog, ReleaseNotes, ReleaseNotes-0.9, TODO,
