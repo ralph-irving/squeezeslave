@@ -104,6 +104,7 @@ static FLAC__StreamDecoderReadStatus flac_read_callback(const FLAC__StreamDecode
 	VDEBUGF("flac_read_callback state=%i\n", audio->decoder_state);
 	if (audio->decoder_state != STREAM_PLAYING) {
 		pthread_mutex_unlock(&audio->decoder_mutex);
+		DEBUGF("slimaudio_decoder_flac_process: STREAM_NOT_PLAYING\n");
 				
 		*bytes = 0;
 		return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
@@ -113,12 +114,14 @@ static FLAC__StreamDecoderReadStatus flac_read_callback(const FLAC__StreamDecode
 	
 	if (audio->decoder_end_of_stream) {
 		*bytes = 0;
+		DEBUGF("slimaudio_decoder_flac_process: done\n");
 		return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;		
 	}
 	
 	int data_len = *bytes;
 	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, (char*) buffer, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
+		DEBUGF("slimaudio_decoder_flac_process: EOS\n");
 		audio->decoder_end_of_stream = true;
 	}
 

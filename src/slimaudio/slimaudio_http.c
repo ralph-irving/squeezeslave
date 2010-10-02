@@ -303,7 +303,6 @@ static void http_recv(slimaudio_t *audio) {
 	char buf[AUDIO_CHUNK_SIZE];
 	struct timeval timeOut; 
 	fd_set fdread;
-	u32_t decode_bytes_available;
 	u32_t decode_num_tracks_started;
 	u32_t autostart_threshold;
 
@@ -332,8 +331,6 @@ static void http_recv(slimaudio_t *audio) {
 
 	slimaudio_buffer_write(audio->decoder_buffer, buf, n);
 
-	decode_bytes_available = slimaudio_buffer_available(audio->decoder_buffer) ;
-
 	pthread_mutex_lock(&audio->output_mutex);
 	decode_num_tracks_started = audio->decode_num_tracks_started;
 	pthread_mutex_unlock(&audio->output_mutex);
@@ -343,15 +340,27 @@ static void http_recv(slimaudio_t *audio) {
 	audio->http_total_bytes += n;
 	audio->http_stream_bytes += n;
 
-	/* If this is the first track ignore server autostart_threshold */
-	if ( ! decode_num_tracks_started )
-		autostart_threshold = 40000L;
-	else
-		autostart_threshold = audio->autostart_threshold;
+	autostart_threshold = audio->autostart_threshold;
 
-	if (audio->autostart && decode_bytes_available >= autostart_threshold)
+	if ( !decode_num_tracks_started )
 	{
-		DEBUGF("http_recv: AUTOSTART at %u\n", decode_bytes_available);
+		switch (audio->decoder_mode)
+		{
+			case 'o':
+			case 'm':
+				autostart_threshold = 40000L;
+				break;
+			default:
+				break;
+		}
+	}
+
+	VDEBUGF("http_recv: decode_num_tracks_started %u decode_bytes_available %u\n",
+		decode_num_tracks_started, audio->http_stream_bytes );
+
+	if (audio->autostart && (audio->http_stream_bytes >= autostart_threshold) )
+	{
+		DEBUGF("http_recv: AUTOSTART at %u threshold %u\n", audio->http_stream_bytes, autostart_threshold);
 		audio->autostart = false;
 
 		/* Notify buffer threshold has been reached */

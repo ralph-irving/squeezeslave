@@ -35,3 +35,4 @@ Fixed ogg decoder handling for ov_read returning OV_HOLE.  OGG stream positionin
 
 Upgraded all makefiles to PADEV r1541. To fix excessive log messages when Pa_IsFormatSupported is used to test for supported sample rates and some of them are not supported by device.
 
+Squeezeslave will not work with the spotify plugin as direct streaming is not supported.

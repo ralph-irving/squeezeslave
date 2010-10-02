@@ -887,7 +887,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 
 			audio->pa_streamtime_offset = audio->stream_samples;
 
-			DEBUGF("pa_callback: STREAM_START:output_STMs:%i\n",audio->output_STMs);
+			DEBUGF("pa_callback: STREAM_START:output_STMs:%i tracks:%i\n",
+				audio->output_STMs, audio->decode_num_tracks_started);
 
 			pthread_mutex_unlock(&audio->output_mutex);
 			pthread_cond_broadcast(&audio->output_cond);

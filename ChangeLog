@@ -1,3 +1,9 @@
+2010-09-29 15:45  paddockd
+
+	* [r199] ChangeLog, makefile.sol10-intel-display,
+	  makefile.sol10-sparc-display, makefile.sol9-sparc-display:
+	  Removed -display from solaris binary name.
+
 2010-09-29 13:45  paddockd
 
 	* [r198] ChangeLog, src/squeezeslave/interactive.c,
