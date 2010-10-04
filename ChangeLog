@@ -1,3 +1,14 @@
+2010-10-04 11:34  paddockd
+
+	* [r201] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/squeezeslave/squeezeslave.c: Increased decoder/output buffer
+	  sizes as r200 50% reduction introduced audio dropouts.
+	  Revision Decoder sizes in bytes r199:3145728 r200:1572864
+	  r201:2097152
+	  Revision Output sizes in bytes r199:3528000 (10s) r200:1764000
+	  (5s) r201:2116800 (6s)
+	  Increased version to 201.
+
 2010-10-02 11:37  paddockd
 
 	* [r200] ChangeLog, ReleaseNotes, src/slimaudio/slimaudio.h,

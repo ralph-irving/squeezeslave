@@ -44,7 +44,7 @@
 #define PA_DEFAULT_DEVICE	(0)
 #else
 #define DECODER_BUFFER_SIZE	(2048*1024)
-#define OUTPUT_BUFFER_SIZE	(6*2*44100*4)
+#define OUTPUT_BUFFER_SIZE	(8*2*44100*4)
 #define PA_DEFAULT_DEVICE	(-1)
 typedef int	PaDeviceIndex;
 #endif
