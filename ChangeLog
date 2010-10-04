@@ -1,3 +1,10 @@
+2010-10-04 12:02  paddockd
+
+	* [r202] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/squeezeslave/squeezeslave.c: Increased output buffer size to
+	  2822400 (8s) as r201 still exhibits audio dropouts on windows.
+	  Increased version to 202.
+
 2010-10-04 11:34  paddockd
 
 	* [r201] ChangeLog, src/slimaudio/slimaudio.h,
