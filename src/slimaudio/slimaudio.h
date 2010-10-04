@@ -38,13 +38,12 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio_buffer.h"
 
-#ifdef PORTAUDIO_DEV
 #define DECODER_BUFFER_SIZE	(2048*1024)
 #define OUTPUT_BUFFER_SIZE	(8*2*44100*4)
+
+#ifdef PORTAUDIO_DEV
 #define PA_DEFAULT_DEVICE	(0)
 #else
-#define DECODER_BUFFER_SIZE	(2048*1024)
-#define OUTPUT_BUFFER_SIZE	(8*2*44100*4)
 #define PA_DEFAULT_DEVICE	(-1)
 typedef int	PaDeviceIndex;
 #endif

@@ -1,3 +1,10 @@
+2010-10-04 12:44  paddockd
+
+	* [r203] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/squeezeslave/squeezeslave.c: Missed increasing output buffer
+	  size to 8s when using PADEV.
+	  Increased version to 203.
+
 2010-10-04 12:02  paddockd
 
 	* [r202] ChangeLog, src/slimaudio/slimaudio.h,

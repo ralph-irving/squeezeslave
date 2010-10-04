@@ -306,6 +306,9 @@ void print_version(void) {
 #endif
 	fprintf(stdout, "\n");
 
+	fprintf(stdout, "buffer sizes: decoder %u output %u bytes\n",DECODER_BUFFER_SIZE, OUTPUT_BUFFER_SIZE);
+	fprintf(stdout, "\n");
+
 	fprintf(stdout, "Copyright 2004-2007 Richard Titmuss, 2008-2010 Duane Paddock.\n");
 
 	fprintf (stdout,
