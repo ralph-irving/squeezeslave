@@ -1,3 +1,16 @@
+2010-10-02 11:37  paddockd
+
+	* [r200] ChangeLog, ReleaseNotes, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added DEBUG statements to flac
+	  decoder.
+	  Reduced both OUTPUT and DECODER buffer sizes by 50%.
+	  Reverted r169 decode_bytes_available commit.
+	  Use autostart_threshold of 40000 instead of server threshold for
+	  the first track only for mp3 and ogg streams.
+	  Increased version to 200.
+
 2010-09-29 15:45  paddockd
 
 	* [r199] ChangeLog, makefile.sol10-intel-display,
