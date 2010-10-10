@@ -28,9 +28,7 @@ Should not be using pthread_mutex_lock in PA callback nothing more than pthread_
 
 ---
 
-r1526 no badstate patch after 7 songs on hera
-Expression 'paTimedOut' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2926
-Expression 'PaAlsaStream_WaitForFrames( stream, &framesAvail, &xrun )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 3328
+Investigate removal of lirc display and not daemon requirements. See http://forums.slimdevices.com/showpost.php?p=581573&postcount=343
 
 ---
 

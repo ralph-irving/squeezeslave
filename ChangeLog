@@ -1,3 +1,11 @@
+2010-10-04 18:50  paddockd
+
+	* [r204] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Removed
+	  duplicate decoder/output buffer size declarations.
+	  Added buffer sizes display to -V/--version.
+	  Increased version to 204.
+
 2010-10-04 12:44  paddockd
 
 	* [r203] ChangeLog, src/slimaudio/slimaudio.h,
