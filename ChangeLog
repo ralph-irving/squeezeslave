@@ -1,3 +1,16 @@
+2010-10-10 13:41  paddockd
+
+	* [r205] ChangeLog, TODO, contrib, contrib/makefile.freebsd,
+	  contrib/makefile.linux26-armel-alsa-display,
+	  contrib/makefile.linux26-armel-oss,
+	  contrib/makefile.linux26-mipsel-oss, contrib/makefile.netbsd,
+	  makefile.freebsd, makefile.linux26-armel-oss,
+	  makefile.linux26-mipsel-oss, makefile.netbsd,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Moved
+	  contributed makefiles to contrib folder.
+	  Updated latency option description.
+	  Increased version to 205.
+
 2010-10-04 18:50  paddockd
 
 	* [r204] ChangeLog, src/slimaudio/slimaudio.h,

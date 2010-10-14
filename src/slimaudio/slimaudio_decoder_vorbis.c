@@ -79,7 +79,9 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 	char buffer[AUDIO_CHUNK_SIZE];
 	
 	do {
-#ifdef __BIG_ENDIAN__
+#if defined(NO_FPU) /* Use Tremor fixed point vorbis decoder */
+		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, &current_bitstream);
+#elif defined(__BIG_ENDIAN__)
 		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, 1, 2, 1, &current_bitstream);
 #else /* __LITTLE_ENDIAN__ */
 		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, 0, 2, 1, &current_bitstream);
