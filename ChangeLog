@@ -1,3 +1,24 @@
+2010-10-25 23:27  paddockd
+
+	* [r207] contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-mipsel-nofpu-oss,
+	  patches/build-portaudio-mipps.patch: Removed DEBUG from
+	  mipsel-nofpu-oss makefile.
+	  Added mipsel-nofpu-alsa makefile. Requires alsa-lib in cross
+	  compile build environment otherwise only OSS is available.
+
+2010-10-14 11:22  paddockd
+
+	* [r206] ChangeLog, contrib/makefile.linux26-mipsel-nofpu-oss,
+	  sources/tremor-r17503.tar.bz2,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/squeezeslave/squeezeslave.c: Added Tremor fixed point
+	  Ogg/Vorbis decoder source.
+	  Added Popcorn Hour MIPSEL No FPU OSS makefile.
+	  Added NO_FPU define to use Tremor ov_read call parameters instead
+	  of libvorbis.
+	  Increased version to 206.
+
 2010-10-10 13:41  paddockd
 
 	* [r205] ChangeLog, TODO, contrib, contrib/makefile.freebsd,
@@ -6,8 +27,10 @@
 	  contrib/makefile.linux26-mipsel-oss, contrib/makefile.netbsd,
 	  makefile.freebsd, makefile.linux26-armel-oss,
 	  makefile.linux26-mipsel-oss, makefile.netbsd,
-	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Moved
-	  contributed makefiles to contrib folder.
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  ARMel ALSA makefile for the Seagate FreeAgent DockStar
+	  contributed by Gon.
+	  Moved contributed makefiles to contrib folder.
 	  Updated latency option description.
 	  Increased version to 205.
 

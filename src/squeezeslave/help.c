@@ -304,6 +304,9 @@ void print_version(void) {
 #ifdef DAEMONIZE
 	fprintf(stdout, "daemon ");
 #endif
+#ifdef NO_FPU
+	fprintf(stdout, "nofpu ");
+#endif
 	fprintf(stdout, "\n");
 
 	fprintf(stdout, "buffer sizes: decoder %u output %u bytes\n",DECODER_BUFFER_SIZE, OUTPUT_BUFFER_SIZE);
