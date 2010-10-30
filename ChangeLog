@@ -1,3 +1,13 @@
+2010-10-26 12:11  paddockd
+
+	* [r208] ChangeLog, contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  linux nofpu padev display makefiles which use the Tremor fixed
+	  point vorbis decoder.
+	  Added nofpu display option to --version/-V.
+	  Increased version to 208.
+
 2010-10-25 23:27  paddockd
 
 	* [r207] contrib/makefile.linux26-mipsel-nofpu-alsa,

@@ -44,7 +44,7 @@ LIBGETOPT=lib/libgetopt.a
 
 SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisidec.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a
 
-SQUEEZESLAVE=bin/squeezeslave-pch
+SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o

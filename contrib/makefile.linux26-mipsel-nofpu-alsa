@@ -17,8 +17,8 @@ CP=cp
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float -static
-LDFLAGS=-s -static
+CFLAGS=-DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float
+LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
@@ -42,7 +42,7 @@ LIBGETOPT=lib/libgetopt.a
 
 SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisidec.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a
 
-SQUEEZESLAVE=bin/squeezeslave-pch
+SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
@@ -50,11 +50,12 @@ SQUEEZESLAVE=bin/squeezeslave-pch
 all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
 lib/libportaudio/$(OS)/lib/libportaudio.a:
+	cd lib/libportaudio/$(OS) && ${TAR} --bzip -xf ../../../sources/mipsel-alsa-lib.tar.bz2
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/badstate-pa_linux_alsa.patch
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && ${CP} ../../../../../patches/build-portaudio-mipps.patch config.sub
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPP="$(CPP)" CXXCPP="$(CPP)" CPPFLAGS="$(CFLAGS) -I`pwd`/../../include" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -I`pwd`/../../include" CPP="$(CPP)" CXXCPP="$(CPP)" CPPFLAGS="$(CFLAGS) -I`pwd`/../../include" LDFLAGS="$(LDFLAGS) -L`pwd`/../../lib" ./configure --without-jack --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	${CP} -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	${CP} -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
@@ -99,8 +100,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	# $(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lasound -lrt -lpthread -lm
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm -Llib/libportaudio/$(OS)/lib -lasound
 
 clean:
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
@@ -117,6 +117,8 @@ realclean: clean
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
 	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
 	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
+	-@rm -rf lib/libportaudio/$(OS)/include/alsa lib/libportaudio/$(OS)/lib/pkgconfig
+	-@rm -rf lib/libportaudio/$(OS)/lib/alsa-lib
 	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
 	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
 	-@rm -f lib/vorbis/$(OS)/lib/libvorbisidec.a
@@ -124,4 +126,5 @@ realclean: clean
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
+	-@rm -f lib/libportaudio/$(OS)/lib/{libasound.la,libasound.so,libasound.so.2,libasound.so.2.0.0}
 
