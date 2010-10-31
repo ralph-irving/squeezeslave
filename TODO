@@ -32,6 +32,11 @@ Investigate removal of lirc display and not daemon requirements. See http://foru
 
 ---
 
+Investigate Tremor fixed point ogg decoder crashing when playing one track for a long amount of time.
+ie. Playing a 2 hour pod cast or an OGG internet stream, squeezeslave crashes after ~10 minutes.
+
+---
+
 http://lists.apple.com/archives/macnetworkprog/2004/Mar/msg00021.html
 
 Recv will return 0 *only* to indicate that the socket was cleanly closed
@@ -89,7 +94,10 @@ http://www.sockets.com/winsock.htm#Deviation_Select
 ---
 
 Investigate buffering message remaining at 0% when starting remote streams.
-
+slimaudio_buffer_available returns the currently available number of bytes in the buffer.
+However it doesn't take into account bytes that have been consumed, so during startup
+the decoder is constantly removing data and therefore keeps the number of bytes available
+near zero.  Need to implement a counter similiar to http_stream_bytes in slimaudio_http.c
 
 [10-03-13 06:55:54.9399] Slim::Player::StreamingController::play (1954) 00:17:31:7b:88:7b
 [10-03-13 06:55:54.9407] Slim::Player::Squeezebox::stream (980) strm-q
