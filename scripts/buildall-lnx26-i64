@@ -1,13 +1,13 @@
 #!/bin/bash
 VER=`svnversion`
 
-make -f makefile.linux26-i64-alsa realclean
-make -f makefile.linux26-i64-alsa
-mv bin/squeezeslave bin/squeezeslave-lnx26-i64-0.9-$VER
-make -f makefile.linux26-i64-alsa realclean
-
-make -f makefile.linux26-i64-alsa-display  realclean
+make -f makefile.linux26-i64-alsa-display realclean
 make -f makefile.linux26-i64-alsa-display
-mv bin/squeezeslave bin/squeezeslave-lnx26-i64-display-0.9-$VER
+
+gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx26/lib/libportaudio.a lib/libmad/lnx26/lib/libmad.a lib/vorbis/lnx26/lib/libvorbisfile.a lib/vorbis/lnx26/lib/libvorbis.a lib/vorbis/lnx26/lib/libvorbisenc.a lib/vorbis/lnx26/lib/libogg.a lib/flac/lnx26/lib/libFLAC.a -lasound -lrt -lpthread -lm /usr/lib/libncurses.a /usr/lib/liblirc_client.a
+
+gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx26i64/lib/libportaudio.a lib/libmad/lnx26i64/lib/libmad.a lib/vorbis/lnx26i64/lib/libvorbisfile.a lib/vorbis/lnx26i64/lib/libvorbis.a lib/vorbis/lnx26i64/lib/libvorbisenc.a lib/vorbis/lnx26i64/lib/libogg.a lib/flac/lnx26i64/lib/libFLAC.a -lasound -lrt -lpthread -lm /usr/lib/libncurses.a /usr/lib/liblirc_client.a
+
+mv bin/squeezeslave bin/squeezeslave-lnx26-i64-1.0-$VER
 make -f makefile.linux26-i64-alsa-display realclean
 

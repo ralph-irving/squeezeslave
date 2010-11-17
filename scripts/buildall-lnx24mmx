@@ -9,12 +9,3 @@ gcc -static -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave
 mv bin/squeezeslave bin/squeezeslave-mmx-display
 make -f makefile.linux24-i586-display clean
 
-make -f makefile.linux24-i586 clean
-make -f makefile.linux24-i586
-
-gcc -static -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libportaudio.a /usr/lib/libmad.a /usr/lib/libFLAC.a /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a -lpthread -lm
-
-mv bin/squeezeslave bin/squeezeslave-mmx
-
-make -f makefile.linux24-i586 clean
-

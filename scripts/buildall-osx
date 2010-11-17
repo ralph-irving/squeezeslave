@@ -8,14 +8,14 @@ if [ "`uname -r`" == "8.4.1" ]; then
     make -f makefile.osx-ppc-display realclean
     make -f makefile.osx-ppc-display
 
-    mv bin/squeezeslave bin/squeezeslave-ppc-0.9-$VER
+    mv bin/squeezeslave bin/squeezeslave-ppc-1.0-$VER
 
     make -f makefile.osx-ppc-display realclean
 
     make -f makefile.osx-intel-display realclean
     make -f makefile.osx-intel-display
 
-    mv bin/squeezeslave bin/squeezeslave-intel-0.9-$VER
+    mv bin/squeezeslave bin/squeezeslave-intel-1.0-$VER
 fi
 
 if [ "`uname -r`" == "10.4.1" ]; then
@@ -26,5 +26,5 @@ if [ "`uname -r`" == "10.4.1" ]; then
     make -f makefile.osx-i64-display realclean
     make -f makefile.osx-i64-display
 
-    mv bin/squeezeslave bin/squeezeslave-i64-0.9-$VER
+    mv bin/squeezeslave bin/squeezeslave-i64-1.0-$VER
 fi

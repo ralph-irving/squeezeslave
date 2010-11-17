@@ -37,6 +37,16 @@ ie. Playing a 2 hour pod cast or an OGG internet stream, squeezeslave crashes af
 
 ---
 
+Investigate unreachable code at line 159 of slimaudio_http.c from SunPROC compiler on sol10 intel.
+"src/slimaudio/slimaudio_http.c", line 159: warning: statement not reached
+
+---
+
+WMA stream for testing ffmpeg decoder integration.
+http://somafm.com/wma128/groovesalad.asx
+
+---
+
 http://lists.apple.com/archives/macnetworkprog/2004/Mar/msg00021.html
 
 Recv will return 0 *only* to indicate that the socket was cleanly closed

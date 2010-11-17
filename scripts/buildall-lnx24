@@ -1,35 +1,19 @@
 #!/bin/bash
 VER=`svnversion`
 
-make -f makefile.linux24  realclean
-make -f makefile.linux24
-
-gcc -static -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libportaudio.a lib/libslimproto.a lib/libgetopt.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lpthread -lm
-
-mv bin/squeezeslave bin/squeezeslave-lnx24-pastable-0.9-$VER
-make -f makefile.linux24  realclean
-
 make -f makefile.linux24-display realclean
 make -f makefile.linux24-display
 
-gcc -static -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libportaudio.a lib/libslimproto.a lib/libgetopt.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lpthread -lm -lcurses -llirc_client
+gcc -s -static -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libportaudio.a lib/libslimproto.a lib/libgetopt.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lpthread -lm -lcurses -llirc_client
 
-mv bin/squeezeslave bin/squeezeslave-lnx24-display-pastable-0.9-$VER
+mv bin/squeezeslave bin/squeezeslave-lnx24-oss-1.0-$VER
 make -f makefile.linux24-display realclean
 
-make -f makefile.linux24-alsa realclean
-make -f makefile.linux24-alsa
-
-gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx24/lib/libportaudio.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lasound -lrt -lpthread -lm
-
-mv bin/squeezeslave bin/squeezeslave-lnx24-0.9-$VER
-make -f makefile.linux24-alsa realclean
-
-make -f makefile.linux24-alsa-display  realclean
+make -f makefile.linux24-alsa-display realclean
 make -f makefile.linux24-alsa-display  
 
-gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx24/lib/libportaudio.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lasound -lrt -lpthread -lm /usr/lib/libcurses.a /usr/lib/liblirc_client.a
+gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx24/lib/libportaudio.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lasound -lrt -lpthread -lm /usr/lib/libncurses.a /usr/lib/liblirc_client.a
 
-mv bin/squeezeslave bin/squeezeslave-lnx24-display-0.9-$VER
+mv bin/squeezeslave bin/squeezeslave-lnx24-alsa-1.0-$VER
 make -f makefile.linux24-alsa-display realclean
 

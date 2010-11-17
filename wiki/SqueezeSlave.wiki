@@ -10,7 +10,9 @@
 
 [[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
 
-If you have problems with [[SqueezeSlave]] read the support thread at http://forums.slimdevices.com/showthread.php?t=63966 for additional help.
+If you have problems with [[SqueezeSlave]] read the support thread at http://forums.slimdevices.com/showthread.php?p=589850 for additional help.
+
+Version 1.0 fixes a long standing bug in the buffering code that caused playback to not advance after the end of the first track when the duration of the track was less than 30 seconds.  The bug also caused several online music services like LastFM and Napster to exhibit the problem. Version 1.0 works with Squeezebox Server versions 7.3.4 through 7.6 r31503.  Server versions older than 7.3.4 have not been tested so YMMV.
 
 Version 0.9 brings replay gain support with [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
 Positive dB replay gain values are ignored to prevent clipping.
@@ -26,7 +28,7 @@ For older versions of [[SqueezeCenter]] the replay gain patches below include th
 
 Patch files squeezecenter_squeezeslave_player3-7.3.patch and squeezecenter_squeezeslave_player3-7.2.patch are included in the binary packages if that build has the features enabled for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.  They are also available in the source tree under the patches subdirectory.
 
-Executable versions for Windows, Linux Intel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/
+Executable versions for Windows, Linux Intel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/
 
 Makefiles are available for NetBSD and FreeBSD, see build instructions below.
 
@@ -36,7 +38,7 @@ Makefiles are available for NetBSD and FreeBSD, see build instructions below.
 
 === Mac OS X installation ===
 
-The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-0.9.133/squeezeslave-0.9-133.1-osx.tar.gz/download . Unpacking the file gives a folder with
+The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-osx.tar.gz/download . Unpacking the file gives a folder with
 * A GNU <code>LICENSE.txt</code>
 * An <code>squeezeslave-ppc</code> and
 * a <code>squeezeslave-intel</code> executable.
@@ -166,7 +168,7 @@ makefile.linux26-alsa-display
 
 makefile.linux26-i64-alsa-display
 
-*Linux 2.6 32-bit PowerPC kernel (PS3, PPC Mac), OSS, ALSA and pulseaudio audio drivers
+*Linux 2.6 32-bit PowerPC kernel (PS3, PPC Mac Linux), OSS, ALSA and pulseaudio audio drivers
 
 makefile.linux26-ppc-alsa-display
 
@@ -330,6 +332,8 @@ To build an ASIO binary you need to obtain Steinberg's ASIO SDK asiosdk2.2.zip f
 
 You'll need to download the DirectX SDK file DXSDK_Mar09.exe or older from http://www.microsoft.com/downloads/details.aspx?FamilyID=24A541D6-0486-4453-8641-1EEE9E21B282&displaylang=en as it's not included in the repository.  The DXSDK_Aug09.exe and DXSDK_Feb10.exe releases do NOT compile with squeezeslave as the dsound.h file includes header files only available from Visual Studio.  If the version of the SDK you're using is not DXSDK_Mar09.exe you'll need to update the filename in the makefile as well.  The DirectX SDK is not needed for the ASIO build.
 
+The WASAPI version does not require any additional files be downloaded for a successful build.
+
 Launch a 'Cygwin Bash Shell" command prompt window.  The icon should be on your Desktop.
 
  svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
@@ -345,6 +349,10 @@ Launch a 'Cygwin Bash Shell" command prompt window.  The icon should be on your 
  make -f makefile.mingw32-asio-display realclean
  make -f makefile.mingw32-asio-display
 
+ <i>WASAPI build</i>
+ make -f makefile.mingw32-wasapi-display realclean
+ make -f makefile.mingw32-wasapi-display
+
 Upon successfull completion, you'll find a file in the bin/ directory called squeezeslave.exe.  Several makefiles append a hyphen and an additional word to help identify the "flavour" of the build for packaging purposes.
 
 == Command Line Switches ==
@@ -358,17 +366,22 @@ For example;
 
 squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
 
-=== Squeezeslave 0.9-133 (Windows) ===
+=== Squeezeslave 1.0-210 (Windows) ===
 <code>
- squeezeslave 0.9-133
- compile flags: win32 portaudio:1420 debug interactive 
+ squeezeslave 1.0-210 Oct 31 2010 18:39:41
+ compile flags: windows portaudio:1541:wasapi debug interactive 
+ buffer sizes: decoder 2097152 output 2822400 bytes
+ 
+ Copyright 2004-2007 Richard Titmuss, 2008-2010 Duane Paddock.
+ This is free software; see the source for copying conditions. There is NO
+ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  
  squeezeslave [options] [<server address>]
  The Squeezebox Server address defaults to 127.0.0.1.
  Options:
- -h, --help:                 Prints this message.
+ -h, --help                  Prints this message.
  -a,                         Sets the amplitude of a high-frequency tone
- --predelay_amplitude <val>: produced during the predelay (see --predelay).
+ --predelay_amplitude <val>  produced during the predelay (see --predelay).
                              The frequency is set at the source's sampling
                              rate/2 and the amplitude is in absolute value.
                              For 16-bit sources, the max is 32767, but values
@@ -377,67 +390,75 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                              to wake-up and lock before actual samples are
                              played out.  If the DAC locks using only silence,
                              do not use this option (it will default to 0).
- -k, --keepalive <sec>:      Controls how frequently squeezeslave sends a
-                             alive signal to SqueezeCenter.  6.5.x servers
+ -k, --keepalive <sec>       Controls how frequently squeezeslave sends a
+                             alive signal to Squeezebox Server.  6.5.x servers
                              need this to avoid dropping the player's
                              connection.  By default, the implementation
                              chooses the right value: 10s for a >=6.5.x server
                              and 0s for a <6.5.x server, which means no
                              keepalive.
+ -H, --highpriority          Change process priority class to high.
+ -S, --shared                Use shared mode for a WasApi device.
+                             Settings in Control Panel for a shared device
+                             must be set to 16-bit, 44100 Hz (CD Quality).
+                             ** Available on WASAPI version only. **
  -D, --display               Enable slimp3 style text display and
                              keyboard input.
                              Keys: 0-9:             0-9
-                                   Insert           Add
+                                   Insert or I      Add
                                    Cursor Keys      Arrows
                                    >,<              Fwd,Rew
-                                   Home             Home
-                                   End              Now Playing
+                                   Home or H        Home
+                                   End or N         Now Playing
                                    Space or P       Pause
                                    Enter            Play
+                                   Q                Quit
                                    R                Repeat
                                    S                Shuffle
                                    ?                Search
-                                   B                Browse
+                                   b                Browse
                                    F                Favourites
                                    %                Size
                                    Z                Sleep
                                    +,-              Vol up,down
  -w, --width <chars>         Set the display width to <chars> characters
  -L, --list                  List available audio devices and exit.
- -m, --mac <mac_address>:    Sets the mac address for this instance.
+ -m, --mac <mac_address>     Sets the mac address for this instance.
                              Use the colon-separated notation.
                              The default is 00:00:00:00:00:01.
-                             SqueezeCenter uses this value to distinguish
+                             Squeezebox Server uses this value to distinguish
                              multiple instances, allowing per-player settings.
- -o, --output <device_id>:   Sets the output device id.
+ -o, --output <device_id>    Sets the output device id.
                              The default id is 0.
                              The output device ids can be found with -L.
- -P, --port <portnumber>:    Sets the SqueezeCenter port number.
+ -P, --port <portnumber>     Sets the Squeezebox Server port number.
                              The default port is 3483.
- -p, --predelay <msec>:      Sets a delay before any playback is started.  This
+ -p, --predelay <msec>       Sets a delay before any playback is started.  This
                              is useful if the DAC used for output is slow to
                              wake-up/lock, causing the first few samples to be
                              dropped.
- --retry                     Causes the program to retry connecting to
-                             SqueezeCenter until it succeeds or is stopped using
-                             SIGTERM or keyboard entry (see -s/--signal).
-                             If the connection to SqueezeCenter is lost, the
+ -R, --retry                 Causes the program to retry connecting to
+                             Squeezebox Server until it succeeds or is stopped
+                             using SIGTERM or keyboard entry.
+                             If the connection to Squeezebox Server is lost, the
                              program will poll it until it restarts.  --retry
                              enables retry with a 5 second delay between
                              attempts.
- -r <sec>                    For a different retry interval use -r and the
+ -r <sec>, --intretry <sec>  For a different retry interval use -r and the
                              desired interval in seconds. (ie. -r10)
                              A value is required for this option.
- -s, --signal:               Ignored. Always uses SIGTERM to exit.
- -V, --version:              Prints the squeezeslave version.
- -v, --volume <sw|off>:      Enables/disables volume changes done by
-                             SqueezeCenter during its operation, such as when
-                             changing the volume through the web interface or
-                             when applying replay gain.  Defaults to sw.
+ -V, --version               Prints the squeezeslave version.
+ -v, --volume <sw|off>       Enables/disables volume changes done by
+                             Squeezebox Server during its operation, such as
+                             when changing the volume through the web interface
+                             or when applying replay gain.  Defaults to sw.
                                    sw:  volume changes performed in software.
                                    off: volume changes ignored.
- -Y, --debuglog <logfile>:   Redirect debug output from stderr to <logfile>.
- -d, --debug <trace_name>:   Turns on debug tracing for the specified level.
+ -y, --latency <msec>        Modify the default latency for the audio device.
+                             Useful if you experience drop outs during playback.
+                             Values between 80-200 ms are recommended.
+ -Y, --debuglog <logfile>    Redirect debug output from stderr to <logfile>.
+ -d, --debug <trace_name>    Turns on debug tracing for the specified level.
                              The option can be used multiple times to enable
                              multiple levels.
                              Available levels:
@@ -455,17 +476,22 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_output_v
 </code>
 
-=== Squeezeslave 0.9-133 (Unix) ===
+=== Squeezeslave 1.0-210 (Unix) ===
 <code>
- squeezeslave 0.9-133
- compile flags: linux portaudio:1420 debug interactive daemon 
+ squeezeslave 1.0-210 Oct 31 2010 16:35:58
+ compile flags: linux portaudio:1541 debug interactive daemon 
+ buffer sizes: decoder 2097152 output 2822400 bytes
+ 
+ Copyright 2004-2007 Richard Titmuss, 2008-2010 Duane Paddock.
+ This is free software; see the source for copying conditions. There is NO
+ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  
  squeezeslave [options] [<server address>]
  The Squeezebox Server address defaults to 127.0.0.1.
  Options:
- -h, --help:                 Prints this message.
+ -h, --help                  Prints this message.
  -a,                         Sets the amplitude of a high-frequency tone
- --predelay_amplitude <val>: produced during the predelay (see --predelay).
+ --predelay_amplitude <val>  produced during the predelay (see --predelay).
                              The frequency is set at the source's sampling
                              rate/2 and the amplitude is in absolute value.
                              For 16-bit sources, the max is 32767, but values
@@ -474,8 +500,8 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                              to wake-up and lock before actual samples are
                              played out.  If the DAC locks using only silence,
                              do not use this option (it will default to 0).
- -k, --keepalive <sec>:      Controls how frequently squeezeslave sends a
-                             alive signal to SqueezeCenter.  6.5.x servers
+ -k, --keepalive <sec>       Controls how frequently squeezeslave sends a
+                             alive signal to Squeezebox Server.  6.5.x servers
                              need this to avoid dropping the player's
                              connection.  By default, the implementation
                              chooses the right value: 10s for a >=6.5.x server
@@ -485,22 +511,23 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                              Requires LCDd running on local host.
  -i, --lirc                  Enable lirc remote control support.
                              Requires lirc running on local host.
- -c, --lircrc <filename>:    Location of lirc client configuration file.
+ -c, --lircrc <filename>     Location of lirc client configuration file.
                              Default: ~/.lircrc
  -D, --display               Enable slimp3 style text display and
                              keyboard input.
                              Keys: 0-9:             0-9
-                                   Insert           Add
+                                   Insert or I      Add
                                    Cursor Keys      Arrows
                                    >,<              Fwd,Rew
-                                   Home             Home
-                                   End              Now Playing
+                                   Home or H        Home
+                                   End or N         Now Playing
                                    Space or P       Pause
                                    Enter            Play
+                                   Q                Quit
                                    R                Repeat
                                    S                Shuffle
                                    ?                Search
-                                   B                Browse
+                                   b                Browse
                                    F                Favourites
                                    %                Size
                                    Z                Sleep
@@ -511,40 +538,42 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                              Messages written to specified file.
                              Not supported with lirc and display modes.
  -L, --list                  List available audio devices and exit.
- -m, --mac <mac_address>:    Sets the mac address for this instance.
+ -m, --mac <mac_address>     Sets the mac address for this instance.
                              Use the colon-separated notation.
                              The default is 00:00:00:00:00:01.
-                             SqueezeCenter uses this value to distinguish
+                             Squeezebox Server uses this value to distinguish
                              multiple instances, allowing per-player settings.
- -o, --output <device_id>:   Sets the output device id.
+ -o, --output <device_id>    Sets the output device id.
                              The default id is 0.
                              The output device ids can be found with -L.
- -P, --port <portnumber>:    Sets the SqueezeCenter port number.
+ -P, --port <portnumber>     Sets the Squeezebox Server port number.
                              The default port is 3483.
- -p, --predelay <msec>:      Sets a delay before any playback is started.  This
+ -p, --predelay <msec>       Sets a delay before any playback is started.  This
                              is useful if the DAC used for output is slow to
                              wake-up/lock, causing the first few samples to be
                              dropped.
- --retry                     Causes the program to retry connecting to
-                             SqueezeCenter until it succeeds or is stopped using
-                             SIGTERM or keyboard entry (see -s/--signal).
-                             If the connection to SqueezeCenter is lost, the
+ -R, --retry                 Causes the program to retry connecting to
+                             Squeezebox Server until it succeeds or is stopped
+                             using SIGTERM or keyboard entry.
+                             If the connection to Squeezebox Server is lost, the
                              program will poll it until it restarts.  --retry
                              enables retry with a 5 second delay between
                              attempts.
- -r <sec>                    For a different retry interval use -r and the
+ -r <sec>, --intretry <sec>  For a different retry interval use -r and the
                              desired interval in seconds. (ie. -r10)
                              A value is required for this option.
- -s, --signal:               Ignored. Always uses SIGTERM to exit.
- -V, --version:              Prints the squeezeslave version.
- -v, --volume <sw|off>:      Enables/disables volume changes done by
-                             SqueezeCenter during its operation, such as when
-                             changing the volume through the web interface or
-                             when applying replay gain.  Defaults to sw.
+ -V, --version               Prints the squeezeslave version.
+ -v, --volume <sw|off>       Enables/disables volume changes done by
+                             Squeezebox Server during its operation, such as
+                             when changing the volume through the web interface
+                             or when applying replay gain.  Defaults to sw.
                                    sw:  volume changes performed in software.
                                    off: volume changes ignored.
- -Y, --debuglog <logfile>:   Redirect debug output from stderr to <logfile>.
- -d, --debug <trace_name>:   Turns on debug tracing for the specified level.
+ -y, --latency <msec>        Modify the default latency for the audio device.
+                             Useful if you experience drop outs during playback.
+                             Values between 80-200 ms are recommended.
+ -Y, --debuglog <logfile>    Redirect debug output from stderr to <logfile>.
+ -d, --debug <trace_name>    Turns on debug tracing for the specified level.
                              The option can be used multiple times to enable
                              multiple levels.
                              Available levels:
@@ -560,6 +589,5 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_http_v
                                    slimaudio_output
                                    slimaudio_output_v
-
 </code>
 
