@@ -10,7 +10,7 @@ Squeezeslave 1.0-210 is now available at
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel and OpenSolaris 32/64-bit Intel[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx26.tar.gz/download]Linux v2.6 kernel 32/64-bit Intel ALSA, Pulseaudio and OSS[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24.tar.gz/download]Linux v2.4 kernel 32-bit Intel ALSA and OSS[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MXX or better OSS statically linked[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MMX or better OSS statically linked[/url]
 
 [URL=http://ralph_irving.users.sourceforge.net/ss10disp.jpeg/][IMG]http://ralph_irving.users.sourceforge.net/ss10disp.jpeg[/IMG][/URL]
 
@@ -33,7 +33,7 @@ Added workaround for unavailable keys Insert, Home and End with an Apple keyboar
 Added portaudio hostapi name and low/high latency info to output device listing.
 
 Added -y/--latency command line option to allow tuning the audio buffers to prevent audio dropouts or "skipping".
-This issue is mainly seen on Linux and systems and I have found the following values eliminates the dropouts.
+This issue is mainly seen on Linux systems and I have found the following values eliminates the dropouts.
 For Linux 2.6 kernels add -y84 or  2.4 add -y140 to the command line.
 This increases the CPU utilization of squeezeslave, while streaming.
 These are the recommended starting values but can be increased by even values if dropouts are still heard.

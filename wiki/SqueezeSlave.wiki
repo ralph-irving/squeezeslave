@@ -10,9 +10,9 @@
 
 [[SqueezeSlave]] is currently maintained by Ralph Irving http://forums.slimdevices.com/member.php?u=3484.
 
-If you have problems with [[SqueezeSlave]] read the support thread at http://forums.slimdevices.com/showthread.php?p=589850 for additional help.
+If you have problems with [[SqueezeSlave]] read the support thread at http://forums.slimdevices.com/showthread.php?t=83362 for additional help.
 
-Version 1.0 fixes a long standing bug in the buffering code that caused playback to not advance after the end of the first track when the duration of the track was less than 30 seconds.  The bug also caused several online music services like LastFM and Napster to exhibit the problem. Version 1.0 works with Squeezebox Server versions 7.3.4 through 7.6 r31503.  Server versions older than 7.3.4 have not been tested so YMMV.
+Version 1.0 fixes a long standing bug in the buffering code that caused playback to not advance after the end of the first track when the duration of the track was less than 30 seconds.  The bug also caused several online music services like LastFM and Napster to exhibit the problem. Version 1.0 has been tested with Squeezebox Server versions 7.3.4, 7.4.2, 7.5.1 and 7.6 r31503.  Server versions older than 7.3.4 have not been tested so YMMV.
 
 Version 0.9 brings replay gain support with [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
 Positive dB replay gain values are ignored to prevent clipping.
@@ -82,33 +82,33 @@ Lingon http://sourceforge.net/projects/lingon/ provides a gui to edit and create
  <?xml version="1.0" encoding="UTF-8"?>
  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
  <plist version="1.0">
- 	<dict>
- 		<key>KeepAlive</key>
- 		<true/>
- 		<key>OnDemand</key>
- 		<false/>
- 		<key>RunAtLoad</key>
- 		<true/>
- 		<key>Label</key>
- 		<string>squeezeslave</string>
- 		<key>ProgramArguments</key>
- 		<array>
- 			<string>/opt/local/bin/squeezeslave</string>
- 			<string>-o4</string>
- 			<string>-r10</string>
- 			<string>macmini.mynet</string>
- 		</array>
- 	</dict>
+        <dict>
+                <key>KeepAlive</key>
+                <true/>
+                <key>OnDemand</key>
+                <false/>
+                <key>RunAtLoad</key>
+                <true/>
+                <key>Label</key>
+                <string>squeezeslave</string>
+                <key>ProgramArguments</key>
+                <array>
+                        <string>/opt/local/bin/squeezeslave</string>
+                        <string>-o4</string>
+                        <string>-r10</string>
+                        <string>macmini.mynet</string>
+                </array>
+        </dict>
  </plist>
 
 If you intend to use more than one Squeezeslave, you will need to provide a different mac address to each
- 		<array>
- 			<string>/opt/local/bin/squeezeslave</string>
- 			<string>-o4</string>
- 			<string>-r10</string>
- 			<string>-m00:00:00:00:00:16</string>
- 			<string>macmini.mynet</string>
- 		</array>
+                <array>
+                        <string>/opt/local/bin/squeezeslave</string>
+                        <string>-o4</string>
+                        <string>-r10</string>
+                        <string>-m00:00:00:00:00:16</string>
+                        <string>macmini.mynet</string>
+                </array>
 
 For me, the lengthier command parameter <code>--mac 00:00:00:00:00:16</code> didn't work properly.
 
@@ -590,4 +590,3 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_output
                                    slimaudio_output_v
 </code>
-
