@@ -4,15 +4,11 @@ Investigate no audio after resume from sleep on windows 7 asio
 
 ---
 
-Investigate adding command line option to specify output and decoder buffer sizes.
-
----
-
 Investigate toggle_handler usage of SIGUSR2 when USE_SIGNALS_FOR_RESTART not defined.
 
 ---
 
-Add AAC decoder support using faad2.
+Add AAC decoder support using faad2 from SBS vendor sources.
 
 ---
 

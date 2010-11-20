@@ -1,3 +1,12 @@
+2010-11-20 12:48  paddockd
+
+	* [r213] ChangeLog, ReleaseNotes, ReleaseNotes-0.8,
+	  ReleaseNotes-0.9, sources/portaudio-r1534.tar.gz,
+	  sources/portaudio-r1539.tar.gz, wiki/SqueezeSlave.wiki,
+	  wiki/SupportThread.wiki: Removed obsolete portaudio library
+	  sources.
+	  Additional updates from 1.0 release.
+
 2010-11-17 22:35  paddockd
 
 	* [r211] ChangeLog, TODO, scripts/buildall-lnx24,
