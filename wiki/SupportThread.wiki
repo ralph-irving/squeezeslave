@@ -103,7 +103,9 @@ LIRC and LCDd features are NOT available in the windows version.
 [b]Source[/b]
 You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/trunk/squeezeslave]here[/url] or download it with subversion.
 [code]
-svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
+svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.0-210
 [/code]
+
+The source is also available in [url=http://squeezeslave.googlecode.com/files/squeezeslave-1.0-210-src.tar.bz2]tar file format[/url] if you don't have subversion available.
 
 Deleted deprecated linux24 and linux26 non-interactive makefiles.  Functionality now provided by -display makefiles.  See deprecated/README.txt for details.

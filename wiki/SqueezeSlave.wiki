@@ -14,7 +14,7 @@ If you have problems with [[SqueezeSlave]] read the support thread at http://for
 
 Version 1.0 fixes a long standing bug in the buffering code that caused playback to not advance after the end of the first track when the duration of the track was less than 30 seconds.  The bug also caused several online music services like LastFM and Napster to exhibit the problem. Version 1.0 has been tested with Squeezebox Server versions 7.3.4, 7.4.2, 7.5.1 and 7.6 r31503.  Server versions older than 7.3.4 have not been tested so YMMV.
 
-Version 0.9 brings replay gain support with [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
+Version 0.9 brought replay gain support with [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
 Positive dB replay gain values are ignored to prevent clipping.
 
 The linux version supports ALSA, pulseaudio and OSS audio, IR remotes, USB displays, on screen text mode display and keyboard navigation.
@@ -136,9 +136,19 @@ Prebuilt versions of squeezeslave for most platforms are available on SourceForg
 
 The current source tree for squeezeslave is available on Google Code.
 
-The current and all previous 0.8 releases are available for checkout.
+To checkout version 1.0-210 use the branch url
+
+ svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.0-210
+
+If a subversion client is not available you can download the source code in tar format.
+
+ http://squeezeslave.googlecode.com/files/squeezeslave-1.0-210-src.tar.bz2
+
+You can checkout the latest development code from trunk with this url.
 
  svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/trunk/squeezeslave
+
+To track changes in trunk you can view them at http://code.google.com/p/squeezeslave/source/list
 
 The makefiles build all required support libraries; portaudio, flac, ogg, vorbis and mad.
 
@@ -590,3 +600,4 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_output
                                    slimaudio_output_v
 </code>
+

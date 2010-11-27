@@ -1,3 +1,11 @@
+2010-11-20 12:58  paddockd
+
+	* [r214] ChangeLog, TODO,
+	  contrib/makefile.linux26-ppc-alsa-display, logs/downloads.log,
+	  makefile.linux26-ppc-alsa-display: Moved linux PPC ALSA makefile
+	  to contrib directory.
+	  Additional file cleanup.
+
 2010-11-20 12:48  paddockd
 
 	* [r213] ChangeLog, ReleaseNotes, ReleaseNotes-0.8,
