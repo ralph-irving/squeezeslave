@@ -1,5 +1,5 @@
 #
-# makefile.linux26 for ds109 by jonask
+# makefile.linux26 for alsa
 # download http://sourceforge.net/projects/dsgpl/files/DSM%202.3%20Tool%20Chains/Marvell%2088F6281%20Linux%202.6.24/gcc421_glibc25_88f6281.tgz/download
 # unzip to /usr/local with: sudo tar zxpf gcc421_glibc25_88f6281.tgz –C /usr/local/
 #
@@ -20,15 +20,8 @@ TAR=tar
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-#CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -Wall -O2 -march=i686
 CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -Wall -O2 -I/usr/local/arm-none-linux-gnueabi/include
-#LDFLAGS=-s
 LDFLAGS=-s -L/usr/local/arm-none-linux-gnueabi/lib 
-
-
-# Comment out these two lines to remove display support
-CFLAGS+=-DINTERACTIVE
-LIBS+=-lncurses -llirc_client
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
@@ -63,16 +56,14 @@ lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/badstate-pa_linux_alsa.patch
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
-#	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no --host=armle-unknown-linux --target=armle-unknown-linux --build=i686-pc-linux --prefix=/usr/local
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no --enable-fpm=arm --host=armle-unknown-linux --target=armle-unknown-linux --build=i686-pc-linux --prefix=/usr/local
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
-
 lib/libmad/$(OS)/lib/libmad.a:
 	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
 	cd lib/libmad/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libmad-forcemem.patch
-#	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=intel
+#	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)"                 CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-fpm=intel
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)" CXXCPP="$(CPP)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=arm --host=armle-unknown-linux --target=armle-unknown-linux --build=i686-pc-linux --prefix=/usr/local
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
 	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
@@ -115,7 +106,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	$(RANLIB) $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lasound -lrt -lpthread -lm $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lrt -lpthread -lm
 
 clean:
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
@@ -138,5 +129,5 @@ realclean: clean
 	-@rm -f lib/vorbis/$(OS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
-	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
+
 
