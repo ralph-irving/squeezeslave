@@ -16,7 +16,7 @@ Add WMA decoder support using ffmpeg.
 
 ---
 
-Add STMo No more decoded (uncompressed) data to play status message.
+Add STMo No more decoded (uncompressed) data to play status message. Requires reconnect callback and server side changes.
 
 ___
 
@@ -30,11 +30,6 @@ Investigate removal of lirc display and not daemon requirements. See http://foru
 
 Investigate Tremor fixed point ogg decoder crashing when playing one track for a long amount of time.
 ie. Playing a 2 hour pod cast or an OGG internet stream, squeezeslave crashes after ~10 minutes.
-
----
-
-Investigate unreachable code at line 159 of slimaudio_http.c from SunPROC compiler on sol10 intel.
-"src/slimaudio/slimaudio_http.c", line 159: warning: statement not reached
 
 ---
 

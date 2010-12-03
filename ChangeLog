@@ -1,3 +1,16 @@
+2010-11-28 12:30  paddockd
+
+	* [r217] contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armel-alsa-display: Removed broken armel
+	  alsa display makefile.
+	  Added armel alsa makefile contributed by JonasK.
+
+2010-11-27 12:03  paddockd
+
+	* [r216] ChangeLog, contrib/makefile.linux26-armel-alsa-display,
+	  wiki/SqueezeSlave.wiki, wiki/SupportThread.wiki: Fixed armel alsa
+	  makefile portaudio version.
+
 2010-11-20 12:58  paddockd
 
 	* [r214] ChangeLog, TODO,

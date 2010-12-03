@@ -633,18 +633,17 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	return 0;
 }
 
-
 void slimaudio_output_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	pthread_mutex_lock(&audio->output_mutex);
 
 	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
 
-	if ( audio->output_state == PLAYING ) {
+	if ( (audio->output_state == PLAYING) || (audio->output_state == PAUSED) ) {
 		pthread_mutex_unlock(&audio->output_mutex);
 		return;
 	}
 	
-	audio->output_state = BUFFERING;
+	audio->output_state = PAUSE;
 
 	DEBUGF("slimaudio_output_connect: state=%i\n", audio->output_state);
 
@@ -652,7 +651,6 @@ void slimaudio_output_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	pthread_cond_broadcast(&audio->output_cond);
 }
-
 
 int slimaudio_output_disconnect(slimaudio_t *audio) {
 	pthread_mutex_lock(&audio->output_mutex);

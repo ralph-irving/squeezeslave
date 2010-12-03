@@ -258,15 +258,16 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	
 	audio->streamfd = fd;
 	audio->http_stream_bytes = 0;
-	audio->autostart = msg->strm.autostart == '1' || msg->strm.autostart == '3';
+	audio->autostart_mode = msg->strm.autostart ;
+	audio->autostart_threshold_reached = false;
 	audio->autostart_threshold = (msg->strm.threshold & 0xFF) * 1024;
 
 	/* XXX FIXME Hard coded sample rate calculation */
 	/* (Sample Rate * Sample Size * Channels / 8 bits/byte) / tenths of a second) */
 	audio->output_threshold = (((44100*16*2)/8)/10) * msg->strm.output_threshold; /* Stored in bytes */
 
-	DEBUGF("slimaudio_http_connect: autostart=%i autostart_threshold=%i output_threshold=%i replay_gain=%f\n",
-		audio->autostart, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);
+	DEBUGF("slimaudio_http_connect: autostart_mode=%c autostart_threshold=%i output_threshold=%i replay_gain=%f\n",
+		audio->autostart_mode, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);
 	
 	audio->http_state = STREAM_PLAYING;
 
@@ -344,11 +345,19 @@ static void http_recv(slimaudio_t *audio) {
 
 	if ( !decode_num_tracks_started )
 	{
-		switch (audio->decoder_mode)
+		switch ( audio->autostart_mode )
 		{
-			case 'o':
-			case 'm':
-				autostart_threshold = 40000L;
+			case '1': /* Modify threshold for autostart modes, and not sync modes */
+			case '3':
+				switch (audio->decoder_mode)
+				{
+					case 'o':
+					case 'm':
+						autostart_threshold = 40000L;
+						break;
+					default:
+						break;
+				}
 				break;
 			default:
 				break;
@@ -358,20 +367,43 @@ static void http_recv(slimaudio_t *audio) {
 	VDEBUGF("http_recv: decode_num_tracks_started %u decode_bytes_available %u\n",
 		decode_num_tracks_started, audio->http_stream_bytes );
 
-	if (audio->autostart && (audio->http_stream_bytes >= autostart_threshold) )
+	if ( !audio->autostart_threshold_reached && ( audio->http_stream_bytes >= autostart_threshold ))
 	{
-		DEBUGF("http_recv: AUTOSTART at %u threshold %u\n", audio->http_stream_bytes, autostart_threshold);
-		audio->autostart = false;
+		audio->autostart_threshold_reached = true;
 
-		/* Notify buffer threshold has been reached */
-		/* Only send when autostart=0/2 */
-		// slimaudio_stat(audio, "STMl", (u32_t) 0);
-		
-		pthread_mutex_unlock(&audio->http_mutex);
-		pthread_cond_broadcast(&audio->http_cond);				
-		slimaudio_output_unpause(audio);
+		switch ( audio->autostart_mode )
+		{
+			case '0':
+			case '2':
+				DEBUGF("http_recv: AUTOSTART mode %c at %u threshold %u\n",
+					audio->autostart_mode, audio->http_stream_bytes, autostart_threshold);
+
+				slimaudio_stat(audio, "STMl", (u32_t) 0);
+
+				pthread_mutex_unlock(&audio->http_mutex);
+				pthread_cond_broadcast(&audio->http_cond);
+
+				break;
+
+			case '1':
+			case '3':
+				DEBUGF("http_recv: AUTOSTART mode %c at %u threshold %u\n",
+					audio->autostart_mode, audio->http_stream_bytes, autostart_threshold);
+
+				pthread_mutex_unlock(&audio->http_mutex);
+				pthread_cond_broadcast(&audio->http_cond);
+
+				slimaudio_output_unpause(audio);
+				break;
+
+			default:
+				break;
+		}
+
+
 	}
-	else {
+	else
+	{
 		pthread_mutex_unlock(&audio->http_mutex);
 		pthread_cond_broadcast(&audio->http_cond);				
 	}

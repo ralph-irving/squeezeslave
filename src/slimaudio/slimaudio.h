@@ -84,7 +84,8 @@ typedef struct {
 	int streamfd;
 	u64_t http_total_bytes;
 	u32_t http_stream_bytes;
-	bool autostart;
+	u8_t autostart_mode;
+	bool autostart_threshold_reached;
 	u32_t autostart_threshold;
 	u32_t output_threshold;
 	float replay_gain;
