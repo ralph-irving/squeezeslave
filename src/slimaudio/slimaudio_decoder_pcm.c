@@ -53,10 +53,14 @@ int slimaudio_decoder_pcm_process(slimaudio_t *audio) {
 	unsigned char *ptr = data;
 	slimaudio_buffer_status ok = SLIMAUDIO_BUFFER_STREAM_START;
 
-	while (ok != SLIMAUDIO_BUFFER_STREAM_END) {
+	DEBUGF("pcm: decoder_endianness: %c\n", audio->decoder_endianness );
+
+	while (ok != SLIMAUDIO_BUFFER_STREAM_END)
+	{
 		/* keep partial samples from last iteration */
 		int remainder = data_len;
-		if (remainder > 0) {
+		if (remainder > 0)
+		{
 			memcpy(data, ptr, remainder);
 		}			
 		
@@ -66,39 +70,47 @@ int slimaudio_decoder_pcm_process(slimaudio_t *audio) {
 
 		/* convert buffer into samples */
 		ptr = data;
-		if (audio->decoder_endianness == '1') {
-			for (i=0; i<nsamples; i++) {
+		if (audio->decoder_endianness == '1')
+		{
+			for (i=0; i<nsamples; i++)
+			{
 				buffer[i] = *ptr++;
 				buffer[i] |= (*ptr++) << 8;
 			}
 		}
-		else {
-			for (i=0; i<nsamples; i++) {
+		else
+		{
+			for (i=0; i<nsamples; i++)
+			{
 				buffer[i] = (*ptr++) << 8;
 				buffer[i] |= *ptr++;
 			}			
 		}
 
-		/* can perform processing here ... */
+		/* Perform additional processing here */
 
 #ifdef __BIG_ENDIAN__
-	ptr = data;
-	for (i=0; i<nsamples; i++) {
-		int sample;
+		ptr = data;
+		for (i=0; i<nsamples; i++)
+		{
+			int sample;
 
-	    sample = buffer[i];
-	    *ptr++ = (sample >> 8) & 0xff;
-	    *ptr++ = (sample >> 0) & 0xff;	    
-	}
+			sample = buffer[i];
+			*ptr++ = (sample >> 8) & 0xff;
+			*ptr++ = (sample >> 0) & 0xff;	    
+		}
+
 #else /* __LITTLE_ENDIAN__ */
-	ptr = data;
-    for (i=0; i<nsamples; i++) {
-		int sample;
 
-		sample = buffer[i];
-		*ptr++ = (sample >> 0) & 0xff;
-		*ptr++ = (sample >> 8) & 0xff;
-	}
+		ptr = data;
+		for (i=0; i<nsamples; i++)
+		{
+			int sample;
+
+			sample = buffer[i];
+			*ptr++ = (sample >> 0) & 0xff;
+			*ptr++ = (sample >> 8) & 0xff;
+		}
 #endif
 		slimaudio_buffer_write(audio->output_buffer, (char*)data, nsamples * 2);
 
