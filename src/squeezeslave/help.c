@@ -307,6 +307,12 @@ void print_version(void) {
 #ifdef NO_FPU
 	fprintf(stdout, "nofpu ");
 #endif
+#ifdef AAC_DECODER
+	fprintf(stdout, "aac ");
+#endif
+#ifdef WMA_DECODER
+	fprintf(stdout, "wma ");
+#endif
 	fprintf(stdout, "\n");
 
 	fprintf(stdout, "buffer sizes: decoder %u output %u bytes\n",DECODER_BUFFER_SIZE, OUTPUT_BUFFER_SIZE);

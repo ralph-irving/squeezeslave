@@ -142,9 +142,19 @@ typedef struct {
 
 	// ogg decoder	
 	OggVorbis_File oggvorbis_file;
-	
+
+#ifdef WMA_DECODER	
 	// WMA decoder
-	// IWMReader*  wma_reader;
+	u8_t wma_chunking;
+	u8_t wma_playstream;
+	u8_t wma_metadatastream;
+#endif
+
+#ifdef AAC_DECODER
+	// AAC decoder
+	u8_t aac_format;
+#endif
+
 } slimaudio_t;
 
 int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, bool);
@@ -213,4 +223,16 @@ int slimaudio_decoder_pcm_init(slimaudio_t *audio);
 void slimaudio_decoder_pcm_free(slimaudio_t *audio);
 int slimaudio_decoder_pcm_process(slimaudio_t *audio);
 
-#endif //_SLIMAUDIO_H_
+#ifdef AAC_DECODER
+int slimaudio_decoder_aac_init(slimaudio_t *audio);
+void slimaudio_decoder_aac_free(slimaudio_t *audio);
+int slimaudio_decoder_aac_process(slimaudio_t *audio);
+#endif /* AAC_DECODER */
+
+#ifdef WMA_DECODER
+int slimaudio_decoder_wma_init(slimaudio_t *audio);
+void slimaudio_decoder_wma_free(slimaudio_t *audio);
+int slimaudio_decoder_wma_process(slimaudio_t *audio);
+#endif /* WMA_DECODER */
+
+#endif /* _SLIMAUDIO_H_ */

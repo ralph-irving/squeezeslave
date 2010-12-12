@@ -54,6 +54,14 @@ int slimaudio_decoder_open(slimaudio_t *audio) {
 		return -1;
 	if (slimaudio_decoder_pcm_init(audio) != 0)
 		return -1;
+#ifdef AAC_DECODER	
+	if (slimaudio_decoder_aac_init(audio) != 0)
+		return -1;
+#endif
+#ifdef WMA_DECODER	
+	if (slimaudio_decoder_wma_init(audio) != 0)
+		return -1;
+#endif
 	
 	/* 
 	 * Acquire the decoder mutex before the thread is started, to make sure
@@ -90,6 +98,12 @@ int slimaudio_decoder_close(slimaudio_t *audio) {
 	slimaudio_decoder_flac_free(audio);
 	slimaudio_decoder_vorbis_free(audio);
 	slimaudio_decoder_pcm_free(audio);
+#ifdef AAC_DECODER
+	slimaudio_decoder_aac_free(audio);
+#endif
+#ifdef WMA_DECODER
+	slimaudio_decoder_wma_free(audio);
+#endif
 	
 	pthread_mutex_destroy(&(audio->decoder_mutex));
 	pthread_cond_destroy(&(audio->decoder_cond));
@@ -145,7 +159,16 @@ static void *decoder_thread(void *ptr) {
 				case 'p': // wav
 					slimaudio_decoder_pcm_process(audio);
 					break;
-					
+#ifdef AAC_DECODER					
+				case 'a': // aac
+					slimaudio_decoder_aac_process(audio);
+					break;
+#endif					
+#ifdef WMA_DECODER					
+				case 'w': // wma
+					slimaudio_decoder_wma_process(audio);
+					break;
+#endif					
 				default:
 					fprintf(stderr, "Cannot decode unknown format: %c\n", audio->decoder_mode);
 					slimaudio_stat(audio, "STMn", (u32_t) 0); // decoder does not support format

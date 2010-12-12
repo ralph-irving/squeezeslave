@@ -1,3 +1,23 @@
+2010-12-09 23:58  paddockd
+
+	* [r219] TODO, src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/squeezeslave/squeezeslave.c: Code cleanup in
+	  slimaudio_decoder_pcm.c
+	  Increased version to 219.
+
+2010-12-03 22:22  paddockd
+
+	* [r218] ChangeLog, TODO, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Added STMl notify buffer threshold has been reached when
+	  autostart=0/2.
+	  Modify first track threshold only when autostart=1/3 and not
+	  autostart=0/2 as well.
+	  Set slimaudio_output_connect initial output_state to PAUSE
+	  instead of BUFFERING.
+	  Increased version to 218.
+
 2010-11-28 12:30  paddockd
 
 	* [r217] contrib/makefile.linux26-armel-alsa,

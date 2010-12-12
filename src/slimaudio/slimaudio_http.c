@@ -262,6 +262,22 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	audio->autostart_threshold_reached = false;
 	audio->autostart_threshold = (msg->strm.threshold & 0xFF) * 1024;
 
+#ifdef AAC_DECODER
+	/* AAC container type and bitstream format */
+	audio->aac_format = msg->strm.pcm_sample_size ;
+#endif
+#ifdef WMA_DECODER
+	/* WMA stream details */
+	audio->wma_chunking = msg->strm.pcm_sample_size ;
+	audio->wma_playstream = msg->strm.pcm_sample_rate + 48 ; /* Squeezebox.pm doesn't use char for this field */
+	audio->wma_metadatastream =  msg->strm.pcm_channels ;
+#endif
+
+	DEBUGF("slimaudio_http_connect: pcm_sample_size:%d '%c' pcm_sample_rate:%d '%c' pcm_channels:%d '%c'\n",
+		msg->strm.pcm_sample_size, msg->strm.pcm_sample_size,
+		msg->strm.pcm_sample_rate, msg->strm.pcm_sample_rate,
+		msg->strm.pcm_channels, msg->strm.pcm_channels);
+
 	/* XXX FIXME Hard coded sample rate calculation */
 	/* (Sample Rate * Sample Size * Channels / 8 bits/byte) / tenths of a second) */
 	audio->output_threshold = (((44100*16*2)/8)/10) * msg->strm.output_threshold; /* Stored in bytes */
