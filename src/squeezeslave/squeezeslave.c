@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.0";
-const int revision = 220;
+const int revision = 222;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -512,9 +512,9 @@ int main(int argc, char *argv[]) {
 #ifdef DAEMONIZE
 	if ( should_daemonize ) {
 #ifdef INTERACTIVE
-		if ( using_curses || using_lirc || use_lcdd_menu )
+		if ( using_curses || use_lcdd_menu )
 		{
-			fprintf(stderr, "Daemonize not supported with lirc or display modes.\n");
+			fprintf(stderr, "Daemonize not supported with display modes.\n");
 			exit(-1);
 		}
 		else
@@ -622,12 +622,12 @@ int main(int argc, char *argv[]) {
                 signal_restart_flag = false;
                 while (!signal_exit_flag && !signal_restart_flag) {
 #ifdef INTERACTIVE
-                   if (using_curses == 1 || use_lcdd_menu) {
+                   if (using_curses == 1 || use_lcdd_menu || using_lirc) {
                       FD_ZERO(&read_fds);
                       FD_ZERO(&write_fds);
 		      if (using_curses == 1)
      	                 FD_SET(0, &read_fds); /* watch stdin */
-   	              if (use_lcdd_menu) {
+   	              if  (use_lcdd_menu) {
 		         FD_SET(lcd_fd, &read_fds); 
 		         maxfd = lcd_fd;
 		      }

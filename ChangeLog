@@ -1,3 +1,25 @@
+2010-12-12 16:05  paddockd
+
+	* [r221] config/squeezeslave.init.debian: Added Ubuntu/Debian init
+	  script. Use this to start/stop squeezeslave on boot/reboot.
+
+2010-12-12 16:04  paddockd
+
+	* [r220] ChangeLog, lib/ffmpeg, lib/ffmpeg/lnx24,
+	  lib/ffmpeg/lnx24/build, lib/ffmpeg/lnx24/include,
+	  lib/ffmpeg/lnx24/include/libavcodec,
+	  lib/ffmpeg/lnx24/include/libavcore,
+	  lib/ffmpeg/lnx24/include/libavfilter,
+	  lib/ffmpeg/lnx24/include/libavformat,
+	  lib/ffmpeg/lnx24/include/libavutil, lib/ffmpeg/lnx24/lib,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_aac.c,
+	  src/slimaudio/slimaudio_decoder_wma.c,
+	  src/slimaudio/slimaudio_http.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added framework for WMA and AAC
+	  decoders.
+	  Increased version to 220.
+
 2010-12-09 23:58  paddockd
 
 	* [r219] TODO, src/slimaudio/slimaudio_decoder_pcm.c,

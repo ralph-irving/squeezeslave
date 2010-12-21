@@ -30,6 +30,7 @@ Investigate removal of lirc display and not daemon requirements. See http://foru
 
 Investigate Tremor fixed point ogg decoder crashing when playing one track for a long amount of time.
 ie. Playing a 2 hour pod cast or an OGG internet stream, squeezeslave crashes after ~10 minutes.
+Initial tests show that switching back to ogg-1.1.4 produces a stable tremor decoder.  More testing required
 
 ---
 

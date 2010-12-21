@@ -4,13 +4,22 @@ Squeezeslave 1.0-210 is now available at
 
 [url]http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/[/url]
 
-[b]Direct Download[/b]
+[b]Release Downloads[/b]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-win.zip/download]Windows ASIO, Direct Sound and WASAPI (Vista/Win7) 32/64-bit[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-osx.tar.gz/download]Mac OSX 32-bit PowerPC/Intel and 64-bit Intel[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel and OpenSolaris 32/64-bit Intel[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx26.tar.gz/download]Linux v2.6 kernel 32/64-bit Intel ALSA, Pulseaudio and OSS[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24.tar.gz/download]Linux v2.4 kernel 32-bit Intel ALSA and OSS[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MMX or better OSS statically linked[/url]
+
+[b]Contributed Downloads[/b]
+[url=http://squeezeslave.googlecode.com/files/SqueezeSlave-1.0-r216-88f6281-001.spk]Synology DS109, DS409slim, DS209, DS409, DS509, RS409, DS110j, DS210j, DS410j Package[/url]  ** Thanks to JonasK for contributing the package **
+
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_r217-1_brcm47xx.ipk]OpenWrt brcm47xx OSS Package[/url] Recommend as first choice for Broadcom 47xx users.
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-alsa_r217-1_brcm47xx.ipk]OpenWrt brcm47xx ALSA Package[/url] More resource hungry than the OSS version.
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_r217-1_brcm63xx.ipk]OpenWrt brcm63xx OSS Package[/url]
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_r217-1_ar71xx.ipk]OpenWrt ar71xx OSS Package[/url]
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-1.0-217-mips-lnx26.tar.gz]Generic MIPS OSS[/url]  ** Thanks to MusicManiac for contributing the OpenWRT and MIPS packages **
 
 [URL=http://ralph_irving.users.sourceforge.net/ss10disp.jpeg/][IMG]http://ralph_irving.users.sourceforge.net/ss10disp.jpeg[/IMG][/URL]
 
