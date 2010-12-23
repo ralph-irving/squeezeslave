@@ -24,10 +24,6 @@ Should not be using pthread_mutex_lock in PA callback nothing more than pthread_
 
 ---
 
-Investigate removal of lirc display and not daemon requirements. See http://forums.slimdevices.com/showpost.php?p=581573&postcount=343
-
----
-
 Investigate Tremor fixed point ogg decoder crashing when playing one track for a long amount of time.
 ie. Playing a 2 hour pod cast or an OGG internet stream, squeezeslave crashes after ~10 minutes.
 Initial tests show that switching back to ogg-1.1.4 produces a stable tremor decoder.  More testing required

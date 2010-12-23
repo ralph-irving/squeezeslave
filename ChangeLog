@@ -1,3 +1,11 @@
+2010-12-21 16:51  paddockd
+
+	* [r222] ChangeLog, TODO, src/squeezeslave/squeezeslave.c,
+	  wiki/SlimProtocol.wiki, wiki/SupportThread.wiki: Applied patch to
+	  allow lirc usage with daemonize from Gon.
+	  Capture wiki updates.
+	  Increased version to 222.
+
 2010-12-12 16:05  paddockd
 
 	* [r221] config/squeezeslave.init.debian: Added Ubuntu/Debian init
