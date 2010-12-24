@@ -1,8 +1,14 @@
 # FreeBSD 8.1 sparc64 libportaudio and display
 # Requires ports pth, bash, gmake and lirc.
+# Optional port aumix allows mixer setting changes.
 # Use gmake -f contrib/makefile.freebsd-sparc64
 #
+# As this is an "unsupported" platform I've reused
+# the lnx24 build directory structure instead of polluting
+# the build tree with yet another OS type.
+#
 OS=lnx24
+
 CC=gcc
 CXX=g++
 TAR=tar
@@ -22,7 +28,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.0
 LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1556
+LIBPORTAUDIO=portaudio-r1541
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 

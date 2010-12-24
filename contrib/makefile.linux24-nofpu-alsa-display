@@ -17,7 +17,7 @@ LIBS+=-lcurses -llirc_client
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.2.0
+LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
 LIBPORTAUDIO=portaudio-r1541
