@@ -67,6 +67,7 @@
 static void *proto_thread(void *ptr);
 static int proto_connect(slimproto_t *p);
 static int proto_recv(slimproto_t *p);
+static int send_message(int sockfd, unsigned char* msg, size_t msglen, int msgflags);
 
 int slimproto_init(slimproto_t *p) {
 	memset(p, 0, sizeof(slimproto_t));
@@ -617,6 +618,21 @@ u32_t slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr)
 	return timestamp;
 }
 
+/* send a complete message or fail */
+int send_message(int sockfd, unsigned char* msg, size_t msglen, int msgflags) {
+	size_t nsent = 0;
+	size_t n;
+
+	do {
+		n = send(sockfd, &msg[nsent], msglen - nsent, msgflags);
+		if (n < 0) {
+                return n;
+		}
+		nsent += n;
+	} while (nsent < msglen);
+	return nsent;
+}
+
 int slimproto_send(slimproto_t *p, unsigned char *msg) {
 	int n;
 
@@ -629,7 +645,7 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 		return -1;		
 	}
 
-	n = send(p->sockfd, msg, unpackN4(msg, 4) + 8, slimproto_get_socketsendflags());
+	n = send_message(p->sockfd, msg, unpackN4(msg, 4) + 8, slimproto_get_socketsendflags());
 
 	if (n < 0)
 	{
