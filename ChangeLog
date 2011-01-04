@@ -1,3 +1,9 @@
+2011-01-04 12:22  paddockd
+
+	* [r226] ChangeLog, contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-mipsel-nofpu-oss: Updated mipsel
+	  makefiles for new cross compile environment.
+
 2010-12-28 13:37  paddockd
 
 	* [r225] src/slimproto/slimproto.c, src/squeezeslave/help.c,

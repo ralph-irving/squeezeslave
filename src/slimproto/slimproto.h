@@ -159,6 +159,8 @@ int slimproto_stat(slimproto_t *, const char *, int, int, u64_t, int, int, u32_t
 
 int slimproto_configure_socket(int sockfd, int socktimeout);
 
+int send_message(int sockfd, unsigned char* msg, size_t msglen, int msgflags);
+
 // This function configures the socket whose fd is passed in, in order
 // to disable the raise of SIGPIPE when writing to a closed socket.
 //

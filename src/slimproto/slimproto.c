@@ -67,7 +67,6 @@
 static void *proto_thread(void *ptr);
 static int proto_connect(slimproto_t *p);
 static int proto_recv(slimproto_t *p);
-static int send_message(int sockfd, unsigned char* msg, size_t msglen, int msgflags);
 
 int slimproto_init(slimproto_t *p) {
 	memset(p, 0, sizeof(slimproto_t));

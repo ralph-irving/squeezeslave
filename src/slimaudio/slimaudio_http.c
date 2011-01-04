@@ -161,6 +161,8 @@ static void *http_thread(void *ptr) {
 
 
 void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
+	int n;
+
 	slimaudio_http_disconnect(audio);
 	
 	struct sockaddr_in serv_addr = audio->proto->serv_addr;
@@ -198,7 +200,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	/* send http request to server */
 	DEBUGF("slimaudio_http_connect: http request %s\n", msg->strm.http_hdr);
 
-	int n = send(fd, msg->strm.http_hdr, strlen(msg->strm.http_hdr), slimproto_get_socketsendflags());
+	n = send_message(fd, msg->strm.http_hdr, strlen(msg->strm.http_hdr), slimproto_get_socketsendflags());
 
 	if (n < 0)
 	{
