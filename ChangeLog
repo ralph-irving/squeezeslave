@@ -1,3 +1,45 @@
+2010-12-28 13:37  paddockd
+
+	* [r225] src/slimproto/slimproto.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Applied slimproto partial send
+	  patch from mbennett. Thanks Mike.
+	  
+	  This is a patch to slimproto (SlimProtoLib) to deal with
+	  SOCK_STREAM sends correctly when partial writes occur.
+	  
+	  Justification: when dealing with SOCK_DGRAM (UDP) sockets,
+	  send()s
+	  are all-or-nothing; slimproto.c seems to expect this behavior
+	  from
+	  the socket, but SOCK_STREAM (TCP) sockets can accept partial
+	  writes
+	  in the socket buffer, requiring the application resend the
+	  unqueued
+	  portion of the message.
+	  
+	  The potential impact of a partially written message assumed to
+	  have been fully written is that the receiver will see a malformed
+	  message stream, resulting in loss of message synchronization on
+	  the
+	  socket, which would require closing of the connection. This would
+	  most likely occur during network congestion or overload.
+	  
+	  This patch provides this send-a-full-message functionality behind
+	  a
+	  new 'send_message' routine which perform send() operations until
+	  the entire message has been accepted by the socket.
+	  
+	  - mike bennett 27dec10 (mbennett in the slimdevices forum)
+	  
+	  Increased version to 225.
+
+2010-12-24 13:15  paddockd
+
+	* [r224] ChangeLog, contrib/makefile.freebsd-sparc64,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  patches/libfaad-alac.patch, patches/libfaad-iquote.patch,
+	  tests/palibsndfile.c: Contrib makefile updates.
+
 2010-12-23 16:43  paddockd
 
 	* [r223] ChangeLog, TODO, contrib/makefile.freebsd-sparc64,

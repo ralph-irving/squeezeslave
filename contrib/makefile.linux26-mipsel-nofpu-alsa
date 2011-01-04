@@ -2,7 +2,7 @@
 # from makefile.linux26 for Popcorn hour A-100, A-110, B-110
 #
 
-PATH:=/home/sigma/source/smp86xx_toolchain.20080505/build_mipsel_nofpu/staging_dir/bin:$(PATH)
+PATH:=/usr/local/mips/bin:$(PATH)
 export PATH
 
 # Linux 2.6 MIPS ALSA NoFPU
@@ -18,12 +18,12 @@ SED=sed
 SHELL=/bin/bash
 PATCH=patch
 CFLAGS=-DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float
-LDFLAGS=-s
+LDFLAGS=-s -lgcc_s
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.2.0
+LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
 LIBPORTAUDIO=portaudio-r1541

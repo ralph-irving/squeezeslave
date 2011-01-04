@@ -2,7 +2,7 @@
 # from makefile.linux26 for Popcorn hour A-100, A-110, B-110
 #
 
-PATH:=/home/sigma/source/smp86xx_toolchain.20080505/build_mipsel_nofpu/staging_dir/bin:$(PATH)
+PATH:=/usr/local/mips/bin:$(PATH)
 export PATH
 
 # Linux 2.6 MIPS OSS NoFPU
@@ -16,15 +16,15 @@ TAR=tar
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float -static
-LDFLAGS=-s -static
+CFLAGS=-DDAEMONIZE -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float
+LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include
 
 PORTAUDIOFILES:=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_oss.c  lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.2.0
+LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
 
@@ -95,7 +95,9 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm
+	$(CC) $(LDFLAGS) -static -o $(SQUEEZESLAVE) $^ -lpthread -lm
+	mv $(SQUEEZESLAVE) $(SQUEEZESLAVE)-static
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm -lgcc_s
 
 clean:
 	-@rm -f $(PORTAUDIOFILES:.c=.o)
@@ -106,7 +108,7 @@ clean:
 	-@rm -f $(LIBPORTAUDIO)
 	-@rm -f $(LIBSLIMPROTO)
 	-@rm -f $(LIBGETOPT)
-	-@rm -f $(SQUEEZESLAVE)
+	-@rm -f $(SQUEEZESLAVE) $(SQUEEZESLAVE)-static
 
 realclean: clean
 	-@rm -rf lib/libmad/$(OS)/build/$(LIBMAD)
