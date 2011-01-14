@@ -62,10 +62,10 @@ lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
 	cp -p lib/pthread/$(OS)/build/pthreads.2/libpthreadGC2.a lib/pthread/$(OS)/lib
 	cp -p lib/pthread/$(OS)/build/pthreads.2/{semaphore.h,pthread.h,sched.h} lib/pthread/$(OS)/include
 
-lib/libportaudio/$(OS)/lib/libportaudio.a: lib/pthread/$(OS)/lib/libpthreadGC2.a
+lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && ../../../../../$(7ZIP) x -y ../../../../../sources/$(ASIOSDK).zip > /dev/null
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`../../../../pthread/$(OS)/include" CFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" CPPFLAGS="$(CFLAGS) -I`pwd`../../../../pthread/$(OS)/include" LDFLAGS="$(LDFLAGS) -L`pwd`../../../../pthread/$(OS)/lib" ./configure --with-host_os=mingw --with-winapi=asio --with-asiodir=`pwd`/ASIOSDK2 --without-jack --enable-shared=no
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --with-host_os=mingw --with-winapi=asio --with-asiodir=`pwd`/ASIOSDK2 --without-jack --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p0 -i ../../../../../patches/build-portaudio-asio-gcc34.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib

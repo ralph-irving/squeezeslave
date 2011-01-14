@@ -1,0 +1,178 @@
+# Linux 2.4 ALSA via libportaudio and display
+OS=lnx24
+CC=gcc
+CXX=g++
+TAR=tar
+SED=sed
+PATCH=patch
+CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DPORTAUDIO_DEV -Wall -O2 -march=i686 -s
+LDFLAGS=-s
+
+# Enable AAC decoder support
+# CFLAGS+=-DAAC_DECODER
+
+# Enable ALAC decoder support
+# CFLAGS+=-DALAC_DECODER
+
+# Enable WMA decoder support
+# CFLAGS+=-DWMA_DECODER
+
+# Comment out these two lines to remove display support
+CFLAGS+=-DINTERACTIVE
+LIBS+=-lcurses -llirc_client
+
+INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/ffmpeg/$(OS)/include
+
+LIBMAD=libmad-0.15.1b
+LIBOGG=libogg-1.2.1
+LIBVORBIS=libvorbis-1.3.2
+LIBFLAC=flac-1.2.1
+LIBFFMPEG=ffmpeg-export-2011-01-14
+LIBFAAD2=faad2-2.7
+LIBPORTAUDIO=portaudio-r1541
+
+PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
+
+GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+# SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_aac.c
+# SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_alac.c
+# SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_wma.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
+
+LIBSLIMPROTO=lib/libslimproto.a
+
+LIBGETOPT=lib/libgetopt.a
+
+SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a
+# SUPPORTLIBS+=lib/faad2/$(OS)/lib/libfaad.a lib/faad2/$(OS)/lib/libmp4ff.a
+# SUPPORTLIBS+=lib/ffmpeg/$(OS)/lib/libavcodec.a lib/ffmpeg/$(OS)/lib/libavformat.a lib/ffmpeg/$(OS)/lib/libavcore.a lib/ffmpeg/$(OS)/lib/libavutil.a lib/ffmpeg/$(OS)/lib/libavfilter.a
+
+SQUEEZESLAVE=bin/squeezeslave
+
+.c.o:
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
+
+lib/libportaudio/$(OS)/lib/libportaudio.a:
+	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
+	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/badstate-pa_linux_alsa.patch
+	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no
+	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
+	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
+	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
+
+lib/libmad/$(OS)/lib/libmad.a:
+	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
+	cd lib/libmad/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libmad-forcemem.patch
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=intel
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/mad.h lib/libmad/$(OS)/include
+
+lib/vorbis/$(OS)/lib/libogg.a:
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h,config_types.h} lib/vorbis/$(OS)/include/ogg
+
+lib/vorbis/$(OS)/lib/libvorbisfile.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --with-ogg-includes=`pwd`/../../include --with-ogg-libraries=`pwd`/../../lib
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/$(OS)/include/vorbis
+
+lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && CC="$(CC)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
+	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
+
+lib/faad2/$(OS)/lib/libfaad.a:
+lib/faad2/$(OS)/lib/libmp4ff.a:
+	cd lib/faad2/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBFAAD2).tar.gz
+	cd lib/faad2/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libfaad-alac.patch
+	cd lib/faad2/$(OS)/build/$(LIBFAAD2) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-xmms --without-drm --without-mpeg4ip --disable-shared
+	cd lib/faad2/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libfaad-iquote.patch
+	cd lib/faad2/$(OS)/build/$(LIBFAAD2)/libfaad && make clean && make
+	cp -p lib/faad2/$(OS)/build/$(LIBFAAD2)/libfaad/.libs/libfaad.a lib/faad2/$(OS)/lib
+	cp -p lib/faad2/$(OS)/build/$(LIBFAAD2)/include/{faad.h,neaacdec.h} lib/faad2/$(OS)/include
+	cd lib/faad2/$(OS)/build/$(LIBFAAD2)/common/mp4ff && make clean && make
+	cp -p lib/faad2/$(OS)/build/$(LIBFAAD2)/common/mp4ff/libmp4ff.a lib/faad2/$(OS)/lib
+	cp -p lib/faad2/$(OS)/build/$(LIBFAAD2)/common/mp4ff/{mp4ff.h,mp4ffint.h,mp4ff_int_types.h} lib/faad2/$(OS)/include
+
+lib/ffmpeg/$(OS)/lib/libavcodec.a:
+lib/ffmpeg/$(OS)/lib/libavformat.a:
+lib/ffmpeg/$(OS)/lib/libavutil.a:
+lib/ffmpeg/$(OS)/lib/libavcore.a:
+lib/ffmpeg/$(OS)/lib/libavfilter.a:
+	cd lib/ffmpeg/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFFMPEG).tar.bz2
+	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-avdevice --disable-swscale --disable-encoders --disable-devices --disable-filters --disable-muxers --disable-demuxers --disable-network --disable-parsers --enable-parser=aac --disable-protocols --disable-bsfs --enable-bsf=aac_adtstoasc --disable-decoders --enable-decoder=aac --enable-decoder=alac --enable-decoder=wmav1 --enable-decoder=wmav2 --enable-decoder=wmapro --enable-runtime-cpudetect
+	#	--disable-debug
+	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && make clean && make
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcore/libavcore.a lib/ffmpeg/$(OS)/lib
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavformat/libavformat.a lib/ffmpeg/$(OS)/lib
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcodec/libavcodec.a lib/ffmpeg/$(OS)/lib
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavutil/libavutil.a lib/ffmpeg/$(OS)/lib
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavfilter/libavfilter.a lib/ffmpeg/$(OS)/lib
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcore/{audioconvert.h,avcore.h,imgutils.h,parseutils.h,samplefmt.h} lib/ffmpeg/$(OS)/include/libavcore
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavformat/{avformat.h,avio.h} lib/ffmpeg/$(OS)/include/libavformat
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h} lib/ffmpeg/$(OS)/include/libavcodec
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavutil/{adler32.h,attributes.h,avassert.h,avstring.h,avutil.h,base64.h,bswap.h,common.h,cpu.h,crc.h,error.h,eval.h,fifo.h,intfloat_readwrite.h,intreadwrite.h,lfg.h,log.h,lzo.h,mathematics.h,md5.h,mem.h,opt.h,pixdesc.h,pixfmt.h,random_seed.h,rational.h,sha1.h,avconfig.h} lib/ffmpeg/$(OS)/include/libavutil
+	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavfilter/{avfilter.h,avfiltergraph.h} lib/ffmpeg/$(OS)/include/libavfilter
+
+$(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
+	ar cru $(LIBSLIMPROTO) $^
+	ranlib $(LIBSLIMPROTO)
+
+$(LIBGETOPT): $(GETOPTFILES:.c=.o)
+	ar cru $(LIBGETOPT) $^
+	ranlib $(LIBGETOPT)
+
+$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lasound -lrt -lpthread -lm $(LIBS)
+
+clean:
+	-@rm -f $(SLIMPROTOFILES:.c=.o)
+	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
+	-@rm -f $(PORTMIXERFILES:.c=.o)
+	-@rm -f $(GETOPTFILES:.c=.o)
+	-@rm -f $(LIBSLIMPROTO)
+	-@rm -f $(LIBGETOPT)
+	-@rm -f $(SQUEEZESLAVE)
+
+realclean: clean
+	-@rm -rf lib/libmad/$(OS)/build/$(LIBMAD)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBOGG)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
+	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
+	-@rm -rf lib/faad2/$(OS)/build/$(LIBFAAD2)
+	-@rm -rf lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)
+	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
+	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
+	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
+	-@rm -f lib/vorbis/$(OS)/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
+	-@rm -f lib/vorbis/$(OS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
+	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
+	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
+	-@rm -f lib/faad2/$(OS)/lib/libfaad.a
+	-@rm -f lib/faad2/$(OS)/lib/libmp4ff.a
+	-@rm -f lib/faad2/$(OS)/include/{faad.h,neaacdec.h}
+	-@rm -f lib/faad2/$(OS)/include/{mp4ff.h,mp4ffint.h,mp4ff_int_types.h}
+	-@rm -f lib/ffmpeg/$(OS)/lib/{libavcodec.a,libavformat.a,libavutil.a,libavcore.a,libavfilter.a}
+	-@rm -f lib/ffmpeg/$(OS)/include/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h}
+	-@rm -f lib/ffmpeg/$(OS)/include/libavformat/{avformat.h,avio.h}
+	-@rm -f lib/ffmpeg/$(OS)/include/libavcore/{audioconvert.h,avcore.h,imgutils.h,parseutils.h,samplefmt.h}
+	-@rm -f lib/ffmpeg/$(OS)/include/libavutil/{adler32.h,attributes.h,avassert.h,avstring.h,avutil.h,base64.h,bswap.h,common.h,cpu.h,crc.h,error.h,eval.h,fifo.h,intfloat_readwrite.h,intreadwrite.h,lfg.h,log.h,lzo.h,mathematics.h,md5.h,mem.h,opt.h,pixdesc.h,pixfmt.h,random_seed.h,rational.h,sha1.h,avconfig.h}
+	-@rm -f lib/ffmpeg/$(OS)/include/libavfilter/{avfilter.h,avfiltergraph.h}
+	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
+

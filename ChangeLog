@@ -1,3 +1,11 @@
+2011-01-04 21:56  paddockd
+
+	* [r227] ChangeLog, src/slimaudio/slimaudio_http.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/squeezeslave.c: Applied slimproto partial send
+	  fix from r225 to slimaudio_http as well.
+	  Increased version to 227.
+
 2011-01-04 12:22  paddockd
 
 	* [r226] ChangeLog, contrib/makefile.linux26-mipsel-nofpu-alsa,

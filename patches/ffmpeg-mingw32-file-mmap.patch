@@ -1,0 +1,53 @@
+--- libavutil/file.c.orig	2011-01-05 00:16:33.000000000 -0500
++++ libavutil/file.c	2011-01-14 09:43:12.712500000 -0500
+@@ -20,11 +20,11 @@
+ #include <fcntl.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+-#if HAVE_MMAP
+-#include <sys/mman.h>
+-#elif HAVE_MAPVIEWOFFILE
++#ifdef HAVE_MAPVIEWOFFILE
+ #include <io.h>
+ #include <windows.h>
++#elif HAVE_MMAP
++#include <sys/mman.h>
+ #endif
+ 
+ typedef struct {
+@@ -74,17 +74,7 @@
+     }
+     *size = off_size;
+ 
+-#if HAVE_MMAP
+-    ptr = mmap(NULL, *size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+-    if ((int)(ptr) == -1) {
+-        err = AVERROR(errno);
+-        av_strerror(err, errbuf, sizeof(errbuf));
+-        av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in mmap(): %s\n", errbuf);
+-        close(fd);
+-        return err;
+-    }
+-    *bufptr = ptr;
+-#elif HAVE_MAPVIEWOFFILE
++#if HAVE_MAPVIEWOFFILE
+     {
+         HANDLE mh, fh = (HANDLE)_get_osfhandle(fd);
+ 
+@@ -105,6 +95,16 @@
+ 
+         *bufptr = ptr;
+     }
++#elif HAVE_MMAP
++    ptr = mmap(NULL, *size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
++    if ((int)(ptr) == -1) {
++        err = AVERROR(errno);
++        av_strerror(err, errbuf, sizeof(errbuf));
++        av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in mmap(): %s\n", errbuf);
++        close(fd);
++        return err;
++    }
++    *bufptr = ptr;
+ #else
+     *bufptr = av_malloc(*size);
+     if (!*bufptr) {
