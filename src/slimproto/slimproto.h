@@ -64,7 +64,7 @@ typedef union {
 		u32_t replay_gain;		// [4]	replay gain in 16.16 fixed point, 0 means none
 		u16_t server_port;		// [2]	server's port
 		u32_t server_ip;		// [4]	server's IP		
-		char http_hdr[1024];	// HTTP headers from here
+		unsigned char http_hdr[1024];	// HTTP headers from here
 	} strm;
 	
 	struct {

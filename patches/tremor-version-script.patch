@@ -1,0 +1,11 @@
+--- tremor-r17503/configure.orig	2010-10-12 11:06:10.000000000 -0400
++++ tremor-r17503/configure	2011-01-15 17:11:36.492046000 -0500
+@@ -11270,7 +11270,7 @@
+ 
+       case "$target_os" in
+   linux* | solaris* )
+-    SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
++    SHLIB_VERSION_ARG=
+     ;;
+   *)
+     ;;
