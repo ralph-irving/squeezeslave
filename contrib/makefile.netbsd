@@ -21,7 +21,7 @@ CFLAGS=-Wall -s -O2 -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREE
 
 INCLUDE=-I/usr/pkg/include/portaudio2 -I/usr/pkg/include -Ilib/portmixer/px_common -Isrc
 
-PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
+PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
 

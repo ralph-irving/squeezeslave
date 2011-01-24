@@ -28,7 +28,7 @@ LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
 LIBPORTAUDIO=portaudio-r1541
 
-PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
+PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 

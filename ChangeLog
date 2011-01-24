@@ -1,3 +1,27 @@
+2011-01-20 13:34  paddockd
+
+	* [r231] config/squeezeplug-asound.conf,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  patches/tremor-version-script.patch, src/slimproto/slimproto.h,
+	  src/squeezeslave/squeezeslave.c: Added squeezeplug armel nofpu
+	  debian makefile.
+	  Added /etc/asound.conf ALSA config for squeezeplug devices using
+	  USB sound cards.
+	  Fixed http header signed vs unsigned issue.
+	  Increased version to 231.
+
+2011-01-14 16:57  paddockd
+
+	* [r230] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.mingw32-ffmpeg-display,
+	  makefile.mingw32-asio-display, makefile.mingw32-display,
+	  makefile.mingw32-wasapi-display,
+	  patches/ffmpeg-mingw32-file-mmap.patch,
+	  patches/slimproto_patch.tar.gz: Removed pthread library
+	  dependancy from mingw32 makefiles for libportaudio.
+	  Added initial ffmpeg makefiles.
+	  Added original patch file from mbennett.
+
 2011-01-04 21:56  paddockd
 
 	* [r227] ChangeLog, src/slimaudio/slimaudio_http.c,

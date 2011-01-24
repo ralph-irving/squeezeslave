@@ -31,7 +31,7 @@ LIBFFMPEG=ffmpeg-export-2011-01-14
 LIBFAAD2=faad2-2.7
 LIBPORTAUDIO=portaudio-r1541
 
-PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
+PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
