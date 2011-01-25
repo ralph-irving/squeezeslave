@@ -1,3 +1,23 @@
+2011-01-24 12:56  paddockd
+
+	* [r232] ChangeLog, contrib/makefile.freebsd,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  contrib/makefile.linux26-ppc-alsa-display,
+	  contrib/makefile.netbsd, lib/lirc/lnx26, lib/lirc/lnx26/build,
+	  lib/lirc/lnx26/include, lib/lirc/lnx26/include/lirc,
+	  lib/lirc/lnx26/lib, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  src/squeezeslave/squeezeslave.c: Fixed inconsistant use of
+	  portmixer unix_oss and none.
+	  Portmixer unix_oss is not compatible with PORTAUDIO_DEV.
+	  Updated armel squeezeplug makefile to build lirc_client.
+	  Increased version to 232.
+
 2011-01-20 13:34  paddockd
 
 	* [r231] config/squeezeplug-asound.conf,

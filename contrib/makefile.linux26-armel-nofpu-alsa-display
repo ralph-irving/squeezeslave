@@ -119,6 +119,7 @@ realclean: clean
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBOGG)
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
 	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
+	-@rm -rf lib/lirc/$(OS)/build/$(LIBLIRC)
 	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
 	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
 	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
