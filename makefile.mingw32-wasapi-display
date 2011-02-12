@@ -19,7 +19,7 @@ LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
-LIBPORTAUDIO=portaudio-r1541
+LIBPORTAUDIO=portaudio-r1596
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
 
@@ -63,6 +63,7 @@ lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`/src/hostapi/wasapi/mingw-include" CFLAGS="$(CFLAGS) -I`pwd`/src/hostapi/wasapi/mingw-include" CPPFLAGS="$(CFLAGS) -I`pwd`/src/hostapi/wasapi/mingw-include" LDFLAGS="$(LDFLAGS)" ./configure --with-host_os=mingw --with-winapi=wasapi --without-jack --enable-shared=no --enable-debug-output=no
+	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-wasapi-ringbuf.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/{portaudio.h,pa_win_wasapi.h,pa_win_waveformat.h} lib/libportaudio/$(OS)/include

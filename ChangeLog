@@ -1,3 +1,11 @@
+2011-01-25 12:40  paddockd
+
+	* [r233] ChangeLog,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.mingw32-ffmpeg-display: Fixed lirc realclean for
+	  armel squeezeplug makefile.
+	  Fixed portaudio version in mingw32-ffmpeg makefile.
+
 2011-01-24 12:56  paddockd
 
 	* [r232] ChangeLog, contrib/makefile.freebsd,
@@ -13,8 +21,8 @@
 	  lib/lirc/lnx26/lib, makefile.linux24-alsa-display,
 	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
 	  src/squeezeslave/squeezeslave.c: Fixed inconsistant use of
-	  portmixer unix_oss and none.
-	  Portmixer unix_oss is not compatible with PORTAUDIO_DEV.
+	  portmixer unix_oss and none as portmixer unix_oss is not
+	  compatible with PORTAUDIO_DEV.
 	  Updated armel squeezeplug makefile to build lirc_client.
 	  Increased version to 232.
 

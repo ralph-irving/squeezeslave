@@ -1,0 +1,12 @@
+--- portaudio/Makefile.orig	2011-02-11 07:32:21.499375000 -0500
++++ portaudio/Makefile	2011-02-12 06:27:14.358750000 -0500
+@@ -56,7 +56,8 @@
+ 	src/common/pa_process.o \
+ 	src/common/pa_skeleton.o \
+ 	src/common/pa_stream.o \
+-	src/common/pa_trace.o
++	src/common/pa_trace.o \
++	src/common/pa_ringbuffer.o
+ 
+ TESTS = \
+ 	bin/paqa_devs \
