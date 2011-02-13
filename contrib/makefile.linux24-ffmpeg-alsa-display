@@ -24,12 +24,12 @@ LIBS+=-lcurses -llirc_client
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/ffmpeg/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.2.1
-LIBVORBIS=libvorbis-1.3.2
+LIBOGG=libogg-1.2.0
+LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
 LIBFFMPEG=ffmpeg-export-2011-01-14
 LIBFAAD2=faad2-2.7
-LIBPORTAUDIO=portaudio-r1541
+LIBPORTAUDIO=portaudio-r1596
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
@@ -116,7 +116,7 @@ lib/ffmpeg/$(OS)/lib/libavutil.a:
 lib/ffmpeg/$(OS)/lib/libavcore.a:
 lib/ffmpeg/$(OS)/lib/libavfilter.a:
 	cd lib/ffmpeg/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFFMPEG).tar.bz2
-	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-avdevice --disable-swscale --disable-encoders --disable-devices --disable-filters --disable-muxers --disable-demuxers --disable-network --disable-parsers --enable-parser=aac --disable-protocols --disable-bsfs --enable-bsf=aac_adtstoasc --disable-decoders --enable-decoder=aac --enable-decoder=alac --enable-decoder=wmav1 --enable-decoder=wmav2 --enable-decoder=wmapro --enable-runtime-cpudetect
+	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-avdevice --disable-swscale --disable-encoders --disable-devices --disable-filters --disable-muxers --disable-demuxers --disable-network --disable-parsers --enable-parser=aac --disable-protocols --disable-bsfs --enable-bsf=aac_adtstoasc --disable-decoders --enable-decoder=aac --enable-decoder=alac --enable-decoder=wmav1 --enable-decoder=wmav2 --enable-decoder=wmapro --enable-runtime-cpudetect --enable-memalign-hack --enable-gpl
 	#	--disable-debug
 	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && make clean && make
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcore/libavcore.a lib/ffmpeg/$(OS)/lib

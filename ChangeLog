@@ -1,3 +1,19 @@
+2011-02-12 12:00  paddockd
+
+	* [r234] ChangeLog, makefile.linux24-alsa-display,
+	  makefile.linux26-alsa-display, makefile.linux26-i64-alsa-display,
+	  makefile.mingw32-asio-display, makefile.mingw32-display,
+	  makefile.mingw32-wasapi-display,
+	  patches/build-portaudio-wasapi-ringbuf.patch,
+	  sources/portaudio-r1596.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Updated core linux ALSA makefiles to PA DEV r1596 to fix a long
+	  standing issue with squeezeslave ALSA linux binaries hanging
+	  after the playlist has been stopped the first time from initial
+	  run of the program. Can be reproduced consistantly with the
+	  snd_hda_intel linux kernel module.
+	  Updated windows makefiles to PA DEV r1596.
+	  Increased version to 234.
+
 2011-01-25 12:40  paddockd
 
 	* [r233] ChangeLog,

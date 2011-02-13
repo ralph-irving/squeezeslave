@@ -26,7 +26,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1541
+LIBPORTAUDIO=portaudio-r1596
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
