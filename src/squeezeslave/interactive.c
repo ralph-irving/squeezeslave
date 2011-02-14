@@ -325,8 +325,10 @@ unsigned long getircode(int key) {
     case '\f': wrefresh(curscr); break; /* repaint screen */
     case 'q': ir=0x01 ;/* quit */
     case 'Q': ir=0x01 ;/* quit */
+#if 0
 #if ! defined(__APPLE__) && ! defined(__MACH__)
     case '\e': ir=0x01 ;/* quit */
+#endif
 #endif
   }
 

@@ -1,3 +1,25 @@
+2011-02-13 13:25  paddockd
+
+	* [r235] ChangeLog, contrib/makefile.freebsd-sparc64,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  contrib/makefile.linux26-ppc-alsa-display,
+	  contrib/makefile.mingw32-ffmpeg-display,
+	  makefile.mingw32-wasapi-display, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display,
+	  scripts/createpaexp, sources/portaudio-r1596.tar.gz,
+	  src/squeezeslave/squeezeslave.c: Updated OSX makefiles to PA DEV
+	  1596.
+	  Updated contrib makefiles to PA DEV 1596.
+	  Added createpaexp script to create "patched" portaudio tar file.
+	  Replaced portaudio-r1596.tar.gz tar file with version from
+	  creation script.
+	  Increased version to 235.
+
 2011-02-12 12:00  paddockd
 
 	* [r234] ChangeLog, makefile.linux24-alsa-display,
