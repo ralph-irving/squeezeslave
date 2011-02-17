@@ -1,0 +1,42 @@
+Index: portaudio/src/hostapi/alsa/pa_linux_alsa.c
+===================================================================
+--- portaudio/src/hostapi/alsa/pa_linux_alsa.c	(revision 1542)
++++ portaudio/src/hostapi/alsa/pa_linux_alsa.c	(revision 1543)
+@@ -239,9 +239,12 @@
+     return (const PaAlsaDeviceInfo *)hostApi->deviceInfos[device];
+ }
+ 
+-static void AlsaErrorHandler(const char *file, int line, const char *function, int err, const char *fmt, ...)
++/** Uncommented because AlsaErrorHandler is unused for anything good yet. If AlsaErrorHandler is 
++    to be used, do not forget to register this callback in PaAlsa_Initialize, and unregister in Terminate.
++*/
++/*static void AlsaErrorHandler(const char *file, int line, const char *function, int err, const char *fmt, ...)
+ {
+-}
++}*/
+ 
+ PaError PaAlsa_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex hostApiIndex )
+ {
+@@ -262,7 +265,10 @@
+     (*hostApi)->OpenStream = OpenStream;
+     (*hostApi)->IsFormatSupported = IsFormatSupported;
+ 
+-    ENSURE_( snd_lib_error_set_handler(AlsaErrorHandler), paUnanticipatedHostError );
++    /** If AlsaErrorHandler is to be used, do not forget to unregister callback pointer in 
++        Terminate function.
++    */
++    /*ENSURE_( snd_lib_error_set_handler(AlsaErrorHandler), paUnanticipatedHostError );*/
+ 
+     PA_ENSURE( BuildDeviceList( alsaHostApi ) );
+ 
+@@ -308,6 +314,10 @@
+     PaAlsaHostApiRepresentation *alsaHostApi = (PaAlsaHostApiRepresentation*)hostApi;
+ 
+     assert( hostApi );
++    
++    /** See AlsaErrorHandler and PaAlsa_Initialize for details.
++    */
++    /*snd_lib_error_set_handler(NULL);*/
+ 
+     if( alsaHostApi->allocations )
+     {

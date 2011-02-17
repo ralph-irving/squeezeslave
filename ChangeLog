@@ -1,3 +1,11 @@
+2011-02-14 12:40  paddockd
+
+	* [r236] ChangeLog, TODO, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c: Removed the Escape key from the
+	  list of keys that can quit from interactive mode, only Q or q
+	  exit now.
+	  Increased version to 236.
+
 2011-02-13 13:25  paddockd
 
 	* [r235] ChangeLog, contrib/makefile.freebsd-sparc64,
