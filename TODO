@@ -1,5 +1,12 @@
 ---
 
+Using dockstar oss 1.0-236 binary from r238 squeezeslave on squeezeplug image
+crashes after continuous play of approximately 8 hours with
+
+PaHost_WatchDogProc: killing hung audio thread!
+
+---
+
 After spending some more time tracking this down, it turns out it looks like a gcc3.3 thing.  We only are seeing this on our PPC builds which use gcc3.3.  We have the MACOSX_DEPLOYMENT_TARGET_ppc set to 10.3 in the project settings and we see "... -DMAC_OS_X_VERSION_MIN_REQUIRED=1030 ..." in the build transcript, but __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ never gets defined.  Perhaps a bug in the Apple building system?  Perhaps not implemented in the compiler?  Who knows.  The fix for us was adding this to the prefix file:
 
 // Added to resolve a bug in Apple's system that doesn't set this very needed variable for gcc3.3

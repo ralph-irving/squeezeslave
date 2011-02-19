@@ -1,3 +1,10 @@
+2011-02-17 14:57  paddockd
+
+	* [r237] ChangeLog, contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  patches/build-portaudio-alsaerrhandler.patch: Fixed PA DEV r1596
+	  compile error in mipsel alsa makefile.
+	  Added alsa error handler re-enable patch.
+
 2011-02-14 12:40  paddockd
 
 	* [r236] ChangeLog, TODO, src/squeezeslave/interactive.c,

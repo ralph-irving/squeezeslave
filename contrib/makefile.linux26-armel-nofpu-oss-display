@@ -1,4 +1,4 @@
-# Linux 2.6 ALSA/OSS armel squeezeplug
+# Linux 2.6 OSS armel squeezeplug
 # Uses Tremor fixed point vorbis decoder.
 OS=lnx26
 CC=gcc
@@ -8,23 +8,24 @@ CP=cp
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2
+CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DNO_FPU -Wall -O2
 LDFLAGS=-s
 
 # Comment out these two lines to remove display support
 CFLAGS+=-DINTERACTIVE
 LIBS+=/usr/lib/libncurses.a lib/lirc/$(OS)/lib/liblirc_client.a
 
-INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
+INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
+
+PORTAUDIOFILES:=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_oss.c  lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1596
 LIBLIRC=lirc-0.8.6
 
-PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
+PORTMIXERFILES:=lib/portmixer/px_unix_oss/px_unix_oss.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
@@ -32,11 +33,13 @@ SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c
 
 SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
 
+LIBPORTAUDIO=lib/libportaudio.a
+
 LIBSLIMPROTO=lib/libslimproto.a
 
 LIBGETOPT=lib/libgetopt.a
 
-SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisidec.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/lirc/$(OS)/lib/liblirc_client.a
+SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisidec.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/lirc/$(OS)/lib/liblirc_client.a
 
 SQUEEZESLAVE=bin/squeezeslave
 
@@ -44,15 +47,6 @@ SQUEEZESLAVE=bin/squeezeslave
 	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
 all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
-
-lib/libportaudio/$(OS)/lib/libportaudio.a:
-	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/badstate-pa_linux_alsa.patch
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no
-	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
-	${CP} -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
-	${CP} -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
 
 lib/libmad/$(OS)/lib/libmad.a:
 	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
@@ -94,6 +88,10 @@ lib/lirc/$(OS)/lib/liblirc_client.a:
 	ranlib lib/lirc/$(OS)/lib/liblirc_client.a
 	cp -p lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.h lib/lirc/$(OS)/include/lirc
 
+$(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
+	ar cru $(LIBPORTAUDIO) $^
+	ranlib $(LIBPORTAUDIO)
+
 $(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
 	ar cru $(LIBSLIMPROTO) $^
 	ranlib $(LIBSLIMPROTO)
@@ -102,16 +100,20 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ar cru $(LIBGETOPT) $^
 	ranlib $(LIBGETOPT)
 
-$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lasound -lrt -lpthread -lm $(LIBS)
+$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
+	$(CC) $(LDFLAGS) -static -o $(SQUEEZESLAVE) $^ -lpthread -lm $(LIBS)
+	mv $(SQUEEZESLAVE) $(SQUEEZESLAVE)-static
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm $(LIBS)
 
 clean:
+	-@rm -f $(PORTAUDIOFILES:.c=.o)
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
 	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
 	-@rm -f $(PORTMIXERFILES:.c=.o)
 	-@rm -f $(GETOPTFILES:.c=.o)
 	-@rm -f $(LIBSLIMPROTO)
 	-@rm -f $(LIBGETOPT)
+	-@rm -f $(SQUEEZESLAVE)-static
 	-@rm -f $(SQUEEZESLAVE)
 
 realclean: clean
@@ -120,13 +122,11 @@ realclean: clean
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
 	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
 	-@rm -rf lib/lirc/$(OS)/build/$(LIBLIRC)
-	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
 	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
 	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
 	-@rm -f lib/vorbis/$(OS)/lib/libvorbisidec.a
 	-@rm -f lib/vorbis/$(OS)/include/vorbis/{vorbisfile.h,ivorbiscodec.h,ivorbisfile.h,config_types.h}
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
-	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
 	-@rm -f lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/include/lirc/lirc_client.h
 
