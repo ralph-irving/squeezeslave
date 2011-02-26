@@ -26,7 +26,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1596
+LIBPORTAUDIO=portaudio-r1608
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
@@ -52,11 +52,10 @@ all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS) && ${TAR} --bzip -xf ../../../sources/mipsel-alsa-lib.tar.bz2
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/badstate-pa_linux_alsa.patch
+	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-alsa-badstate.patch
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-alsaerrhandler.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && ${CP} ../../../../../patches/build-portaudio-mipps.patch config.sub
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -I`pwd`/../../include -DALLOW_SMP_DANGERS" CPP="$(CPP)" CXXCPP="$(CPP)" CPPFLAGS="$(CFLAGS) -I`pwd`/../../include" LDFLAGS="$(LDFLAGS) -L`pwd`/../../lib" ./configure --without-jack --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -I`pwd`/../../include" CPP="$(CPP)" CXXCPP="$(CPP)" CPPFLAGS="$(CFLAGS) -I`pwd`/../../include" LDFLAGS="$(LDFLAGS) -L`pwd`/../../lib" ./configure --without-jack --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	${CP} -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	${CP} -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include

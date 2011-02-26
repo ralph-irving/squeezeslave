@@ -1,3 +1,18 @@
+2011-02-26 13:59  paddockd
+
+	* [r239] ChangeLog, TODO, makefile.linux26-alsa-display,
+	  makefile.linux26-i64-alsa-display, makefile.mingw32-asio-display,
+	  makefile.mingw32-display, makefile.mingw32-wasapi-display,
+	  patches/build-portaudio-alsa-badstate.patch,
+	  patches/build-portaudio-wasapi-ringbuf.patch,
+	  scripts/createpaexp, sources/portaudio-r1608.tar.gz,
+	  src/squeezeslave/squeezeslave.c: Updated lnx26 and windows
+	  makefiles to PA DEV r1608.
+	  Removed patches from libportaudio export creation script.
+	  Updated wasapi ringbuffer patch for latest PA DEV.
+	  Updated alsa badstate patch for latest PA DEV.
+	  Increased version to 239.
+
 2011-02-19 13:54  paddockd
 
 	* [r238] ChangeLog, TODO,
