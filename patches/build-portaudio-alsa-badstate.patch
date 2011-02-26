@@ -1,0 +1,19 @@
+--- portaudio/src/hostapi/alsa/pa_linux_alsa.c.orig	2011-02-25 08:58:12.000000000 -0500
++++ portaudio/src/hostapi/alsa/pa_linux_alsa.c	2011-02-25 09:13:22.000000000 -0500
+@@ -3701,6 +3701,16 @@
+             goto end;
+         }
+ 
++        if( pollPlayback && self->playback.pcm )
++        {
++                int state = snd_pcm_state( self->playback.pcm );
++                if( state != SND_PCM_STATE_RUNNING )
++                {
++                        // bad state, restart alsa
++                        AlsaRestart(self);
++                }
++        }
++
+         if( *framesAvail > 0 )
+         {
+             /* Mark pcms ready from poll */

@@ -1,3 +1,10 @@
+2011-02-19 13:54  paddockd
+
+	* [r238] ChangeLog, TODO,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-nofpu-oss-display: Added
+	  squeezeplug armel OSS makefile.
+
 2011-02-17 14:57  paddockd
 
 	* [r237] ChangeLog, contrib/makefile.linux26-mipsel-nofpu-alsa,
