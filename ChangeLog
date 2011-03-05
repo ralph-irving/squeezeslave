@@ -1,3 +1,9 @@
+2011-03-05 20:52  paddockd
+
+	* [r242] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,
+	  src/slimaudio/slimaudio_decoder_wma.c: Fixed occasional crashes
+	  during track changes.
+
 2011-03-05 11:29  paddockd
 
 	* [r241] ChangeLog, TODO,
