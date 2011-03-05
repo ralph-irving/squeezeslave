@@ -1,3 +1,18 @@
+2011-02-26 19:41  paddockd
+
+	* [r240] ChangeLog, contrib/makefile.freebsd-sparc64,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  contrib/makefile.linux26-ppc-alsa-display,
+	  contrib/makefile.mingw32-ffmpeg-display,
+	  makefile.linux24-alsa-display, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display: Updated
+	  lnx24, osx and contrib makefiles to PA DEV r1608.
+
 2011-02-26 13:59  paddockd
 
 	* [r239] ChangeLog, TODO, makefile.linux26-alsa-display,

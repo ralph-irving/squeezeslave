@@ -100,9 +100,53 @@ int read_data(void *opaque, char *buf, int buf_size)
 
 Thank you for all help.
 
-
 ---
 
+http://dranger.com/ffmpeg/tutorial01.html
+http://ffmpeg.arrozcru.org/forum/viewtopic.php?f=8&t=1060
+http://ffmpeg.arrozcru.org/forum/viewtopic.php?f=8&t=1435 Resampling example
+
+---
+Hello,
+
+here is my code with the callback function to realize a timeout on
+av_read_frame. It is written in C++ with Visual Studio in Windows, but
+with a little change also usable in other systems.
+
+First you have to initialize the call back function in libav. At this
+time libav call this function in blocking functions (av_read_frame)
+
+url_set_interrupt_cb(decode_interrupt_cb);
+
+  The implementation of this function looks like that:
+
+LONGLONG timeout; //für decode_interuppt_cb
+static int decode_interrupt_cb(void)
+{
+     LARGE_INTEGER ptime;
+     QueryPerformanceCounter(&ptime);
+     if (ptime.QuadPart > timeout)  //timeout arrived?
+         return 1;
+     //return 0 for no timeout
+     return 0;
+}
+
+In the program every time i call a blocking function of libav I set a
+new timeout (ptime):
+
+QueryPerformanceCounter(&ptime);
+timeout = ptime.QuadPart + pfreq.QuadPart *5; //Timeout
+res = av_read_frame(decforctx,&re_pkt);
+
+The QueryperformanceCounter is a 64 bit value of windows. The frequnecy
+depends on the architecture of the pc, but is constant. I use it as a
+relative time to define the timeout.  The Callback function check the
+time and decide to skip the function of libav.
+
+I hope the code helps you.
+
+Steffen 
+---
 Using dockstar oss 1.0-236 binary from r238 squeezeslave on squeezeplug image
 crashes after continuous play of approximately 8 hours with
 
