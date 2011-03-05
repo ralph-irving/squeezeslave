@@ -27,7 +27,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.0
 LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
-LIBFFMPEG=ffmpeg-2011-03-01
+LIBFFMPEG=ffmpeg-2011-03-05
 LIBFAAD2=faad2-2.7
 LIBPORTAUDIO=portaudio-r1608
 
@@ -115,10 +115,10 @@ lib/ffmpeg/$(OS)/lib/libavcodec.a:
 lib/ffmpeg/$(OS)/lib/libavformat.a:
 lib/ffmpeg/$(OS)/lib/libavutil.a:
 lib/ffmpeg/$(OS)/lib/libavfilter.a:
-	#cd lib/ffmpeg/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFFMPEG).tar.bz2
-	#cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-swscale --disable-bzlib --disable-zlib --enable-runtime-cpudetect --enable-memalign-hack --enable-gpl
+	cd lib/ffmpeg/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFFMPEG).tar.bz2
+	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-swscale --disable-bzlib --disable-zlib --disable-indevs --disable-outdevs --enable-runtime-cpudetect --enable-memalign-hack --enable-gpl
 	#	--disable-debug
-	#cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && make clean && make
+	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && make clean && make
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavdevice/libavdevice.a lib/ffmpeg/$(OS)/lib
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavfilter/libavfilter.a lib/ffmpeg/$(OS)/lib
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavformat/libavformat.a lib/ffmpeg/$(OS)/lib
@@ -168,7 +168,8 @@ realclean: clean
 	-@rm -f lib/faad2/$(OS)/lib/libmp4ff.a
 	-@rm -f lib/faad2/$(OS)/include/{faad.h,neaacdec.h}
 	-@rm -f lib/faad2/$(OS)/include/{mp4ff.h,mp4ffint.h,mp4ff_int_types.h}
-	-@rm -f lib/ffmpeg/$(OS)/lib/{libavcodec.a,libavformat.a,libavutil.a,libavcore.a,libavfilter.a}
+	-@rm -f lib/ffmpeg/$(OS)/lib/{libavcodec.a,libavformat.a,libavutil.a,libavcore.a,libavfilter.a,libavdevice.a}
+	-@rm -f lib/ffmpeg/$(OS)/include/libavdevice/avdevice.h
 	-@rm -f lib/ffmpeg/$(OS)/include/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h}
 	-@rm -f lib/ffmpeg/$(OS)/include/libavformat/{avformat.h,avio.h}
 	-@rm -f lib/ffmpeg/$(OS)/include/libavcore/{audioconvert.h,avcore.h,imgutils.h,parseutils.h,samplefmt.h}

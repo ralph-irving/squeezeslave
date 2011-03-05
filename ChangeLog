@@ -1,3 +1,10 @@
+2011-03-05 11:29  paddockd
+
+	* [r241] ChangeLog, TODO,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  src/slimaudio/slimaudio_decoder_wma.c: Initial support for native
+	  wmav1 and wmav2 decoder on linux little endian hardware.
+
 2011-02-26 19:41  paddockd
 
 	* [r240] ChangeLog, contrib/makefile.freebsd-sparc64,

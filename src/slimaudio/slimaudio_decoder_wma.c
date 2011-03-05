@@ -41,13 +41,7 @@
   #define VDEBUGF(...)
 #endif
 
-#define FFMPEG_STREAM_DECODER_READ_STATUS_CONTINUE (-1)
-#define	FFMPEG_STREAM_DECODER_READ_STATUS_ABORT (-2)
-#define	FFMPEG_STREAM_DECODER_READ_STATUS_END_OF_STREAM (-3)
-
-#define INBUF_SIZE (AUDIO_CHUNK_SIZE/2)
-#define AUDIO_INBUF_SIZE 20480
-#define AUDIO_REFILL_THRESH 4096
+#define AUDIO_INBUF_SIZE (AUDIO_CHUNK_SIZE*2)
 
 void av_err_callback(void *ptr, int level, const char *fmt, va_list vargs)
 {
@@ -64,11 +58,15 @@ int slimaudio_decoder_wma_init(slimaudio_t *audio) {
 	av_register_all();
 	DEBUGF("wma: av_register_all\n");
 
-	AVInputFormat *p = NULL;
-	while (p = av_iformat_next(p))
-		DEBUGF("wma: %s: %s:\n", p->name, p->long_name);
+        AVInputFormat *p = NULL;
+	p = av_iformat_next(p);
+        while (p)
+	{
+                VDEBUGF("wma: %s: %s:\n", p->name, p->long_name);
+		p = av_iformat_next(p);
+	};
 
-	DEBUGF("wma: %s\n", avformat_configuration() );
+	VDEBUGF("wma: %s\n", avformat_configuration() );
 
 	return 0;
 }
@@ -93,14 +91,12 @@ int av_read_data(void *opaque, char *buffer, int buf_size)
 
         if (audio->decoder_end_of_stream) {
                 audio->decoder_end_of_stream = false;
-		/* DEBUGF("slimaudio_decoder_wma_process: done\n"); */
-		/* return -1; */
         }
 
         int data_len = buf_size;
-	DEBUGF("wma: read ask: %d\n", data_len);
+	VDEBUGF("wma: read ask: %d\n", data_len);
         slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, (char*) buffer, &data_len);
-	DEBUGF("wma: read actual: %d\n", data_len);
+	VDEBUGF("wma: read actual: %d\n", data_len);
 
         if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
                 DEBUGF("slimaudio_decoder_wma_process: EOS\n");
@@ -115,15 +111,19 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 //	int buffer[AUDIO_CHUNK_SIZE/2];
 //	int i;
 	
-	int data_len = 0;
 //	unsigned char *ptr = data;
-	slimaudio_buffer_status ok = SLIMAUDIO_BUFFER_STREAM_START;
-
+	char streamformat[] = "asf";
 	int out_size;
 	int len = 0;
 	u8_t *outbuf;
 	u8_t *inbuf;
 
+        /* Check WMA metadata to see if this remote stream is being served from a
+	* Windows Media server or a normal HTTP server.  WM servers will use MMS chunking
+	* and need a pcmsamplesize value of 1, whereas HTTP servers need pcmsamplesize of 0.
+	* 0 = asf - default
+	* 1 = mms
+	*/
 	/* FIXME: Use wma_chunking in av_find_input_format call */
 
 	DEBUGF("wma: wma_chunking:%d '%c' wma_playstream:%d '%c' wma_metadatastream:%d '%c'\n",
@@ -131,13 +131,23 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	       	audio->wma_playstream, audio->wma_playstream,
 		audio->wma_metadatastream, audio->wma_metadatastream );
 
-//	av_init_packet(&avpkt);
+	/* FIXME: need lock? */
+	/* Squeezebox server counts streams from 1, ffmpeg starts at 0.
+	 * We need to revert the stream number back to a value which we
+	 * change while reading the http headers and further subtract 1
+	 */ 
+	int audioStream = audio->wma_playstream-49;
 
-	inbuf = av_malloc(AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
-	outbuf = av_malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
+	/* FIXME: change asf, or remove completely */
+	if ( audio->wma_chunking == '1' )
+	{
+		strncpy ( streamformat, "asf", sizeof (streamformat) );
+	}
+
+	DEBUGF ("wma: play audioStream: %d\n", audioStream);
 
 	AVFormatContext* pFormatCtx;
-	AVInputFormat* pAVInputFormat = av_find_input_format("asf");
+	AVInputFormat* pAVInputFormat = av_find_input_format(streamformat);
 	if( !pAVInputFormat )
 	{
 		DEBUGF("wma: probe failed\n");
@@ -148,14 +158,14 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 		pAVInputFormat->flags |= AVFMT_NOFILE;
 	}
 
-	DEBUGF("wma: before init_put_byte\n");
 	ByteIOContext ByteIOCtx;
 
-	if( init_put_byte( &ByteIOCtx, inbuf, (INBUF_SIZE), 0, audio, av_read_data, NULL, NULL ) < 0)
+	inbuf = av_malloc(AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
+
+	if( init_put_byte( &ByteIOCtx, inbuf, AUDIO_CHUNK_SIZE, 0, audio, av_read_data, NULL, NULL ) < 0)
 	{
 		DEBUGF("wma: init_put_byte failed\n");
 	}
-	DEBUGF("wma: after init_put_byte\n");
 
 	ByteIOCtx.is_streamed = 1;
 
@@ -171,12 +181,6 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 		DEBUGF("wma: find stream info failed.\n");
 	}
 
-	/* FIXME: need lock? */
-	/* Squeezebox server counts streams from 1, ffmpeg starts are 0.
-	 * We need to revert the stream number back to a value which we
-	 * change while reading the http headers and further subtract 1
-	 */ 
-	int audioStream = audio->wma_playstream-49;
 	if ( pFormatCtx->nb_streams < audioStream )
 		DEBUGF("wma: invalid stream.\n");
 
@@ -205,19 +209,36 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	}
 
 	int iRC;
-	int eos = 0;
+	bool eos = false;
 	AVPacket avpkt;
+
+	outbuf = av_malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
 
 	while ( ! eos )
 	{
 		iRC = av_read_frame (pFormatCtx, &avpkt);
+
 		/* Some decoders fail to read the last packet so additional handling is required */
 	        if (iRC < 0)
 		{
-			if ( (iRC == AVERROR_EOF) || url_feof(pFormatCtx->pb) )
-				eos=1;
+			DEBUGF("wma: av_read_frame error: %d\n", iRC);
+			if ( (iRC == AVERROR_EOF) && audio->decoder_end_of_stream )
+			{
+				DEBUGF("wma: AVERROR_EOF\n");
+				eos=true;
+			}
+#if 0
+			if ( url_feof(pFormatCtx->pb) )
+			{
+				DEBUGF("wma: url_feof\n");
+				eos=true;
+			}
 			if ( url_ferror(pFormatCtx->pb) )
+			{
+				DEBUGF("wma: url_ferror\n");
 		                break;
+			}
+#endif
 		}
 
 		if ( avpkt.stream_index == audioStream )
@@ -242,7 +263,6 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 			av_free_packet (&avpkt);
 		}
 	}
-
 
 	if ( inbuf != NULL )
 		av_free(inbuf);
