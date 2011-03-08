@@ -1,3 +1,13 @@
+2011-03-05 20:59  paddockd
+
+	* [r243] ChangeLog,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  patches/build-portaudio-enable-alsaerrhandler.patch,
+	  src/squeezeslave/squeezeslave.c: Added patch to reenable alsa
+	  "null" error handler to remove the alsalib error message spew.
+	  Added alsa error handler patch to armel squeezeplug makefile.
+	  Increased version to 243.
+
 2011-03-05 20:52  paddockd
 
 	* [r242] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,

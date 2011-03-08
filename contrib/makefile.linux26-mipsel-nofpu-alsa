@@ -54,6 +54,7 @@ lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-alsa-badstate.patch
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
+	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-enable-alsaerrhandler.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && ${CP} ../../../../../patches/build-portaudio-mipps.patch config.sub
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -I`pwd`/../../include" CPP="$(CPP)" CXXCPP="$(CPP)" CPPFLAGS="$(CFLAGS) -I`pwd`/../../include" LDFLAGS="$(LDFLAGS) -L`pwd`/../../lib" ./configure --without-jack --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la

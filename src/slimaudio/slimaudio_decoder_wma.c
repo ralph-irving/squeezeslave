@@ -115,6 +115,7 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	char streamformat[] = "asf";
 	int out_size;
 	int len = 0;
+	int iRC;
 	u8_t *outbuf;
 	u8_t *inbuf;
 
@@ -146,11 +147,11 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 
 	DEBUGF ("wma: play audioStream: %d\n", audioStream);
 
-	AVFormatContext* pFormatCtx;
 	AVInputFormat* pAVInputFormat = av_find_input_format(streamformat);
 	if( !pAVInputFormat )
 	{
 		DEBUGF("wma: probe failed\n");
+		return -1;
 	}
 	else
 	{
@@ -158,61 +159,92 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 		pAVInputFormat->flags |= AVFMT_NOFILE;
 	}
 
-	ByteIOContext ByteIOCtx;
 
 	inbuf = av_malloc(AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
-
-	if( init_put_byte( &ByteIOCtx, inbuf, AUDIO_CHUNK_SIZE, 0, audio, av_read_data, NULL, NULL ) < 0)
+	if ( !inbuf )
 	{
-		DEBUGF("wma: init_put_byte failed\n");
+		DEBUGF("wma: inbuf alloc failed.\n");
+		return -1;
 	}
 
-	ByteIOCtx.is_streamed = 1;
+	ByteIOContext ByteIOCtx;
 
-	int ires = av_open_input_stream(&pFormatCtx, &ByteIOCtx, "", pAVInputFormat, NULL);
-
-	if (ires < 0)
+	iRC = init_put_byte( &ByteIOCtx, inbuf, AUDIO_CHUNK_SIZE, 0, audio, av_read_data, NULL, NULL ) ;
+	if( iRC < 0)
 	{
-		DEBUGF("wma: input stream open failed:%d\n",ires);
+		DEBUGF("wma: init_put_byte failed:%d\n", iRC);
+		return -1;
+	}
+	else
+	{
+		ByteIOCtx.is_streamed = 1;
 	}
 
-	if ( av_find_stream_info(pFormatCtx) < 0 )
-	{
-		DEBUGF("wma: find stream info failed.\n");
-	}
-
-	if ( pFormatCtx->nb_streams < audioStream )
-		DEBUGF("wma: invalid stream.\n");
-
-	if ( pFormatCtx->streams[audioStream]->codec->codec_type != CODEC_TYPE_AUDIO )
-	{
-		DEBUGF("wma: stream: %d is not audio.\n", audioStream );
-	}
-
+	AVFormatContext* pFormatCtx;
 	AVCodecContext *pCodecCtx;
 
-	pCodecCtx = pFormatCtx->streams[audioStream]->codec;
+	iRC = av_open_input_stream(&pFormatCtx, &ByteIOCtx, "", pAVInputFormat, NULL);
+
+	if (iRC < 0)
+	{
+		DEBUGF("wma: input stream open failed:%d\n", iRC);
+		return -1;
+	}
+	else
+	{
+		iRC = av_find_stream_info(pFormatCtx);
+		if ( iRC < 0 )
+		{
+			DEBUGF("wma: find stream info failed:%d\n", iRC);
+			return -1;
+		}
+		else
+		{
+			if ( pFormatCtx->nb_streams < audioStream )
+			{
+				DEBUGF("wma: invalid stream.\n");
+				return -1;
+			}
+
+			if ( pFormatCtx->streams[audioStream]->codec->codec_type != CODEC_TYPE_AUDIO )
+			{
+				DEBUGF("wma: stream: %d is not audio.\n", audioStream );
+				return -1;
+			}
+			else
+			{
+				pCodecCtx = pFormatCtx->streams[audioStream]->codec;
+			}
+		}
+	}
 
 	AVCodec *pCodec;
 
 	/* Find the WMA audio decoder */
 	pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-	if (pCodec == NULL )
+	if ( !pCodec )
 	{
 		DEBUGF("wma: codec not found.\n");
+		return -1;
 	} 
 	
 	/* Open codec */
-	if (avcodec_open(pCodecCtx, pCodec) < 0)
+	iRC = avcodec_open(pCodecCtx, pCodec);
+	if ( iRC < 0)
 	{
-		DEBUGF("wma: could not open codec\n");
+		DEBUGF("wma: could not open codec:%d\n", iRC);
+		return -1;
 	}
 
-	int iRC;
+	outbuf = av_malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
+	if ( !outbuf )
+	{
+		DEBUGF("wma: outbuf alloc failed.\n");
+		return -1;
+	}
+
 	bool eos = false;
 	AVPacket avpkt;
-
-	outbuf = av_malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
 
 	while ( ! eos )
 	{
@@ -228,6 +260,15 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 				eos=true;
 			}
 #if 0
+			else
+			{
+				if ( audio->decoder_end_of_stream )
+				{
+					DEBUGF("wma: end_of_stream\n");
+					eos=true;
+				}
+			}
+#endif
 			if ( url_feof(pFormatCtx->pb) )
 			{
 				DEBUGF("wma: url_feof\n");
@@ -236,9 +277,10 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 			if ( url_ferror(pFormatCtx->pb) )
 			{
 				DEBUGF("wma: url_ferror\n");
+#if 0
 		                break;
-			}
 #endif
+			}
 		}
 
 		if ( avpkt.stream_index == audioStream )
