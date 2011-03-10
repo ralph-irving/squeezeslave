@@ -118,7 +118,8 @@ static void *decoder_thread(void *ptr) {
 #endif
 	
 	audio->decoder_state = STREAM_STOPPED;
-	
+
+	bool decoder_failed = false;	
 	unsigned char first_time = 1;
 
 	while (true) {				
@@ -136,6 +137,16 @@ static void *decoder_thread(void *ptr) {
 				else {
 					pthread_mutex_lock(&audio->decoder_mutex);
 				}
+
+				if ( decoder_failed )
+				{
+					decoder_failed = false;
+
+					slimaudio_stat(audio, "STMn", (u32_t) 0); // decoder does not support format
+
+					DEBUGF("decoder_thread: decoder %c failed\n", audio->decoder_mode);
+				}
+
 				pthread_cond_wait(&audio->decoder_cond, &audio->decoder_mutex);
 				pthread_mutex_unlock(&audio->decoder_mutex);
 				break;
@@ -166,7 +177,11 @@ static void *decoder_thread(void *ptr) {
 #endif					
 #ifdef WMA_DECODER					
 				case 'w': // wma
-					slimaudio_decoder_wma_process(audio);
+					if ( slimaudio_decoder_wma_process(audio) < 0 )
+					{
+						decoder_failed = true ;
+					}
+
 					break;
 #endif					
 				default:

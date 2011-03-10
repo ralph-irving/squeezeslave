@@ -1,164 +1,17 @@
 ---
 
-Fix memory leak(s) in wma decoder
+Add decoder_failed handling for all decoders.
 
 ---
 
-    /* decode until eof */
-    avpkt.data = inbuf;
-    for(;;) {
-        avpkt.size = fread(inbuf, 1, INBUF_SIZE, f);
-        if (avpkt.size == 0)
-            break;
-
-        avpkt.data = inbuf;
-        while (avpkt.size > 0) {
-            out_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
-            len = avcodec_decode_audio3(c, (short *)outbuf, &out_size, &avpkt);
-            if (len < 0) {
-                fprintf(stderr, "Error while decoding\n");
-                exit(1);
-            }
-            if (out_size > 0) {
-                /* if a frame has been decoded, output it */
-                fwrite(outbuf, 1, out_size, outfile);
-            }
-            avpkt.size -= len;
-            avpkt.data += len;
-        }
-    }
-
-Well, it seems that the problem wasn't in the parameters to 
-av_audio_resample_init(), but in audio_resample(). In my program it looked like 
-this:
-
-unsigned char pcm[AVCODEC_MAX_AUDIO_FRAME_SIZE];
-int cb = sizeof(pcm);
-avcodec_decode_audio3(ctx_.get(), (short *)pcm, &cb, &packet_);
-// <...>
-unsigned char pcm2[AVCODEC_MAX_AUDIO_FRAME_SIZE];
-audio_resample(resampleCtx, (short *)pcm2, (short *)pcm, cb / 4);
-
-I assumed that "cb" is in bytes, and every sample is 4 bytes - thus passed cb/4 
-to audio_resample(), and this resulted in crackles/hum.
-If I change it to cb/2 -- everything sounds ok.
-
-Right, it's "number of samples", so in this case bytes / sizeof(float).
-
-I thought that SAMPLE_FMT_FLT designates 4-byte float.
-At least, when I treated the original non-resampled sound as SAMPLE_FMT_S32, 
-there was some reasonable sound (with a lot of noise), while SAMPLE_FMT_S16 
-didn't produce anything but noise...
-
----
-
-URL: http://libav-users.943685.n4.nabble.com/av-open-input-stream-Failing-tp2715548p2718835.html
-
-I have figured out the problem.
-
-It was failing when it tried to match asf header with the stream. I was
-downloading header during first call of libmms and thus while I try to open
-stream it was failing as header was not matching.
-
-Here is my updated code
-
-#include <stdio.h>
-#include "libmms/mmsx.h"
-#include "libmms/mms.h"
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-
-const char *url = "mms://live.cumulusstreaming.com/KPLX-FM";
-
-
-void my_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
-{
-  printf(fmt, vargs);
-}
-
-int64_t seek_data(void *opaque, int64_t offset, int whence)
-{
-  printf("SEEK DATA\n");
-  return -1;
-}
-
-int main(int argc, char *argv[])
-{
-  mmsx_t *this = NULL;
-  mmsx_t *this2 = NULL;
-  char buf[2048];
-  char buf2[2048];
-  int i, res;
-  FILE* f;
-  AVFormatContext* pFormatCtx;
-
-  av_log_set_callback(my_log_callback);
-  av_log_set_level(AV_LOG_VERBOSE);
-
-
-  av_register_all();
-
-  int read_data(void *opaque, char *buf, int buf_size);  
-
-  AVInputFormat* pAVInputFormat = av_find_input_format("asf");
-  if(!pAVInputFormat)
-  {
-    printf("Probe not successful\n");
-  }
-  else
-  {
-    printf("Probe successfull------%s-------%s\n",pAVInputFormat->name,
-pAVInputFormat->long_name);
-  }
-
-  if((this = mmsx_connect(NULL, NULL, url, 1)))
-    printf("Connect OK\n");
-
-  //pAVInputFormat->flags |= AVFMT_NOFILE;
-
-  ByteIOContext ByteIOCtx;
-  if(init_put_byte(&ByteIOCtx, buf, 2048, 0, this, read_data, NULL,
-seek_data) < 0)
-  {
-    printf("init_put_byte not successful\n");
-  }
-  else
-  {
-    printf("init_put_byte successful\n");
-  }
-  ByteIOCtx.is_streamed = 1;
-
-
-  int ires = av_open_input_stream(&pFormatCtx, &ByteIOCtx, "",
-pAVInputFormat,NULL);
- 
-  if(ires < 0)
-  {
-    printf("Open input stream not successful %d\n",ires);
-  }
-  else
-  {
-    printf("Open input stream successfull %d\n",ires);
-  }
-
-}
-
-int read_data(void *opaque, char *buf, int buf_size)
-{
-  mmsx_t *this22 = (mmsx_t *)opaque;
-  int cnt = mmsx_read(NULL, opaque, buf, buf_size);
-  return cnt;
-}
-
-
-
-Thank you for all help.
+Fix memory leak(s) in wma decoder.
 
 ---
 
 http://dranger.com/ffmpeg/tutorial01.html
 http://ffmpeg.arrozcru.org/forum/viewtopic.php?f=8&t=1060
 http://ffmpeg.arrozcru.org/forum/viewtopic.php?f=8&t=1435 Resampling example
+http://libav-users.943685.n4.nabble.com/av-open-input-stream-Failing-tp2715548p2718835.html
 
 ---
 Hello,
@@ -201,6 +54,7 @@ I hope the code helps you.
 
 Steffen 
 ---
+
 Using dockstar oss 1.0-236 binary from r238 squeezeslave on squeezeplug image
 crashes after continuous play of approximately 8 hours with
 

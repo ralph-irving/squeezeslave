@@ -92,7 +92,15 @@ int av_read_data(void *opaque, char *buffer, int buf_size)
         if (audio->decoder_end_of_stream) {
                 audio->decoder_end_of_stream = false;
         }
-
+#if 0
+	int avail = 0;
+	do
+	{
+		Pa_Sleep(100);
+		avail = slimaudio_buffer_available(audio->decoder_buffer);
+	}
+	while ( (avail < buf_size) && (avail != 0) );
+#endif
         int data_len = buf_size;
 	VDEBUGF("wma: read ask: %d\n", data_len);
         slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, (char*) buffer, &data_len);
@@ -158,7 +166,6 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 		DEBUGF("wma: probe ok name:%s lname:%s\n", pAVInputFormat->name, pAVInputFormat->long_name);
 		pAVInputFormat->flags |= AVFMT_NOFILE;
 	}
-
 
 	inbuf = av_malloc(AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
 	if ( !inbuf )
@@ -254,26 +261,24 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	        if (iRC < 0)
 		{
 			DEBUGF("wma: av_read_frame error: %d\n", iRC);
+
 			if ( (iRC == AVERROR_EOF) && audio->decoder_end_of_stream )
 			{
 				DEBUGF("wma: AVERROR_EOF\n");
 				eos=true;
 			}
-#if 0
-			else
+
+			if ( audio->decoder_end_of_stream )
 			{
-				if ( audio->decoder_end_of_stream )
-				{
-					DEBUGF("wma: end_of_stream\n");
-					eos=true;
-				}
+				DEBUGF("wma: end_of_stream\n");
 			}
-#endif
+
 			if ( url_feof(pFormatCtx->pb) )
 			{
 				DEBUGF("wma: url_feof\n");
 				eos=true;
 			}
+
 			if ( url_ferror(pFormatCtx->pb) )
 			{
 				DEBUGF("wma: url_ferror\n");
@@ -283,27 +288,22 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 			}
 		}
 
-		if ( avpkt.stream_index == audioStream )
+		out_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+		len = avcodec_decode_audio3(pCodecCtx, (int16_t *)outbuf, &out_size, &avpkt);
+		if (len < 0)
 		{
-			out_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
-			len = avcodec_decode_audio3(pCodecCtx, (int16_t *)outbuf, &out_size, &avpkt);
-			if (len < 0)
-			{
-				DEBUGF("wma: no audio to decode\n");
-				av_free_packet (&avpkt);
-				break;
-			}
-
-			if (out_size > 0)
-			{
-				/* if a frame has been decoded, output it */
-				slimaudio_buffer_write(audio->output_buffer, (char*)outbuf, out_size);
-			}
-		}
-		else
-		{
+			DEBUGF("wma: no audio to decode\n");
 			av_free_packet (&avpkt);
+			break;
 		}
+
+		if (out_size > 0)
+		{
+			/* if a frame has been decoded, output it */
+			slimaudio_buffer_write(audio->output_buffer, (char*)outbuf, out_size);
+		}
+
+		av_free_packet (&avpkt);
 	}
 
 	if ( inbuf != NULL )

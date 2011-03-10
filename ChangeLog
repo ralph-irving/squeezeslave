@@ -1,3 +1,18 @@
+2011-03-08 12:40  paddockd
+
+	* [r244] ChangeLog, TODO,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  contrib/makefile.linux26-ppc-alsa-display,
+	  makefile.linux24-alsa-display, makefile.linux26-alsa-display,
+	  makefile.linux26-i64-alsa-display,
+	  src/slimaudio/slimaudio_decoder_wma.c: Added alsa error handler
+	  patch to remaining makefiles.
+
 2011-03-05 20:59  paddockd
 
 	* [r243] ChangeLog,

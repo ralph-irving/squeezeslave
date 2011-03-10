@@ -717,8 +717,19 @@ int main(int argc, char *argv[]) {
 		fclose (debuglog);
 	}
 #endif
+#if 0
+	unsigned char msg[SLIMPROTO_MSG_SIZE];
+	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
+	packA4(msg, 0, "BYE!");
+	packN4(msg, 4, 1);
+	packC(msg, 8, 0x01);
+	slimproto_send(&slimproto, msg);
+	Pa_Sleep(1000);
+#endif
 	slimaudio_destroy(&slimaudio);
 	slimproto_destroy(&slimproto);
+
+	/* fprintf ( stderr, "BYE!\n" ); */
 	return 0;
 } 
 
