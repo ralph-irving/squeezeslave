@@ -1,3 +1,15 @@
+2011-03-10 12:50  paddockd
+
+	* [r245] ChangeLog, TODO, src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_wma.c,
+	  src/squeezeslave/squeezeslave.c: Added wma decoder failure logic
+	  to have the server stop squeezeslave when an error occurs. Prior
+	  behaviour had squeezeslave playing endless silence until stop was
+	  pressed.
+	  Wma decoder does not handle mms streams yet.
+	  Added "BYE!" slimprotocol packet send on exit, currently
+	  disabled.
+
 2011-03-08 12:40  paddockd
 
 	* [r244] ChangeLog, TODO,
@@ -26,8 +38,8 @@
 2011-03-05 20:52  paddockd
 
 	* [r242] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,
-	  src/slimaudio/slimaudio_decoder_wma.c: Fixed occasional crashes
-	  during track changes.
+	  src/slimaudio/slimaudio_decoder_wma.c: Fixed occasional crash in
+	  wma decoder during track changes.
 
 2011-03-05 11:29  paddockd
 

@@ -172,7 +172,11 @@ static void *decoder_thread(void *ptr) {
 					break;
 #ifdef AAC_DECODER					
 				case 'a': // aac
-					slimaudio_decoder_aac_process(audio);
+					if ( slimaudio_decoder_aac_process(audio) < 0 )
+					{
+						decoder_failed = true ;
+					}
+
 					break;
 #endif					
 #ifdef WMA_DECODER					

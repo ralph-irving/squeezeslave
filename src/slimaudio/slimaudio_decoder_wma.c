@@ -150,7 +150,7 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	/* FIXME: change asf, or remove completely */
 	if ( audio->wma_chunking == '1' )
 	{
-		strncpy ( streamformat, "asf", sizeof (streamformat) );
+		strncpy ( streamformat, "mms", sizeof (streamformat) );
 	}
 
 	DEBUGF ("wma: play audioStream: %d\n", audioStream);
