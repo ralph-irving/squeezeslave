@@ -1,3 +1,13 @@
+2011-03-11 16:24  paddockd
+
+	* [r246] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_aac.c,
+	  src/slimaudio/slimaudio_decoder_wma.c: Initial support for native
+	  aac decoder on linux little endian hardware.
+	  Updated ffmpeg linux makefile to use gcc-4.3 to avoid stack
+	  mis-alignment errors.
+
 2011-03-10 12:50  paddockd
 
 	* [r245] ChangeLog, TODO, src/slimaudio/slimaudio_decoder.c,

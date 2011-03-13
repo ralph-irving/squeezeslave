@@ -286,15 +286,9 @@ int slimaudio_decoder_aac_process(slimaudio_t *audio) {
 		{
 			DEBUGF("aac: av_read_frame error: %d\n", iRC);
 
-			if ( (iRC == AVERROR_EOF) && audio->decoder_end_of_stream )
+			if ( (iRC == AVERROR_EOF) )
 			{
 				DEBUGF("aac: AVERROR_EOF\n");
-				eos=true;
-			}
-
-			if ( audio->decoder_end_of_stream )
-			{
-				DEBUGF("aac: end_of_stream\n");
 				eos=true;
 			}
 

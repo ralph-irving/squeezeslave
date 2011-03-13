@@ -120,7 +120,7 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 //	int i;
 	
 //	unsigned char *ptr = data;
-	char streamformat[] = "asf";
+	char streamformat[16];
 	int out_size;
 	int len = 0;
 	int iRC;
@@ -147,10 +147,18 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	 */ 
 	int audioStream = audio->wma_playstream-49;
 
-	/* FIXME: change asf, or remove completely */
-	if ( audio->wma_chunking == '1' )
+	switch ( audio->wma_chunking )
 	{
-		strncpy ( streamformat, "mms", sizeof (streamformat) );
+		case '0':
+			strncpy ( streamformat, "asf", sizeof (streamformat) );
+			break;
+		case '1':
+			strncpy ( streamformat, "mms", sizeof (streamformat) );
+			return -1; /* mms+wma stream decoding not yet supported */
+			break;
+		default:
+			fprintf (stderr, "wma: unknown chunking type: %c\n" ,audio->wma_chunking );
+			return -1;
 	}
 
 	DEBUGF ("wma: play audioStream: %d\n", audioStream);
@@ -266,11 +274,6 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 			{
 				DEBUGF("wma: AVERROR_EOF\n");
 				eos=true;
-			}
-
-			if ( audio->decoder_end_of_stream )
-			{
-				DEBUGF("wma: end_of_stream\n");
 			}
 
 			if ( url_feof(pFormatCtx->pb) )
