@@ -223,6 +223,10 @@ int slimaudio_decoder_pcm_init(slimaudio_t *audio);
 void slimaudio_decoder_pcm_free(slimaudio_t *audio);
 int slimaudio_decoder_pcm_process(slimaudio_t *audio);
 
+#if defined(WMA_DECODER) || defined(AAC_DECODER)
+void av_lib_setup (void);
+#endif /* WMA_DECODER || AAC_DECODER */
+
 #ifdef AAC_DECODER
 int slimaudio_decoder_aac_init(slimaudio_t *audio);
 void slimaudio_decoder_aac_free(slimaudio_t *audio);

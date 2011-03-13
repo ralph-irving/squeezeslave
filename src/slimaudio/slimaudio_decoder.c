@@ -27,6 +27,11 @@
 
 #include <mad.h>
 
+#if defined(WMA_DECODER) || defined(AAC_DECODER)
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#endif /* WMA_DECODER || AAC_DECODER */
+
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
@@ -35,11 +40,49 @@
   bool slimaudio_decoder_debug_r;
   bool slimaudio_decoder_debug_v;
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
+  #define VDEBUGF(...) if (slimaudio_decoder_debug_v) fprintf(stderr, __VA_ARGS__)
 #else
   #define DEBUGF(...)
+  #define VDEBUGF(...)
 #endif
 
 static void *decoder_thread(void *ptr);
+
+#if defined(WMA_DECODER) || defined(AAC_DECODER)
+
+bool av_lib_init = false; /* Only initialize ffmpeg library once */
+
+static void av_err_callback(void *ptr, int level, const char *fmt, va_list vargs)
+{
+	VDEBUGF(fmt, vargs);
+}
+
+void av_lib_setup (void)
+{
+	if ( !av_lib_init )
+	{
+		/* Setup error message capture */
+		av_log_set_callback(av_err_callback);
+		av_log_set_level(AV_LOG_VERBOSE);
+
+		/* Register all the codecs */
+		av_register_all();
+		DEBUGF("decoder_thread: av_register_all\n");
+
+		AVInputFormat *p = NULL;
+		p = av_iformat_next(p);
+		while (p)
+		{
+			VDEBUGF("decoder_thread: %s: %s:\n", p->name, p->long_name);
+			p = av_iformat_next(p);
+		};
+
+		VDEBUGF("decoder_thread: %s\n", avformat_configuration() );
+
+		av_lib_init = true;
+	}
+}
+#endif /* WMA_DECODER || AAC_DECODER */
 
 int slimaudio_decoder_open(slimaudio_t *audio) {
 	pthread_mutex_init(&(audio->decoder_mutex), NULL);

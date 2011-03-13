@@ -43,38 +43,18 @@
 
 #define AUDIO_INBUF_SIZE (AUDIO_CHUNK_SIZE*2)
 
-void av_err_callback(void *ptr, int level, const char *fmt, va_list vargs)
+int slimaudio_decoder_wma_init(slimaudio_t *audio)
 {
-	fprintf(stderr, fmt, vargs);
-}
-
-int slimaudio_decoder_wma_init(slimaudio_t *audio) {
-
-	/* Setup error message capture */
-	av_log_set_callback(av_err_callback);
-	av_log_set_level(AV_LOG_VERBOSE);
-
-	/* Register all the codecs */
-	av_register_all();
-	DEBUGF("wma: av_register_all\n");
-
-        AVInputFormat *p = NULL;
-	p = av_iformat_next(p);
-        while (p)
-	{
-                VDEBUGF("wma: %s: %s:\n", p->name, p->long_name);
-		p = av_iformat_next(p);
-	};
-
-	VDEBUGF("wma: %s\n", avformat_configuration() );
+	av_lib_setup();
 
 	return 0;
 }
 
-void slimaudio_decoder_wma_free(slimaudio_t *audio) {
+void slimaudio_decoder_wma_free(slimaudio_t *audio)
+{
 }
 
-int av_read_data(void *opaque, char *buffer, int buf_size)
+static int av_read_data(void *opaque, char *buffer, int buf_size)
 {
 	slimaudio_t *audio = (slimaudio_t *) opaque;
 
