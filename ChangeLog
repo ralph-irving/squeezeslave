@@ -1,3 +1,11 @@
+2011-03-13 15:12  paddockd
+
+	* [r248] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_aac.c,
+	  src/slimaudio/slimaudio_decoder_wma.c: Removed duplicate ffmpeg
+	  library initialization code from aac and wma decoders.
+
 2011-03-13 14:25  paddockd
 
 	* [r247] ChangeLog, src/slimaudio/slimaudio_decoder_aac.c,
@@ -18,10 +26,9 @@
 
 	* [r245] ChangeLog, TODO, src/slimaudio/slimaudio_decoder.c,
 	  src/slimaudio/slimaudio_decoder_wma.c,
-	  src/squeezeslave/squeezeslave.c: Added wma decoder failure logic
-	  to have the server stop squeezeslave when an error occurs. Prior
-	  behaviour had squeezeslave playing endless silence until stop was
-	  pressed.
+	  src/squeezeslave/squeezeslave.c: Added experimental wma decoder
+	  failure logic to have the server stop squeezeslave when an error
+	  occurs.
 	  Wma decoder does not handle mms streams yet.
 	  Added "BYE!" slimprotocol packet send on exit, currently
 	  disabled.
