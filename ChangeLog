@@ -1,3 +1,29 @@
+2011-03-14 12:39  paddockd
+
+	* [r250] contrib/makefile.mingw32-ffmpeg-display,
+	  deprecated/README.txt, deprecated/makefile.mingw32,
+	  deprecated/makefile.mingw32-asio,
+	  deprecated/makefile.mingw32-padev, deprecated/makefile.osxintel,
+	  deprecated/makefile.osxintel-padev, deprecated/makefile.osxppc,
+	  deprecated/makefile.osxppc-padev, deprecated/makefile.s10intel,
+	  deprecated/makefile.s10sparc, deprecated/makefile.s9sparc,
+	  sources/pa_snapshot-20091022.tar.gz,
+	  sources/pa_snapshot-20091205.tar.gz,
+	  sources/portaudio-r1596.tar.gz: Removed remaining deprecated
+	  makefiles.
+	  Removed obsolete portaudio source files.
+
+2011-03-14 12:30  paddockd
+
+	* [r249] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux26-ffmpeg-alsa-display,
+	  lib/ffmpeg/lnx24/include/libavdevice,
+	  src/squeezeslave/squeezeslave.c, tests/avOpenInputStream.c:
+	  Capture outstanding aac/wma decoder changes.
+	  Ffmpeg wma decoder does not support mms remote streams.
+	  Ffmpeg aac decoder does not always play remote streams.
+	  Increased version to 249.
+
 2011-03-13 15:12  paddockd
 
 	* [r248] ChangeLog, src/slimaudio/slimaudio.h,

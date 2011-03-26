@@ -505,6 +505,29 @@ int slimproto_dsco(slimproto_t *p, int dscoCode) {
 	return slimproto_send(p, msg);
 }
 
+/*
+ * upgrade = 0x00 -> always zero for squeezeslave
+ * upgrade = 0x01 -> player is goint out for firmware upgrade
+ */
+int slimproto_goodbye(slimproto_t *p, u8_t upgrade) {
+
+	pthread_mutex_lock(&p->slimproto_mutex);
+	if (p->state != PROTO_CONNECTED) {
+  		pthread_mutex_unlock(&p->slimproto_mutex);
+		return 0;
+	}
+	pthread_mutex_unlock(&p->slimproto_mutex);
+
+	unsigned char msg[SLIMPROTO_MSG_SIZE];
+	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
+
+        packA4(msg, 0, "BYE!");
+        packN4(msg, 4, 1);
+        packC(msg, 8, upgrade);
+
+	return slimproto_send(p, msg);
+}
+
 int slimproto_helo(slimproto_t *p, char device_id, char revision, const char *macaddress, char isGraphics, char isReconnect) {	
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);

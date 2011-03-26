@@ -151,7 +151,9 @@ u32_t slimproto_set_jiffies(slimproto_t *p, unsigned char *buf, int jiffies_ptr)
  */
 int slimproto_helo(slimproto_t *p, char device_id, char revision, const char *macaddress, char isGraphics, char isReconnect);
 
-int slimproto_dsco(slimproto_t *p, int status);
+int slimproto_dsco(slimproto_t *, int);
+
+int slimproto_goodbye(slimproto_t *, u8_t);
 
 int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 

@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.0";
-const int revision = 249;
+const int revision = 251;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -705,6 +705,12 @@ int main(int argc, char *argv[]) {
 	close_lirc();
 #endif
 	slimaudio_close(&slimaudio);
+
+	slimproto_goodbye(&slimproto, 0x00);
+
+	/* Wait 200ms for BYE! message send to complete */
+	Pa_Sleep(200);
+
 	slimproto_close(&slimproto);
 
 #ifdef INTERACTIVE
@@ -717,19 +723,10 @@ int main(int argc, char *argv[]) {
 		fclose (debuglog);
 	}
 #endif
-#if 0
-	unsigned char msg[SLIMPROTO_MSG_SIZE];
-	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
-	packA4(msg, 0, "BYE!");
-	packN4(msg, 4, 1);
-	packC(msg, 8, 0x01);
-	slimproto_send(&slimproto, msg);
-	Pa_Sleep(1000);
-#endif
+
 	slimaudio_destroy(&slimaudio);
 	slimproto_destroy(&slimproto);
 
-	/* fprintf ( stderr, "BYE!\n" ); */
 	return 0;
 } 
 
