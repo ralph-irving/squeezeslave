@@ -4,7 +4,7 @@ Add decoder_failed handling for all decoders.
 
 ---
 
-Fix memory leak(s) in wma decoder.
+Replace ffmpeg with libwma decoder.
 
 ---
 
@@ -85,10 +85,6 @@ Add AAC decoder support using faad2 from SBS vendor sources.
 
 ---
 
-Add WMA decoder support using ffmpeg.
-
----
-
 Add STMo No more decoded (uncompressed) data to play status message. Requires reconnect callback and server side changes.
 
 ___
@@ -97,13 +93,7 @@ Should not be using pthread_mutex_lock in PA callback nothing more than pthread_
 
 ---
 
-Investigate Tremor fixed point ogg decoder crashing when playing one track for a long amount of time.
-ie. Playing a 2 hour pod cast or an OGG internet stream, squeezeslave crashes after ~10 minutes.
-Initial tests show that switching back to ogg-1.1.4 produces a stable tremor decoder.  More testing required
-
----
-
-WMA stream for testing ffmpeg decoder integration.
+WMA stream for testing libwma decoder integration.
 http://somafm.com/wma128/groovesalad.asx
 
 ---

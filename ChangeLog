@@ -1,3 +1,19 @@
+2011-04-30 20:35  paddockd
+
+	* [r252] src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c:
+	  Use default retry_connection of 5 seconds instead of aborting
+	  with an error.
+	  Increased version to 1.1-252.
+
+2011-03-26 15:45  paddockd
+
+	* [r251] ChangeLog, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Added BYE! to slimprotocol API.
+	  Send goodbye during squeezeslave shutdown.
+	  Increased firmware release to 5.
+	  Increased version to 251.
+
 2011-03-14 12:39  paddockd
 
 	* [r250] contrib/makefile.mingw32-ffmpeg-display,
