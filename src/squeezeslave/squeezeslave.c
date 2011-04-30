@@ -49,8 +49,8 @@ unsigned int user_latency = 0L;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "1.0";
-const int revision = 251;
+const char* version = "1.1";
+const int revision = 252;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -431,7 +431,7 @@ int main(int argc, char *argv[]) {
 			if ( (port < 0) || (port > 65535) )
 			{
 				port = SLIMPROTOCOL_PORT;
-				fprintf(stderr, "%s: Invalid port value, using (%d)\n", argv[0], port);
+				fprintf(stderr, "%s: Invalid port number, using %d.\n", argv[0], port);
 			}
 			break;
 			break;
@@ -441,10 +441,10 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			retry_connection = true;
 			retry_interval = strtoul(optarg, NULL, 0);
-			if ( retry_interval < 1 )
+			if ( ( retry_interval < 1 ) || ( retry_interval > 120 ) )
 			{
-				fprintf (stderr, "Retry option requires value in seconds.\n");
-				exit(-1);
+				retry_interval = RETRY_DEFAULT;
+				fprintf (stderr, "Invalid retry interval, using %d seconds.\n", retry_interval );
 			}
 			break;
 #ifdef INTERACTIVE

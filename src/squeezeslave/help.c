@@ -421,7 +421,7 @@ void print_help(void) {
 "                            attempts.\n"
 "-r <sec>, --intretry <sec>  For a different retry interval use -r and the\n"
 "                            desired interval in seconds. (ie. -r10)\n"
-"                            A value is required for this option.\n"
+"                            Retry interval range is 1-120 seconds.\n"
 "-V, --version               Prints the squeezeslave version.\n"
 #ifndef PORTAUDIO_DEV
 "-v, --volume <on|sw|off>    Enables/disables volume changes done by\n"
