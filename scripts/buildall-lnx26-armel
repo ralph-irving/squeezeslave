@@ -1,0 +1,17 @@
+#!/bin/bash
+VER=`svnversion`
+
+make -f contrib/makefile.linux26-armel-nofpu-oss-display realclean
+
+make -f contrib/makefile.linux26-armel-nofpu-alsa-display realclean
+make -f contrib/makefile.linux26-armel-nofpu-alsa-display
+
+mv bin/squeezeslave bin/squeezeslave-1.1-$VER
+
+make -f contrib/makefile.linux26-armel-nofpu-alsa-display realclean
+make -f contrib/makefile.linux26-armel-nofpu-oss-display
+
+mv bin/squeezeslave bin/squeezeslave-oss-1.1-$VER
+mv bin/squeezeslave-static bin/squeezeslave-oss-static-1.1-$VER
+
+make -f contrib/makefile.linux26-armel-nofpu-oss-display realclean

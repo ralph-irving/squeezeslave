@@ -1,3 +1,9 @@
+2011-04-30 20:38  paddockd
+
+	* [r253] ChangeLog, TODO, src/squeezeslave/squeezeslave.c: Updated
+	  ChangeLog.
+	  Increased version to 253.
+
 2011-04-30 20:35  paddockd
 
 	* [r252] src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c:

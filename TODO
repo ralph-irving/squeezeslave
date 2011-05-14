@@ -1,5 +1,9 @@
 ---
 
+Add device matching by name.
+
+---
+
 Add decoder_failed handling for all decoders.
 
 ---
