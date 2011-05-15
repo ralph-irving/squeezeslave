@@ -84,7 +84,7 @@ Format:
 
 
 ==== Capabilities ====
-''This is an extension planed for SC 7.4 or later.''
+''This is an extension implemented in SBS 7.4 or later.''
 
 The basic HELO packet above can be augmented by a list of capabilities, in which case the packet will be longer than 36 bytes. Capabilities form a comma-separated list. By convention CODEC capabilities are three or four letters all lower case and other capabilities start with an upper-case letter.
 
@@ -328,7 +328,7 @@ If the first data byte to this command is 0x01 then the player is going out for 
 
 == Server -> Client Communication ==
 
-Data from the server to the player consists of 2 bytes of length data (in network order), a 4 byte command header, then the command data itself. The length sent is the the size of the data plus the 4 byte command header; it does not include the 2 byte length field itself.
+Data from the server to the player consists of 2 bytes of length data (in network order), a 4 byte command header, then the command data itself. The length sent is the size of the data plus the 4 byte command header; it does not include the 2 byte length field itself.
 
 === Command: "strm" ===
 

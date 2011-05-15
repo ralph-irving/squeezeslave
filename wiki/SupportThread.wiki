@@ -1,16 +1,25 @@
-[ANNOUNCE] Squeezeslave: 1.0 released
+[ANNOUNCE] Squeezeslave: 1.1 released
 
-Squeezeslave 1.0-210 is now available at
+Squeezeslave 1.1-253 is now available at
 
-[url]http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/[/url]
+[url]http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/[/url]
 
 [b]Release Downloads[/b]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-win.zip/download]Windows ASIO, Direct Sound and WASAPI (Vista/Win7) 32/64-bit[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-osx.tar.gz/download]Mac OSX 32-bit PowerPC/Intel and 64-bit Intel[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel and OpenSolaris 32/64-bit Intel[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx26.tar.gz/download]Linux v2.6 kernel 32/64-bit Intel ALSA, Pulseaudio and OSS[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24.tar.gz/download]Linux v2.4 kernel 32-bit Intel ALSA and OSS[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MMX or better OSS statically linked[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-win.zip/download]Windows ASIO, Direct Sound and WASAPI (Vista/Win7) 32/64-bit[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-osx.tar.gz/download]Mac OSX 32-bit PowerPC/Intel and 64-bit Intel[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx26.tar.gz/download]Linux v2.6 kernel 32/64-bit Intel ALSA, Pulseaudio and OSS[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx26-armel.tar.gz/download]Linux 2.6 ARMel NoFPU ALSA/OSS dynamic and OSS static[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx24.tar.gz/download]Linux v2.4 kernel 32-bit Intel ALSA and OSS[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MMX or better OSS statically linked[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel and OpenSolaris 32/64-bit Intel[/url]
+
+[b]Source[/b]
+You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/trunk/squeezeslave]here[/url] or download it with subversion.
+[code]
+svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.1-253
+[/code]
+
+The source is also available in [url=http://squeezeslave.googlecode.com/files/squeezeslave-1.1-253-src.tar.bz2]tar file format[/url] if you don't have subversion available.
 
 [b]Contributed Downloads[/b]
 [url=http://squeezeslave.googlecode.com/files/SqueezeSlave-1.0-r216-88f6281-001.spk]Synology DS109, DS409slim, DS209, DS409, DS509, RS409, DS110j, DS210j, DS410j Package[/url]  ** Thanks to JonasK for contributing the package **
@@ -23,7 +32,32 @@ Squeezeslave 1.0-210 is now available at
 
 [URL=http://ralph_irving.users.sourceforge.net/ss10disp.jpeg/][IMG]http://ralph_irving.users.sourceforge.net/ss10disp.jpeg[/IMG][/URL]
 
-[b]What's new in Squeezeslave 1.0-210[/b]
+[b]What's new in Squeezeslave 1.1-253[/b]
+
+Fixed a long standing issue with squeezeslave ALSA hanging after the playlist was stopped the first time.
+
+Fix to handle partial sends in slimprotocol and http socket code.  Thanks to Mike Bennett for the patch.
+
+Better squeezeslave player sync support by adding STMl notify buffer threshold has been reached message when autostart=0/2 and modifying the first track threshold when autostart=1/3.
+
+Use default retry_connection of 5 seconds instead of exiting with an error when supplied retry interval is invalid.
+
+Updated all PORTAUDIO_DEV builds to revision 1608.
+
+Added Squeezeplug ARMel ALSA and OSS builds to official release.
+
+Added Slimprotocol BYE! message notify on squeezeslave exit.
+
+Added FreeBSD sparc64 makefile in contrib.
+
+Removed the Escape key from the list of keys that can quit from interactive mode, only Q or q exit now.
+
+Removed old portmixer from all ALSA PORTAUDIO_DEV builds.
+
+Increased reported firmware release to 5 to identify STMl and BYE! slimprotocol updates.
+
+
+[b]What changed in Squeezeslave 1.0-210[/b]
 
 Windows 7/Vista WASAPI Exclusive and Shared mode version.
 Default is Exclusive mode.

@@ -12,7 +12,9 @@
 
 If you have problems with [[SqueezeSlave]] read the support thread at http://forums.slimdevices.com/showthread.php?t=83362 for additional help.
 
-Version 1.0 fixes a long standing bug in the buffering code that caused playback to not advance after the end of the first track when the duration of the track was less than 30 seconds.  The bug also caused several online music services like LastFM and Napster to exhibit the problem. Version 1.0 has been tested with Squeezebox Server versions 7.3.4, 7.4.2, 7.5.1 and 7.6 r31503.  Server versions older than 7.3.4 have not been tested so YMMV.
+Version 1.1 fixes a long standing issue with squeezeslave ALSA hanging after the playlist was stopped the first time.
+
+Version 1.0 fixed a long standing bug in the buffering code that caused playback to not advance after the end of the first track when the duration of the track was less than 30 seconds.  The bug also caused several online music services like LastFM and Napster to exhibit the problem. Version 1.0 has been tested with Squeezebox Server versions 7.3.4, 7.4.2, 7.5.1 and 7.6 r31503.  Server versions older than 7.3.4 have not been tested so YMMV.
 
 Version 0.9 brought replay gain support with [[SqueezeCenter | Squeezebox Server]] v7.4 r26720 or later.
 Positive dB replay gain values are ignored to prevent clipping.
@@ -28,7 +30,7 @@ For older versions of [[SqueezeCenter]] the replay gain patches below include th
 
 Patch files squeezecenter_squeezeslave_player3-7.3.patch and squeezecenter_squeezeslave_player3-7.2.patch are included in the binary packages if that build has the features enabled for squeezecenter 7.3.3 and 7.2.2 running on linux/solaris.  They are also available in the source tree under the patches subdirectory.
 
-Executable versions for Windows, Linux Intel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/
+Executable versions for Windows, Linux Intel/ARMel, OSX PPC/Intel and Solaris SPARC/Intel can be downloaded from SourceForge.net at: http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/
 
 Makefiles are available for NetBSD and FreeBSD, see build instructions below.
 
@@ -38,7 +40,7 @@ Makefiles are available for NetBSD and FreeBSD, see build instructions below.
 
 === Mac OS X installation ===
 
-The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.0.210/squeezeslave-1.0-210-osx.tar.gz/download . Unpacking the file gives a folder with
+The Mac OS X version can be downloaded from http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-osx.tar.gz/download . Unpacking the file gives a folder with
 * A GNU <code>LICENSE.txt</code>
 * An <code>squeezeslave-ppc</code> and
 * a <code>squeezeslave-intel</code> executable.
@@ -136,13 +138,13 @@ Prebuilt versions of squeezeslave for most platforms are available on SourceForg
 
 The current source tree for squeezeslave is available on Google Code.
 
-To checkout version 1.0-210 use the branch url
+To checkout version 1.1-253 use the branch url
 
- svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.0-210
+ svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.1-253
 
 If a subversion client is not available you can download the source code in tar format.
 
- http://squeezeslave.googlecode.com/files/squeezeslave-1.0-210-src.tar.bz2
+ http://squeezeslave.googlecode.com/files/squeezeslave-1.1-253-src.tar.bz2
 
 You can checkout the latest development code from trunk with this url.
 
@@ -376,13 +378,13 @@ For example;
 
 squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
 
-=== Squeezeslave 1.0-210 (Windows) ===
+=== Squeezeslave 1.1-253 (Windows) ===
 <code>
- squeezeslave 1.0-210 Oct 31 2010 18:39:41
- compile flags: windows portaudio:1541:wasapi debug interactive 
+ squeezeslave 1.1-253 Apr 30 2011 17:40:47
+ compile flags: windows portaudio:1608:wasapi debug interactive 
  buffer sizes: decoder 2097152 output 2822400 bytes
  
- Copyright 2004-2007 Richard Titmuss, 2008-2010 Duane Paddock.
+ Copyright 2004-2007 Richard Titmuss, 2008-2011 Duane Paddock.
  This is free software; see the source for copying conditions. There is NO
  warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  
@@ -411,7 +413,7 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
  -S, --shared                Use shared mode for a WasApi device.
                              Settings in Control Panel for a shared device
                              must be set to 16-bit, 44100 Hz (CD Quality).
-                             ** Available on WASAPI version only. **
+                               ** Available on WASAPI version only. **
  -D, --display               Enable slimp3 style text display and
                              keyboard input.
                              Keys: 0-9:             0-9
@@ -456,7 +458,7 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                              attempts.
  -r <sec>, --intretry <sec>  For a different retry interval use -r and the
                              desired interval in seconds. (ie. -r10)
-                             A value is required for this option.
+                             Retry interval range is 1-120 seconds.
  -V, --version               Prints the squeezeslave version.
  -v, --volume <sw|off>       Enables/disables volume changes done by
                              Squeezebox Server during its operation, such as
@@ -486,13 +488,13 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                                    slimaudio_output_v
 </code>
 
-=== Squeezeslave 1.0-210 (Unix) ===
+=== Squeezeslave 1.1-253 (Unix) ===
 <code>
- squeezeslave 1.0-210 Oct 31 2010 16:35:58
- compile flags: linux portaudio:1541 debug interactive daemon 
+ squeezeslave 1.1-253 May  1 2011 05:49:57
+ compile flags: linux portaudio:1608 debug signals interactive daemon 
  buffer sizes: decoder 2097152 output 2822400 bytes
  
- Copyright 2004-2007 Richard Titmuss, 2008-2010 Duane Paddock.
+ Copyright 2004-2007 Richard Titmuss, 2008-2011 Duane Paddock.
  This is free software; see the source for copying conditions. There is NO
  warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  
@@ -571,7 +573,7 @@ squeezeslave -r10 -o4 -m00:00:00:00:00:02 schostname
                              attempts.
  -r <sec>, --intretry <sec>  For a different retry interval use -r and the
                              desired interval in seconds. (ie. -r10)
-                             A value is required for this option.
+                             Retry interval range is 1-120 seconds.
  -V, --version               Prints the squeezeslave version.
  -v, --volume <sw|off>       Enables/disables volume changes done by
                              Squeezebox Server during its operation, such as
