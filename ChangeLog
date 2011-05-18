@@ -1,3 +1,9 @@
+2011-05-15 11:06  paddockd
+
+	* [r255] ChangeLog, wiki/SlimProtocol.wiki, wiki/SqueezeSlave.wiki,
+	  wiki/SupportThread.wiki: Capture support thread announcement and
+	  squeezeslave wiki changes.
+
 2011-05-14 15:25  paddockd
 
 	* [r254] ChangeLog, TODO, scripts/buildall-lnx24,

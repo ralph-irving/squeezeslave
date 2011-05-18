@@ -8,13 +8,13 @@ Squeezeslave 1.1-253 is now available at
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-win.zip/download]Windows ASIO, Direct Sound and WASAPI (Vista/Win7) 32/64-bit[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-osx.tar.gz/download]Mac OSX 32-bit PowerPC/Intel and 64-bit Intel[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx26.tar.gz/download]Linux v2.6 kernel 32/64-bit Intel ALSA, Pulseaudio and OSS[/url]
-[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx26-armel.tar.gz/download]Linux 2.6 ARMel NoFPU ALSA/OSS dynamic and OSS static[/url]
+[url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx26-armel.tar.gz/download]Linux v2.6 ARMel NoFPU ALSA/OSS dynamic and OSS static[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx24.tar.gz/download]Linux v2.4 kernel 32-bit Intel ALSA and OSS[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-lnx24-i586.tar.gz/download]Linux v2.4 Pentium MMX or better OSS statically linked[/url]
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel and OpenSolaris 32/64-bit Intel[/url]
 
 [b]Source[/b]
-You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/trunk/squeezeslave]here[/url] or download it with subversion.
+You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/branches/squeezeslave-1.1-253[/url] or download it with subversion.
 [code]
 svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.1-253
 [/code]
