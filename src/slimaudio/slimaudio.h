@@ -157,7 +157,7 @@ typedef struct {
 
 } slimaudio_t;
 
-int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, bool);
+int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, bool);
 void slimaudio_destroy(slimaudio_t *audio);
 int slimaudio_open(slimaudio_t *audio);
 int slimaudio_close(slimaudio_t *audio);
@@ -191,7 +191,7 @@ void slimaudio_decoder_connect(slimaudio_t *a, slimproto_msg_t *msg);
 void slimaudio_decoder_disconnect(slimaudio_t *a);
 
 
-int slimaudio_output_init(slimaudio_t *a, PaDeviceIndex, bool);
+int slimaudio_output_init(slimaudio_t *a, PaDeviceIndex, char *, bool);
 void slimaudio_output_destroy(slimaudio_t *a);
 int slimaudio_output_open(slimaudio_t *a);
 int slimaudio_output_close(slimaudio_t *audio);

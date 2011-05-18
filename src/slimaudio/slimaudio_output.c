@@ -70,7 +70,8 @@ static int pa_callback(  void *inputBuffer, void *outputBuffer,
 static int audg_callback(slimproto_t *p, const unsigned char *buf, int buf_len, void *user_data);
 
 /* Find audio devices which support stereo */
-PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, bool show_list)
+PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device_name,
+	bool output_change, bool show_list)
 {
 	int i;
 	int err;
@@ -101,7 +102,32 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 	}
 
 	if ( output_change )
-		DefaultDevice = default_device;
+	{
+		if ( default_device_name == NULL )
+			DefaultDevice = default_device;
+		else
+		{
+			/* Set the initial device to the default.
+			 * If we find a match the device index will be applied.
+			 */
+			DefaultDevice = PA_DEFAULT_DEVICE;
+
+		        for ( i = 0; i < DeviceCount; i++ )
+		        {
+		                pdi = Pa_GetDeviceInfo( i );
+		                if ( pdi->name != NULL )
+				{
+					if ( strncasecmp (pdi->name, default_device_name, strlen (pdi->name)) == 0 )
+					{
+						DefaultDevice = i;
+						break;
+					}
+				}
+	                }
+			if ( DefaultDevice == PA_DEFAULT_DEVICE )
+				fprintf (stderr, "Named device match failed, using default.\n");
+		}
+	}
 	else
 		DefaultDevice = PA_DEFAULT_DEVICE;
 
@@ -176,13 +202,14 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, bool output_change, 
 	return (DefaultDevice) ;
 }
 
-int slimaudio_output_init(slimaudio_t *audio, PaDeviceIndex output_device_id, bool output_change)
+int slimaudio_output_init(slimaudio_t *audio, PaDeviceIndex output_device_id,
+	char *output_device_name, bool output_change)
 {
-	audio->output_device_id = GetAudioDevices(output_device_id, output_change, false);
+	audio->output_device_id = GetAudioDevices(output_device_id, output_device_name, output_change, false);
 
 	if ( audio->output_device_id == paNoDevice )
 	{
-		printf("PortAudio error7: No output devices found.\n" );	
+		printf("PortAudio error7: No output devices found.\n" );
 		exit(-1);
 	}
 

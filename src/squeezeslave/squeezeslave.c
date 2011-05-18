@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1";
-const int revision = 253;
+const int revision = 258;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -176,6 +176,7 @@ int main(int argc, char *argv[]) {
 	slimaudio_t slimaudio;
 
 	PaDeviceIndex output_device_id = PA_DEFAULT_DEVICE;
+	char *output_device_name = NULL;
 
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
@@ -219,7 +220,7 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:o:P:p:Rr:Vv:";
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 		{"debug",              required_argument, 0, 'd'},
@@ -228,6 +229,7 @@ int main(int argc, char *argv[]) {
 		{"keepalive",          required_argument, 0, 'k'},
 		{"list",               no_argument,       0, 'L'},
 		{"mac",	               required_argument, 0, 'm'},
+		{"name",               required_argument, 0, 'n'},
 		{"output",             required_argument, 0, 'o'},
 		{"playerid",           required_argument, 0, 'e'},
 		{"firmware",           required_argument, 0, 'f'},
@@ -419,6 +421,10 @@ int main(int argc, char *argv[]) {
 			break;
 #endif
 #endif
+		case 'n':
+			output_device_name = optarg;
+			output_change = true;
+			break;
 		case 'o':
 			output_device_id = strtoul(optarg, NULL, 0);
 			output_change = true;
@@ -505,7 +511,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (listdevs) {
-		GetAudioDevices(output_device_id, output_change, true);
+		GetAudioDevices(output_device_id, output_device_name, output_change, true);
 		exit(0);
 	}
 
@@ -538,7 +544,7 @@ int main(int argc, char *argv[]) {
 		exit(-1);	
 	}
 
-	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_change) < 0) {
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change) < 0) {
 		fprintf(stderr, "Failed to initialize slimaudio\n");
 		exit(-1);
 	}
