@@ -103,6 +103,8 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device
 
 	if ( output_change )
 	{
+		/* If name not set, use device index */
+
 		if ( default_device_name == NULL )
 			DefaultDevice = default_device;
 		else
@@ -124,8 +126,12 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device
 					}
 				}
 	                }
+
 			if ( DefaultDevice == PA_DEFAULT_DEVICE )
+			{
+				output_change = false;
 				fprintf (stderr, "Named device match failed, using default.\n");
+			}
 		}
 	}
 	else
@@ -169,26 +175,17 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device
 		if ( pdi->maxOutputChannels >= 2 )
 		{
                	        if ( i == DefaultDevice )
-			{
 				bValidDev = true;
-				if ( show_list )
-#ifdef PORTAUDIO_DEV
-	                       	        printf("*%2d: (%s) %s (%i/%i)\n", i, info->name, pdi->name, \
-							(unsigned int) (pdi->defaultLowOutputLatency * 1000.0),
-							(unsigned int) (pdi->defaultHighOutputLatency * 1000.0) );
-#else
-					printf("*%2d: %s\n", i, pdi->name);
-#endif
-			}
-                        else
+
+			if ( show_list )
 			{
-				if ( show_list )
 #ifdef PORTAUDIO_DEV
-	                       	        printf(" %2d: (%s) %s (%i/%i)\n", i, info->name, pdi->name, \
-							(unsigned int) (pdi->defaultLowOutputLatency * 1000.0),
-							(unsigned int) (pdi->defaultHighOutputLatency * 1000.0) );
+                       	        printf("%c%2d: (%s) %s (%i/%i)\n", i == DefaultDevice ? '*' : ' ', \
+						i, info->name, pdi->name,
+						(unsigned int) (pdi->defaultLowOutputLatency * 1000.0),
+						(unsigned int) (pdi->defaultHighOutputLatency * 1000.0) );
 #else
-					printf(" %2d: %s\n", i, pdi->name);
+				printf("%c%2d: %s\n", i == DefaultDevice ? '*' : ' ', i, pdi->name);
 #endif
 			}
 		}

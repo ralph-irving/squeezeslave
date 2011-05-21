@@ -1,3 +1,15 @@
+2011-05-18 20:04  paddockd
+
+	* [r258] src/slimaudio/slimaudio.c, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Output device selection by name (-n/--name) added.
+
+2011-05-18 18:57  paddockd
+
+	* [r257] ChangeLog, wiki/SupportThread.wiki: Capture additional
+	  support thread announcement changes.
+
 2011-05-15 11:06  paddockd
 
 	* [r255] ChangeLog, wiki/SlimProtocol.wiki, wiki/SqueezeSlave.wiki,
