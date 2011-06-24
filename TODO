@@ -1,5 +1,31 @@
 ---
 
+Squeezeslave 1.1-253 & lcdproc 0.5.4
+Hi all,
+Dunno if Squeezeslave is still developed...anyway it seems to not work properly with lcdproc 0.5.4. The new version of lcdproc doesn't use number for priority when setting up the lcd screen....but instead "input", "alert", .....(see man LCDd).
+The effect is that the screen is in background and don't take part to the screen rotates......
+
+I modified the interactive.c file in the init_lcd(void) function. I replace the line
+
+send_lcd("screen_set main -priority 256\n",30)
+by
+send_lcd("screen_set main -priority info\n",30)
+
+Now it seems to work.
+
+My config :
+VB 1.9
+Antec Fusion black (Soundgraph LCD (0038))
+Squeezeslave on the same server than squezeserver
+
+still got some pb with the IR and the remote. on it....
+
+Hope it will help..
+
+Bill0t
+
+---
+
 Add decoder_failed handling for all decoders.
 
 ---

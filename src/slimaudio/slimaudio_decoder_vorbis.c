@@ -89,16 +89,16 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 		switch (bytes_read) {
 
 		case OV_HOLE: /* Recoverable error in stream */
-			RDEBUGF("libvorbis: (ogg) decoding error OV_HOLE ((0x%04x)\n", bytes_read );
+			RDEBUGF("libvorbis: (ogg) decoding error OV_HOLE (0x%04x)\n", bytes_read );
 			break ;
 
 		case OV_EBADLINK:
-			DEBUGF("libvorbis: (ogg) decoding error OV_EBADLINK ((0x%04x)\n", bytes_read );
+			DEBUGF("libvorbis: (ogg) decoding error OV_EBADLINK (0x%04x)\n", bytes_read );
 			ogg_continue = false ;
 			break;
 
 		case OV_EINVAL:
-			DEBUGF("libvorbis: (ogg) decoding error OV_EINVAL ((0x%04x)\n", bytes_read );
+			DEBUGF("libvorbis: (ogg) decoding error OV_EINVAL (0x%04x)\n", bytes_read );
 			ogg_continue = false ;
 			break ;
 		

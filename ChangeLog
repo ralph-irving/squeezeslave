@@ -1,3 +1,8 @@
+2011-06-06 14:42  paddockd
+
+	* [r261] ChangeLog, src/squeezeslave/squeezeslave.c: Increased
+	  version to 261.
+
 2011-06-06 14:40  paddockd
 
 	* [r260] src/slimaudio/slimaudio.h: Could not select output device
