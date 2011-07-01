@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <sched.h>
 
 #ifdef __WIN32__
   #include <winsock.h>
@@ -109,7 +110,6 @@ static void *http_thread(void *ptr) {
 #ifdef BSD_THREAD_LOCKING
 	pthread_mutex_lock(&audio->http_mutex);
 #endif
-
 	audio->http_state = STREAM_STOPPED;
 	
 	while (true) {
@@ -321,6 +321,8 @@ void slimaudio_http_disconnect(slimaudio_t *audio) {
 static void http_recv(slimaudio_t *audio) {
 	char buf[AUDIO_CHUNK_SIZE];
 	struct timeval timeOut; 
+	int n;
+	
 	fd_set fdread;
 	u32_t decode_num_tracks_started;
 	u32_t autostart_threshold;
@@ -336,7 +338,17 @@ static void http_recv(slimaudio_t *audio) {
 		return;
 	}
 
-	int n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, 0);
+	while (slimaudio_buffer_available(audio->output_buffer) < (AUDIO_CHUNK_SIZE * 8) &&
+		slimaudio_buffer_available(audio->decoder_buffer) >= (AUDIO_CHUNK_SIZE * 16))
+	{
+		DEBUGF("http_recv: output_buffer %i below AUDIO_CHUNK_SIZE * 8\n",
+			slimaudio_buffer_available(audio->output_buffer));
+		DEBUGF("http_recv: output_decoder_available %i\n",
+			slimaudio_buffer_available(audio->decoder_buffer));
+		sched_yield();
+	}
+
+	n = recv(audio->streamfd, buf, AUDIO_CHUNK_SIZE, 0);
 
 	/* n == 0 http stream closed by server */
 	if (n <= 0)

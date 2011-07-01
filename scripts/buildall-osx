@@ -18,7 +18,7 @@ if [ "`uname -r`" == "8.4.1" ]; then
     mv bin/squeezeslave bin/squeezeslave-intel-1.1-$VER
 fi
 
-if [ "`uname -r`" == "10.7.0" ]; then
+if [ "`uname -r`" == "10.8.0" ]; then
 
     make -f makefile.osx-intel-display realclean
     make -f makefile.osx-ppc-display realclean

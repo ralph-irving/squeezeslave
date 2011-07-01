@@ -122,8 +122,8 @@ typedef struct {
 	u64_t pa_streamtime_offset;
 	u64_t stream_samples;
 
-	bool output_STMs;
-	bool output_STMu;
+	volatile bool output_STMs;
+	volatile bool output_STMu;
 
 	int keepalive_interval;
 	

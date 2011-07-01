@@ -302,8 +302,8 @@ static void *output_thread(void *ptr) {
                 exit(-1);
         }
 
-        DEBUGF("output_thread: PortAudio initialized\n");
-	
+	DEBUGF("output_thread: PortAudio initialized\n");
+
 #ifndef PORTAUDIO_DEV
 	err = Pa_OpenStream(	&audio->pa_stream,	// stream
 				paNoDevice,		// input device
@@ -315,7 +315,7 @@ static void *output_thread(void *ptr) {
 				paInt16,		// output sample format
 				NULL,			// output driver info
 				44100.0,		// sample rate
-				256,			// frames per buffer
+				1152,			// frames per buffer
 				0,			// number of buffers
 				0,			// stream flags
 				pa_callback,		// callback
@@ -512,6 +512,15 @@ static void *output_thread(void *ptr) {
 				if (audio->output_STMs)
 				{
 					audio->output_STMs = false;
+					audio->decode_num_tracks_started++;
+
+					audio->replay_gain = audio->start_replay_gain;
+					audio->volume = audio->vol_adjust * audio->replay_gain;
+
+					if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
+						audio->volume = 1.0;
+
+					audio->pa_streamtime_offset = audio->stream_samples;
 
 					DEBUGF("output_thread STMs-PLAYING: %llu\n",audio->pa_streamtime_offset);
 					output_thread_stat(audio, "STMs");
@@ -872,49 +881,30 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		{
 			ok = SLIMAUDIO_BUFFER_STREAM_UNDERRUN;
 			DEBUGF("pa_callback: SLIMAUDIO_BUFFER_STREAM_UNDERRUN\n");
+			break; // Added so playback would be silent on underrun
 		}
 
 		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 			/* stream closed */
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
-				pthread_mutex_lock(&audio->output_mutex);
-
 				// Send buffer underrun to Squeezebox Server. During
 				// normal play this indicates the end of the
 				// playlist. During sync this starts the next 
 				// track.
 				audio->output_STMu = true;
-
-				DEBUGF("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
-
-				pthread_mutex_unlock(&audio->output_mutex);
 				pthread_cond_broadcast(&audio->output_cond);
+
+				DEBUGF("pa_callback: STREAM_END\n");
 			}
 		}
 		else if (ok == SLIMAUDIO_BUFFER_STREAM_START) {
-			pthread_mutex_lock(&audio->output_mutex);
-
 			/* Send track start to Squeezebox Server. During normal play
 			** this advances the playlist.
 			*/
 			audio->output_STMs = true;
-
-			audio->decode_num_tracks_started++;
-
-			audio->replay_gain = audio->start_replay_gain;
-			audio->volume = audio->vol_adjust * audio->replay_gain;
-
-			if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
-				audio->volume = 1.0;
-
-			audio->pa_streamtime_offset = audio->stream_samples;
-
-			DEBUGF("pa_callback: STREAM_START:output_STMs:%i tracks:%i\n",
-				audio->output_STMs, audio->decode_num_tracks_started);
-
-			pthread_mutex_unlock(&audio->output_mutex);
 			pthread_cond_broadcast(&audio->output_cond);
 
+			DEBUGF("pa_callback: STREAM_START\n");
 		}
 
 		audio->stream_samples += framesPerBuffer;
