@@ -1,3 +1,13 @@
+2011-07-04 14:29  paddockd
+
+	* [r265] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Added
+	  -N/--renice option implementing thread priority changes from
+	  rpress empeg patch. Linux, Solaris and OSX only. Enable by adding
+	  -DRENICE to CFLAGS in the appropriate makefile.
+	  Increased version to 265.
+
 2011-07-01 21:19  paddockd
 
 	* [r264] README, scripts/buildall-osx, src/slimaudio/slimaudio.h,
