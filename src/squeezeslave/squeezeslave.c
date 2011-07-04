@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1";
-const int revision = 264;
+const int revision = 265;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -62,6 +62,10 @@ bool debug_logfile = false;
 
 #ifdef PA_WASAPI
 bool wasapi_exclusive = true;
+#endif
+
+#ifdef RENICE
+bool renice = false;
 #endif
 
 #ifdef INTERACTIVE
@@ -258,6 +262,9 @@ int main(int argc, char *argv[]) {
 		{"display",            no_argument,       0, 'D'},
 		{"width",              required_argument, 0, 'w'},
 #endif
+#ifdef RENICE
+		{"renice",             no_argument,       0, 'N'},
+#endif
 		{0, 0, 0, 0}
 	};
 #ifdef PORTAUDIO_DEV
@@ -275,6 +282,10 @@ int main(int argc, char *argv[]) {
 	strcat (getopt_options, "S");
 #endif
 #endif
+#ifdef RENICE
+	strcat (getopt_options, "N");
+#endif
+
 	while (true) {
 		const char shortopt =
 			getopt_long_only(argc, argv, getopt_options, long_options, NULL);
@@ -420,6 +431,11 @@ int main(int argc, char *argv[]) {
 			wasapi_exclusive = false;
 			break;
 #endif
+#endif
+#ifdef RENICE
+		case 'N':
+			renice = true;
+			break;
 #endif
 		case 'n':
 			output_device_name = optarg;

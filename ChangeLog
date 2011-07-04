@@ -1,3 +1,20 @@
+2011-07-01 21:19  paddockd
+
+	* [r264] README, scripts/buildall-osx, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Applied http thread yield and
+	  output thread PA callback mutex locking removal changes from
+	  rpress empeg patch.
+	  Updated mac build script for OSX 10.6.8.
+	  Increased version to 264.
+
+2011-06-24 12:45  paddockd
+
+	* [r262] ChangeLog, TODO, src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/squeezeslave/squeezeslave.c: Fixed vorbis decoder debug
+	  messages.
+	  Increased version to 262.
+
 2011-06-06 14:42  paddockd
 
 	* [r261] ChangeLog, src/squeezeslave/squeezeslave.c: Increased

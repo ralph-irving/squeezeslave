@@ -313,6 +313,10 @@ void print_version(void) {
 #ifdef WMA_DECODER
 	fprintf(stdout, "wma ");
 #endif
+#ifdef RENICE
+	fprintf(stdout, "renice ");
+#endif
+
 	fprintf(stdout, "\n");
 
 	fprintf(stdout, "buffer sizes: decoder %u output %u bytes\n",DECODER_BUFFER_SIZE, OUTPUT_BUFFER_SIZE);
@@ -358,6 +362,9 @@ void print_help(void) {
 "                            Settings in Control Panel for a shared device\n"
 "                            must be set to 16-bit, 44100 Hz (CD Quality).\n"
 #endif
+#endif
+#ifdef RENICE
+"-N, --renice                Increase process priority. Root access required.\n"
 #endif
 #ifdef INTERACTIVE
 #ifndef __WIN32__

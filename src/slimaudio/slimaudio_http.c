@@ -103,10 +103,21 @@ int slimaudio_http_close(slimaudio_t *audio) {
 
 static void *http_thread(void *ptr) {
 	slimaudio_t *audio = (slimaudio_t *) ptr;
+#ifdef RENICE
+	int err;
+#endif
 #ifdef SLIMPROTO_DEBUG				
 	int last_state = 0;
 #endif
-
+#ifdef RENICE
+	if ( renice )
+	{
+		errno = 0;
+	        err = nice (5); /* Lower thread priority to give precedence to the decoder */
+	        if ( errno )
+	                fprintf(stderr, "http_thread: renice failed (%d).\n", errno);
+	}
+#endif
 #ifdef BSD_THREAD_LOCKING
 	pthread_mutex_lock(&audio->http_mutex);
 #endif
