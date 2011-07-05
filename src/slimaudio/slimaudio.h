@@ -63,6 +63,7 @@ typedef int	PaDeviceIndex;
 
 #ifdef RENICE
 extern bool renice;
+bool renice_thread ( int );
 #endif
 
 typedef enum { STREAM_QUIT=0, STREAM_STOP, STREAM_STOPPED, STREAM_PLAYING } slimaudio_stream_state_t;

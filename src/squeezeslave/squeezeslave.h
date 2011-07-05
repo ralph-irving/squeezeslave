@@ -26,10 +26,6 @@
 #error "DAEMONIZE not supported on windows version of squeezeslave."
 #endif
 
-#if defined(RENICE) && defined(__WIN32__)
-#error "RENICE not supported on windows version of squeezeslave."
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

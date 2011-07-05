@@ -304,12 +304,8 @@ static void *output_thread(void *ptr) {
 
 #ifdef RENICE
 	if ( renice )
-	{
-		errno = 0;
-		err = nice(-5); /* Increase priority */
-		if ( errno )
-			fprintf(stderr, "output_thread: renice failed (%d). Got Root?\n", errno);
-	}
+		if ( renice_thread (-5) ) /* Increase priority */
+			fprintf(stderr, "output_thread: renice failed. Got Root?\n");
 #endif
 
 	DEBUGF("output_thread: PortAudio initialized\n");
