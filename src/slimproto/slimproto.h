@@ -135,6 +135,7 @@ void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_c
 
 void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t *callback, void *user_data);
 
+
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port);
 
 int slimproto_close(slimproto_t *p);
@@ -153,10 +154,6 @@ int slimproto_helo(slimproto_t *p, char device_id, char revision, const char *ma
 int slimproto_dsco(slimproto_t *, int);
 
 int slimproto_goodbye(slimproto_t *, u8_t);
-
-int slimproto_button(slimproto_t *p, int button);
-
-int slimproto_knob(slimproto_t *p, long position);
 
 int slimproto_ir(slimproto_t *p, int format, int noBits, int irCode);
 

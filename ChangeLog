@@ -1,3 +1,12 @@
+2011-07-05 11:57  paddockd
+
+	* [r267] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Added windows -N/--renice
+	  -DRENICE support.
+	  Increased version to 267.
+
 2011-07-04 18:40  paddockd
 
 	* [r266] ChangeLog, src/slimproto/slimproto.c,

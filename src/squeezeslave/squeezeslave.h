@@ -66,8 +66,8 @@
 
 #define RETRY_DEFAULT	5
 #define LINE_COUNT	2
-#define OPTLEN		64
-#define FIRMWARE_VERSION	6
+#define OPTLEN		96
+#define FIRMWARE_VERSION	5
 #define SLIMPROTOCOL_PORT	3483
 #define PLAYER_TYPE	8
 
