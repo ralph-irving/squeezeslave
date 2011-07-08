@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1";
-const int revision = 271;
+const int revision = 272;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -65,8 +65,12 @@ bool wasapi_exclusive = true;
 #endif
 
 #ifdef RENICE
+#ifdef EMPEG /* Always enabled for empeg */
+bool renice = true;
+#else
 bool renice = false;
-#endif
+#endif /* EMPEG */
+#endif /* RENICE */
 
 #ifdef INTERACTIVE
 struct lirc_config *lircconfig;

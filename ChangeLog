@@ -1,3 +1,13 @@
+2011-07-08 12:52  paddockd
+
+	* [r271] ChangeLog, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Reverted r266 libslimprotocol
+	  changes from empeg patch until I've modified it to support
+	  windows as well.
+	  Decreased FIRMWARE_VERSION to 5.
+	  Increased version to 271.
+
 2011-07-05 11:57  paddockd
 
 	* [r267] ChangeLog, src/slimaudio/slimaudio.h,
