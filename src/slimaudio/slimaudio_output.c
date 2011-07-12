@@ -275,6 +275,37 @@ int slimaudio_output_close(slimaudio_t *audio) {
 	return 0;
 }
 
+void slimaudio_output_vol_adjust(slimaudio_t *audio)
+{
+	if ( audio->vol_adjust > 1.0 )
+		audio->vol_adjust = 1.0;
+
+#ifdef EMPEG
+	audio->volume = audio->vol_adjust + (audio->replay_gain - 1);
+#else
+	audio->volume = audio->vol_adjust * audio->replay_gain;
+#endif
+
+	if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
+		audio->volume = 1.0;
+
+	DEBUGF("vol_adjust:%f replay_gain:%f start_replay_gain:%f\n",
+			audio->vol_adjust, audio->replay_gain, audio->start_replay_gain);
+
+#ifndef PORTAUDIO_DEV
+	if (audio->px_mixer != NULL) {
+#ifdef EMPEG
+		Px_SetMasterVolume(audio->px_mixer, (PxVolume)audio->volume);
+		DEBUGF("Master volume %f\n", Px_GetMasterVolume(audio->px_mixer));
+#else
+		Px_SetPCMOutputVolume(audio->px_mixer, (PxVolume)audio->volume);
+		DEBUGF("pcm volume %f\n", Px_GetPCMOutputVolume(audio->px_mixer));
+#endif
+	}
+#endif
+}
+
+
 // Wrapper to call slimaudio_stat from output_thread.  Because the
 // output thread keeps the output mutex locked, this wrapper unlocks
 // the mutex for the duration of the slimaudio_stat call.  The reason
@@ -521,10 +552,7 @@ static void *output_thread(void *ptr) {
 					audio->decode_num_tracks_started++;
 
 					audio->replay_gain = audio->start_replay_gain;
-					audio->volume = audio->vol_adjust * audio->replay_gain;
-
-					if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
-						audio->volume = 1.0;
+					slimaudio_output_vol_adjust(audio);
 
 					audio->pa_streamtime_offset = audio->stream_samples;
 
@@ -645,30 +673,15 @@ static int audg_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	slimaudio_t* const audio = (slimaudio_t *) user_data;
 	slimproto_parse_command(buf, buf_len, &msg);
 
-	audio->vol_adjust = (float) (msg.audg.left_gain) / 65536.0;
-
-	if ( audio->vol_adjust > 1.0 )
-		audio->vol_adjust = 1.0;
-
-	audio->volume = audio->vol_adjust * audio->replay_gain;
-
-	if ( ( audio->volume == -1.0 ) || ( audio->volume > 1.0 ) )
-		audio->volume = 1.0;
-
 	DEBUGF("audg cmd: left_gain:%u right_gain:%u volume:%f old_left_gain:%u old_right_gain:%u",
 			msg.audg.left_gain, msg.audg.right_gain, audio->volume,
 			msg.audg.old_left_gain, msg.audg.old_right_gain);
-	DEBUGF(" vol_adjust:%f replay_gain:%f start_replay_gain:%f",
-			audio->vol_adjust, audio->replay_gain, audio->start_replay_gain);
 	VDEBUGF(" preamp:%hhu digital_volume_control:%hhu", msg.audg.preamp, msg.audg.digital_volume_control);
 	DEBUGF("\n");
 
-#ifndef PORTAUDIO_DEV
-	if (audio->px_mixer != NULL) {
-		Px_SetPCMOutputVolume(audio->px_mixer, (PxVolume)audio->volume);
-		DEBUGF("pcm volume %f\n", Px_GetPCMOutputVolume(audio->px_mixer));	
-	}
-#endif		
+	audio->vol_adjust = (float) (msg.audg.left_gain) / 65536.0;
+	slimaudio_output_vol_adjust(audio);
+
 	return 0;
 }
 
