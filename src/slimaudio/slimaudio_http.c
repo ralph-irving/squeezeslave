@@ -116,8 +116,8 @@ static void *http_thread(void *ptr) {
 #endif
 	audio->http_state = STREAM_STOPPED;
 	
-	while (true) {
-				
+	while ( audio->http_state != STREAM_QUIT )
+	{
 #ifdef SLIMPROTO_DEBUG				
 		if (last_state == audio->http_state) {
 			VDEBUGF("http_thread state %i\n", audio->http_state);
@@ -156,11 +156,13 @@ static void *http_thread(void *ptr) {
 				break;
 				
 			case STREAM_QUIT:
-				return 0;
+				break;
 		}
 	}
-		
+
 	pthread_mutex_unlock(&audio->http_mutex);
+
+	return 0;
 }
 
 
