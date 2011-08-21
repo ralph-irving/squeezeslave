@@ -2,10 +2,14 @@
 # FreeBSD makefile for squeezeslave.
 # Uses system installed support libraries instead of compiling them as part of the build.
 # Provided by Gummy35
+# 2011-08-06: updated by Torfinn Ingolfsen
+# instructions: use 'gmake -f makefile.freebsd' to compile
 #
 CC=gcc
 
-CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
+#CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
+CFLAGS+=-Wall -s -O2 -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
+LIBS+=-lncurses -lpthread -lm -L/usr/local/lib/portaudio2 -lportaudio -L/usr/local/lib -lFLAC -lmad -lvorbisfile
 
 INCLUDE=-I/usr/local/include/portaudio2 -I/usr/local/include -Ilib/portmixer/px_common -Isrc
 
@@ -21,21 +25,20 @@ SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/s
 all : bin/squeezeslave
 
 lib/libslimproto.a: $(SLIMPROTOFILES:.c=.o)
-	ar cru lib/libslimproto.a $>
+	ar cru lib/libslimproto.a $^
 	ranlib lib/libslimproto.a
 
 bin/squeezeslave : $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) lib/libslimproto.a
-	${CC} -o bin/squeezeslave $> lib/libslimproto.a /usr/local/lib/portaudio2/libportaudio.a /usr/local/lib/libmad.a /usr/local/lib/libFLAC.a /usr/local/lib/libvorbisfile.a /usr/local/lib/libvorbis.a /usr/local/lib/libogg.a /usr/local/lib/liblirc_client.a -lncurses -lpthread -lm
+	$(CC) -o bin/squeezeslave $^ lib/libslimproto.a  $(LIBS)
 
 clean:
 	@{ for FILE in $(PORTAUDIOFILES:.c=.o) \
 	               $(SLIMPROTOFILES:.c=.o) \
 	               $(PORTMIXERFILES:.c=.o) \
 	               $(SQUEEZESLAVEFILES:.c=.o) \
-	               lib/libportaudio.a \
 	               lib/libslimproto.a \
 	               bin/squeezeslave; do \
 	  test -e $$FILE && echo $$FILE || true; \
 	  test -e $$FILE && $(RM) $$FILE 2>/dev/null || true; \
-	done; } | xargs --no-run-if-empty echo $(RM)
+	done; } | xargs -r echo $(RM)
 

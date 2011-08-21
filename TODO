@@ -1,5 +1,9 @@
 ---
 
+Define PAWIN_USE_WDMKS_DEVICE_INFO when building Win PortAudio -- that will bypass DirectSound anduse the driver channel count information.
+
+---
+
 Squeezeslave 1.1-253 & lcdproc 0.5.4
 Hi all,
 Dunno if Squeezeslave is still developed...anyway it seems to not work properly with lcdproc 0.5.4. The new version of lcdproc doesn't use number for priority when setting up the lcd screen....but instead "input", "alert", .....(see man LCDd).
