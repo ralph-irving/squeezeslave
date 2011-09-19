@@ -1,6 +1,5 @@
 #!/bin/bash
 
-cd ${HOME}/source/squeezeslave
 VER=`svnversion`
 
 make -f makefile.mingw32-display realclean

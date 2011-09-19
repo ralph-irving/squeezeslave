@@ -73,7 +73,7 @@ void slimaudio_decoder_mad_free(slimaudio_t *audio) {
 }
 
 int slimaudio_decoder_mad_process(slimaudio_t *audio) {
-	int retcode = 0;
+	int retcode = 0, result;
 
 	/* configure input, output, and error functions */
     mad_decoder_init(&audio->mad_decoder, audio,
@@ -82,7 +82,7 @@ int slimaudio_decoder_mad_process(slimaudio_t *audio) {
 
 	/* start decoding */
 	audio->decoder_end_of_stream = false;
-	int result = mad_decoder_run(&audio->mad_decoder, MAD_DECODER_MODE_SYNC);
+	result = mad_decoder_run(&audio->mad_decoder, MAD_DECODER_MODE_SYNC);
 	if (result != 0)
 		retcode = -1;
 
@@ -106,7 +106,8 @@ enum mad_flow mad_input(void *data,
 		    struct mad_stream *stream)
 {
 	slimaudio_t *audio = (slimaudio_t *) data;
-	int remainder;
+	int remainder, data_len;
+	slimaudio_buffer_status ok;
 
 	pthread_mutex_lock(&audio->decoder_mutex);
 
@@ -130,9 +131,9 @@ enum mad_flow mad_input(void *data,
 
 	memcpy (audio->decoder_data, stream->this_frame, remainder);
 	
-	int data_len = AUDIO_CHUNK_SIZE-MAD_BUFFER_GUARD-remainder;
+	data_len = AUDIO_CHUNK_SIZE-MAD_BUFFER_GUARD-remainder;
 	VDEBUGF("mad: data_len:%i remainder:%i available:%i\n", data_len, remainder, slimaudio_buffer_available(audio->decoder_buffer));
-	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, audio->decoder_data + remainder, &data_len);
+	ok = slimaudio_buffer_read(audio->decoder_buffer, audio->decoder_data + remainder, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 		DEBUGF("mad: SLIMAUDIO_BUFFER_STREAM_END\n");
 		memset(audio->decoder_data + remainder + data_len, 0, MAD_BUFFER_GUARD);

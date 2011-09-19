@@ -25,10 +25,10 @@
 #include <string.h>
 #include <assert.h>
 
-#include <FLAC/stream_decoder.h>
-
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
+
+#include <FLAC/stream_decoder.h>
 
 #ifdef SLIMPROTO_DEBUG
   #define DEBUGF(...) if (slimaudio_decoder_debug) fprintf(stderr, __VA_ARGS__)
@@ -65,6 +65,13 @@ void slimaudio_decoder_flac_free(slimaudio_t *audio) {
 }
 
 int slimaudio_decoder_flac_process(slimaudio_t *audio) {
+#if !defined(FLAC_API_VERSION_CURRENT) || FLAC_API_VERSION_CURRENT < 8
+	FLAC__StreamDecoderState s;
+#else
+	FLAC__StreamDecoderInitStatus s;
+#endif
+	FLAC__bool b;
+	
 	assert(audio != NULL);
 
 	DEBUGF("slimaudio_decoder_flac_process: start\n");
@@ -75,9 +82,9 @@ int slimaudio_decoder_flac_process(slimaudio_t *audio) {
 	FLAC__stream_decoder_set_write_callback(audio->flac_decoder, flac_write_callback);
 	FLAC__stream_decoder_set_metadata_callback(audio->flac_decoder, flac_metadata_callback);
 	FLAC__stream_decoder_set_error_callback(audio->flac_decoder, flac_error_callback);
-	FLAC__StreamDecoderState s = FLAC__stream_decoder_init(audio->flac_decoder);
+	s = FLAC__stream_decoder_init(audio->flac_decoder);
 #else
-	FLAC__StreamDecoderInitStatus s = FLAC__stream_decoder_init_stream(audio->flac_decoder, flac_read_callback, NULL, NULL, NULL, NULL, flac_write_callback, flac_metadata_callback, flac_error_callback, audio);
+	s = FLAC__stream_decoder_init_stream(audio->flac_decoder, flac_read_callback, NULL, NULL, NULL, NULL, flac_write_callback, flac_metadata_callback, flac_error_callback, audio);
 #endif
 	if (s != FLAC__STREAM_DECODER_SEARCH_FOR_METADATA) {
 		DEBUGF("slimaudio_decoder_flac_process: init failed %i\n", s);
@@ -88,7 +95,7 @@ int slimaudio_decoder_flac_process(slimaudio_t *audio) {
 
 	audio->decoder_end_of_stream = false;
 
-	FLAC__bool b = FLAC__stream_decoder_process_until_end_of_stream(audio->flac_decoder);
+	b = FLAC__stream_decoder_process_until_end_of_stream(audio->flac_decoder);
 	FLAC__stream_decoder_finish(audio->flac_decoder);
 
 	DEBUGF("slimaudio_decoder_flac_process: end\n");
@@ -97,6 +104,9 @@ int slimaudio_decoder_flac_process(slimaudio_t *audio) {
 }
 
 static FLAC__StreamDecoderReadStatus flac_read_callback(const FLAC__StreamDecoder *decoder, FLAC__byte buffer[], size_t *bytes, void *client_data) {
+	int data_len;
+	slimaudio_buffer_status ok;
+	
 	slimaudio_t *audio = (slimaudio_t *) client_data;
 	
 	pthread_mutex_lock(&audio->decoder_mutex);
@@ -118,8 +128,8 @@ static FLAC__StreamDecoderReadStatus flac_read_callback(const FLAC__StreamDecode
 		return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;		
 	}
 	
-	int data_len = *bytes;
-	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, (char*) buffer, &data_len);
+	data_len = *bytes;
+	ok = slimaudio_buffer_read(audio->decoder_buffer, (char*) buffer, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 		DEBUGF("slimaudio_decoder_flac_process: EOS\n");
 		audio->decoder_end_of_stream = true;

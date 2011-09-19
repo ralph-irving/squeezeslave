@@ -50,10 +50,14 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 276;
+const int revision = 278;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
+
+#ifdef EMPEG
+extern volatile struct empeg_state_t empeg_state;
+#endif
 
 #ifdef SLIMPROTO_DEBUG
 FILE *debuglog = NULL;
@@ -164,7 +168,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
                 packN4(msg, 4, 2);
                 packC(msg, 8, 0xfe);
                 packC(msg, 9, linelen);
-               	slimproto_send(p, msg);
+                slimproto_send(p, msg);
 	}
 #endif
 	}
@@ -180,6 +184,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 }
 
 int main(int argc, char *argv[]) {
+	int exit_code = 0;
 	slimproto_t slimproto;
 	slimaudio_t slimaudio;
 
@@ -188,9 +193,14 @@ int main(int argc, char *argv[]) {
 
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
-
+#ifdef EMPEG
+	bool power_bypass = false, power_last = false;
+	bool geteq = false;
+	long key, ir;
+	slimaudio_volume_t volume_control = VOLUME_DRIVER;
+#else
 	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;
-
+#endif
 	unsigned int retry_interval = RETRY_DEFAULT;
 
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
@@ -198,12 +208,13 @@ int main(int argc, char *argv[]) {
 	int keepalive_interval = -1;
 
 	bool listdevs = false;
+	bool discover_server = false;
 
 #ifdef DAEMONIZE
 	bool should_daemonize = false;
 	char *logfile = NULL;
 #endif
-
+	char slimserver_address[INET_ADDRSTRLEN] = "127.0.0.1";
 
 #ifdef INTERACTIVE
         fd_set read_fds;
@@ -231,6 +242,9 @@ int main(int argc, char *argv[]) {
 	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
+#ifndef __WIN32__
+		{"discover",           no_argument,       0, 'F'},
+#endif
 		{"debug",              required_argument, 0, 'd'},
 		{"debuglog",           required_argument, 0, 'Y'},
 		{"help",               no_argument,       0, 'h'},
@@ -243,6 +257,10 @@ int main(int argc, char *argv[]) {
 		{"firmware",           required_argument, 0, 'f'},
 		{"port",               required_argument, 0, 'P'},
 		{"predelay",           required_argument, 0, 'p'},
+#ifdef EMPEG
+		{"puteq",              no_argument,       0, 'Q'},
+		{"geteq",              no_argument,       0, 'q'},
+#endif
 		{"retry",              no_argument,       0, 'R'},
 		{"intretry",           required_argument, 0, 'r'},
 		{"version",            no_argument,       0, 'V'},
@@ -271,6 +289,12 @@ int main(int argc, char *argv[]) {
 #endif
 		{0, 0, 0, 0}
 	};
+#ifdef EMPEG
+	strcat (getopt_options, "Qq");
+#endif
+#ifndef __WIN32__
+	strcat (getopt_options, "F");
+#endif
 #ifdef PORTAUDIO_DEV
 	strcat (getopt_options, "y:");
 #endif	
@@ -290,6 +314,10 @@ int main(int argc, char *argv[]) {
 	strcat (getopt_options, "N");
 #endif
 
+#ifdef EMPEG
+	empeg_getmac(macaddress);
+#endif
+
 	while (true) {
 		const char shortopt =
 			getopt_long_only(argc, argv, getopt_options, long_options, NULL);
@@ -301,6 +329,9 @@ int main(int argc, char *argv[]) {
 		switch (shortopt) {
 		case 'a':
 			output_predelay_amplitude = strtoul(optarg, NULL, 0);
+			break;
+		case 'F':
+			discover_server = true;
 			break;
 		case 'd':
 #ifdef SLIMPROTO_DEBUG
@@ -461,6 +492,15 @@ int main(int argc, char *argv[]) {
 			}
 			break;
 			break;
+#ifdef EMPEG
+		case 'Q':
+			empeg_puteq_tofile();
+			exit(0);
+			break;
+		case 'q':
+			geteq = true;
+			break;
+#endif
 		case 'R':
 			retry_connection = true;
 			break;
@@ -535,6 +575,9 @@ int main(int argc, char *argv[]) {
 		exit(0);
 	}
 
+	if (optind < argc)
+		strncpy(slimserver_address, argv[optind], sizeof(slimserver_address));
+
 #ifdef DAEMONIZE
 	if ( should_daemonize ) {
 #ifdef INTERACTIVE
@@ -548,12 +591,8 @@ int main(int argc, char *argv[]) {
 			init_daemonize();
 	}
 #endif
-
-	char *slimserver_address = "127.0.0.1";
-	if (optind < argc)
-		slimserver_address = argv[optind];
-
 	signal(SIGTERM, &exit_handler);
+	signal(SIGINT, &exit_handler);
 	install_restart_handler();
 
 #ifdef INTERACTIVE
@@ -576,6 +615,11 @@ int main(int argc, char *argv[]) {
 	if ( using_curses || using_lirc || use_lcdd_menu )
 		slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
+#ifdef EMPEG
+	slimproto_add_command_callback(&slimproto, "grfe", empeg_vfd_callback, macaddress);
+	slimproto_add_command_callback(&slimproto, "grfb", empeg_vfdbrt_callback, macaddress);
+	slimproto_add_command_callback(&slimproto, "aude", empeg_aude_callback, macaddress);
+#endif
 
 	slimaudio_set_volume_control(&slimaudio, volume_control);
 	slimaudio_set_output_predelay(&slimaudio, output_predelay, output_predelay_amplitude);
@@ -587,13 +631,18 @@ int main(int argc, char *argv[]) {
 #ifdef INTERACTIVE
 	init_lcd();
 #endif
+#ifdef EMPEG
+	empeg_init();
+	if (geteq)
+	   empeg_geteq_fromfile();
+	power_last = empeg_state.power_on;
+	empeg_state.power_on = false;
+#endif
 
 	if (slimaudio_open(&slimaudio) < 0) {
 		fprintf(stderr, "Failed to open slimaudio\n");
-#ifdef INTERACTIVE
-		close (lcd_fd);
-#endif
-		exit(-1);
+		exit_code = -1;
+		goto exit;
 	}
 
 #ifdef SLIMPROTO_DEBUG
@@ -615,27 +664,7 @@ int main(int argc, char *argv[]) {
 	// When retry_connection is true, retry connecting to Squeezebox Server 
 	// until we succeed, unless the signal handler tells us to give up.
 	do {
-		while (slimproto_connect(
-			&slimproto, slimserver_address, port) < 0) {
-			if (!retry_connection || signal_exit_flag) {
-				if (signal_exit_flag) {
-					// No message when the exit is triggered
-					// by the user.
-#ifdef INTERACTIVE
-					exitcurses();
-					close_lirc();
-					close_lcd();
-#endif
-					exit(0);
-				}
-#ifdef INTERACTIVE
-				exitcurses();
-				close_lirc();
-				close_lcd();
-#endif
-				fprintf(stderr, "Connection to Squeezebox Server %s failed.\n", slimserver_address);
-				exit(-1);
-			}
+		if (signal_restart_flag) { 
 #ifdef INTERACTIVE
 			exitcurses();
 #endif
@@ -645,8 +674,87 @@ int main(int argc, char *argv[]) {
 	   	        initcurses();
 #endif
 		}
-                signal_restart_flag = false;
+#ifdef EMPEG
+		if (discover_server && empeg_state.last_server[0] != '\0')
+		{
+			strcpy(slimserver_address, (char *)empeg_state.last_server);
+			empeg_state.last_server[0] = '\0';
+		}
+		else
+#endif
+#ifndef __WIN32__
+		if (discover_server && slimproto_discover(slimserver_address, sizeof(slimserver_address), port) < 0) {
+			fprintf(stderr,"Discover failed.\n");
+			if (!retry_connection) {
+				exit_code = -1;
+				goto exit;
+			}
+			signal_restart_flag = true;
+			continue;
+		}
+#endif
+		if (slimproto_connect(
+			&slimproto, slimserver_address, port) < 0) {
+			fprintf(stderr, "Connection to Squeezebox Server %s failed.\n", slimserver_address);
+			if (!retry_connection) {
+				exit_code = -1;
+				goto exit;
+			}
+			signal_restart_flag = true;
+			continue;
+		}
+		signal_restart_flag = false;
+		discover_server = false;
+#ifdef EMPEG
+		strcpy((char *)empeg_state.last_server, slimserver_address);
+		if (power_last)
+			while (!empeg_state.power_on)
+			{
+				Pa_Sleep(100);
+				slimproto_ir(&slimproto, 1, 1, 0x76898F70);
+			}
+#endif
                 while (!signal_exit_flag && !signal_restart_flag) {
+#ifdef EMPEG
+		   int rc = empeg_idle();
+		   if (power_bypass)
+		   {
+		      if (rc == 0 || !empeg_state.power_on)
+		      {
+		         power_last = false;
+		         power_bypass = false;
+		      }
+		   }
+		   else if (rc == -1)
+		   {
+		      fprintf(stderr, "Power loss detected.\n");
+		      power_last = empeg_state.power_on;
+                      slimproto_ir(&slimproto, 1, 1, 0x76898778);
+		      while (empeg_state.power_on)
+		         Pa_Sleep(250);
+		   }
+		   else if (rc == -2 && empeg_state.power_on)
+		   {
+		      fprintf(stderr, "Manual override, aborting power down.\n");
+		      power_bypass = true;
+		   }
+		   else if (rc == -3)
+		   {
+		      fprintf(stderr, "Power restored.\n");
+		      if (power_last)
+                         slimproto_ir(&slimproto, 1, 1, 0x76898F70);
+		   }
+		   else if (rc == -4)
+		   {
+		      fprintf(stderr, "Powering down.\n");
+		      slimproto_goodbye(&slimproto, 0x00);
+		      Pa_Sleep(400);
+		      slimproto_close(&slimproto);
+		      empeg_state.power_on = power_last;
+		      empeg_poweroff();
+		      signal_restart_flag = true;
+		   }
+#endif
 #ifdef INTERACTIVE
                    if (using_curses == 1 || use_lcdd_menu || using_lirc) {
                       FD_ZERO(&read_fds);
@@ -708,25 +816,25 @@ int main(int argc, char *argv[]) {
                       wait_for_restart_signal();
 		   }
 #else
+#ifdef EMPEG
+                   while ((key = empeg_getkey()) != -1)
+                   {
+                      ir = empeg_getircode(key);
+                      if (ir != 0)
+                         slimproto_ir(&slimproto, 1, 1, ir);
+                   }
+#else
                    wait_for_restart_signal();
+#endif
 #endif
 		}
 #ifdef INTERACTIVE
                 FD_ZERO(&read_fds);
                 FD_ZERO(&write_fds);
 #endif
-		if (signal_restart_flag) { 
-#ifdef INTERACTIVE
-			exitcurses();
-#endif
-			fprintf(stderr,"Retry in %d seconds.\n", retry_interval);
-			Pa_Sleep(1000 * retry_interval);
-#ifdef INTERACTIVE
-	   	        initcurses();
-#endif
-		}
         } while (signal_restart_flag && !signal_exit_flag);
 
+exit:
 #ifdef INTERACTIVE
 	close_lirc();
 #endif
@@ -743,6 +851,10 @@ int main(int argc, char *argv[]) {
         exitcurses();
         close_lcd();
 #endif
+#ifdef EMPEG
+	close_lcd();
+#endif
+
 #ifdef SLIMPROTO_DEBUG
 	if (debug_logfile)
 	{
@@ -753,6 +865,6 @@ int main(int argc, char *argv[]) {
 	slimaudio_destroy(&slimaudio);
 	slimproto_destroy(&slimproto);
 
-	return 0;
+	return exit_code;
 } 
 

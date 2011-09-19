@@ -58,6 +58,7 @@ int slimaudio_decoder_pcm_process(slimaudio_t *audio) {
 	while (ok != SLIMAUDIO_BUFFER_STREAM_END)
 	{
 		/* keep partial samples from last iteration */
+		int nsamples;
 		int remainder = data_len;
 		if (remainder > 0)
 		{
@@ -66,7 +67,7 @@ int slimaudio_decoder_pcm_process(slimaudio_t *audio) {
 		
 		data_len = AUDIO_CHUNK_SIZE-remainder;
 		ok = slimaudio_buffer_read(audio->decoder_buffer, (char*)(data+remainder), &data_len);
-		int nsamples = data_len / 2;
+		nsamples = data_len / 2;
 
 		/* convert buffer into samples */
 		ptr = data;

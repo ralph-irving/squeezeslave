@@ -135,6 +135,9 @@ void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_c
 
 void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t *callback, void *user_data);
 
+#ifndef __WIN32__
+int slimproto_discover(char * server_addr, int server_addr_len, int port);
+#endif
 
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port);
 

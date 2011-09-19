@@ -1,3 +1,33 @@
+2011-08-24 11:53  paddockd
+
+	* [r276] contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-nofpu-oss-display,
+	  sources/portaudio-r1738.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Updated armel ALSA makefile to PA DEV 1738.
+	  Enabled RENICE option in armel makefiles.
+	  Increased revision to 276.
+
+2011-08-21 18:16  paddockd
+
+	* [r275] src/slimaudio/slimaudio_http.c,
+	  src/squeezeslave/squeezeslave.c: Fixed SUNPRO_C unreachable code
+	  error in slimaudio_http.c
+	  Updated version to 1.1L to indicate builds from local repository.
+	  Increased revision to 275.
+
+2011-08-21 17:30  paddockd
+
+	* [r274] TODO, contrib/makefile.freebsd: Updated makefile.freebsd
+	  for 8.2-STABLE. Thanks to Torfinn Ingolfsen.
+
+2011-07-12 13:33  paddockd
+
+	* [r273] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Applied fix from empeg branch
+	  gcr265 for replay gain on track change bug, only occurs when
+	  using hardware volume.
+	  Increase version to 273.
+
 2011-07-08 13:06  paddockd
 
 	* [r272] ChangeLog, src/squeezeslave/squeezeslave.c: For -DEMPEG

@@ -155,15 +155,15 @@ int slimaudio_decoder_close(slimaudio_t *audio) {
 
 
 static void *decoder_thread(void *ptr) {
+	bool decoder_failed = false;	
+	unsigned char first_time = 1;
+
 	slimaudio_t *audio = (slimaudio_t *) ptr;
 #ifdef BSD_THREAD_LOCKING
 	pthread_mutex_lock(&audio->decoder_mutex);
 #endif
 	
 	audio->decoder_state = STREAM_STOPPED;
-
-	bool decoder_failed = false;	
-	unsigned char first_time = 1;
 
 	while (true) {				
 		switch (audio->decoder_state) {

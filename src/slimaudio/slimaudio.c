@@ -230,6 +230,7 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 // server to signal the version.
 static int vers_callback(slimproto_t *p, const unsigned char *buf,
 			 int buf_len, void *user_data) {
+	slimproto_msg_t msg;
 
 	slimaudio_t* const audio = (slimaudio_t*)user_data;
 
@@ -240,7 +241,6 @@ static int vers_callback(slimproto_t *p, const unsigned char *buf,
 		return 0;
 	}
 
-	slimproto_msg_t msg;
 	slimproto_parse_command(buf, buf_len, &msg);
 	DEBUGF("Server version: %x\n", msg.vers.version);
 
@@ -291,9 +291,9 @@ static void audio_stop(slimaudio_t *audio) {
 }
 
 static int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
+	slimaudio_t *audio = (slimaudio_t*)user_data;
 	if (!isConnected) {
 		DEBUGF("Stopping audio because of disconnection.\n");
-		slimaudio_t *audio = (slimaudio_t*)user_data;
 		audio_stop(audio);
 	}
 	

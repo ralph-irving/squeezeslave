@@ -54,12 +54,16 @@ void slimaudio_decoder_vorbis_free(slimaudio_t *audio) {
 
 int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 	int err;
+	ov_callbacks callbacks;
+	int bytes_read;
+	int current_bitstream;
+	bool ogg_continue = true;
+	char buffer[AUDIO_CHUNK_SIZE];
 	
 	assert(audio != NULL);
 
 	DEBUGF("slimaudio_decoder_vorbis_process: start\n");
 	
-	ov_callbacks callbacks;
 	callbacks.read_func = vorbis_read_func;
 	callbacks.seek_func = vorbis_seek_func;
 	callbacks.close_func = vorbis_close_func;
@@ -73,10 +77,6 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 		return -1;
 	}
 	
-	int bytes_read;
-	int current_bitstream;
-	bool ogg_continue = true;
-	char buffer[AUDIO_CHUNK_SIZE];
 	
 	do {
 #if defined(NO_FPU) /* Use Tremor fixed point vorbis decoder */
@@ -126,7 +126,8 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 
 static size_t vorbis_read_func(void *ptr, size_t size, size_t nmemb, void *datasource) {
 	slimaudio_t *audio = (slimaudio_t *) datasource;
-	
+	int data_len;
+	slimaudio_buffer_status ok;
 	pthread_mutex_lock(&audio->decoder_mutex);
 
 	if (audio->decoder_state != STREAM_PLAYING) {
@@ -139,8 +140,8 @@ static size_t vorbis_read_func(void *ptr, size_t size, size_t nmemb, void *datas
 	if (audio->decoder_end_of_stream)
 		return 0;
 	
-	int data_len = nmemb;
-	slimaudio_buffer_status ok = slimaudio_buffer_read(audio->decoder_buffer, ptr, &data_len);
+	data_len = nmemb;
+	ok = slimaudio_buffer_read(audio->decoder_buffer, ptr, &data_len);
 	if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 		audio->decoder_end_of_stream = true;
 	}

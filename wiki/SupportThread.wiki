@@ -14,7 +14,7 @@ Squeezeslave 1.1-253 is now available at
 [url=http://sourceforge.net/projects/softsqueeze/files/squeezeslave/squeezeslave-1.1.253/squeezeslave-1.1-253-solaris.tar.gz/download]Solaris 9 32-bit SPARC/Solaris 10 64-bit SPARC/Solaris 10 32/64-bit Intel and OpenSolaris 32/64-bit Intel[/url]
 
 [b]Source[/b]
-You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/branches/squeezeslave-1.1-253[/url] or download it with subversion.
+You can browse the source [url=http://code.google.com/p/squeezeslave/source/browse/#svn/squeezeslave/branches/squeezeslave-1.1-253]here[/url] or download it with subversion.
 [code]
 svn checkout http://squeezeslave.googlecode.com/svn/squeezeslave/branches/squeezeslave-1.1-253
 [/code]
@@ -24,11 +24,13 @@ The source is also available in [url=http://squeezeslave.googlecode.com/files/sq
 [b]Contributed Downloads[/b]
 [url=http://squeezeslave.googlecode.com/files/SqueezeSlave-1.0-r216-88f6281-001.spk]Synology DS109, DS409slim, DS209, DS409, DS509, RS409, DS110j, DS210j, DS410j Package[/url]  ** Thanks to JonasK for contributing the package **
 
-[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_r217-1_brcm47xx.ipk]OpenWrt brcm47xx OSS Package[/url] Recommend as first choice for Broadcom 47xx users.
-[url=http://squeezeslave.googlecode.com/files/squeezeslave-alsa_r217-1_brcm47xx.ipk]OpenWrt brcm47xx ALSA Package[/url] More resource hungry than the OSS version.
-[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_r217-1_brcm63xx.ipk]OpenWrt brcm63xx OSS Package[/url]
-[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_r217-1_ar71xx.ipk]OpenWrt ar71xx OSS Package[/url]
-[url=http://squeezeslave.googlecode.com/files/squeezeslave-1.0-217-mips-lnx26.tar.gz]Generic MIPS OSS[/url]  ** Thanks to MusicManiac for contributing the OpenWRT and MIPS packages **
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_1.1-r281_brcm47xx.ipk]OpenWrt brcm47xx OSS Package[/url] Recommend as first choice for Broadcom 47xx users.
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-alsa_1.1-r281_brcm47xx.ipk]OpenWrt brcm47xx ALSA Package[/url] More resource hungry than the OSS version.
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_1.1-r281_brcm63xx.ipk]OpenWrt brcm63xx OSS Package[/url]
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-alsa_1.1-r281_brcm63xx.ipk]OpenWrt brcm63xx ALSA Package[/url]
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-oss_1.1-r281_ar71xx.ipk]OpenWrt ar71xx OSS Package[/url]
+[url=http://squeezeslave.googlecode.com/files/squeezeslave-alsa_1.1-r281_ar71xx.ipk]OpenWrt ar71xx ALSA Package[/url]
+[url=http://squeezeslave.googlecode.com/files/squeezeslave_1.1-r281_mips-lnx26.tar.gz]Generic MIPS ALSA/OSS[/url]  ** Thanks to MusicManiac for contributing the OpenWRT and MIPS packages **
 
 [URL=http://ralph_irving.users.sourceforge.net/ss10disp.jpeg/][IMG]http://ralph_irving.users.sourceforge.net/ss10disp.jpeg[/IMG][/URL]
 
@@ -56,6 +58,7 @@ Removed old portmixer from all ALSA PORTAUDIO_DEV builds.
 
 Increased reported firmware release to 5 to identify STMl and BYE! slimprotocol updates.
 
+[ANNOUNCE] Squeezeslave: 1.0 released
 
 [b]What changed in Squeezeslave 1.0-210[/b]
 

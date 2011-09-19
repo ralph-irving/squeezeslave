@@ -8,7 +8,7 @@ CP=cp
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2
+CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2
 LDFLAGS=-s
 
 # Comment out these two lines to remove display support
@@ -21,7 +21,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1738
+LIBPORTAUDIO=portaudio-r1608
 LIBLIRC=lirc-0.8.6
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c

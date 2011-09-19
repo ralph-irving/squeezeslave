@@ -69,10 +69,11 @@ void slimaudio_buffer_free(slimaudio_buffer_t *buf) {
 }
 
 void slimaudio_buffer_open(slimaudio_buffer_t *buf, void *user_data) {
+	struct buffer_stream *stream;
 	assert(buf);	
 	DEBUGF("buffer_open: %p\n", buf);
 	
-	struct buffer_stream *stream = (struct buffer_stream *) malloc(sizeof(struct buffer_stream));
+	stream = (struct buffer_stream *) malloc(sizeof(struct buffer_stream));
 	memset(stream, 0, sizeof(struct buffer_stream));
 	
 	stream->user_data = user_data;
@@ -116,13 +117,13 @@ void slimaudio_buffer_close(slimaudio_buffer_t *buf) {
 }
 
 void slimaudio_buffer_flush(slimaudio_buffer_t *buf) {
+	struct buffer_stream *stream, *next_stream;
+	
 	pthread_mutex_lock(&buf->buffer_mutex);
 
 	assert(buf);
 	
 	DEBUGF("buffer_flush: buf=%p\n", buf);
-	
-	struct buffer_stream *stream, *next_stream;
 	
 	stream = buf->read_stream;
 	while (stream != NULL) {
@@ -162,7 +163,7 @@ void slimaudio_buffer_set_readopt(slimaudio_buffer_t *buf, int opt) {
 }
 
 void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
-	int free;
+	int free, trailing_space, remainder_len;
 
 	pthread_mutex_lock(&buf->buffer_mutex);
 	
@@ -194,7 +195,7 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
 		free = buf->buffer_size - buf->total_available;
 	}
 
-	int trailing_space = buf->buffer_end - buf->write_ptr;
+	trailing_space = buf->buffer_end - buf->write_ptr;
 	if ( len < trailing_space) {
 		/* sufficient trailing space */
 		memcpy(buf->write_ptr, data, len);
@@ -208,7 +209,7 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
 		data += trailing_space;
 
 		/* copy remainder to start */
-		int remainder_len = len - trailing_space;
+		remainder_len = len - trailing_space;
 		memcpy(buf->buffer_start, data, remainder_len);
 		buf->write_ptr = buf->buffer_start + remainder_len;
 	}
@@ -224,12 +225,15 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
 }
 
 slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *data, int *data_len) {
+	int len, trailing_data, remainder_len;
+	slimaudio_buffer_status status = SLIMAUDIO_BUFFER_STREAM_CONTINUE;
+
 	pthread_mutex_lock(&buf->buffer_mutex);
 	
 	assert(buf);
 	assert(data);
 
-	int len = *data_len;
+	len = *data_len;
 	
 	while (buf->total_available == 0) {
 		if (buf->read_stream == NULL)
@@ -290,7 +294,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 	buf->total_available -= len;
 	buf->read_stream->available -= len;
 
-	int trailing_data = buf->buffer_end - buf->read_ptr;
+	trailing_data = buf->buffer_end - buf->read_ptr;
 	if (len < trailing_data) {
 		/* sufficient trailing data */
 		memcpy(data, buf->read_ptr, len);
@@ -304,7 +308,7 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		data += trailing_data;
 
 		/* copy remainder from start */		
-		int remainder_len = len - trailing_data;
+		remainder_len = len - trailing_data;
 		memcpy(data, buf->buffer_start, remainder_len);
 		buf->read_ptr = buf->buffer_start + remainder_len;		
 	}
@@ -314,7 +318,6 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 		pthread_cond_signal(&buf->read_cond);	
 	}
 	
-	slimaudio_buffer_status status = SLIMAUDIO_BUFFER_STREAM_CONTINUE;
 
 	if (buf->read_stream->read_count == 0) {
 		status = SLIMAUDIO_BUFFER_STREAM_START;		

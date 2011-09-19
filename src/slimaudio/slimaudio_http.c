@@ -168,10 +168,15 @@ static void *http_thread(void *ptr) {
 
 void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	int n;
+	struct sockaddr_in serv_addr = audio->proto->serv_addr;
+	const socket_t fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	char http_hdr[HTTP_HEADER_LENGTH];
+	int pos = 0;
+	int crlf = 0;
 
 	slimaudio_http_disconnect(audio);
 	
-	struct sockaddr_in serv_addr = audio->proto->serv_addr;
 	if (msg->strm.server_ip != 0) {
 		serv_addr.sin_addr.s_addr = htonl(msg->strm.server_ip);
 	}
@@ -182,7 +187,6 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	DEBUGF("slimaudio_http_connect: http connect %s:%i\n", 
 	       inet_ntoa(serv_addr.sin_addr), msg->strm.server_port);
 	
-	const socket_t fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 0) {
 		perror("slimaudio_http_connect: Error opening socket");
 		return;
@@ -216,9 +220,6 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	}
 
 	/* read http header */
-	char http_hdr[HTTP_HEADER_LENGTH];
-	int pos = 0;
-	int crlf = 0;
 	
 	do {
 		n = recv(fd, http_hdr+pos, 1, 0);
@@ -344,13 +345,11 @@ static void http_recv(slimaudio_t *audio) {
 		return;
 	}
 
-	while (slimaudio_buffer_available(audio->output_buffer) < (AUDIO_CHUNK_SIZE * 8) &&
-		slimaudio_buffer_available(audio->decoder_buffer) >= (AUDIO_CHUNK_SIZE * 16))
+	while (slimaudio_buffer_available(audio->output_buffer) < AUDIO_CHUNK_SIZE * 2 &&
+		slimaudio_buffer_available(audio->decoder_buffer) >= AUDIO_CHUNK_SIZE * 8)
 	{
-		DEBUGF("http_recv: output_buffer %i below AUDIO_CHUNK_SIZE * 8\n",
-			slimaudio_buffer_available(audio->output_buffer));
-		DEBUGF("http_recv: output_decoder_available %i\n",
-			slimaudio_buffer_available(audio->decoder_buffer));
+		DEBUGF("http_recv: output_buffer %i below AUDIO_CHUNK_SIZE * 2\n", slimaudio_buffer_available(audio->output_buffer));
+		DEBUGF("http_recv: output_decoder_available %i\n", slimaudio_buffer_available(audio->decoder_buffer));
 		sched_yield();
 	}
 

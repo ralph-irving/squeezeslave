@@ -32,6 +32,7 @@
   #include <winsock.h>
   #define CLOSESOCKET(s) closesocket(s)
 #else
+  #include <sys/poll.h>
   #include <arpa/inet.h>
   #include <unistd.h>
   #include <sys/types.h>
@@ -118,7 +119,8 @@ void slimproto_destroy(slimproto_t *p) {
 
 static void *proto_thread(void *ptr) {
 	int r, i;
-
+	bool disconnected;
+	
 	slimproto_t *p = (slimproto_t *) ptr;
 
 	pthread_mutex_lock(&p->slimproto_mutex);				
@@ -141,7 +143,7 @@ static void *proto_thread(void *ptr) {
 
 				while (proto_recv(p) >= 0) {
 					pthread_mutex_lock(&p->slimproto_mutex);
-					const bool disconnected = p->state != PROTO_CONNECTED;
+					disconnected = p->state != PROTO_CONNECTED;
 					pthread_mutex_unlock(&p->slimproto_mutex);
 					if (disconnected) {
 						DEBUGF("proto_thread: disconnected state:%i\n", p->state);
@@ -174,9 +176,10 @@ static void *proto_thread(void *ptr) {
 }
 
 void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_command_callback_t *callback, void *user_data) {
+	int i;
 	pthread_mutex_lock(&p->slimproto_mutex);				
 
-	int i = p->num_command_callbacks;
+	i = p->num_command_callbacks;
 	p->command_callbacks[i].cmd = strdup(cmd);
 	p->command_callbacks[i].callback = (void *) callback; // FIXME
 	p->command_callbacks[i].user_data = user_data;
@@ -186,9 +189,10 @@ void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_c
 }
 
 void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t *callback, void *user_data) {
+	int i;
 	pthread_mutex_lock(&p->slimproto_mutex);				
 
-	int i = p->num_connect_callbacks;
+	i = p->num_connect_callbacks;
 	p->connect_callbacks[i].callback = (void *) callback; // FIXME
 	p->connect_callbacks[i].user_data = user_data;
 	p->num_connect_callbacks++;
@@ -216,13 +220,13 @@ int slimproto_configure_socket(int sockfd, int socktimeout)
 	}
 	else
 	{
-#ifndef __SUNPRO_C
+#if !defined(__SUNPRO_C) && !defined(EMPEG)
 	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout,  sizeof(timeout)))
 	{
 		perror("Error setting receive socket timeout");
 		retcode = -1;
 	}
-       	else
+	else
 	{
 	if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (void *)&timeout,  sizeof(timeout)))
 	{
@@ -231,23 +235,88 @@ int slimproto_configure_socket(int sockfd, int socktimeout)
 	}
 	else
 	{
-#endif /* __SUNPRO_C */
+#endif /* !__SUNPRO_C && !EMPEG */
 	if (slimproto_configure_socket_sigpipe(sockfd) != 0)
 	{
 		fprintf(stderr, "Couldn't configure socket for SIGPIPE.\n");
 		retcode = -1;
 	}
-#ifndef __SUNPRO_C
+#if !defined(__SUNPRO_C) && !defined(EMPEG)
 	}
 	}
-#endif /* __SUNPRO_C */
+#endif /* !__SUNPRO_C && !EMPEG */
 	}
 
 	return (retcode);
 }
 
+#ifndef __WIN32__
+#define SLIMPROTO_DISCOVERY "eIPAD\0NAME\0JSON"
+
+int slimproto_discover(char * server_addr, int server_addr_len, int port)
+{
+	int sockfd;
+	int broadcast=1;
+	struct sockaddr_in sendaddr;
+	struct sockaddr_in recvaddr;
+	int try;
+	char buffer[100];
+	socklen_t sockaddr_len = sizeof(sendaddr);
+	struct pollfd pollfd;
+
+        if((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
+                perror("sockfd");
+                return -1;
+        }
+
+	pollfd.fd = sockfd;
+	pollfd.events = POLLIN;
+
+       if((setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof broadcast)) == -1) {
+		perror("setsockopt - SO_BROADCAST");
+                return -1;
+        }
+
+        sendaddr.sin_family = AF_INET;
+        sendaddr.sin_port = htons(port);
+        sendaddr.sin_addr.s_addr = INADDR_ANY;
+        memset(sendaddr.sin_zero,'\0',sizeof sendaddr.sin_zero);
+
+        if(bind(sockfd, (struct sockaddr*) &sendaddr, sizeof sendaddr) == -1) {
+            perror("bind");
+            return -1;
+        }
+	recvaddr.sin_family = AF_INET;
+	recvaddr.sin_port = htons(port);
+	recvaddr.sin_addr.s_addr = INADDR_BROADCAST;
+	memset(recvaddr.sin_zero,'\0',sizeof recvaddr.sin_zero);
+
+	for (try = 0; try < 5; try ++) {
+		if (sendto(sockfd, SLIMPROTO_DISCOVERY, sizeof(SLIMPROTO_DISCOVERY), 0, (struct sockaddr *)&recvaddr, sizeof(recvaddr)) == -1) {
+			close(sockfd);
+			perror("sendto");
+			return -1;
+		}
+		DEBUGF("slimproto_discover: Server discovery packet sent\n");
+		/* Wait up to 1 second for response */
+		while (poll(&pollfd, 1, 1000)) {
+			if (recvfrom(sockfd, buffer, sizeof(buffer), MSG_DONTWAIT, (struct sockaddr *)&sendaddr, &sockaddr_len) == -1) continue;
+			if (memcmp(buffer, "ENAME", 5)) continue;
+			buffer[buffer[5] + 6] = 0;
+			inet_ntop(AF_INET, &sendaddr.sin_addr.s_addr, server_addr, server_addr_len);
+			DEBUGF("slimproto_discover: Server discovered %s@%s\n", &buffer[6], server_addr);
+			close(sockfd);
+			return strlen(server_addr);
+		}
+	}
+	close(sockfd);
+	return -1;  /* Server not found */
+}
+#endif /* __WIN32__ */
+
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	struct hostent *server;
+	int return_value = 0; 
 
 	DEBUGF("slimproto_connect: (%s, %i)\n", server_addr, port);
 
@@ -275,7 +344,6 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 	// Wait for confirmation that the connection opens correctly.  This
 	// will fail, for example, if Squeezebox Server is not running when the
 	// connection attempt happens.
-	int return_value = 0; 
 	while (p->state != PROTO_CONNECTED) {
 		pthread_cond_wait(&p->slimproto_cond, &p->slimproto_mutex);
 		if (p->state == PROTO_CLOSED) {
@@ -359,7 +427,7 @@ int slimproto_close(slimproto_t *p) {
 static int proto_recv(slimproto_t *p) {
 	short len;
 	unsigned char buf[BUF_LENGTH];
-	int r, n;		
+	int r, n, i;
 
         /* Fix receive error on quiting */
 	if (p->state != PROTO_CONNECTED) return -1;
@@ -402,7 +470,6 @@ static int proto_recv(slimproto_t *p) {
 	DEBUGF("proto_recv: cmd=%4.4s len=%i\n", buf+2, len);
 
 	buf[len]=0;
-	int i;
 	for (i=0; i<p->num_command_callbacks; i++) {
 		if (strncmp(p->command_callbacks[i].cmd, (char*)(buf+2), 4) == 0) {
 			int ok = (p->command_callbacks[i].callback)(p, buf, len, p->command_callbacks[i].user_data);
@@ -419,6 +486,9 @@ static int proto_recv(slimproto_t *p) {
 }
 
 void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_msg_t *msg) {
+	int http_len, val, i;
+	char str[2] = { '\0', '\0' };
+	
 	memset(msg, 0, sizeof(slimproto_msg_t));
 	
 	if (strncmp((char*)(buf+2), "strm", 4) == 0) {
@@ -441,7 +511,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 		msg->strm.replay_gain = unpackN4(buf, 20);
 		msg->strm.server_port = unpackN2(buf, 24);
 		msg->strm.server_ip = unpackN4(buf, 26);
-		int http_len = msg->strm.length-28;
+		http_len = msg->strm.length-28;
 
 		if (http_len > 0) {
 			assert(http_len+1 < sizeof(msg->strm.http_hdr));
@@ -463,10 +533,9 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 		msg->vers.length = unpackN2(buf, 0);
 		memcpy(msg->vers.cmd, buf+2, 4);
 
-		int val =  0;
+		val =  0;
 		// This assumes the version format is a.b.c, where
 		// a, b, c are numbers of at most 2 digits.
-		int i;
 		for( i = 6; i <= buf_len; ++i ) {
 			if(buf[i]=='.' || i == buf_len) {
 				msg->vers.version <<= 8;
@@ -475,7 +544,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 			}
 			else if (isdigit(buf[i])) {
 				val <<= 4;
-				char str[2] = { buf[i], '\0' };
+				str[0] = buf[i];
 				val += atoi(str);
 			}
 		}
@@ -487,6 +556,7 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 }
 
 int slimproto_dsco(slimproto_t *p, int dscoCode) {
+	unsigned char msg[SLIMPROTO_MSG_SIZE];
 
 	pthread_mutex_lock(&p->slimproto_mutex);
 	if (p->state != PROTO_CONNECTED) {
@@ -495,7 +565,6 @@ int slimproto_dsco(slimproto_t *p, int dscoCode) {
 	}
 	pthread_mutex_unlock(&p->slimproto_mutex);
 
-	unsigned char msg[SLIMPROTO_MSG_SIZE];
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
 
 	packA4(msg, 0, "DSCO");
@@ -510,6 +579,7 @@ int slimproto_dsco(slimproto_t *p, int dscoCode) {
  * upgrade = 0x01 -> player is goint out for firmware upgrade
  */
 int slimproto_goodbye(slimproto_t *p, u8_t upgrade) {
+	unsigned char msg[SLIMPROTO_MSG_SIZE];
 
 	pthread_mutex_lock(&p->slimproto_mutex);
 	if (p->state != PROTO_CONNECTED) {
@@ -518,7 +588,6 @@ int slimproto_goodbye(slimproto_t *p, u8_t upgrade) {
 	}
 	pthread_mutex_unlock(&p->slimproto_mutex);
 
-	unsigned char msg[SLIMPROTO_MSG_SIZE];
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
 
         packA4(msg, 0, "BYE!");
@@ -530,6 +599,7 @@ int slimproto_goodbye(slimproto_t *p, u8_t upgrade) {
 
 int slimproto_helo(slimproto_t *p, char device_id, char revision, const char *macaddress, char isGraphics, char isReconnect) {	
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
+	int channelList = 0;
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
 
 	packA4(msg, 0, "HELO");
@@ -537,7 +607,6 @@ int slimproto_helo(slimproto_t *p, char device_id, char revision, const char *ma
 	packC(msg, 8, device_id);
 	packC(msg, 9, revision);
 	memcpy(msg+10, macaddress, 6);
-	int channelList = 0;
 	if (isGraphics)
 		channelList |= 0x8000;
 	if (isReconnect)
