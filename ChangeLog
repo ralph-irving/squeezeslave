@@ -1,3 +1,22 @@
+2011-09-19 18:58  paddockd
+
+	* [r278] ChangeLog, TODO,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-nofpu-oss-display,
+	  scripts/buildall-win, scripts/buildall-win32,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_flac.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_pcm.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimaudio/slimaudio_http.c, src/slimaudio/slimaudio_output.c,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h, wiki/SupportThread.wiki: Merged
+	  gcr283 empeg in trunk changes.
+	  Increased revision to 278.
+
 2011-08-24 11:53  paddockd
 
 	* [r276] contrib/makefile.linux26-armel-nofpu-alsa-display,

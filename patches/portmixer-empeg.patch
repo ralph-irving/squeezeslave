@@ -1,0 +1,23 @@
+Index: portaudio/pa_unix_oss/pa_unix_oss.c
+===================================================================
+Index: portaudio/pa_unix_oss/pa_unix.h
+===================================================================
+Index: portmixer/px_unix_oss/px_unix_oss.c
+===================================================================
+--- portmixer/px_unix_oss/px_unix_oss.c	(revision 263)
++++ portmixer/px_unix_oss/px_unix_oss.c	(working copy)
+@@ -136,11 +136,9 @@
+    if (ioctl(info->fd, MIXER_READ(SOUND_MIXER_READ_DEVMASK),
+              &devmask) == -1)
+       goto bad;
+-   if (ioctl(info->fd, MIXER_READ(SOUND_MIXER_READ_RECMASK),
+-             &recmask) == -1)
+-      goto bad;
+-   outmask = devmask ^ recmask;
+-
++   outmask = devmask;
++   recmask = 0;
++   
+    info->num_out = 0;
+    info->num_rec = 0;
+ 

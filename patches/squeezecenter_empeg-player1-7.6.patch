@@ -1,0 +1,336 @@
+diff -ruN Slim.orig/Networking/Slimproto.pm Slim/Networking/Slimproto.pm
+--- Slim.orig/Networking/Slimproto.pm	2011-06-29 07:53:02.000000000 -0700
++++ Slim/Networking/Slimproto.pm	2011-07-06 06:48:34.000000000 -0700
+@@ -31,7 +31,7 @@
+ use constant LATENCY_LIST_MAX => 10;
+ use constant LATENCY_LIST_MIN => 6;
+ 
+-our @deviceids = (undef, undef, 'squeezebox', 'softsqueeze','squeezebox2','transporter', 'softsqueeze3', 'receiver', 'squeezeslave', 'controller', 'boom', 'softboom', 'squeezeplay');
++our @deviceids = (undef, undef, 'squeezebox', 'softsqueeze','squeezebox2','transporter', 'softsqueeze3', 'receiver', 'squeezeslave', 'controller', 'boom', 'softboom', 'squeezeplay', 'empeg');
+ my $log       = logger('network.protocol.slimproto');
+ my $faclog    = logger('factorytest');
+ my $synclog   = logger('player.sync');
+@@ -310,7 +310,7 @@
+ 
+ 	main::INFOLOG && $log->info("forgetting disconnected client");
+ 
+-	Slim::Control::Request::executeRequest($client, ['client', 'forget']);
++#	Slim::Control::Request::executeRequest($client, ['client', 'forget']);
+ }
+ 
+ sub client_writeable {
+@@ -1169,6 +1169,11 @@
+ 		$client_class  = 'Slim::Player::SqueezePlay';
+ 		$display_class = 'Slim::Display::NoDisplay';
+ 
++	} elsif ($deviceids[$deviceid] eq 'empeg') {
++
++		$client_class = 'Slim::Player::Empeg';
++		$display_class = 'Slim::Display::Boom';
++
+ 	} else {
+ 
+ 		main::INFOLOG && $log->info("Unknown device type for $deviceid in HELO frame! Closing connection");
+diff -ruN Slim.orig/Player/Empeg.pm Slim/Player/Empeg.pm
+--- Slim.orig/Player/Empeg.pm	1969-12-31 16:00:00.000000000 -0800
++++ Slim/Player/Empeg.pm	2011-07-07 09:29:56.000000000 -0700
+@@ -0,0 +1,287 @@
++package Slim::Player::Empeg;
++
++# $Id$
++
++# Squeezebox Server Copyright 2001-2009 Logitech.
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License,
++# version 2.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++
++use strict;
++use base qw(Slim::Player::Squeezebox);
++
++use MIME::Base64;
++use Scalar::Util qw(blessed);
++
++use Slim::Utils::Log;
++use Slim::Utils::Misc;
++use Slim::Utils::Prefs;
++
++my $prefs = preferences('server');
++
++our $defaultPrefs = {
++	'replayGainMode'     => 3,
++	'minSyncAdjust'      => 30,	# ms
++	'maxBitrate'         => 0,  # no bitrate limiting
++	'screensavertimeout' => 6,
++	'powerOffBrightness' => 3,
++	'powerOnResume'      => 'PauseOff-PlayOn',
++	'idleFont_curr'      => 1,
++};
++
++sub initPrefs {
++	my $client = shift;
++
++	# make sure any preferences unique to this client may not have set are set to the default
++	$prefs->client($client)->init($defaultPrefs);
++
++	$client->SUPER::initPrefs();
++
++	$client->display->widthOverride(1, 128);
++}
++
++sub maxBass { 50 };
++sub minBass { 50 };
++sub maxTreble { 50 };
++sub minTreble { 50 };
++sub maxPitch { 100 };
++sub minPitch { 100 };
++
++sub model {
++	return 'empeg';
++}
++
++sub modelName { 'empeg' }
++
++sub hasIR { 1 }
++
++# in order of preference based on whether we're connected via wired or wireless...
++sub formats {
++	my $client = shift;
++	
++	return qw(ogg flc pcm mp3);
++}
++
++sub dBToFixed {
++	my $client = shift;
++	my $db = shift;
++
++	# Map a floating point dB value to a 16.16 fixed point value to
++	# send as a new style volume to empeg.
++	# The empeg has a range of -66.2dB to 10 dB
++	my $floatmult = 1 + $db * 0.0131;
++
++	# use 8 bits of accuracy for dB values greater than -30dB to avoid rounding errors
++	if ($db >= -30 && $db <= 0) {
++		return int($floatmult * (1 << 8) + 0.5) * (1 << 8);
++	}
++	else {
++		return int(($floatmult * (1 << 16)) + 0.5);
++	}
++}
++
++# Most music is -6dB, so normalize replaygain by adding 6dB
++sub canDoReplayGain {
++	my $client = shift;
++	my $replay_gain = shift;
++
++	if (defined($replay_gain)) {
++		return $client->dBToFixed($replay_gain);
++	}
++
++	return 0;
++}
++
++sub volume {
++	my $client = shift;
++	my $newvolume = shift;
++
++	my $volume = $client->Slim::Player::Client::volume($newvolume, @_);
++	my $preamp = 255 - int(2 * ($prefs->client($client)->get('preampVolumeControl') || 0));
++
++	if (defined($newvolume)) {
++		my $newGain;
++		if ($volume == 0) {
++			$newGain = 0;
++		}
++		else {
++			# Directly map volume control to newGain
++			$newGain = $volume * 655.35;
++		}
++
++		my $data = pack('NNCCNN', 0, 0, $prefs->client($client)->get('digitalVolumeControl'), $preamp, $newGain, $newGain);
++		$client->sendFrame('audg', \$data);
++	}
++	return $volume;
++}
++
++sub upgradeFirmware {
++	
++}
++
++sub needsUpgrade {
++	return 0;
++}
++
++sub requestStatus {
++	shift->stream('t');
++}
++
++sub stop {
++	my $client = shift;
++	$client->SUPER::stop(@_);
++	# Preemptively set the following state variables
++	# to 0, since we rely on them for time display and may
++	# have to wait to get a status message with the correct
++	# values.
++	$client->songElapsedSeconds(0);
++	$client->outputBufferFullness(0);
++
++}
++
++sub songElapsedSeconds {
++	my $client = shift;
++
++	# Ignore values sent by the client if we're in the stopped
++	# state, since they may be out of sync.
++	if (defined($_[0]) && 
++	    Slim::Player::Source::playmode($client) eq 'stop') {
++		$client->SUPER::songElapsedSeconds(0);
++	}
++
++	return $client->SUPER::songElapsedSeconds(@_);
++}
++
++sub canDirectStream {
++	return undef;
++}
++sub maxTransitionDuration {
++	return 0;
++}
++sub hasPreAmp {
++	return 1;
++}
++sub hasDigitalOut {
++	return 0;
++}
++sub hasPowerControl {
++	return 0;
++}
++sub hasScrolling {
++	return 0;
++}
++
++sub pcm_sample_rates {
++	my $client = shift;
++	my $track = shift;
++
++    	my %pcm_sample_rates = ( 8000 => '5',
++				 11025 => '0',
++				 12000 => '6',
++				 22050 => '1',
++				 24000 => '8',
++				 32000 => '2',
++				 44100 => '3',
++				 48000 => '4',
++				 16000 => '7',
++				 88200 => '10',
++				 96000 => '9',
++				 );
++
++	my $rate = $pcm_sample_rates{$track->samplerate()};
++
++	return defined $rate ? $rate : '3';
++}
++
++sub packetLatency {
++	my $client = shift;
++	
++	return (
++		Slim::Networking::Slimproto::getLatency($client) / 1000
++		||
++		$client->SUPER::packetLatency()
++	);
++}
++
++sub statHandler {
++	my ($client, $code) = @_;
++	
++	if ($code eq 'STMd') {
++		$client->readyToStream(1);
++		$client->controller()->playerReadyToStream($client);
++	} elsif ($code eq 'STMn') {
++		$client->readyToStream(1);
++		logError($client->id(). ": Decoder does not support file format");
++		$client->controller()->playerStreamingFailed($client, 'PROBLEM_OPENING');
++	} elsif ($code eq 'STMl') {
++		$client->bufferReady(1);
++		$client->controller()->playerBufferReady($client);
++	} elsif ($code eq 'STMu') {
++		$client->readyToStream(1);
++		$client->controller()->playerStopped($client);
++	} elsif ($code eq 'STMa') {
++		$client->bufferReady(1);
++	} elsif ($code eq 'STMc') {
++		$client->readyToStream(0);
++		$client->bufferReady(0);
++		$client->connecting(1); # reset in Slim::Networking::Slimproto::_http_response_handler() upon connection establishment
++	} elsif ($code eq 'STMs') {
++		$client->controller()->playerTrackStarted($client);
++	} elsif ($code eq 'STMo') {
++		$client->controller()->playerOutputUnderrun($client);
++	} elsif ($code eq 'EoS') {
++		$client->controller()->playerEndOfStream($client);
++	} else {		
++		if ( !$client->bufferReady() && ($client->outputBufferFullness() > 40_000) && $client->isSynced(1) ) {
++			# Fake up buffer ready (0.25s audio)
++			$client->bufferReady(1);	# to stop multiple starts 
++			$client->controller()->playerBufferReady($client);
++		} else {
++			$client->controller->playerStatusHeartbeat($client);
++		}
++	}	
++	
++}
++
++sub startAt {
++	my ($client, $at) = @_;
++
++	Slim::Utils::Timers::killTimers($client, \&_buffering);
++	Slim::Utils::Timers::setHighTimer(
++			$client,
++			$at - $client->packetLatency(),
++			\&_unpauseAfterInterval
++		);
++	return 1;
++}
++
++sub _unpauseAfterInterval {
++	my $client = shift;
++	$client->stream('u');
++	$client->playPoint(undef);
++	return 1;
++}
++
++sub audio_outputs_enable {
++	my $client = shift;
++	my $enabled = shift;
++
++	# spdif enable / dac enable
++	my $data = pack('CC', $enabled, $enabled);
++	$client->sendFrame('aude', \$data);
++}
++
++# Need to use weighted play-point
++sub needsWeightedPlayPoint { 1 }
++
++sub playPoint {
++	return Slim::Player::Client::playPoint(@_);
++}
++
++1;
+diff -ruN Slim.orig/Web/Settings/Player/Basic.pm Slim/Web/Settings/Player/Basic.pm
+--- Slim.orig/Web/Settings/Player/Basic.pm	2011-06-27 02:04:17.000000000 -0700
++++ Slim/Web/Settings/Player/Basic.pm	2011-06-29 08:01:05.000000000 -0700
+@@ -218,7 +218,7 @@
+ 	
+ 	# default icon for software emulators and media players
+ 	$model = 'squeezebox' if $model eq 'squeezebox2';
+-	$model = 'softsqueeze' if $model =~ /(?:http|squeezeslave)/i;
++	$model = 'softsqueeze' if $model =~ /(?:http|squeezeslave|empeg)/i;
+ 	
+ 	return $model;
+ }
