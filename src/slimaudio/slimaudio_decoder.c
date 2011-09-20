@@ -165,8 +165,10 @@ static void *decoder_thread(void *ptr) {
 	
 	audio->decoder_state = STREAM_STOPPED;
 
-	while (true) {				
-		switch (audio->decoder_state) {
+	while ( audio->decoder_state != STREAM_QUIT )
+	{				
+		switch (audio->decoder_state)
+		{
 			case STREAM_STOPPED:
 				DEBUGF("decoder_thread: STREAM_STOPPED first_time:%d\n", first_time);
 
@@ -263,9 +265,11 @@ static void *decoder_thread(void *ptr) {
 			
 			case STREAM_QUIT:
 				DEBUGF("decoder_thread: STREAM_QUIT\n");
-				return 0;
+				break;
 		}		
 	}
+
+	return 0;
 }
 
 
