@@ -40,6 +40,7 @@
 
 #define DECODER_BUFFER_SIZE	(2048*1024)
 #define OUTPUT_BUFFER_SIZE	(8*2*44100*4)
+#define MAX_ZONES		(4)
 
 #define PA_DEFAULT_DEVICE	(-1)
 #ifndef PORTAUDIO_DEV
@@ -124,6 +125,9 @@ typedef struct {
 	unsigned int output_predelay_frames;
 	unsigned int output_predelay_amplitude;
 
+	u8_t output_num_zones;
+	u8_t output_zone;
+
 	u64_t pa_streamtime_offset;
 	u64_t stream_samples;
 
@@ -160,7 +164,7 @@ typedef struct {
 
 } slimaudio_t;
 
-int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, bool);
+int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, bool, int, int);
 void slimaudio_destroy(slimaudio_t *audio);
 int slimaudio_open(slimaudio_t *audio);
 int slimaudio_close(slimaudio_t *audio);

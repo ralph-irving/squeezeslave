@@ -61,13 +61,19 @@ static void audio_stop(slimaudio_t *audio);
  * - register callbacks with slimproto
  */
 int slimaudio_init(slimaudio_t *audio, slimproto_t *proto,
-	PaDeviceIndex default_device, char *default_device_name, bool output_change)
+	PaDeviceIndex default_device, char *default_device_name, bool output_change,
+	int output_zone, int output_num_zones)
 {
 	memset(audio, 0, sizeof(slimaudio_t));
 	
 	audio->proto = proto;
 	audio->decoder_buffer = slimaudio_buffer_init(DECODER_BUFFER_SIZE);
 	audio->output_buffer = slimaudio_buffer_init(OUTPUT_BUFFER_SIZE);
+
+	if (output_zone >= output_num_zones)
+		return -1;
+	audio->output_num_zones=output_num_zones;
+	audio->output_zone=output_zone;
 	
 	if (slimaudio_output_init(audio, default_device, default_device_name, output_change) != 0)
 		return -1;

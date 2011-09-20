@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 280;
+const int revision = 281;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -204,11 +204,15 @@ int main(int argc, char *argv[]) {
 	unsigned int retry_interval = RETRY_DEFAULT;
 
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
+	bool default_macaddress = true;
 
 	int keepalive_interval = -1;
 
 	bool listdevs = false;
 	bool discover_server = false;
+
+	unsigned int zone = 0;
+	unsigned int num_zones = 1;
 
 #ifdef DAEMONIZE
 	bool should_daemonize = false;
@@ -239,7 +243,7 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:z:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 #ifndef __WIN32__
@@ -265,6 +269,7 @@ int main(int argc, char *argv[]) {
 		{"intretry",           required_argument, 0, 'r'},
 		{"version",            no_argument,       0, 'V'},
 		{"volume",             required_argument, 0, 'v'},
+		{"zone",               required_argument, 0, 'z'},
 #ifdef PORTAUDIO_DEV
 		{"latency",            required_argument, 0, 'y'},
 #endif
@@ -436,6 +441,7 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "%s: Cannot parse mac address %s\n", argv[0], optarg);
 				exit(-1);	
 			}
+			default_macaddress = false;
 			break;
 #ifdef DAEMONIZE
 		case 'M':
@@ -565,6 +571,25 @@ int main(int argc, char *argv[]) {
 			}
 			break;
 #endif
+		case 'z':
+			if (sscanf(optarg, "%u/%u", &zone, &num_zones) != 2)
+			{
+				fprintf (stderr, "Invalid zone specification, using default.\n");
+			}
+			if (num_zones > MAX_ZONES)
+			{
+				fprintf(stderr, "Number of zones > %d not supported\n", MAX_ZONES);
+				zone=0;
+				num_zones=1;
+			}
+			if (num_zones <= zone)
+			{
+				fprintf (stderr, "Invalid zone specification, using default.\n");
+				zone = 0;
+				num_zones = 1;
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -603,10 +628,13 @@ int main(int argc, char *argv[]) {
 		exit(-1);	
 	}
 
-	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change) < 0) {
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change, zone, num_zones) < 0) {
 		fprintf(stderr, "Failed to initialize slimaudio\n");
 		exit(-1);
 	}
+
+	if (default_macaddress)
+		macaddress[5] += zone;
 
 	slimproto_add_connect_callback(&slimproto, connect_callback, macaddress);
 

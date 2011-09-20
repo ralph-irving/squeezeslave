@@ -379,9 +379,8 @@ if ( renice )
 		printf("output_thread: by the device number listed before the colon.  See -h for details.\n");
 		exit(-2);
 	}
-
 	outputParameters.device = audio->output_device_id;
-	outputParameters.channelCount = 2;
+	outputParameters.channelCount = 2 * audio->output_num_zones;
 	outputParameters.sampleFormat = paInt16;
 	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
 
@@ -960,6 +959,26 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	if (audio->volume_control == VOLUME_SOFTWARE) {
 		apply_software_volume(audio, outputBuffer, framesPerBuffer);
 	}
+	
+	if (audio->output_num_zones > 1)
+	{
+		// FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes)
+		char frame[2*MAX_ZONES] = {0};
+		int zonedFrameSize = frameSize*audio->output_num_zones;
+		int zonedLen = framesPerBuffer*zonedFrameSize;
+		int writePos, readPos;
+	
+		for (writePos=zonedLen - zonedFrameSize, 
+		     readPos =len - frameSize;
+		     writePos >= 0;
+		     writePos -= zonedFrameSize, readPos -= frameSize)
+		{
+			
+			memcpy(frame + frameSize*audio->output_zone, (char *)outputBuffer + readPos, frameSize);
+			memcpy((char *)outputBuffer + writePos, frame, zonedFrameSize);
+			
+		}
+	}	
 
 	VDEBUGF("pa_callback complete framesPerBuffer=%lu\n", framesPerBuffer);
 
