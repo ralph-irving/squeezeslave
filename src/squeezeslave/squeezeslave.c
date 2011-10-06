@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 281;
+const int revision = 282;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -204,16 +204,16 @@ int main(int argc, char *argv[]) {
 	unsigned int retry_interval = RETRY_DEFAULT;
 
 	char macaddress[6] = { 0, 0, 0, 0, 0, 1 };
-	bool default_macaddress = true;
 
 	int keepalive_interval = -1;
 
 	bool listdevs = false;
 	bool discover_server = false;
-
+#ifdef ZONES
+	bool default_macaddress = true;
 	unsigned int zone = 0;
 	unsigned int num_zones = 1;
-
+#endif
 #ifdef DAEMONIZE
 	bool should_daemonize = false;
 	char *logfile = NULL;
@@ -243,7 +243,7 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:z:";
+	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 #ifndef __WIN32__
@@ -292,6 +292,9 @@ int main(int argc, char *argv[]) {
 #ifdef RENICE
 		{"renice",             no_argument,       0, 'N'},
 #endif
+#ifdef ZONES
+		{"zone",               required_argument, 0, 'z'},
+#endif
 		{0, 0, 0, 0}
 	};
 #ifdef EMPEG
@@ -318,7 +321,9 @@ int main(int argc, char *argv[]) {
 #ifdef RENICE
 	strcat (getopt_options, "N");
 #endif
-
+#ifdef ZONES
+	strcat (getopt_options, "z:");
+#endif
 #ifdef EMPEG
 	empeg_getmac(macaddress);
 #endif
@@ -441,7 +446,9 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "%s: Cannot parse mac address %s\n", argv[0], optarg);
 				exit(-1);	
 			}
+#ifdef ZONES
 			default_macaddress = false;
+#endif
 			break;
 #ifdef DAEMONIZE
 		case 'M':
@@ -571,6 +578,7 @@ int main(int argc, char *argv[]) {
 			}
 			break;
 #endif
+#ifdef ZONES
 		case 'z':
 			if (sscanf(optarg, "%u/%u", &zone, &num_zones) != 2)
 			{
@@ -589,7 +597,7 @@ int main(int argc, char *argv[]) {
 				num_zones = 1;
 			}
 			break;
-
+#endif
 		default:
 			break;
 		}
@@ -628,14 +636,19 @@ int main(int argc, char *argv[]) {
 		exit(-1);	
 	}
 
-	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change, zone, num_zones) < 0) {
+#ifdef ZONES
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change, zone, num_zones) < 0)
+#else
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change) < 0)
+#endif
+	{
 		fprintf(stderr, "Failed to initialize slimaudio\n");
 		exit(-1);
 	}
-
+#ifdef ZONES
 	if (default_macaddress)
 		macaddress[5] += zone;
-
+#endif
 	slimproto_add_connect_callback(&slimproto, connect_callback, macaddress);
 
 #ifdef INTERACTIVE

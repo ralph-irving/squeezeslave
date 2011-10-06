@@ -416,6 +416,9 @@ void print_version(void) {
 #ifdef RENICE
 	fprintf(stdout, "renice ");
 #endif
+#ifdef ZONES
+	fprintf(stdout, "zones ");
+#endif
 
 	fprintf(stdout, "\n");
 
@@ -559,6 +562,10 @@ void print_help(void) {
 #endif
 #ifdef SLIMPROTO_DEBUG
 "-Y, --debuglog <logfile>    Redirect debug output from stderr to <logfile>.\n"
+#endif
+#ifdef ZONES
+"-z, --zone <x/y>            Pairs surround sound speakers into stereo zones.\n"
+"                            Requires 5.1 or better amplifier and sound card.\n"
 #endif
 "-d, --debug <trace_name>    Turns on debug tracing for the specified level.\n"
 "                            The option can be used multiple times to enable\n"

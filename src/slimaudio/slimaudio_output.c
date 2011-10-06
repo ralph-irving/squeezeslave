@@ -380,7 +380,11 @@ if ( renice )
 		exit(-2);
 	}
 	outputParameters.device = audio->output_device_id;
+#ifdef ZONES
 	outputParameters.channelCount = 2 * audio->output_num_zones;
+#else
+	outputParameters.channelCount = 2;
+#endif
 	outputParameters.sampleFormat = paInt16;
 	outputParameters.suggestedLatency = paDeviceInfo->defaultHighOutputLatency;
 
@@ -959,7 +963,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	if (audio->volume_control == VOLUME_SOFTWARE) {
 		apply_software_volume(audio, outputBuffer, framesPerBuffer);
 	}
-	
+#ifdef ZONES	
 	if (audio->output_num_zones > 1)
 	{
 		// FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes)
@@ -978,7 +982,8 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 			memcpy((char *)outputBuffer + writePos, frame, zonedFrameSize);
 			
 		}
-	}	
+	}
+#endif
 
 	VDEBUGF("pa_callback complete framesPerBuffer=%lu\n", framesPerBuffer);
 
