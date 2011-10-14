@@ -1,6 +1,6 @@
 # Windows 32-bit makefile using Cygwin 2.693 setup.exe
+# Requires Windows DirectX SDK. Uses old portaudio v18.1 api 
 # See http://wiki.slimdevices.com/index.php/SqueezeSlave for details  
-# Builds libportaudio v19 to support WASAPI SDK
 #
 OS=mingw32
 CC=gcc
@@ -8,10 +8,10 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPA_WASAPI -DPTW32_STATIC_LIB -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
+CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DPTW32_STATIC_LIB -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
-INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include
+INCLUDE=-Ilib/dxsdk/$(OS)/include -Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pa_win_ds -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.0
@@ -19,11 +19,13 @@ LIBVORBIS=libvorbis-1.3.1
 LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
-LIBPORTAUDIO=portaudio-r1608
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
+DIRECTXSDK=DXSDK_Mar09
 
-PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
+PORTAUDIOFILES:=lib/portaudio/pa_win_ds/dsound_wrapper.c lib/portaudio/pa_win_ds/pa_dsound.c lib/portaudio/pa_common/pa_lib.c
+
+PORTMIXERFILES:=lib/portmixer/px_win_ds/px_win_ds.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
@@ -31,15 +33,17 @@ SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c
 
 SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
 
+LIBPORTAUDIO=lib/libportaudio.a
+
 LIBSLIMPROTO=lib/libslimproto.a
 
 LIBGETOPT=lib/libgetopt.a
 
-SUPPORTLIBS=lib/pthread/$(OS)/lib/libpthreadGC2.a lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/curses/$(OS)/lib/libcurses.a lib/lirc/$(OS)/lib/liblirc_client.a
+SUPPORTLIBS=lib/pthread/$(OS)/lib/libpthreadGC2.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/dxsdk/$(OS)/lib/dsound.lib lib/curses/$(OS)/lib/libcurses.a lib/lirc/$(OS)/lib/liblirc_client.a
 
 7ZIP=bin/7z.exe
 
-SQUEEZESLAVE=bin/squeezeslave-wasapi.exe
+SQUEEZESLAVE=bin/squeezeslave.exe
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
@@ -53,20 +57,18 @@ $(7ZIP):
 	cd lib/7z/$(OS)/build/$(7ZIPSRC) && make clean && make 7z
 	cp -pr lib/7z/$(OS)/build/$(7ZIPSRC)/bin/{7z.exe,7z.so,Codecs} bin/
 
+lib/dxsdk/$(OS)/lib/dsound.lib: $(7ZIP)
+	cd lib/dxsdk/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(DIRECTXSDK).exe DXSDK/Lib/x86/dsound.lib DXSDK/Include/dsound.h > /dev/null
+	cp -f lib/dxsdk/$(OS)/build/DXSDK/Lib/x86/dsound.lib lib/dxsdk/$(OS)/lib
+	cp -f lib/dxsdk/$(OS)/build/DXSDK/Include/dsound.h lib/dxsdk/$(OS)/include
+	cd lib/dxsdk/$(OS)/include && chmod 644 dsound.h && $(SED) -i "s:^typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;$$:// typedef struct IDirectSoundFullDuplex \*LPDIRECTSOUNDFULLDUPLEX;:" dsound.h
+
 lib/pthread/$(OS)/lib/libpthreadGC2.a: $(7ZIP)
 	cd lib/pthread/$(OS)/build && ../../../../$(7ZIP) x -y ../../../../sources/$(LIBPTHREAD)-release.exe pthreads.2 > /dev/null
 	cd lib/pthread/$(OS)/build/pthreads.2 && $(SED) -i "s:-Wall$$:-Wall -mno-cygwin -march=i686 -mtune=pentium4:" GNUmakefile
 	cd lib/pthread/$(OS)/build/pthreads.2 && make -f GNUmakefile GC-static
 	cp -p lib/pthread/$(OS)/build/pthreads.2/libpthreadGC2.a lib/pthread/$(OS)/lib
 	cp -p lib/pthread/$(OS)/build/pthreads.2/{semaphore.h,pthread.h,sched.h} lib/pthread/$(OS)/include
-
-lib/libportaudio/$(OS)/lib/libportaudio.a:
-	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-wasapi-ringbuf.patch
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC) -I`pwd`/src/hostapi/wasapi/mingw-include" CFLAGS="$(CFLAGS) -I`pwd`/src/hostapi/wasapi/mingw-include" CPPFLAGS="$(CFLAGS) -I`pwd`/src/hostapi/wasapi/mingw-include" LDFLAGS="$(LDFLAGS)" ./configure --with-host_os=mingw --with-winapi=wasapi --without-jack --enable-shared=no --enable-debug-output=no
-	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
-	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
-	cp -p lib/libportaudio/$(OS)/build/portaudio/include/{portaudio.h,pa_win_wasapi.h,pa_win_waveformat.h} lib/libportaudio/$(OS)/include
 
 lib/libmad/$(OS)/lib/libmad.a:
 	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
@@ -117,6 +119,10 @@ lib/lirc/$(OS)/lib/liblirc_client.a:
 	ranlib lib/lirc/$(OS)/lib/liblirc_client.a
 	cp -p lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.h lib/lirc/$(OS)/include/lirc
 
+$(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
+	ar cru $(LIBPORTAUDIO) $^
+	ranlib $(LIBPORTAUDIO)
+
 $(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
 	ar cru $(LIBSLIMPROTO) $^
 	ranlib $(LIBSLIMPROTO)
@@ -125,10 +131,11 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ar cru $(LIBGETOPT) $^
 	ranlib $(LIBGETOPT)
 
-$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -mno-cygwin -o $(SQUEEZESLAVE) $^ -lm -lstdc++ -lws2_32 -lwinmm -lole32 -luuid
+$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
+	$(CC) $(LDFLAGS) -mno-cygwin -o $(SQUEEZESLAVE) $^ -lm -lws2_32 -lwinmm -lole32
 
 clean:
+	-@rm -f $(PORTAUDIOFILES:.c=.o)
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
 	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
 	-@rm -f $(PORTMIXERFILES:.c=.o)
@@ -143,6 +150,7 @@ realclean: clean
 	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
 	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
 	-@rm -rf lib/pthread/$(OS)/build/pthreads.2
+	-@rm -rf lib/dxsdk/$(OS)/build/DXSDK
 	-@rm -rf lib/7z/$(OS)/build/$(7ZIPSRC)
 	-@rm -rf bin/{7z.exe,7z.so,Codecs}
 	-@rm -rf lib/libportaudio/$(OS)/build/portaudio
@@ -155,7 +163,8 @@ realclean: clean
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 	-@rm -f lib/pthread/$(OS)/lib/libpthreadGC2.a lib/pthread/$(OS)/include/{semaphore.h,pthread.h,sched.h}
-	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/{portaudio.h,pa_win_wasapi.h,pa_win_waveformat.h}
+	-@rm -f lib/dxsdk/$(OS)/lib/dsound.lib lib/dxsdk/$(OS)/include/dsound.h
+	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h
 	-@rm -f lib/curses/$(OS)/lib/libcurses.a lib/curses/$(OS)/include/curses.h
 	-@rm -f lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/include/lirc/lirc_client.h
 

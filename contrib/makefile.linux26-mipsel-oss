@@ -56,7 +56,6 @@ all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
 lib/libmad/$(OS)/lib/libmad.a:
 	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
 	cd lib/libmad/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libmad-forcemem.patch
-#	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)"                 CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=intel
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && CC="$(CC)" CXXCPP="$(CPP)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --enable-fpm=mips --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
 	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
@@ -64,7 +63,6 @@ lib/libmad/$(OS)/lib/libmad.a:
 
 lib/vorbis/$(OS)/lib/libogg.a:
 	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
-#	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CC="$(CC)"                 CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no
 	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CC="$(CC)" CXXCPP="$(CPP)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
 	cd lib/vorbis/$(OS)/build/$(LIBOGG) && make clean && make
 	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/$(OS)/lib
@@ -75,7 +73,6 @@ lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && $(SED) -i "s/-mno-ieee-fp//g" configure
-# cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)"                 OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" CXXCPP="$(CPP)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no --host=i686-pc-linux-gnu --build=mipsel-linux-uclibc --target=mipsel-linux-uclibc
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && $(SED) -i "s:^LIBS =.*:LIBS = `pwd`/../../lib/libogg.a:" examples/Makefile
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
@@ -84,8 +81,7 @@ lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
 
 lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
-#	cd lib/flac/$(OS)/build/$(LIBFLAC) && CC="$(CC)"                 OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
-	cd lib/flac/$(OS)/build/$(LIBFLAC) && CC="$(CC)" CXXCPP="$(CPP)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no --disable-oggtest --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include --host=i686-pc-linux-gnu --build=mipsel-linux --target=mipsel-linux
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && CC="$(CC)" CXXCPP="$(CPP)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=no --disable-oggtest --disable-cpplibs --disable-xmms-plugin --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include --host=i686-pc-linux-gnu --build=mipsel-linux --target=mipsel-linux
 	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
