@@ -1,22 +1,30 @@
 #!/bin/bash
 
-VER=`svnversion`
+SQC="`dirname $0`/../src/squeezeslave/squeezeslave.c"
+VER=`grep version\ = ${SQC} | awk -F\" '{print \$2}'`
+REV=`svnversion`
 
 make -f makefile.mingw32-display realclean
 make -f makefile.mingw32-wasapi-display realclean
 cd bin;tar -xf 7z.tar;cd ..
 make -f makefile.mingw32-wasapi-display
-mv bin/squeezeslave-wasapi.exe bin/squeezeslave-wasapi-1.1-$VER.exe
+mv bin/squeezeslave-wasapi.exe bin/squeezeslave-wasapi-$VER-$REV.exe
 make -f makefile.mingw32-wasapi-display realclean
 
 make -f makefile.mingw32-asio-display realclean
 cd bin;tar -xf 7z.tar;cd ..
 make -f makefile.mingw32-asio-display
-mv bin/squeezeslave-asio.exe bin/squeezeslave-asio-1.1-$VER.exe
+mv bin/squeezeslave-asio.exe bin/squeezeslave-asio-$VER-$REV.exe
 make -f makefile.mingw32-asio-display realclean
+
+make -f contrib/makefile.mingw32-pa-display realclean
+cd bin;tar -xf 7z.tar;cd ..
+make -f contrib/makefile.mingw32-pa-display
+mv bin/squeezeslave-pa.exe bin/squeezeslave-pa-$VER-$REV.exe
+make -f contrib/makefile.mingw32-pa-display realclean
 
 make -f makefile.mingw32-display realclean
 cd bin;tar -xf 7z.tar;cd ..
 make -f makefile.mingw32-display
-mv bin/squeezeslave.exe bin/squeezeslave-1.1-$VER.exe
+mv bin/squeezeslave.exe bin/squeezeslave-$VER-$REV.exe
 

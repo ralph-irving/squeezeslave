@@ -27,7 +27,7 @@
 #include <pthread.h>
 
 #ifdef __WIN32__
-  #include <winsock.h>
+  #include <winsock2.h>
   #include <sys/time.h>
 #else
   #include <arpa/inet.h>
@@ -135,9 +135,11 @@ void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_c
 
 void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t *callback, void *user_data);
 
-#ifndef __WIN32__
-int slimproto_discover(char * server_addr, int server_addr_len, int port);
+#ifdef __WIN32__
+const char * inet_ntop(int, const void *, char *, size_t);
 #endif
+
+int slimproto_discover(char * server_addr, int server_addr_len, int port);
 
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port);
 
@@ -185,11 +187,10 @@ int slimproto_get_socketsendflags();
 
 #define SLIMPROTO_MSG_SIZE	4096
 
-#define DSCO_CLOSED			 	0
+#define DSCO_CLOSED		 	0
 #define DSCO_RESET_LOCAL 		1
 #define DSCO_RESET_REMOTE 		2
 #define DSCO_UNREACHABLE 		3
 #define DSCO_TIMEOUT 			4
-
 
 #endif //_SLIMPROTO_H_

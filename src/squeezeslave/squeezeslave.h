@@ -49,7 +49,8 @@
 #ifdef __WIN32__
 #include <sys/fcntl.h>
 #include <winsock2.h>
-#define MSG_DONTWAIT 0
+#include <ws2tcpip.h>
+#define MSG_DONTWAIT (0)
 #else
 #include <sys/socket.h>
 #endif
@@ -65,10 +66,6 @@
 #endif
 #endif
 
-#ifdef __WIN32__
-#include <ws2tcpip.h>
-#endif
-
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
@@ -81,7 +78,7 @@
 #define FIRMWARE_VERSION	1
 #else
 #define PLAYER_TYPE	8
-#define FIRMWARE_VERSION	5
+#define FIRMWARE_VERSION	6
 #endif
 
 int connect_callback(slimproto_t *, bool, void *);
@@ -125,6 +122,8 @@ struct empeg_state_t
 };
 #endif
 
+int setNonblocking(int);
+
 #ifdef INTERACTIVE
 void toggle_handler(int);
 int vfd_callback(slimproto_t *, const unsigned char *, int, void *);
@@ -142,12 +141,13 @@ void init_lcd (void);
 void init_lirc(void);
 void send_lcd(char*, int);
 bool read_lcd(void);
-int setNonblocking(int);
 void close_lirc(void);
 void close_lcd(void);
+
 #ifdef __WIN32__
 int inet_pton (int, const char *, void *);
 #endif
+
 #endif
 
 #endif /* _SQUEEZESLAVE_H_ */

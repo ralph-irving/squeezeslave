@@ -25,7 +25,7 @@
 #include <sched.h>
 
 #ifdef __WIN32__
-  #include <winsock.h>
+  #include <winsock2.h>
   typedef SOCKET socket_t;
   #define CLOSESOCKET(s) closesocket(s)
   #define SOCKETERROR WSAGetLastError()

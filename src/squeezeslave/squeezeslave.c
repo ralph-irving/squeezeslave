@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 283;
+const int revision = 284;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -243,12 +243,10 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:d:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
+	char getopt_options[OPTLEN] = "a:Fd:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
-#ifndef __WIN32__
 		{"discover",           no_argument,       0, 'F'},
-#endif
 		{"debug",              required_argument, 0, 'd'},
 		{"debuglog",           required_argument, 0, 'Y'},
 		{"help",               no_argument,       0, 'h'},
@@ -299,9 +297,6 @@ int main(int argc, char *argv[]) {
 	};
 #ifdef EMPEG
 	strcat (getopt_options, "Qq");
-#endif
-#ifndef __WIN32__
-	strcat (getopt_options, "F");
 #endif
 #ifdef PORTAUDIO_DEV
 	strcat (getopt_options, "y:");
@@ -723,7 +718,6 @@ int main(int argc, char *argv[]) {
 		}
 		else
 #endif
-#ifndef __WIN32__
 		if (discover_server && slimproto_discover(slimserver_address, sizeof(slimserver_address), port) < 0) {
 			fprintf(stderr,"Discover failed.\n");
 			if (!retry_connection) {
@@ -733,7 +727,7 @@ int main(int argc, char *argv[]) {
 			signal_restart_flag = true;
 			continue;
 		}
-#endif
+
 		if (slimproto_connect(
 			&slimproto, slimserver_address, port) < 0) {
 			fprintf(stderr, "Connection to Squeezebox Server %s failed.\n", slimserver_address);

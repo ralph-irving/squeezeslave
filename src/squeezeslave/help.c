@@ -137,14 +137,43 @@ bool renice_thread( int priority )
 
 #endif /* RENICE */
 
+/* Set fd to non-blocking mode */
+int setNonblocking(int fd)
+{
+#ifdef __WIN32__
+    int iretcode;
+    unsigned long flags;
+
+    iretcode = 0;
+    flags = 1;
+
+    if ( ioctlsocket( fd, FIONBIO, &flags ) == SOCKET_ERROR )
+	    iretcode = -1;
+
+    return (iretcode);
+#else
+    int flags;
+
+    if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
+       flags = 0;
+    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+#endif
+} 
+
 #ifdef __WIN32__
 #ifndef EAFNOSUPPORT
 # define EAFNOSUPPORT EINVAL
 #endif
 
-#define NS_INADDRSZ 4
-#define NS_IN6ADDRSZ 16
-#define NS_INT16SZ 2
+#ifndef NS_INADDRSZ
+# define NS_INADDRSZ      4
+#endif
+#ifndef NS_IN6ADDRSZ
+# define NS_IN6ADDRSZ    16
+#endif
+#ifndef NS_INT16SZ 
+# define NS_INT16SZ      2
+#endif
 
 /*
  * WARNING: Don't even consider trying to compile this on a system where
@@ -351,7 +380,7 @@ inet_pton6 (const char *src, unsigned char *dst)
   return (1);
 }
 #endif
-#endif /*  __WIN32__ */
+#endif /* __WIN32__ */
 
 void print_version(void) {
 	fprintf(stdout, "squeezeslave %s-%d %s %s\n", version, revision, __DATE__, __TIME__);
@@ -502,9 +531,7 @@ void print_help(void) {
 "                            If using LCDd, width is detected.\n"
 #endif
 #endif
-#ifndef __WIN32__
 "-F, --discovery             Discover server IP automatically.\n"
-#endif
 #ifdef DAEMONIZE
 "-M, --daemonize <logfile>   Run squeezeslave as a daemon.\n"
 "                            Messages written to specified file.\n"
