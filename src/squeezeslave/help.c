@@ -137,6 +137,8 @@ bool renice_thread( int priority )
 
 #endif /* RENICE */
 
+#ifndef EMPEG
+
 /* Set fd to non-blocking mode */
 int setNonblocking(int fd)
 {
@@ -159,6 +161,8 @@ int setNonblocking(int fd)
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 #endif
 } 
+
+#endif /* EMPEG */
 
 #ifdef __WIN32__
 #ifndef EAFNOSUPPORT

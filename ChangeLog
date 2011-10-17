@@ -1,3 +1,14 @@
+2011-10-17 15:06  paddockd
+
+	* [r285] ChangeLog, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Fixed crashing on exit when
+	  using SIGINT (Ctrl-C) with windows builds.
+	  Moved slimaudio_destroy call in main() after slimproto_destroy to
+	  fix invalid memory reference (SEGFAULT) caused by slimproto calls
+	  in slimaudio.
+	  Moved WSACleanup before pthread_join in slimproto_destroy.
+	  Increased revision to 285.
+
 2011-10-16 21:18  paddockd
 
 	* [r284] ChangeLog, contrib/makefile.mingw32-pa-display,
