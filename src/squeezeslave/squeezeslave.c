@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 284;
+const int revision = 285;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -870,9 +870,6 @@ int main(int argc, char *argv[]) {
         } while (signal_restart_flag && !signal_exit_flag);
 
 exit:
-#ifdef INTERACTIVE
-	close_lirc();
-#endif
 	slimaudio_close(&slimaudio);
 
 	slimproto_goodbye(&slimproto, 0x00);
@@ -883,10 +880,11 @@ exit:
 	slimproto_close(&slimproto);
 
 #ifdef INTERACTIVE
-        exitcurses();
-        close_lcd();
+	exitcurses();
+	close_lirc();
 #endif
-#ifdef EMPEG
+
+#if defined(EMPEG) || defined(INTERACTIVE)
 	close_lcd();
 #endif
 
@@ -897,8 +895,8 @@ exit:
 	}
 #endif
 
-	slimaudio_destroy(&slimaudio);
 	slimproto_destroy(&slimproto);
+	slimaudio_destroy(&slimaudio);
 
 	return exit_code;
 } 

@@ -1,3 +1,24 @@
+2011-10-16 21:18  paddockd
+
+	* [r284] ChangeLog, contrib/makefile.mingw32-pa-display,
+	  makefile.mingw32-asio-display, makefile.mingw32-display,
+	  makefile.mingw32-wasapi-display, scripts/buildall-win,
+	  src/slimaudio/slimaudio.c, src/slimaudio/slimaudio_http.c,
+	  src/slimproto/poll.c, src/slimproto/poll.h,
+	  src/slimproto/slimproto.c, src/slimproto/slimproto.h,
+	  src/squeezeslave/help.c, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Implemented slimproto_discover for windows.
+	  Added poll function for mingw32 in poll.c and poll.h from ffmpeg
+	  snapshot.
+	  Added inet_ntop function for mingw32 in slimproto.c from Paul
+	  Vixie.
+	  Moved setNonblocking function from interactive.c to help.c.
+	  Now only using winsock2.h.
+	  Updated windows makefiles to include poll.c in SLIMPROTOFILES.
+	  Increased FIRMWARE to 6.
+	  Increased revision to 284.
+
 2011-10-14 13:40  paddockd
 
 	* [r283] ChangeLog, contrib/makefile.freebsd-sparc64,

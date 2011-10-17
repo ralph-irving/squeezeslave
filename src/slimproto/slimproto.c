@@ -97,18 +97,19 @@ int slimproto_init(slimproto_t *p) {
 }
 
 void slimproto_destroy(slimproto_t *p) {
-	pthread_mutex_lock(&p->slimproto_mutex);					
+	pthread_mutex_lock(&p->slimproto_mutex);
+
 	p->state = PROTO_QUIT;
 
 	pthread_mutex_unlock(&p->slimproto_mutex);
 
-	pthread_cond_broadcast(&p->slimproto_cond);	
-
-	pthread_join(p->slimproto_thread, NULL);
+	pthread_cond_broadcast(&p->slimproto_cond);
 
 #ifdef __WIN32__
 	WSACleanup();
 #endif
+	pthread_join(p->slimproto_thread, NULL);
+
 	p->sockfd = -1;
 	
 	p->num_connect_callbacks = 0;
