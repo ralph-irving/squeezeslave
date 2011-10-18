@@ -122,8 +122,6 @@ struct empeg_state_t
 };
 #endif
 
-int setNonblocking(int);
-
 #ifdef INTERACTIVE
 void toggle_handler(int);
 int vfd_callback(slimproto_t *, const unsigned char *, int, void *);
@@ -141,13 +139,12 @@ void init_lcd (void);
 void init_lirc(void);
 void send_lcd(char*, int);
 bool read_lcd(void);
+int setNonblocking(int);
 void close_lirc(void);
 void close_lcd(void);
-
 #ifdef __WIN32__
 int inet_pton (int, const char *, void *);
 #endif
-
 #endif
 
 #endif /* _SQUEEZESLAVE_H_ */

@@ -1,0 +1,14 @@
+--- pa_linux_alsa.c.orig	2011-08-21 09:28:30.000000000 -0400
++++ pa_linux_alsa.c	2011-08-21 10:40:34.000000000 -0400
+@@ -3274,7 +3266,10 @@
+     }
+ 
+     /* ALSA docs say that negative delay should indicate xrun, but in my experience alsa_snd_pcm_delay returns -EPIPE */
+-    if( (err = alsa_snd_pcm_delay( otherComponent->pcm, &delay )) < 0 )
++    err = alsa_snd_pcm_delay( otherComponent->pcm, &delay );
++    snd_pcm_avail_update ( otherComponent->pcm );
++
++    if  (err < 0 )
+     {
+         if( err == -EPIPE )
+         {

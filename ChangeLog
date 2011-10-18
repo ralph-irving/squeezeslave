@@ -1,3 +1,10 @@
+2011-10-17 16:13  paddockd
+
+	* [r286] ChangeLog, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Fixed EMPEG build error caused
+	  by setNonblocking function move.
+	  Increased revision to 286.
+
 2011-10-17 15:06  paddockd
 
 	* [r285] ChangeLog, src/slimproto/slimproto.c,

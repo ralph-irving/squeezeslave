@@ -137,33 +137,6 @@ bool renice_thread( int priority )
 
 #endif /* RENICE */
 
-#ifndef EMPEG
-
-/* Set fd to non-blocking mode */
-int setNonblocking(int fd)
-{
-#ifdef __WIN32__
-    int iretcode;
-    unsigned long flags;
-
-    iretcode = 0;
-    flags = 1;
-
-    if ( ioctlsocket( fd, FIONBIO, &flags ) == SOCKET_ERROR )
-	    iretcode = -1;
-
-    return (iretcode);
-#else
-    int flags;
-
-    if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
-       flags = 0;
-    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-#endif
-} 
-
-#endif /* EMPEG */
-
 #ifdef __WIN32__
 #ifndef EAFNOSUPPORT
 # define EAFNOSUPPORT EINVAL

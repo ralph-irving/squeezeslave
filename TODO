@@ -128,7 +128,7 @@ http://somafm.com/wma128/groovesalad.asx
 
 ---
 
-Investigate why slimaudio_decoder_pcm.c outputs static with Solaris 9 SPARC at end of 01-[Not Again! ].wav on sbs01 7.5.1.  Same code on linux 2.4 does exhibit the white noise.  Suspect endianness handling.
+Investigate why slimaudio_decoder_pcm.c outputs static with Solaris 9 SPARC at end of 01-[Not Again! ].wav on sbs01 7.5.1.  Same code on linux 2.4 does not exhibit the white noise.  Suspect endianness handling.
 
 ---
 
