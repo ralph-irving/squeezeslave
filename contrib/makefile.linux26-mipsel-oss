@@ -18,7 +18,7 @@ SED=sed
 SHELL=/bin/bash
 PATCH=patch
 #CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -Wall -O2 -march=i686
-CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -Wall -O2 -march=mips32 -msoft-float -static
+CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -Wall -O2 -march=mips32 -msoft-float -static
 LDFLAGS=-s -static
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include

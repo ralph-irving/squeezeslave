@@ -4,7 +4,7 @@
 
 CC=gcc
 
-CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DSLIMPROTO_DEBUG -DDAEMONIZE -fomit-frame-pointer
+CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -Wall -s -march=i586 -mtune=pentium-mmx -O2 -fomit-frame-pointer
 
 # Comment out these two lines to remove display support
 CFLAGS+=-DINTERACTIVE

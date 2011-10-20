@@ -14,7 +14,7 @@
 
 CC=gcc
 
-CFLAGS=-Wall -s -O2 -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
+CFLAGS=-DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -Wall -s -O2 -fomit-frame-pointer
 
 # If you want debug:
 #CFLAGS+=-DSLIMPROTO_DEBUG

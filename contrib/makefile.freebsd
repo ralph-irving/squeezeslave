@@ -7,8 +7,7 @@
 #
 CC=gcc
 
-#CFLAGS=-Wall -s -march=i586 -mtune=pentium-mmx -O2 -DINTERACTIVE -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
-CFLAGS+=-Wall -s -O2 -DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -fomit-frame-pointer
+CFLAGS+=-DPORTAUDIO_DEV -DSO_NOSIGPIPE -DBSD_THREAD_LOCKING -D__FREEBSD__ -Wall -s -O2 -fomit-frame-pointer
 LIBS+=-lncurses -lpthread -lm -L/usr/local/lib/portaudio2 -lportaudio -L/usr/local/lib -lFLAC -lmad -lvorbisfile
 
 INCLUDE=-I/usr/local/include/portaudio2 -I/usr/local/include -Ilib/portmixer/px_common -Isrc

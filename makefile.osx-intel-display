@@ -9,7 +9,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-s -Wall -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
+CFLAGS=-DRENICE -s -Wall -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
 LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -mmacosx-version-min=10.3
 
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include

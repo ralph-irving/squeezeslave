@@ -17,7 +17,7 @@ CP=cp
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float
+CFLAGS=-DRENICE -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DNO_FPU -Wall -O2 -march=mips32r2 -msoft-float
 LDFLAGS=-s -lgcc_s
 
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include

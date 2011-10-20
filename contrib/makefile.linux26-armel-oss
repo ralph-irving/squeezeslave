@@ -20,7 +20,7 @@ TAR=tar
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -Wall -O2 -I/usr/local/arm-none-linux-gnueabi/include
+CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -Wall -O2 -I/usr/local/arm-none-linux-gnueabi/include
 LDFLAGS=-s -L/usr/local/arm-none-linux-gnueabi/lib 
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include

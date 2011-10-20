@@ -1,3 +1,15 @@
+2011-10-18 11:47  paddockd
+
+	* [r287] ChangeLog, TODO,
+	  patches/build-portaudio-alsa-pcm-avail-update.patch,
+	  src/squeezeslave/help.c, src/squeezeslave/interactive.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h,
+	  tests/find_interfaces.c: Reverted move of setNonblocking function
+	  in r284 back to help.c from interactive.c. setNonblocking now not
+	  used in windows slimproto_discover for windows.
+	  Capture outstanding alsa patch and find interfaces source code.
+	  Increased revision to 287.
+
 2011-10-17 16:13  paddockd
 
 	* [r286] ChangeLog, src/squeezeslave/help.c,
