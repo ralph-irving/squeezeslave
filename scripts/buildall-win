@@ -4,7 +4,7 @@ SQC="`dirname $0`/../src/squeezeslave/squeezeslave.c"
 VER=`grep version\ = ${SQC} | awk -F\" '{print \$2}'`
 REV=`svnversion`
 
-if [ ! -z BUILDOLDWIN ]; then
+if [ ! -z $BUILDOLDWIN ]; then
 
 	make -f makefile.windows-display realclean
 
