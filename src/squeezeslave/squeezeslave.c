@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 289;
+const int revision = 291;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -64,7 +64,7 @@ FILE *debuglog = NULL;
 bool debug_logfile = false;
 #endif
 
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 bool wasapi_exclusive = true;
 #endif
 
@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef __WIN32__
 		{"highpriority",       no_argument,       0, 'H'},
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 		{"shared",             no_argument,       0, 'S'},
 #endif
 #endif
@@ -309,7 +309,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef __WIN32__
 	strcat (getopt_options, "H");
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 	strcat (getopt_options, "S");
 #endif
 #endif
@@ -469,7 +469,7 @@ int main(int argc, char *argv[]) {
 					dwError);
 			} 
 			break;
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 		case 'S':
 			wasapi_exclusive = false;
 			break;

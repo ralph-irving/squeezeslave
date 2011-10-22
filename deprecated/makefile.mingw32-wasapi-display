@@ -8,7 +8,7 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPA_WASAPI -DPTW32_STATIC_LIB -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
+CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DINTERACTIVE -DPORTAUDIO_DEV -DPADEV_WASAPI -DPTW32_STATIC_LIB -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -Wall -O2 -mno-cygwin -march=i686 -mtune=pentium4
 LDFLAGS=-s
 
 INCLUDE=-Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/curses/$(OS)/include -Ilib/lirc/$(OS)/include

@@ -27,7 +27,7 @@
 #include <math.h>
 
 #include <portaudio.h>
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 #include <pa_win_wasapi.h>
 #endif
 #ifndef PORTAUDIO_DEV
@@ -47,7 +47,7 @@
   #define VDEBUGF(...)
 #endif
 
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 extern bool wasapi_exclusive;
 #endif
 
@@ -366,7 +366,7 @@ if ( renice )
 	const PaDeviceInfo * paDeviceInfo;
 	float newLatency;
 
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 	PaWasapiStreamInfo streamInfo;
 	const PaHostApiInfo *paHostApiInfo;
 #endif
@@ -401,7 +401,7 @@ if ( renice )
 		outputParameters.suggestedLatency = newLatency ;
 	}
 
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 	/* Use exclusive mode for WASAPI device, default is shared */
 
 	paHostApiInfo = Pa_GetHostApiInfo ( paDeviceInfo->hostApi );

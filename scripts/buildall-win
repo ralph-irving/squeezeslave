@@ -4,39 +4,45 @@ SQC="`dirname $0`/../src/squeezeslave/squeezeslave.c"
 VER=`grep version\ = ${SQC} | awk -F\" '{print \$2}'`
 REV=`svnversion`
 
+if [ ! -z BUILDOLDWIN ]; then
+
+	make -f makefile.windows-display realclean
+
+	make -f deprecated/makefile.mingw32-wasapi-display realclean
+	if [ -f bin/7z.tar ]; then
+		cd bin;tar -xf 7z.tar;cd ..
+	fi
+	make -f deprecated/makefile.mingw32-wasapi-display
+	mv bin/squeezeslave-wasapi.exe bin/squeezeslave-wasapi-$VER-$REV.exe
+	make -f deprecated/makefile.mingw32-wasapi-display realclean
+
+	make -f deprecated/makefile.mingw32-asio-display realclean
+	if [ -f bin/7z.tar ]; then
+		cd bin;tar -xf 7z.tar;cd ..
+	fi
+	make -f deprecated/makefile.mingw32-asio-display
+	mv bin/squeezeslave-asio.exe bin/squeezeslave-asio-$VER-$REV.exe
+	make -f deprecated/makefile.mingw32-asio-display realclean
+
+	make -f contrib/makefile.mingw32-pa-display realclean
+	if [ -f bin/7z.tar ]; then
+		cd bin;tar -xf 7z.tar;cd ..
+	fi
+	make -f contrib/makefile.mingw32-pa-display
+	mv bin/squeezeslave-pa.exe bin/squeezeslave-pa-$VER-$REV.exe
+	make -f contrib/makefile.mingw32-pa-display realclean
+
+	make -f deprecated/makefile.mingw32-display realclean
+	if [ -f bin/7z.tar ]; then
+		cd bin;tar -xf 7z.tar;cd ..
+	fi
+	make -f deprecated/makefile.mingw32-display
+	mv bin/squeezeslave.exe bin/squeezeslave-ds-$VER-$REV.exe
+fi
+
 make -f makefile.windows-display realclean
-
-make -f deprecated/makefile.mingw32-wasapi-display realclean
 if [ -f bin/7z.tar ]; then
 	cd bin;tar -xf 7z.tar;cd ..
 fi
-make -f deprecated/makefile.mingw32-wasapi-display
-mv bin/squeezeslave-wasapi.exe bin/squeezeslave-wasapi-$VER-$REV.exe
-make -f deprecated/makefile.mingw32-wasapi-display realclean
-
-make -f deprecated/makefile.mingw32-asio-display realclean
-if [ -f bin/7z.tar ]; then
-	cd bin;tar -xf 7z.tar;cd ..
-fi
-make -f deprecated/makefile.mingw32-asio-display
-mv bin/squeezeslave-asio.exe bin/squeezeslave-asio-$VER-$REV.exe
-make -f deprecated/makefile.mingw32-asio-display realclean
-
-make -f contrib/deprecated/makefile.mingw32-pa-display realclean
-if [ -f bin/7z.tar ]; then
-	cd bin;tar -xf 7z.tar;cd ..
-fi
-make -f contrib/deprecated/makefile.mingw32-pa-display
-mv bin/squeezeslave-pa.exe bin/squeezeslave-pa-$VER-$REV.exe
-make -f contrib/deprecated/makefile.mingw32-pa-display realclean
-
-make -f deprecated/makefile.mingw32-display realclean
-if [ -f bin/7z.tar ]; then
-	cd bin;tar -xf 7z.tar;cd ..
-fi
-make -f deprecated/makefile.mingw32-display
-mv bin/squeezeslave.exe bin/squeezeslave-ds-$VER-$REV.exe
-
-make -f makefile.windows-display realclean
 make -f makefile.windows-display
 mv bin/squeezeslave.exe bin/squeezeslave-$VER-$REV.exe

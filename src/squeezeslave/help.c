@@ -386,10 +386,10 @@ void print_version(void) {
 #else
 	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
 #endif
-#ifdef PA_ASIO
+#ifdef PADEV_ASIO
 	fprintf(stdout, "asio ");
 #endif
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 	fprintf(stdout, "wasapi ");
 #endif
 #ifdef SLIMPROTO_DEBUG
@@ -469,7 +469,7 @@ void print_help(void) {
 "                            keepalive.\n"
 #ifdef __WIN32__
 "-H, --highpriority          Change process priority class to high.\n"
-#ifdef PA_WASAPI
+#ifdef PADEV_WASAPI
 "-S, --shared                Use shared mode for a WasApi device.\n"
 "                            Settings in Control Panel for a shared device\n"
 "                            must be set to 16-bit, 44100 Hz (CD Quality).\n"
