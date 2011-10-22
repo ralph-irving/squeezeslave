@@ -1,3 +1,32 @@
+2011-10-20 11:41  paddockd
+
+	* [r288] ChangeLog, contrib/makefile.freebsd,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-nofpu-oss-display,
+	  contrib/makefile.linux26-armel-oss,
+	  contrib/makefile.linux26-ffmpeg-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-mipsel-nofpu-oss,
+	  contrib/makefile.linux26-mipsel-oss,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  contrib/makefile.linux26-ppc-alsa-display,
+	  contrib/makefile.mingw32-ffmpeg-display,
+	  contrib/makefile.mingw32-pa-display, contrib/makefile.netbsd,
+	  makefile.linux24-alsa-display, makefile.linux24-display,
+	  makefile.linux24-i586-display, makefile.linux26-alsa-display,
+	  makefile.linux26-display, makefile.linux26-i64-alsa-display,
+	  makefile.mingw32-asio-display, makefile.mingw32-display,
+	  makefile.mingw32-wasapi-display, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display,
+	  makefile.sol10-intel-display, makefile.sol10-sparc64-display,
+	  makefile.sol9-sparc-display, src/squeezeslave/squeezeslave.c:
+	  Enabled RENICE build option to CFLAGS in all makefiles except
+	  NetBSD/FreeBSD.
+	  Increased revision to 288.
+
 2011-10-18 11:47  paddockd
 
 	* [r287] ChangeLog, TODO,

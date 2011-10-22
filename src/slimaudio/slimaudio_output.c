@@ -368,6 +368,7 @@ if ( renice )
 
 #ifdef PA_WASAPI
 	PaWasapiStreamInfo streamInfo;
+	const PaHostApiInfo *paHostApiInfo;
 #endif
 
 	paDeviceInfo = Pa_GetDeviceInfo(audio->output_device_id);
@@ -401,18 +402,31 @@ if ( renice )
 	}
 
 #ifdef PA_WASAPI
-	/* Use exclusive mode for WasApi device, default is shared */
-	if (wasapi_exclusive)
+	/* Use exclusive mode for WASAPI device, default is shared */
+
+	paHostApiInfo = Pa_GetHostApiInfo ( paDeviceInfo->hostApi );
+	if ( paHostApiInfo != NULL )
 	{
-		streamInfo.size = sizeof(PaWasapiStreamInfo);
-		streamInfo.hostApiType = paWASAPI;
-		streamInfo.version = 1;
-		streamInfo.flags = paWinWasapiExclusive;
-		outputParameters.hostApiSpecificStreamInfo = &streamInfo;
-	}
-	else
-	{
-		outputParameters.hostApiSpecificStreamInfo = NULL;
+		if ( paHostApiInfo->type == paWASAPI )
+		{
+			/* Use exclusive mode for WasApi device, default is shared */
+			if (wasapi_exclusive)
+			{
+				streamInfo.size = sizeof(PaWasapiStreamInfo);
+				streamInfo.hostApiType = paWASAPI;
+				streamInfo.version = 1;
+				streamInfo.flags = paWinWasapiExclusive;
+				outputParameters.hostApiSpecificStreamInfo = &streamInfo;
+
+				DEBUGF("WASAPI: Exclusive\n");
+			}
+			else
+			{
+				outputParameters.hostApiSpecificStreamInfo = NULL;
+
+				DEBUGF("WASAPI: Shared\n");
+			}
+		}
 	}
 #else
 	outputParameters.hostApiSpecificStreamInfo = NULL;

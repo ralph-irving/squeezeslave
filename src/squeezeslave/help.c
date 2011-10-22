@@ -44,8 +44,9 @@ int parse_macaddress(char *macaddress, const char *str) {
 bool renice_thread( int priority )
 {
 	bool failed;
+#ifndef __WIN32__
 	int err;
-
+#endif
 	failed = false;
 
 #ifdef __WIN32__
@@ -382,13 +383,15 @@ void print_version(void) {
 #endif
 #ifndef PORTAUDIO_DEV
 	fprintf(stdout, "portaudio:1810 ");
-#elif defined(PA_ASIO)
-	fprintf(stdout, "portaudio:%d:asio ", Pa_GetVersion());
-#elif defined(PA_WASAPI)
-	fprintf(stdout, "portaudio:%d:wasapi ", Pa_GetVersion());
 #else
 	fprintf(stdout, "portaudio:%d ", Pa_GetVersion());
-#endif /* PORTAUDIO_DEV */
+#endif
+#ifdef PA_ASIO
+	fprintf(stdout, "asio ");
+#endif
+#ifdef PA_WASAPI
+	fprintf(stdout, "wasapi ");
+#endif
 #ifdef SLIMPROTO_DEBUG
 	fprintf(stdout, "debug ");
 #endif
