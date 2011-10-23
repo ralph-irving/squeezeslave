@@ -48,6 +48,7 @@ all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
 $(7ZIP):
 	cd lib/7z/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(7ZIPSRC)_src_all.tar.bz2
+	cd lib/7z/$(OS)/build/$(7ZIPSRC) && ${PATCH} -p1 -i ../../../../../patches/build-7zip-localtime.patch
 	cd lib/7z/$(OS)/build/$(7ZIPSRC) && cp -p makefile.cygwin makefile.machine
 	cd lib/7z/$(OS)/build/$(7ZIPSRC) && $(SED) -i "s| -DHAVE_GCCVISIBILITYPATCH -fvisibility=hidden -fvisibility-inlines-hidden||g" makefile.machine
 	cd lib/7z/$(OS)/build/$(7ZIPSRC) && make clean && make 7z

@@ -1,0 +1,9 @@
+--- p7zip_4.65/CPP/Windows/PropVariantConversions.cpp.orig	2009-02-07 16:05:40.000000000 -0500
++++ p7zip_4.65/CPP/Windows/PropVariantConversions.cpp	2011-10-22 15:40:21.811250000 -0400
+@@ -1,5 +1,5 @@
+ // PropVariantConversions.cpp
+-
++#include <time.h>
+ #include "StdAfx.h"
+ 
+ #include "PropVariantConversions.h"
