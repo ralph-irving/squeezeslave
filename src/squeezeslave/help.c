@@ -473,6 +473,7 @@ void print_help(void) {
 "-S, --shared                Use shared mode for a WasApi device.\n"
 "                            Settings in Control Panel for a shared device\n"
 "                            must be set to 16-bit, 44100 Hz (CD Quality).\n"
+"                            Ignored for Asio and Direct Sound devices.\n"
 #endif
 #endif
 #if defined(RENICE) && !defined(EMPEG)
