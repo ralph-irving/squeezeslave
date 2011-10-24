@@ -1,30 +1,30 @@
 #!/bin/bash
-VER=`svnversion`
+SQC="`dirname $0`/../src/squeezeslave/squeezeslave.c"
+VER=`grep version\ = ${SQC} | awk -F\" '{print \$2}'`
+REV=`svnversion`
 
-if [ "`uname -r`" == "8.4.1" ]; then
+make -f makefile.osx-i64-display realclean
+make -f makefile.osx-intel-display realclean
 
-    make -f makefile.osx-intel-display realclean
+make -f makefile.osx-ppc-display realclean
+make -f makefile.osx-ppc-display
 
-    make -f makefile.osx-ppc-display realclean
-    make -f makefile.osx-ppc-display
+mv bin/squeezeslave bin/squeezeslave-ppc-$VER-$REV
 
-    mv bin/squeezeslave bin/squeezeslave-ppc-1.1-$VER
+make -f makefile.osx-ppc-display realclean
 
-    make -f makefile.osx-ppc-display realclean
+make -f makefile.osx-intel-display realclean
+make -f makefile.osx-intel-display
 
-    make -f makefile.osx-intel-display realclean
-    make -f makefile.osx-intel-display
+mv bin/squeezeslave bin/squeezeslave-intel-$VER-$REV
 
-    mv bin/squeezeslave bin/squeezeslave-intel-1.1-$VER
-fi
+make -f makefile.osx-intel-display realclean
 
-if [ "`uname -r`" == "10.8.0" ]; then
+make -f makefile.osx-i64-display realclean
+make -f makefile.osx-i64-display
 
-    make -f makefile.osx-intel-display realclean
-    make -f makefile.osx-ppc-display realclean
+mv bin/squeezeslave bin/squeezeslave-i64-$VER-$REV
 
-    make -f makefile.osx-i64-display realclean
-    make -f makefile.osx-i64-display
+cd bin && lipo -create squeezeslave-ppc-$VER-$REV squeezeslave-intel-$VER-$REV squeezeslave-i64-$VER-$REV -output squeezeslave-$VER-$REV
 
-    mv bin/squeezeslave bin/squeezeslave-i64-1.1-$VER
-fi
+file bin/squeezeslave-$VER-$REV
