@@ -25,6 +25,6 @@ make -f makefile.osx-i64-display
 
 mv bin/squeezeslave bin/squeezeslave-i64-$VER-$REV
 
-cd bin && lipo -create squeezeslave-ppc-$VER-$REV squeezeslave-intel-$VER-$REV squeezeslave-i64-$VER-$REV -output squeezeslave-$VER-$REV
+lipo -create bin/squeezeslave-ppc-$VER-$REV bin/squeezeslave-intel-$VER-$REV bin/squeezeslave-i64-$VER-$REV -output bin/squeezeslave-$VER-$REV
 
 file bin/squeezeslave-$VER-$REV
