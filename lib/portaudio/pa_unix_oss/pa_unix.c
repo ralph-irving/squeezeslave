@@ -86,7 +86,9 @@ O- handle stereo-only device better ???
 O- what if input and output of a device capabilities differ (e.g. es1371) ???
 */
 
-
+#ifdef sun
+#include <string.h>
+#endif /* sun */
 #include "pa_unix.h"
 
 typedef void *(*pthread_function_t)(void *);

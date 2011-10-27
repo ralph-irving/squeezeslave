@@ -45,6 +45,7 @@
 
 #include <sys/audioio.h>
 #include <sys/stropts.h>
+#include <string.h>
 
 /*********************************************************************
  * Try to open the named device.

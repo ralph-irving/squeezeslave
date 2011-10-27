@@ -210,7 +210,8 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	/* send http request to server */
 	DEBUGF("slimaudio_http_connect: http request %s\n", msg->strm.http_hdr);
 
-	n = send_message(fd, msg->strm.http_hdr, strlen(msg->strm.http_hdr), slimproto_get_socketsendflags());
+	n = send_message(fd, msg->strm.http_hdr, strlen((const char *)msg->strm.http_hdr),
+		slimproto_get_socketsendflags());
 
 	if (n < 0)
 	{

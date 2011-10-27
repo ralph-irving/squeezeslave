@@ -1,3 +1,26 @@
+2011-10-24 16:58  paddockd
+
+	* [r296] scripts/buildall-osx: Fixed OSX build script.
+
+2011-10-24 16:46  paddockd
+
+	* [r295] makefile.osx-intel-display, makefile.osx-ppc-display,
+	  patches/build-portaudio-force-osx10.4u-sdk-i386.patch,
+	  patches/build-portaudio-force-osx10.4u-sdk-ppc.patch,
+	  scripts/buildall-osx, src/squeezeslave/squeezeslave.c: Updated
+	  OSX i386 and ppc makefiles for use with Xcode 3.2.6 on 10.6.
+	  Updated OSX build script to create a universal binary with all 3
+	  architectures.
+	  Xcode 2.4.1 no longer supported for i386 and ppc.
+	  Increased revision to 295.
+
+2011-10-23 14:29  paddockd
+
+	* [r294] ChangeLog, TODO, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Updated -S/--shared help
+	  information.
+	  Increased revision to 294.
+
 2011-10-23 10:40  paddockd
 
 	* [r293] ChangeLog, contrib/makefile.mingw32-pa-display,

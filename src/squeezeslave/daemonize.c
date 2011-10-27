@@ -97,10 +97,10 @@ void init_daemonize()
 void daemonize( char *logfile ) {
 	/* Redirect standard files to /dev/null */
 	freopen( "/dev/null", "r", stdin);
-	if ( freopen( logfile, "a", stdout) < 0 ) {
+	if ( freopen( logfile, "a", stdout) == NULL ) {
 		freopen( "/dev/null", "w", stdout);
 	}
-	if ( freopen( logfile, "a", stderr) < 0 ) {
+	if ( freopen( logfile, "a", stderr) == NULL ) {
 		freopen( "/dev/null", "w", stderr);
 	}
 
