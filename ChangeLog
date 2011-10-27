@@ -1,3 +1,8 @@
+2011-10-27 22:48  paddockd
+
+	* [r298] ChangeLog, scripts/buildall-lnx26-armel: Updated
+	  squeezeplug build script to handle local/google repositories.
+
 2011-10-27 21:31  paddockd
 
 	* [r297] ChangeLog, lib/getopt/getopt.c,
