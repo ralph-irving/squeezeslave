@@ -1,3 +1,23 @@
+2011-10-27 21:31  paddockd
+
+	* [r297] ChangeLog, lib/getopt/getopt.c,
+	  lib/portaudio/pa_unix_oss/pa_unix.c,
+	  lib/portaudio/pa_unix_oss/pa_unix_solaris.c,
+	  src/slimaudio/slimaudio_http.c, src/squeezeslave/daemonize.c,
+	  src/squeezeslave/squeezeslave.c: Fixed Solaris Sun Studio
+	  compiler warnings.
+	  Fixed stdout/stderr freopen error checking.
+	  Increased revision to 297.
+	  -This line, and those below, will be ignored--
+	  
+	  M ChangeLog
+	  M src/slimaudio/slimaudio_http.c
+	  M src/squeezeslave/daemonize.c
+	  M src/squeezeslave/squeezeslave.c
+	  M lib/getopt/getopt.c
+	  M lib/portaudio/pa_unix_oss/pa_unix_solaris.c
+	  M lib/portaudio/pa_unix_oss/pa_unix.c
+
 2011-10-24 16:58  paddockd
 
 	* [r296] scripts/buildall-osx: Fixed OSX build script.
