@@ -18,7 +18,7 @@ INCLUDE=-Ilib/getopt -Ilib/portaudio-empeg/pa_common -Ilib/portaudio-empeg/pabli
 PORTAUDIOFILES:=lib/portaudio-empeg/pa_unix_oss/pa_unix.c lib/portaudio-empeg/pa_unix_oss/pa_unix_oss.c  lib/portaudio-empeg/pa_common/pa_lib.c lib/portaudio-empeg/pa_common/pa_convert.c lib/portaudio-empeg/pablio/ringbuffer.c
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.2.0
+LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
 
