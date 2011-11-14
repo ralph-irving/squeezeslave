@@ -483,6 +483,7 @@ void print_help(void) {
 #ifndef __WIN32__
 "-l, --lcd                   Enable LCDd (lcdproc) text display.\n"
 "                            Requires LCDd running on local host.\n"
+"-C, --lcdc                  Enable old LCDd (lcdproc<0.5.4) text display.\n"
 "-i, --lirc                  Enable lirc remote control support.\n"
 "                            Requires lirc running on local host.\n"
 "-c, --lircrc <filename>     Location of lirc client configuration file.\n"

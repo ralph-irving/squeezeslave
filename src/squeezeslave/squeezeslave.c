@@ -50,7 +50,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 303;
+const int revision = 304;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -84,6 +84,7 @@ int lirc_fd = 0;
 bool using_lirc = false;
 int using_curses = 0;
 bool use_lcdd_menu = false;
+bool lcdd_compat = false;
 int lcd_fd = 0;
 struct sockaddr_in *lcd_addr;
 #endif
@@ -284,6 +285,7 @@ int main(int argc, char *argv[]) {
 		{"lircrc",             required_argument, 0, 'c'},
 		{"lirc",               no_argument,       0, 'i'},
 		{"lcd",                no_argument,       0, 'l'},
+		{"lcdc",               no_argument,       0, 'C'},
 		{"display",            no_argument,       0, 'D'},
 		{"width",              required_argument, 0, 'w'},
 #endif
@@ -305,7 +307,7 @@ int main(int argc, char *argv[]) {
 	strcat (getopt_options, "M:");
 #endif
 #ifdef INTERACTIVE
-	strcat (getopt_options, "c:Dilw:");
+	strcat (getopt_options, "c:CDilw:");
 #endif
 #ifdef __WIN32__
 	strcat (getopt_options, "H");
@@ -532,6 +534,10 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'l':
 			use_lcdd_menu = true;
+			break;
+		case 'C':
+			use_lcdd_menu = true;
+			lcdd_compat = true;
 			break;
 #endif
 		case 'D':

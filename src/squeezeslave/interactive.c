@@ -39,6 +39,7 @@ extern int using_curses;
 extern int lcd_fd; 
 extern struct sockaddr_in *lcd_addr;
 extern bool use_lcdd_menu;
+extern bool lcdd_compat;
 
 // For lircd support
 extern bool using_lirc;
@@ -139,41 +140,57 @@ void init_lirc(void) {
 // Try to open a connection to LCDd if support is enabled
 // If it succeeeds configure our screen
 // If it fails, print a message, disable support and continue
-void init_lcd (void) {
-     if (!use_lcdd_menu) return;
+void init_lcd (void)
+{
+	if (!use_lcdd_menu) return;
 
-     use_lcdd_menu = false;
-     lcd_fd = socket(AF_INET, SOCK_STREAM, 0);
-     if (lcd_fd > 0) {
-        lcd_addr = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));
-        lcd_addr->sin_family = AF_INET;
-	if (inet_pton(AF_INET, "127.0.0.1", (void *)(&(lcd_addr->sin_addr.s_addr))) >0) {
-	   lcd_addr->sin_port = htons(13666);
-           if (connect(lcd_fd, (struct sockaddr *)lcd_addr, sizeof(struct sockaddr)) >= 0){ 
-              int flag = 1;
-              if (setsockopt(lcd_fd, IPPROTO_TCP, TCP_NODELAY, (void*)&flag, sizeof(flag) ) == 0)   {
-                 fprintf(stderr,"Connected to LCDd!\n");
-                 use_lcdd_menu = true;
-	         send_lcd("hello\n",6);
-                 while(!read_lcd());  // wait for display info
-	         send_lcd("client_set name {squeeze}\n",26);
-	         send_lcd("screen_add main\n",16);
-	         send_lcd("screen_set main name {main}\n",28);
-	         send_lcd("screen_set main heartbeat off\n",30);
-	         send_lcd("widget_add main one string\n",27);
-                 send_lcd("widget_add main two string\n",27);
-	         send_lcd("screen_set main -priority 256\n",30);
-	         setNonblocking(lcd_fd);
-	      }
-	   }
-	} 
-     }
-     // If connect failed
-     if (!use_lcdd_menu) {
-        use_lcdd_menu = true;
-	close_lcd();
-	fprintf(stderr,"Connect to LCDd failed!\n");
-     }
+	use_lcdd_menu = false;
+
+	lcd_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	if (lcd_fd > 0)
+	{
+		lcd_addr = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));
+		lcd_addr->sin_family = AF_INET;
+		if (inet_pton(AF_INET, "127.0.0.1", (void *)(&(lcd_addr->sin_addr.s_addr))) >0)
+		{
+			lcd_addr->sin_port = htons(13666);
+			if (connect(lcd_fd, (struct sockaddr *)lcd_addr, sizeof(struct sockaddr)) >= 0)
+			{ 
+				int flag = 1;
+				if (setsockopt(lcd_fd, IPPROTO_TCP, TCP_NODELAY, (void*)&flag, sizeof(flag) ) == 0)
+				{
+					use_lcdd_menu = true;
+					send_lcd("hello\n",6);
+
+					while(!read_lcd());  // wait for display info
+
+					send_lcd("client_set name {squeeze}\n",26);
+					send_lcd("screen_add main\n",16);
+					send_lcd("screen_set main name {main}\n",28);
+					send_lcd("screen_set main heartbeat off\n",30);
+					send_lcd("widget_add main one string\n",27);
+					send_lcd("widget_add main two string\n",27);
+
+					if ( lcdd_compat )		
+						send_lcd("screen_set main -priority 256\n",30);
+					else
+						send_lcd("screen_set main -priority info\n",31);
+
+					setNonblocking(lcd_fd);
+				}
+			}
+		} 
+	}
+
+	// If connect failed
+	if (!use_lcdd_menu)
+	{
+		use_lcdd_menu = true;
+		close_lcd();
+
+		fprintf(stderr,"Connect to LCDd failed!\n");
+	}
 }
 
 // Called by our USR2 signal handler
