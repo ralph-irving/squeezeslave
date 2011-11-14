@@ -1,3 +1,8 @@
+2011-11-12 15:34  paddockd
+
+	* [r302] ChangeLog, scripts/buildall-lnx26: Updated linux 2.6 build
+	  script to handle local/remote repositories.
+
 2011-10-31 16:36  paddockd
 
 	* [r301] sources/libogg-1.2.0.tar.bz2,

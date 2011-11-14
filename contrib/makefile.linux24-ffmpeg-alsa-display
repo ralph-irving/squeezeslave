@@ -9,13 +9,18 @@ CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DPORTAUDIO_DEV -Wall -O2 -march=i
 LDFLAGS=-s
 
 # Enable AAC decoder support
-CFLAGS+=-DAAC_DECODER
+# CFLAGS+=-DAAC_DECODER
+# SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_aac.c
+# SUPPORTLIBS+=lib/faad2/$(OS)/lib/libfaad.a lib/faad2/$(OS)/lib/libmp4ff.a
 
 # Enable ALAC decoder support
 # CFLAGS+=-DALAC_DECODER
+# SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_alac.c
 
 # Enable WMA decoder support
 CFLAGS+=-DWMA_DECODER
+SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_wma.c
+SUPPORTLIBS+=lib/ffmpeg/$(OS)/lib/libavformat.a lib/ffmpeg/$(OS)/lib/libavdevice.a lib/ffmpeg/$(OS)/lib/libavcodec.a lib/ffmpeg/$(OS)/lib/libavfilter.a lib/ffmpeg/$(OS)/lib/libavutil.a
 
 # Comment out these two lines to remove display support
 CFLAGS+=-DINTERACTIVE
@@ -27,18 +32,16 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.2
 LIBVORBIS=libvorbis-1.3.2
 LIBFLAC=flac-1.2.1
+# LIBFFMPEG=ffmpeg-2011-11-05
 LIBFFMPEG=ffmpeg-2011-03-11
 LIBFAAD2=faad2-2.7
 LIBPORTAUDIO=portaudio-r1608
 
-PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
+PORTMIXERFILES=lib/portmixer/px_none/px_none.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
-SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
-SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_aac.c
-# SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_alac.c
-SLIMPROTOFILES+=src/slimaudio/slimaudio_decoder_wma.c
+SLIMPROTOFILES+=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
 
 SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
 
@@ -46,9 +49,7 @@ LIBSLIMPROTO=lib/libslimproto.a
 
 LIBGETOPT=lib/libgetopt.a
 
-SUPPORTLIBS=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a
-# SUPPORTLIBS+=lib/faad2/$(OS)/lib/libfaad.a lib/faad2/$(OS)/lib/libmp4ff.a
-SUPPORTLIBS+=lib/ffmpeg/$(OS)/lib/libavformat.a lib/ffmpeg/$(OS)/lib/libavdevice.a lib/ffmpeg/$(OS)/lib/libavcodec.a lib/ffmpeg/$(OS)/lib/libavfilter.a lib/ffmpeg/$(OS)/lib/libavutil.a
+SUPPORTLIBS+=lib/libportaudio/$(OS)/lib/libportaudio.a lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a
 
 SQUEEZESLAVE=bin/squeezeslave
 
@@ -116,9 +117,8 @@ lib/ffmpeg/$(OS)/lib/libavcodec.a:
 lib/ffmpeg/$(OS)/lib/libavformat.a:
 lib/ffmpeg/$(OS)/lib/libavutil.a:
 lib/ffmpeg/$(OS)/lib/libavfilter.a:
-	cd lib/ffmpeg/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFFMPEG).tar.bz2
-	# cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-avdevice --disable-swscale --disable-encoders --disable-devices --disable-filters --disable-muxers --disable-demuxers --disable-network --disable-parsers --enable-parser=aac --disable-protocols --disable-bsfs --enable-bsf=aac_adtstoasc --disable-decoders --enable-decoder=aac --enable-decoder=alac --enable-decoder=wmav1 --enable-decoder=wmav2 --enable-decoder=wmapro --enable-runtime-cpudetect --enable-memalign-hack --enable-gpl
-	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-swscale --disable-bzlib --disable-zlib --disable-indevs --disable-outdevs --enable-runtime-cpudetect --enable-memalign-hack --enable-gpl
+	 cd lib/ffmpeg/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFFMPEG).tar.bz2
+	 cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffserver --disable-swscale --disable-bzlib --disable-zlib --disable-indevs --disable-outdevs --enable-runtime-cpudetect --enable-memalign-hack --enable-gpl
 	#	--disable-debug
 	cd lib/ffmpeg/$(OS)/build/$(LIBFFMPEG) && make clean && make
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavdevice/libavdevice.a lib/ffmpeg/$(OS)/lib
@@ -129,7 +129,9 @@ lib/ffmpeg/$(OS)/lib/libavfilter.a:
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavdevice/avdevice.h lib/ffmpeg/$(OS)/include/libavdevice
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavfilter/{avfilter.h,avfiltergraph.h} lib/ffmpeg/$(OS)/include/libavfilter
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavformat/{avformat.h,avio.h,version.h} lib/ffmpeg/$(OS)/include/libavformat
+	# cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h,version.h} lib/ffmpeg/$(OS)/include/libavcodec
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h} lib/ffmpeg/$(OS)/include/libavcodec
+	# cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavutil/{adler32.h,attributes.h,audioconvert.h,avassert.h,avstring.h,avutil.h,base64.h,bswap.h,common.h,cpu.h,crc.h,error.h,eval.h,fifo.h,file.h,imgutils.h,intfloat_readwrite.h,intreadwrite.h,lfg.h,log.h,lzo.h,mathematics.h,md5.h,mem.h,opt.h,parseutils.h,pixdesc.h,pixfmt.h,random_seed.h,rational.h,samplefmt.h,dict.h,avconfig.h} lib/ffmpeg/$(OS)/include/libavutil
 	cp -p lib/ffmpeg/$(OS)/build/$(LIBFFMPEG)/libavutil/{adler32.h,attributes.h,audioconvert.h,avassert.h,avstring.h,avutil.h,base64.h,bswap.h,common.h,cpu.h,crc.h,error.h,eval.h,fifo.h,file.h,imgutils.h,intfloat_readwrite.h,intreadwrite.h,lfg.h,log.h,lzo.h,mathematics.h,md5.h,mem.h,opt.h,parseutils.h,pixdesc.h,pixfmt.h,random_seed.h,rational.h,samplefmt.h,sha1.h,avconfig.h} lib/ffmpeg/$(OS)/include/libavutil
 
 $(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
@@ -173,7 +175,9 @@ realclean: clean
 	-@rm -f lib/ffmpeg/$(OS)/lib/{libavcodec.a,libavformat.a,libavutil.a,libavfilter.a,libavdevice.a}
 	-@rm -f lib/ffmpeg/$(OS)/include/libavdevice/avdevice.h
 	-@rm -f lib/ffmpeg/$(OS)/include/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h}
+	# -@rm -f lib/ffmpeg/$(OS)/include/libavcodec/{avcodec.h,avfft.h,dxva2.h,opt.h,vaapi.h,vdpau.h,xvmc.h,version.h}
 	-@rm -f lib/ffmpeg/$(OS)/include/libavformat/{avformat.h,avio.h,version.h}
+	# -@rm -f lib/ffmpeg/$(OS)/include/libavutil/{adler32.h,attributes.h,audioconvert.h,avassert.h,avstring.h,avutil.h,base64.h,bswap.h,common.h,cpu.h,crc.h,error.h,eval.h,fifo.h,file.h,imgutils.h,intfloat_readwrite.h,intreadwrite.h,lfg.h,log.h,lzo.h,mathematics.h,md5.h,mem.h,opt.h,parseutils.h,pixdesc.h,pixfmt.h,random_seed.h,rational.h,samplefmt.h,dict.h,avconfig.h}
 	-@rm -f lib/ffmpeg/$(OS)/include/libavutil/{adler32.h,attributes.h,audioconvert.h,avassert.h,avstring.h,avutil.h,base64.h,bswap.h,common.h,cpu.h,crc.h,error.h,eval.h,fifo.h,file.h,imgutils.h,intfloat_readwrite.h,intreadwrite.h,lfg.h,log.h,lzo.h,mathematics.h,md5.h,mem.h,opt.h,parseutils.h,pixdesc.h,pixfmt.h,random_seed.h,rational.h,samplefmt.h,sha1.h,avconfig.h}
 	-@rm -f lib/ffmpeg/$(OS)/include/libavfilter/{avfilter.h,avfiltergraph.h}
 	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h

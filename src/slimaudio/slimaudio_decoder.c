@@ -69,6 +69,10 @@ void av_lib_setup (void)
 		av_register_all();
 		DEBUGF("decoder_thread: av_register_all\n");
 
+		avcodec_init();
+		avcodec_register_all();
+		DEBUGF("decoder_thread: avcodec_register_all\n");
+
 		AVInputFormat *p = NULL;
 		p = av_iformat_next(p);
 		while (p)
