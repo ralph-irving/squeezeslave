@@ -37,6 +37,7 @@
 
 #include "squeezeslave.h"
 
+#define INET_FQDNSTRLEN	(256)
 // Retry support
 bool retry_connection = false;
 bool output_change = false;
@@ -50,7 +51,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.1L";
-const int revision = 304;
+const int revision = 305;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -219,7 +220,7 @@ int main(int argc, char *argv[]) {
 	bool should_daemonize = false;
 	char *logfile = NULL;
 #endif
-	char slimserver_address[INET_ADDRSTRLEN] = "127.0.0.1";
+	char slimserver_address[INET_FQDNSTRLEN] = "127.0.0.1";
 
 #ifdef INTERACTIVE
         fd_set read_fds;

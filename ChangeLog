@@ -1,3 +1,22 @@
+2011-11-14 13:48  paddockd
+
+	* [r304] TODO, src/squeezeslave/help.c,
+	  src/squeezeslave/interactive.c, src/squeezeslave/squeezeslave.c:
+	  Updated -l/--lcd LCDd (lcdproc) to use Priorities keywords
+	  instead of values.
+	  Added -C/--lcdc option to revert Priorities to use values. Use if
+	  still running lcdproc < 0.5.4.
+	  Increased revision to 304.
+
+2011-11-14 12:40  paddockd
+
+	* [r303] ChangeLog, contrib/makefile.linux24-ffmpeg-alsa-display,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_wma.c,
+	  src/squeezeslave/squeezeslave.c: Removed depreciated function
+	  calls from ffmpeg wma decoder.
+	  Increased revision to 303.
+
 2011-11-12 15:34  paddockd
 
 	* [r302] ChangeLog, scripts/buildall-lnx26: Updated linux 2.6 build
