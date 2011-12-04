@@ -40,7 +40,8 @@
 
 #define BUF_LENGTH 4096
 
-#define DEBUGF(...) fprintf(stderr, __VA_ARGS__)
+/* fprintf(stderr, __VA_ARGS__) */
+#define DEBUGF(...)
 #define VDEBUGF(...)
 
 #define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
@@ -91,7 +92,7 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, bool sc
         }
 
         sendaddr.sin_family = AF_INET;
-        sendaddr.sin_port = htons(port);
+        sendaddr.sin_port = htons(0);
         sendaddr.sin_addr.s_addr = INADDR_ANY;
         memset(sendaddr.sin_zero,'\0',sizeof sendaddr.sin_zero);
 
@@ -102,6 +103,7 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, bool sc
 	recvaddr.sin_family = AF_INET;
 	recvaddr.sin_port = htons(port);
 	recvaddr.sin_addr.s_addr = INADDR_BROADCAST;
+
 	memset(recvaddr.sin_zero,'\0',sizeof recvaddr.sin_zero);
 
 	for (try = 0; try < 5; try ++) {
@@ -113,7 +115,7 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, bool sc
 			return -1;
 		}
 
-		DEBUGF("slimproto_discover: Server discovery packet sent\n");
+		DEBUGF("slimproto_discover: discovery packet sent\n");
 
 		/* Wait up to 1 second for response */
 		while (poll(&pollfd, 1, 1000))
@@ -162,7 +164,7 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, bool sc
 
 			inet_ntop(AF_INET, &sendaddr.sin_addr.s_addr, server_addr, server_addr_len);
 
-			DEBUGF("slimproto_discover: Server discovered %s:%s (%s)\n",
+			DEBUGF("slimproto_discover: discovered %s:%s (%s)\n",
 				server_name, server_web, server_addr);
 
 			serveraddr_len = strlen(server_addr);
@@ -170,15 +172,22 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, bool sc
 			/* Server(s) responded, so don't try again */
 			try = 5;
 
-			if ( !scan )
-				break ;
+			if ( scan )
+				printf("%s:%s (%s)\n", server_name, server_web, server_addr);
+			else
+				break ; /* Return first server that replied */
 		}
 	}
 
 	CLOSESOCKET(sockfd);
 
 	if ( scan )
+	{
+		strcpy ( server_addr, "0.0.0.0" );
 		serveraddr_len = -1;
+	}
+
+	DEBUGF("slimproto_discover: end\n");
 	
 	return serveraddr_len ;
 }
@@ -189,16 +198,17 @@ int main (void)
 	int port = 3483;
 	int len ;
 
+	/* Scan */
 	len = slimproto_discover(slimserver_address, sizeof (slimserver_address), port, true);
 
-	VDEBUGF("main: slimproto_discover_scan: %d\n" ,len );
+	VDEBUGF("main: slimproto_discover_scan: address:%s len:%d\n", slimserver_address, len );
 
-#if 0	
+#if 0
+	/* Discovery */
 	len = slimproto_discover(slimserver_address, sizeof (slimserver_address), port, false);
 
-	VDEBUGF("main: slimproto_discover_noscan: %d\n" ,len );
+	VDEBUGF("main: slimproto_discover: address:%s len:%d\n", slimserver_address, len );
 #endif
-
 	return 0;
 }
 
