@@ -113,11 +113,11 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, unsigne
 
 	memset(recvaddr.sin_zero,'\0',sizeof recvaddr.sin_zero);
 
-	packet = malloc ( sizeof ( unsigned char ) * DISCOVERY_PKTSIZE );
-	v = malloc ( sizeof ( unsigned char ) * 256 );
-	t = malloc ( sizeof ( unsigned char ) * 256 );
-	server_name = malloc ( sizeof ( unsigned char ) * 256 );
-	server_json = malloc ( sizeof ( unsigned char ) * 256 );
+	packet = malloc ( sizeof ( char ) * DISCOVERY_PKTSIZE );
+	v = malloc ( sizeof ( char ) * 256 );
+	t = malloc ( sizeof ( char ) * 256 );
+	server_name = malloc ( sizeof ( char ) * 256 );
+	server_json = malloc ( sizeof ( char ) * 256 );
 	if ( (packet == NULL) ||
 		(v == NULL) ||
 		(t == NULL) ||
