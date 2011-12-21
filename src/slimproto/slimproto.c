@@ -55,8 +55,10 @@
 #ifdef SLIMPROTO_DEBUG
   bool slimproto_debug;
   #define DEBUGF(...) if (slimproto_debug) fprintf(stderr, __VA_ARGS__)
+  #define VDEBUGF(...)
 #else
   #define DEBUGF(...)
+  #define VDEBUGF(...)
 #endif
 
 #define packN4(ptr, off, v) { ptr[off] = (char)(v >> 24) & 0xFF; ptr[off+1] = (v >> 16) & 0xFF; ptr[off+2] = (v >> 8) & 0xFF; ptr[off+3] = v & 0xFF; }
@@ -442,20 +444,33 @@ size_t size;
 #endif
 #endif /* __WIN32__ */
 
-#define SLIMPROTO_DISCOVERY "eIPAD\0NAME\0JSON"
 
-int slimproto_discover(char * server_addr, int server_addr_len, int port)
+#define DISCOVERY_PKTSIZE	1516
+#define SLIMPROTO_DISCOVERY	"eNAME\0JSON\0"
+
+int slimproto_discover(char *server_addr, int server_addr_len, int port, unsigned int *jsonport, bool scan)
 {
 	int sockfd;
-	int broadcast=1;
+	int try;
+	char *packet;
+	int pktlen;
+	int pktidx;
+	char *t;
+	unsigned int l;
+	char *v;
+	char *server_name;
+	char *server_json;
+	struct pollfd pollfd;
 	struct sockaddr_in sendaddr;
 	struct sockaddr_in recvaddr;
-	int try;
-	char buffer[100];
-	socklen_t sockaddr_len = sizeof(sendaddr);
-	struct pollfd pollfd;
 
-        if((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
+	socklen_t sockaddr_len = sizeof(sendaddr);
+
+	int broadcast=1;
+	int serveraddr_len = -1;
+
+        if((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
+	{
                 perror("sockfd");
                 return -1;
         }
@@ -463,45 +478,147 @@ int slimproto_discover(char * server_addr, int server_addr_len, int port)
 	pollfd.fd = sockfd;
 	pollfd.events = POLLIN;
 
-       if((setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const  void*) &broadcast, sizeof broadcast)) == -1) {
+       if((setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const  void*) &broadcast, sizeof broadcast)) == -1)
+	{
 		perror("setsockopt - SO_BROADCAST");
                 return -1;
         }
 
         sendaddr.sin_family = AF_INET;
-        sendaddr.sin_port = htons(port);
+        sendaddr.sin_port = htons(0);
         sendaddr.sin_addr.s_addr = INADDR_ANY;
         memset(sendaddr.sin_zero,'\0',sizeof sendaddr.sin_zero);
 
-        if(bind(sockfd, (struct sockaddr*) &sendaddr, sizeof sendaddr) == -1) {
-            perror("bind");
-            return -1;
+        if(bind(sockfd, (struct sockaddr*) &sendaddr, sizeof sendaddr) == -1)
+	{
+		perror("bind");
+		return -1;
         }
+
 	recvaddr.sin_family = AF_INET;
 	recvaddr.sin_port = htons(port);
 	recvaddr.sin_addr.s_addr = INADDR_BROADCAST;
+
 	memset(recvaddr.sin_zero,'\0',sizeof recvaddr.sin_zero);
 
-	for (try = 0; try < 5; try ++) {
-		if (sendto(sockfd, SLIMPROTO_DISCOVERY, sizeof(SLIMPROTO_DISCOVERY), 0, (struct sockaddr *)&recvaddr, sizeof(recvaddr)) == -1) {
+	packet = malloc ( sizeof ( char ) * DISCOVERY_PKTSIZE );
+	v = malloc ( sizeof ( char ) * 256 );
+	t = malloc ( sizeof ( char ) * 256 );
+	server_name = malloc ( sizeof ( char ) * 256 );
+	server_json = malloc ( sizeof ( char ) * 256 );
+	if ( (packet == NULL) ||
+		(v == NULL) ||
+		(t == NULL) ||
+		(server_name == NULL) ||
+		(server_json == NULL) )
+	{
+		perror("malloc");
+		return -1;
+	}
+
+	for (try = 0; try < 5; try ++)
+	{
+		if (sendto(sockfd, SLIMPROTO_DISCOVERY, sizeof(SLIMPROTO_DISCOVERY), 0,
+			(struct sockaddr *)&recvaddr, sizeof(recvaddr)) == -1)
+		{
 			CLOSESOCKET(sockfd);
 			perror("sendto");
 			return -1;
 		}
-		DEBUGF("slimproto_discover: Server discovery packet sent\n");
+
+		DEBUGF("slimproto_discover: discovery packet sent\n");
+
 		/* Wait up to 1 second for response */
-		while (poll(&pollfd, 1, 1000)) {
-			if (recvfrom(sockfd, buffer, sizeof(buffer), MSG_DONTWAIT, (struct sockaddr *)&sendaddr, &sockaddr_len) == -1) continue;
-			if (memcmp(buffer, "ENAME", 5)) continue;
-			buffer[buffer[5] + 6] = 0;
+		while (poll(&pollfd, 1, 1000))
+		{
+			memset(packet,0,sizeof(packet));
+
+			pktlen = recvfrom(sockfd, packet, DISCOVERY_PKTSIZE, MSG_DONTWAIT,
+				(struct sockaddr *)&sendaddr, &sockaddr_len);
+
+			if ( pktlen == -1 ) continue;
+
+			/* Invalid response packet, try again */
+			if ( packet[0] != 'E') continue;
+
+			memset(server_name,0,sizeof(server_name));
+			memset(server_json,0,sizeof(server_json));
+
+			VDEBUGF("slimproto_discover: pktlen:%d\n",pktlen);
+
+			/* Skip the E */
+			pktidx = 1;
+
+			while ( pktidx < (pktlen - 5) )
+			{
+				strncpy ( t, &packet[pktidx], pktidx + 3 );
+				t[4] = '\0';
+				l = (unsigned int) ( packet[pktidx + 4] );
+				strncpy ( v, &packet[pktidx + 5], pktidx + 4 + l);
+				v[l] = '\0';
+				pktidx = pktidx + 5 + l;
+
+				if ( memcmp ( t, "NAME", 4 ) == 0 )
+				{
+					strncpy ( server_name, v, l );
+					server_name[l] = '\0';
+				}
+				else if ( memcmp ( t, "JSON", 4 ) == 0 )
+				{
+					strncpy ( server_json, v, l );
+					server_json[l] = '\0';
+				}
+
+				VDEBUGF("slimproto_discover: key: %s len: %d value: %s pktidx: %d\n",
+					t, l, v, pktidx);
+			}
+
 			inet_ntop(AF_INET, &sendaddr.sin_addr.s_addr, server_addr, server_addr_len);
-			DEBUGF("slimproto_discover: Server discovered %s@%s\n", &buffer[6], server_addr);
-			CLOSESOCKET(sockfd);
-			return strlen(server_addr);
+
+			*jsonport = (unsigned int) strtoul(server_json, NULL, 10);
+
+			DEBUGF("slimproto_discover: discovered %s:%u (%s)\n",
+				server_name, *jsonport, server_addr);
+
+			serveraddr_len = strlen(server_addr);
+
+			/* Server(s) responded, so don't try again */
+			try = 5;
+
+			if ( scan )
+				printf("%s:%u (%s)\n", server_name, *jsonport, server_addr);
+			else
+				break ; /* Return first server that replied */
 		}
 	}
+
 	CLOSESOCKET(sockfd);
-	return -1;  /* Server not found */
+
+	if ( scan )
+	{
+		strcpy ( server_addr, "0.0.0.0" );
+		*jsonport = 0;
+		serveraddr_len = -1;
+	}
+
+	if ( server_json != NULL )
+		free (server_json);
+
+	if ( server_name != NULL )
+		free (server_name);
+
+	if ( t != NULL )
+		free (t);
+
+	if ( v != NULL )
+		free (v);
+
+	if ( packet != NULL )
+		free (packet);
+
+	DEBUGF("slimproto_discover: end\n");
+	
+	return serveraddr_len ;
 }
 
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {

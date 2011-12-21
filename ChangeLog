@@ -1,3 +1,30 @@
+2011-12-06 13:32  paddockd
+
+	* [r309] tests/find_servers.c: Cleaned up test slimproto_discover
+	  malloc code.
+
+2011-12-06 12:58  paddockd
+
+	* [r308] tests/find_servers.c: Fixed test slimproto_discover OSX
+	  abort traps.
+	  Added JSON port retrieval to test slimproto_discover.
+
+2011-12-04 12:03  paddockd
+
+	* [r307] tests/find_servers.c: Fixed test slimproto_discover
+	  failure when local server running.
+
+2011-12-04 11:55  paddockd
+
+	* [r306] tests/find_servers.c: Added slimproto_discover test
+	  harness.
+
+2011-11-15 12:36  paddockd
+
+	* [r305] ChangeLog, src/squeezeslave/squeezeslave.c: Fixed FQDN
+	  truncation at 16 characters. MAX length is now 256 characters.
+	  Increased revision to 305.
+
 2011-11-14 13:48  paddockd
 
 	* [r304] TODO, src/squeezeslave/help.c,

@@ -520,6 +520,7 @@ void print_help(void) {
 "                            Not supported with lirc and display modes.\n"
 #endif
 "-L, --list                  List available audio devices and exit.\n"
+"-I, --findservers           List servers found via UDP discovery and exit.\n"
 "-m, --mac <mac_address>     Sets the mac address for this instance.\n"
 "                            Use the colon-separated notation.\n"
 "                            The default is 00:00:00:00:00:01.\n"

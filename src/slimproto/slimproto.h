@@ -139,7 +139,7 @@ void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t
 const char * inet_ntop(int, const void *, char *, size_t);
 #endif
 
-int slimproto_discover(char * server_addr, int server_addr_len, int port);
+int slimproto_discover(char *server_addr, int server_addr_len, int port, unsigned int *jsonport, bool scan);
 
 int slimproto_connect(slimproto_t *p, const char *server_addr, int port);
 

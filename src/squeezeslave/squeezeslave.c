@@ -38,6 +38,7 @@
 #include "squeezeslave.h"
 
 #define INET_FQDNSTRLEN	(256)
+
 // Retry support
 bool retry_connection = false;
 bool output_change = false;
@@ -50,8 +51,8 @@ unsigned int user_latency = 0L;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "1.1L";
-const int revision = 305;
+const char* version = "1.2L";
+const int revision = 310;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -210,7 +211,10 @@ int main(int argc, char *argv[]) {
 	int keepalive_interval = -1;
 
 	bool listdevs = false;
+	bool listservers = false;
 	bool discover_server = false;
+	unsigned int json_port;
+
 #ifdef ZONES
 	bool default_macaddress = true;
 	unsigned int zone = 0;
@@ -245,7 +249,7 @@ int main(int argc, char *argv[]) {
 	strcat(lircrc,"/.lircrc");
 #endif
 
-	char getopt_options[OPTLEN] = "a:Fd:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
+	char getopt_options[OPTLEN] = "a:FId:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 		{"discover",           no_argument,       0, 'F'},
@@ -254,6 +258,7 @@ int main(int argc, char *argv[]) {
 		{"help",               no_argument,       0, 'h'},
 		{"keepalive",          required_argument, 0, 'k'},
 		{"list",               no_argument,       0, 'L'},
+		{"findservers",        no_argument,       0, 'I'},
 		{"mac",	               required_argument, 0, 'm'},
 		{"name",               required_argument, 0, 'n'},
 		{"output",             required_argument, 0, 'o'},
@@ -551,6 +556,9 @@ int main(int argc, char *argv[]) {
 		case 'L':
 			listdevs = true;
 			break;
+		case 'I':
+			listservers = true;
+			break;
 		case 'V':
 			print_version();
 			exit(0);
@@ -607,6 +615,11 @@ int main(int argc, char *argv[]) {
 
 	if (listdevs) {
 		GetAudioDevices(output_device_id, output_device_name, output_change, true);
+		exit(0);
+	}
+
+	if (listservers) {
+		slimproto_discover(slimserver_address, sizeof(slimserver_address), port, &json_port, true);
 		exit(0);
 	}
 
@@ -725,7 +738,9 @@ int main(int argc, char *argv[]) {
 		}
 		else
 #endif
-		if (discover_server && slimproto_discover(slimserver_address, sizeof(slimserver_address), port) < 0) {
+		if (discover_server && slimproto_discover(slimserver_address,
+			sizeof(slimserver_address), port, &json_port, false) < 0)
+		{
 			fprintf(stderr,"Discover failed.\n");
 			if (!retry_connection) {
 				exit_code = -1;
