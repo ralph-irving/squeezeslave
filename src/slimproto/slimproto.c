@@ -463,11 +463,26 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, unsigne
 	struct pollfd pollfd;
 	struct sockaddr_in sendaddr;
 	struct sockaddr_in recvaddr;
+#ifdef __WIN32__
+        WSADATA info;
+#endif
 
 	socklen_t sockaddr_len = sizeof(sendaddr);
 
 	int broadcast=1;
 	int serveraddr_len = -1;
+
+#ifdef __WIN32__
+	/* Need to initialize winsock if scanning on windows as slimproto_init has not been called */
+	if ( scan )
+	{
+        	if (WSAStartup(MAKEWORD(1,1), &info) != 0)
+		{
+	                fprintf(stderr, "Cannot initialize WinSock");
+	                return -1;
+		}
+        }
+#endif
 
         if((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
 	{
@@ -599,6 +614,9 @@ int slimproto_discover(char *server_addr, int server_addr_len, int port, unsigne
 		strcpy ( server_addr, "0.0.0.0" );
 		*jsonport = 0;
 		serveraddr_len = -1;
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 	}
 
 	if ( server_json != NULL )

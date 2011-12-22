@@ -1,3 +1,18 @@
+2011-12-21 16:53  paddockd
+
+	* [r310] ChangeLog, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Fixed slimproto_discover failure when a local SBS is running.
+	  Thanks to gharris999 for finding this one and suggesting a fix.
+	  Updated slimproto_discover to support findservers option,
+	  retrieve JSON port as well as the IP address.
+	  Added -I/--findservers option to list servers found via UDP
+	  discovery.
+	  Increased firmware version to 7.
+	  Increased version to 1.2.
+	  Increased revision to 310.
+
 2011-12-06 13:32  paddockd
 
 	* [r309] tests/find_servers.c: Cleaned up test slimproto_discover
