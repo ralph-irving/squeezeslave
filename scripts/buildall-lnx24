@@ -1,19 +1,21 @@
 #!/bin/bash
-VER=`svnversion`
+SQC="`dirname $0`/../src/squeezeslave/squeezeslave.c"
+VER=`grep version\ = ${SQC} | awk -F\" '{print \$2}'`
+REV=`svnversion`
 
 make -f makefile.linux24-display realclean
 make -f makefile.linux24-display
 
 gcc -s -static -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libportaudio.a lib/libslimproto.a lib/libgetopt.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lpthread -lm -lcurses -llirc_client
 
-mv bin/squeezeslave bin/squeezeslave-lnx24-oss-1.1-$VER
+mv bin/squeezeslave bin/squeezeslave-lnx24-oss-$VER-$REV
 make -f makefile.linux24-display realclean
 
 make -f makefile.linux24-alsa-display realclean
 make -f makefile.linux24-alsa-display  
 
-gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_unix_oss/px_unix_oss.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx24/lib/libportaudio.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lasound -lrt -lpthread -lm /usr/lib/libncurses.a /usr/lib/liblirc_client.a
+gcc -s -o bin/squeezeslave src/squeezeslave/squeezeslave.o src/squeezeslave/help.o src/squeezeslave/daemonize.o src/squeezeslave/interactive.o lib/portmixer/px_none/px_none.o lib/libslimproto.a lib/libgetopt.a lib/libportaudio/lnx24/lib/libportaudio.a lib/libmad/lnx24/lib/libmad.a lib/vorbis/lnx24/lib/libvorbisfile.a lib/vorbis/lnx24/lib/libvorbis.a lib/vorbis/lnx24/lib/libvorbisenc.a lib/vorbis/lnx24/lib/libogg.a lib/flac/lnx24/lib/libFLAC.a -lasound -lrt -lpthread -lm /usr/lib/libncurses.a /usr/lib/liblirc_client.a
 
-mv bin/squeezeslave bin/squeezeslave-lnx24-alsa-1.1-$VER
+mv bin/squeezeslave bin/squeezeslave-lnx24-alsa-$VER-$REV
 make -f makefile.linux24-alsa-display realclean
 

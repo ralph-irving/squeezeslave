@@ -1,3 +1,10 @@
+2012-01-10 11:57  paddockd
+
+	* [r312] ChangeLog, contrib/makefile.freebsd,
+	  contrib/makefile.freebsd-i386: Updated freebsd intel makefile to
+	  support building on 8.2.
+	  Added -i386 to freebsd intel makefile name.
+
 2011-12-22 12:57  paddockd
 
 	* [r311] ChangeLog, src/slimproto/slimproto.c,

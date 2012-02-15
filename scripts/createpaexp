@@ -10,13 +10,13 @@ fi
 
 cd /var/tmp || exit 1
 
-svn --quiet export -r$1 http://www.portaudio.com/repos/portaudio/trunk || exit 1
+svn --quiet export -r$1 https://subversion.assembla.com/svn/portaudio/portaudio/trunk || exit 1
 
 sed -i "s:^#define PA_VERSION_  1899:#define PA_VERSION_  $1:" trunk/src/common/pa_front.c || exit 1
 
 cd trunk || exit 1
 
-# svn diff -r1543:1542 http://www.portaudio.com/repos/portaudio/trunk | patch -p0 || exit 1
+# svn diff -r1543:1542 https://subversion.assembla.com/svn/portaudio/portaudio/trunk | patch -p0 || exit 1
 
 cd .. || exit 1
 mv trunk portaudio || exit 1
