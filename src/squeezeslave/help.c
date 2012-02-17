@@ -434,7 +434,7 @@ void print_version(void) {
 	fprintf(stdout, "buffer sizes: decoder %u output %u bytes\n",DECODER_BUFFER_SIZE, OUTPUT_BUFFER_SIZE);
 	fprintf(stdout, "\n");
 
-	fprintf(stdout, "Copyright 2004-2007 Richard Titmuss, 2008-2011 Duane Paddock.\n");
+	fprintf(stdout, "Copyright 2004-2012 Richard Titmuss, Duane Paddock.\n");
 
 	fprintf (stdout,
 	"This is free software; see the source for copying conditions. There is NO\n"
