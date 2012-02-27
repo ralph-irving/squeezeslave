@@ -1,3 +1,15 @@
+2012-02-27 12:49  paddockd
+
+	* [r317] ChangeLog,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-nofpu-oss-display,
+	  patches/tremor-r18153-version-script.patch,
+	  sources/tremor-r18153.tar.bz2, src/squeezeslave/squeezeslave.c:
+	  Added tremor fixed point vorbis library r18153 and build patch.
+	  Updated tremor library in squeezeplug makefiles to r18153.
+	  Updated ogg library in squeezeplug makefiles to 1.2.2.
+	  Increased revision to 317.
+
 2012-02-17 21:07  paddockd
 
 	* [r316] ChangeLog, src/squeezeslave/help.c,

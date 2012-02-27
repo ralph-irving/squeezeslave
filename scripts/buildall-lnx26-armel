@@ -4,17 +4,17 @@ SQC="`dirname $0`/../src/squeezeslave/squeezeslave.c"
 VER=`grep version\ = ${SQC} | awk -F\" '{print \$2}'`
 REV=`svnversion`
 
-make -f contrib/makefile.linux26-armel-nofpu-oss-display realclean
+make -f makefile.linux26-armel-display realclean
 
-make -f contrib/makefile.linux26-armel-nofpu-alsa-display realclean
-make -f contrib/makefile.linux26-armel-nofpu-alsa-display
+make -f makefile.linux26-armel-alsa-display realclean
+make -f makefile.linux26-armel-alsa-display
 
 mv bin/squeezeslave bin/squeezeslave-$VER-$REV
 
-make -f contrib/makefile.linux26-armel-nofpu-alsa-display realclean
-make -f contrib/makefile.linux26-armel-nofpu-oss-display
+make -f makefile.linux26-armel-alsa-display realclean
+make -f makefile.linux26-armel-display
 
 mv bin/squeezeslave bin/squeezeslave-oss-$VER-$REV
 mv bin/squeezeslave-static bin/squeezeslave-oss-static-$VER-$REV
 
-make -f contrib/makefile.linux26-armel-nofpu-oss-display realclean
+make -f makefile.linux26-armel-display realclean
