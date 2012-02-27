@@ -1,0 +1,11 @@
+--- tremor-r18153/configure.orig	2012-02-26 15:01:03.000000000 -0500
++++ tremor-r18153/configure	2012-02-26 17:38:43.000000000 -0500
+@@ -10675,7 +10675,7 @@
+ 
+ 
+ if test "x$lt_cv_prog_gnu_ld" = "xyes"; then
+-   SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
++   SHLIB_VERSION_ARG=
+    LDFLAGS="$LDFLAGS $SHLIB_VERSION_ARG"
+ fi
+ 

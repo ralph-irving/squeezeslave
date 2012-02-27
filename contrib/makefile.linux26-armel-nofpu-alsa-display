@@ -18,8 +18,8 @@ LIBS+=/usr/lib/libncurses.a lib/lirc/$(OS)/lib/liblirc_client.a
 INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.1.4
-LIBVORBIS=tremor-r17503
+LIBOGG=libogg-1.2.2
+LIBVORBIS=tremor-r18153
 LIBFLAC=flac-1.2.1
 LIBPORTAUDIO=portaudio-r1608
 LIBLIRC=lirc-0.8.6
@@ -72,7 +72,7 @@ lib/vorbis/$(OS)/lib/libogg.a:
 
 lib/vorbis/$(OS)/lib/libvorbisidec.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
-	cd lib/vorbis/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/tremor-version-script.patch
+	cd lib/vorbis/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/$(LIBVORBIS)-version-script.patch
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --with-ogg=`pwd`/../.. --disable-oggtest
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
 	${CP} -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/.libs/libvorbisidec.a lib/vorbis/$(OS)/lib
