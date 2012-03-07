@@ -28,6 +28,10 @@
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
+#ifndef CODEC_TYPE_AUDIO
+#define CODEC_TYPE_AUDIO	AVMEDIA_TYPE_AUDIO
+#endif
+
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
@@ -96,11 +100,6 @@ static int av_read_data(void *opaque, char *buffer, int buf_size)
 }
 
 int slimaudio_decoder_aac_process(slimaudio_t *audio) {
-//	unsigned char data[AUDIO_CHUNK_SIZE];
-//	int buffer[AUDIO_CHUNK_SIZE/2];
-//	int i;
-	
-//	unsigned char *ptr = data;
 	char streamformat[16];
 	int out_size;
 	int len = 0;
@@ -148,6 +147,26 @@ int slimaudio_decoder_aac_process(slimaudio_t *audio) {
 
 	DEBUGF ("aac: play audioStream: %d\n", audioStream);
 
+	inbuf = av_malloc(AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
+	if ( !inbuf )
+	{
+		DEBUGF("aac: inbuf alloc failed.\n");
+		return -1;
+	}
+
+	AVIOContext *AVIOCtx;
+
+	AVIOCtx = avio_alloc_context(inbuf, AUDIO_CHUNK_SIZE, 0, audio, av_read_data, NULL, NULL);
+	if ( AVIOCtx == NULL )
+	{
+		DEBUGF("aac: avio_alloc_context failed.\n");
+		return -1;
+	}
+	else
+	{
+		AVIOCtx->is_streamed = 1;
+	}
+
 	AVInputFormat* pAVInputFormat = av_find_input_format(streamformat);
 	if( !pAVInputFormat )
 	{
@@ -160,30 +179,10 @@ int slimaudio_decoder_aac_process(slimaudio_t *audio) {
 		pAVInputFormat->flags |= AVFMT_NOFILE;
 	}
 
-	inbuf = av_malloc(AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE);
-	if ( !inbuf )
-	{
-		DEBUGF("aac: inbuf alloc failed.\n");
-		return -1;
-	}
-
-	ByteIOContext ByteIOCtx;
-
-	iRC = init_put_byte( &ByteIOCtx, inbuf, AUDIO_CHUNK_SIZE, 0, audio, av_read_data, NULL, NULL ) ;
-	if( iRC < 0)
-	{
-		DEBUGF("aac: init_put_byte failed:%d\n", iRC);
-		return -1;
-	}
-	else
-	{
-		ByteIOCtx.is_streamed = 1;
-	}
-
 	AVFormatContext* pFormatCtx;
 	AVCodecContext *pCodecCtx;
 
-	iRC = av_open_input_stream(&pFormatCtx, &ByteIOCtx, "", pAVInputFormat, NULL);
+	iRC = av_open_input_stream(&pFormatCtx, AVIOCtx, "", pAVInputFormat, NULL);
 
 	if (iRC < 0)
 	{
@@ -261,7 +260,7 @@ int slimaudio_decoder_aac_process(slimaudio_t *audio) {
 				eos=true;
 			}
 
-			if ( url_feof(pFormatCtx->pb) )
+			if ( pFormatCtx->pb->eof_reached )
 			{
 				DEBUGF("aac: url_feof\n");
 				eos=true;

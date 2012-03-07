@@ -1,3 +1,15 @@
+2012-02-27 13:23  paddockd
+
+	* [r318] ChangeLog,
+	  contrib/makefile.linux26-armel-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-nofpu-oss-display,
+	  makefile.linux26-armel-alsa-display,
+	  makefile.linux26-armel-display, scripts/buildall-lnx26-armel,
+	  src/squeezeslave/squeezeslave.c: Moved squeezeplug armel
+	  makefiles from contrib folder.
+	  Updated armel build script.
+	  Increased revision to 318.
+
 2012-02-27 12:49  paddockd
 
 	* [r317] ChangeLog,
