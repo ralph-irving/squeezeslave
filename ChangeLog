@@ -1,3 +1,11 @@
+2012-03-07 12:56  paddockd
+
+	* [r319] ChangeLog, src/slimaudio/slimaudio_decoder_aac.c,
+	  src/squeezeslave/squeezeslave.c: Removed depreciated function
+	  calls from ffmpeg aac decoder. Thanks to Tim Harder for the
+	  patch.
+	  Increased revision to 319.
+
 2012-02-27 13:23  paddockd
 
 	* [r318] ChangeLog,

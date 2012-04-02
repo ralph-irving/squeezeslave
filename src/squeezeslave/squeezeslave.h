@@ -78,7 +78,7 @@
 #define FIRMWARE_VERSION	1
 #else
 #define PLAYER_TYPE	8
-#define FIRMWARE_VERSION	7
+#define FIRMWARE_VERSION	8
 #endif
 
 int connect_callback(slimproto_t *, bool, void *);

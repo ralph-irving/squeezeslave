@@ -924,20 +924,37 @@ int slimproto_goodbye(slimproto_t *p, u8_t upgrade) {
 
 int slimproto_helo(slimproto_t *p, char device_id, char revision, const char *macaddress, char isGraphics, char isReconnect) {	
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
+#if 0
+	const char *capabilites = \
+		 "Model=squeezeslave,ModelName=SqueezeSlave,Firmware=7,ogg,flc,pcm,mp3,SampleRate=44100,HasPreAmp";
+#endif
+	int caplen = 0;
 	int channelList = 0;
+
+	if (isGraphics)
+		channelList |= 0x8000;
+
+	if (isReconnect)
+		channelList |= 0x4000;
+#if 0
+	caplen = strlen(capabilites);
+#endif
 	memset(&msg, 0, SLIMPROTO_MSG_SIZE);
 
 	packA4(msg, 0, "HELO");
-	packN4(msg, 4, 10);
-	packC(msg, 8, device_id);
-	packC(msg, 9, revision);
-	memcpy(msg+10, macaddress, 6);
-	if (isGraphics)
-		channelList |= 0x8000;
-	if (isReconnect)
-		channelList |= 0x4000;
-	packN2(msg, 16, channelList);
-	
+	packN4(msg, 4, (36+caplen));	/* Packet Length */
+	packC(msg, 8, device_id);	/* Device Type */
+	packC(msg, 9, revision);	/* Revision */
+	memcpy(msg+10, macaddress, 6);	/* MAC */
+	memcpy(msg+26, macaddress, 6);	/* UID */
+	packN2(msg, 32, channelList);	/* WLan Channel List */
+	packN4(msg, 34, 0);		/* Bytes Received H */
+	packN4(msg, 38, 0);		/* Bytes Received L */
+	packC(msg, 42, 'E');		/* Language */
+	packC(msg, 43, 'N');
+#if 0
+	memcpy(msg+44,capabilites,caplen);
+#endif
 	return slimproto_send(p, msg);
 }
 
