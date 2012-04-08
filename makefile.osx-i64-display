@@ -11,7 +11,7 @@ TAR=tar
 SED=sed
 PATCH=patch
 MACOSX_DEPLOYMENT_TARGET=10.5
-CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -s -Wall -O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch x86_64
+CFLAGS=-DZONES -DRENICE -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -s -Wall -O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch x86_64
 LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk -arch x86_64 -mmacosx-version-min=10.5
 
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -40,6 +40,7 @@ all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
+	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:-Werror::" configure
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib

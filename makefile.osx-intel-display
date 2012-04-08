@@ -13,7 +13,7 @@ CXX=i686-apple-darwin10-g++
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DRENICE -s -Wall -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
+CFLAGS=-DZONES -DRENICE -s -Wall -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
 LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -mmacosx-version-min=10.4
 
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -42,6 +42,7 @@ all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
+	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:-Werror::" configure
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-force-osx10.4u-sdk-i386.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:$CFLAGS -Werror:$CFLAGS:" configure
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no
