@@ -72,7 +72,7 @@ static int audg_callback(slimproto_t *p, const unsigned char *buf, int buf_len, 
 
 /* Find audio devices which support stereo */
 PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device_name,
-	bool output_change, bool show_list)
+	char *default_hostapi, bool output_change, bool show_list)
 {
 	int i;
 	int err;
@@ -120,6 +120,20 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device
 		                pdi = Pa_GetDeviceInfo( i );
 		                if ( pdi->name != NULL )
 				{
+#ifdef PORTAUDIO_DEV
+					/* Match on audio system if specified */
+					if ( default_hostapi != NULL )
+					{
+						info = Pa_GetHostApiInfo ( pdi->hostApi );
+						if ( info->name != NULL )
+						{
+							/* No match, next */
+							if ( strncasecmp (info->name, default_hostapi, strlen (info->name)) != 0 )
+								continue;
+						}
+					}
+#endif
+
 					if ( strncasecmp (pdi->name, default_device_name, strlen (pdi->name)) == 0 )
 					{
 						DefaultDevice = i;
@@ -201,9 +215,9 @@ PaDeviceIndex GetAudioDevices(PaDeviceIndex default_device, char *default_device
 }
 
 int slimaudio_output_init(slimaudio_t *audio, PaDeviceIndex output_device_id,
-	char *output_device_name, bool output_change)
+	char *output_device_name, char *hostapi_name, bool output_change)
 {
-	audio->output_device_id = GetAudioDevices(output_device_id, output_device_name, output_change, false);
+	audio->output_device_id = GetAudioDevices(output_device_id, output_device_name, hostapi_name, output_change, false);
 
 	if ( audio->output_device_id == paNoDevice )
 	{

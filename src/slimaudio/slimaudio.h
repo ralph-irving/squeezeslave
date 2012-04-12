@@ -168,9 +168,9 @@ typedef struct {
 } slimaudio_t;
 
 #ifdef ZONES
-int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, bool, int, int);
+int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, char *, bool, int, int);
 #else
-int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, bool);
+int slimaudio_init(slimaudio_t *audio, slimproto_t *proto, PaDeviceIndex, char *, char *, bool);
 #endif
 
 void slimaudio_destroy(slimaudio_t *audio);
@@ -206,7 +206,7 @@ void slimaudio_decoder_connect(slimaudio_t *a, slimproto_msg_t *msg);
 void slimaudio_decoder_disconnect(slimaudio_t *a);
 
 
-int slimaudio_output_init(slimaudio_t *a, PaDeviceIndex, char *, bool);
+int slimaudio_output_init(slimaudio_t *a, PaDeviceIndex, char *, char *, bool);
 void slimaudio_output_destroy(slimaudio_t *a);
 int slimaudio_output_open(slimaudio_t *a);
 int slimaudio_output_close(slimaudio_t *audio);

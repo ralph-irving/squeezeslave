@@ -62,11 +62,12 @@ static void audio_stop(slimaudio_t *audio);
  */
 #ifdef ZONES
 int slimaudio_init(slimaudio_t *audio, slimproto_t *proto,
-	PaDeviceIndex default_device, char *default_device_name, bool output_change,
-	int output_zone, int output_num_zones)
+	PaDeviceIndex default_device, char *default_device_name, char *default_hostapi,
+	bool output_change, int output_zone, int output_num_zones)
 #else
 int slimaudio_init(slimaudio_t *audio, slimproto_t *proto,
-	PaDeviceIndex default_device, char *default_device_name, bool output_change)
+	PaDeviceIndex default_device, char *default_device_name, char *default_hostapi,
+	bool output_change)
 #endif
 {
 	memset(audio, 0, sizeof(slimaudio_t));
@@ -80,7 +81,7 @@ int slimaudio_init(slimaudio_t *audio, slimproto_t *proto,
 	audio->output_num_zones=output_num_zones;
 	audio->output_zone=output_zone;
 #endif
-	if (slimaudio_output_init(audio, default_device, default_device_name, output_change) != 0)
+	if (slimaudio_output_init(audio, default_device, default_device_name, default_hostapi, output_change) != 0)
 		return -1;
 	
 	slimproto_add_command_callback(proto, "strm", &strm_callback, audio);

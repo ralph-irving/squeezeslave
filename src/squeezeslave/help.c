@@ -569,6 +569,8 @@ void print_help(void) {
 "-y, --latency <msec>        Modify the default latency for the audio device.\n"
 "                            Useful if you experience drop outs during playback.\n"
 "                            Values between 80-200 ms are recommended.\n"
+"-t,                         Match device name specified with -n/--name to only\n"
+"--audiotype \"<pahostapi>\"   this portaudio hostapi name, otherwise ignored.\n"
 #endif
 #ifdef SLIMPROTO_DEBUG
 "-Y, --debuglog <logfile>    Redirect debug output from stderr to <logfile>.\n"

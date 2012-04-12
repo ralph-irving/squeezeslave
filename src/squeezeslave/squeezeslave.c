@@ -52,7 +52,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 322;
+const int revision = 323;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -193,6 +193,7 @@ int main(int argc, char *argv[]) {
 
 	PaDeviceIndex output_device_id = PA_DEFAULT_DEVICE;
 	char *output_device_name = NULL;
+	char *hostapi_name = NULL;
 
 	unsigned int output_predelay = 0;
 	unsigned int output_predelay_amplitude = 0;
@@ -277,6 +278,7 @@ int main(int argc, char *argv[]) {
 		{"zone",               required_argument, 0, 'z'},
 #ifdef PORTAUDIO_DEV
 		{"latency",            required_argument, 0, 'y'},
+		{"audiotype",          required_argument, 0, 't'},
 #endif
 #ifdef DAEMONIZE
 		{"daemonize",          required_argument, 0, 'M'},
@@ -307,7 +309,7 @@ int main(int argc, char *argv[]) {
 	strcat (getopt_options, "Qq");
 #endif
 #ifdef PORTAUDIO_DEV
-	strcat (getopt_options, "y:");
+	strcat (getopt_options, "y:t:");
 #endif	
 #ifdef DAEMONIZE	
 	strcat (getopt_options, "M:");
@@ -587,6 +589,9 @@ int main(int argc, char *argv[]) {
 				modify_latency = false;
 			}
 			break;
+		case 't':
+			hostapi_name = optarg;
+			break;
 #endif
 #ifdef ZONES
 		case 'z':
@@ -614,7 +619,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (listdevs) {
-		GetAudioDevices(output_device_id, output_device_name, output_change, true);
+		GetAudioDevices(output_device_id, output_device_name, hostapi_name, output_change, true);
 		exit(0);
 	}
 
@@ -652,9 +657,11 @@ int main(int argc, char *argv[]) {
 	}
 
 #ifdef ZONES
-	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change, zone, num_zones) < 0)
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name,
+		hostapi_name, output_change, zone, num_zones) < 0)
 #else
-	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name, output_change) < 0)
+	if (slimaudio_init(&slimaudio, &slimproto, output_device_id, output_device_name,
+		hostapi_name, output_change) < 0)
 #endif
 	{
 		fprintf(stderr, "Failed to initialize slimaudio\n");

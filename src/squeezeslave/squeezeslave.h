@@ -82,7 +82,7 @@
 #endif
 
 int connect_callback(slimproto_t *, bool, void *);
-PaDeviceIndex GetAudioDevices(PaDeviceIndex, char*, bool, bool);
+PaDeviceIndex GetAudioDevices(PaDeviceIndex, char*, char*, bool, bool);
 int parse_macaddress(char *, const char *);
 void print_version(void);
 void print_help(void);

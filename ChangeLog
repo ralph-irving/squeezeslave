@@ -1,3 +1,20 @@
+2012-04-12 16:05  paddockd
+
+	* [r322] makefile.windows-display, sources,
+	  sources/portaudio-r1826.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Updated to Windows June 2010 DirectX SDK.
+	  Enabled ZONES feature for mingw32 builds.
+	  Updated portaudio library to r1826 for mingw32 builds.
+	  Increased revision to 322.
+
+2012-04-08 14:21  paddockd
+
+	* [r321] ChangeLog, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display,
+	  src/squeezeslave/squeezeslave.c: Enable ZONES for OSX.
+	  Remove -Werror from portaudio configure prior to execution.
+	  Increased revision to 321.
+
 2012-04-02 13:39  paddockd
 
 	* [r320] ChangeLog, TODO, src/slimproto/slimproto.c,
