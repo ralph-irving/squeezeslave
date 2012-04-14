@@ -1,3 +1,10 @@
+2012-04-14 12:17  paddockd
+
+	* [r324] ChangeLog, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Grouped -n/-t/-y together in
+	  help.
+	  Increased revision to 324.
+
 2012-04-12 17:39  paddockd
 
 	* [r323] ChangeLog, src/slimaudio/slimaudio.c,
