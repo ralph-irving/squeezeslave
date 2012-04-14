@@ -528,6 +528,13 @@ void print_help(void) {
 "                            multiple instances, allowing per-player settings.\n"
 "-n, --name \"<device_name>\"  Sets the output device by name.\n"
 "                            The output device names can be found with -L.\n"
+#ifdef PORTAUDIO_DEV
+"-t,                         Match device name specified with -n/--name to only\n"
+"--audiotype \"<pahostapi>\"   this portaudio hostapi name, otherwise ignored.\n"
+"-y, --latency <msec>        Modify the default latency for the audio device.\n"
+"                            Useful if you experience drop outs during playback.\n"
+"                            Values between 80-200 ms are recommended.\n"
+#endif
 "-o, --output <device_id>    Sets the output device id.\n"
 "                            The output device id can be found with -L.\n"
 "-P, --port <portnumber>     Sets the Squeezebox Server port number.\n"
@@ -565,13 +572,6 @@ void print_help(void) {
 #endif
 "                                  sw:  volume changes performed in software.\n"
 "                                  off: volume changes ignored.\n"
-#ifdef PORTAUDIO_DEV
-"-y, --latency <msec>        Modify the default latency for the audio device.\n"
-"                            Useful if you experience drop outs during playback.\n"
-"                            Values between 80-200 ms are recommended.\n"
-"-t,                         Match device name specified with -n/--name to only\n"
-"--audiotype \"<pahostapi>\"   this portaudio hostapi name, otherwise ignored.\n"
-#endif
 #ifdef SLIMPROTO_DEBUG
 "-Y, --debuglog <logfile>    Redirect debug output from stderr to <logfile>.\n"
 #endif

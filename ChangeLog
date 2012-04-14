@@ -1,3 +1,12 @@
+2012-04-12 17:39  paddockd
+
+	* [r323] ChangeLog, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c,
+	  src/squeezeslave/squeezeslave.h: Added -t/--audiotype option to
+	  limit -n/--name matching to a specific portaudio hostapi type.
+	  Increased revision to 323.
+
 2012-04-12 16:05  paddockd
 
 	* [r322] makefile.windows-display, sources,
