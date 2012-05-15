@@ -1,0 +1,22 @@
+
+flc flc * 00:04:20:22:01:8e
+	# FT:{START=--skip=%t}U:{END=--until=%v}D:{RESAMPLE=rate -v -s 96k}
+	[flac] -dcs $START$ $END$ -- $FILE$ | [sox] -q -v0.965 -t wav - -t wav -b 24 -C 0 - rate -v -s -M -a 96000 | [InguzDSP] -id "00:04:20:22:01:8e" -wav -wavo -d 24 | [flac] -cs -0 --totally-silent -
+
+flc flc transcode 00:04:20:22:01:8e
+	# FT:{START=--skip=%t}U:{END=--until=%v}D:{RESAMPLE=rate -v -s 96k}
+	[flac] -dcs $START$ $END$ -- $FILE$ | [sox] -q -v0.965 -t wav - -t wav -b 24 -C 0 - rate -v -s -M -a 96000 | [InguzDSP] -id "00:04:20:22:01:8e" -wav -wavo -d 24 | [flac] -cs -0 --totally-silent -
+
+mp3 flc * 00:04:20:22:01:8e
+	# IFT:{START=--skip=%t}U:{END=--until=%v}
+	[lame] --mp3input --decode --silent $FILE$ - - | [sox] -q -v0.965 -t wav - -t wav -b 24 -C 0 - rate -v -s -M -a 96000 | [InguzDSP] -id "00:04:20:22:01:8e" -wav -wavo -d 24 | [flac] -cs -0 --totally-silent -
+
+wma flc * 00:04:20:22:01:8e
+	# FT:{PATH=%f}R:{PATH=%F}
+	[wmadec] -w $FILE$ | [InguzDSP] -id "00:04:20:22:01:8e" -wavo -d 24 | [flac] -cs -0 --totally-silent -
+
+aac flc * 00:04:20:22:01:8e
+	# IFT
+	[faad] -q -w -f 1 $FILE$ | [InguzDSP] -id "00:04:20:22:01:8e" -wav -wavo -d 24 | [flac] -cs -0 --totally-silent -
+
+

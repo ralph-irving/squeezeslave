@@ -1,3 +1,10 @@
+2012-05-15 13:28  paddockd
+
+	* [r327] ChangeLog, makefile.linux24-i586-display,
+	  src/squeezeslave/squeezeslave.c: Removed curly brackets from
+	  makefile.linux24-i586-display.
+	  Increased revision to 327.
+
 2012-05-15 12:12  paddockd
 
 	* [r326] ChangeLog, makefile.linux24-i586-display,

@@ -1,0 +1,91 @@
+Index: src/hostapi/asio/iasiothiscallresolver.cpp
+===================================================================
+--- src/hostapi/asio/iasiothiscallresolver.cpp	(revision 1817)
++++ src/hostapi/asio/iasiothiscallresolver.cpp	(working copy)
+@@ -270,6 +270,7 @@
+ 
+ #elif defined(__GNUC__)
+ 
++#if __GNUC__ > 3
+ 
+ #define CALL_THISCALL_0( resultName, thisPtr, funcOffset )                  \
+     __asm__ __volatile__ ("movl (%1), %%edx\n\t"                            \
+@@ -348,6 +349,78 @@
+                           : "%edx" /* Clobbered Registers */                \
+                           );                                                \
+ 
++#else /* __GNUC__ < 4 */
++
++#define CALL_THISCALL_0( resultName, thisPtr, funcOffset )                  \
++    __asm__ __volatile__ ("movl (%1), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx)\n\t"                  \
++                          :"=a"(resultName) /* Output Operands */           \
++                          :"c"(thisPtr)     /* Input Operands */            \
++                         );                                                 \
++
++
++#define CALL_VOID_THISCALL_1( thisPtr, funcOffset, param1 )                 \
++    __asm__ __volatile__ ("pushl %0\n\t"                                    \
++                          "movl (%1), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx)\n\t"                  \
++                          :                 /* Output Operands */           \
++                          :"r"(param1),     /* Input Operands */            \
++                           "c"(thisPtr)                                     \
++                         );                                                 \
++
++
++#define CALL_THISCALL_1( resultName, thisPtr, funcOffset, param1 )          \
++    __asm__ __volatile__ ("pushl %1\n\t"                                    \
++                          "movl (%2), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx)\n\t"                  \
++                          :"=a"(resultName) /* Output Operands */           \
++                          :"r"(param1),     /* Input Operands */            \
++                           "c"(thisPtr)                                     \
++                          );                                                \
++
++
++#define CALL_THISCALL_1_DOUBLE( resultName, thisPtr, funcOffset, param1 )   \
++    __asm__ __volatile__ ("pushl 4(%1)\n\t"                                 \
++                          "pushl (%1)\n\t"                                  \
++                          "movl (%2), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx);\n\t"                 \
++                          :"=a"(resultName) /* Output Operands */           \
++                          :"a"(&param1),    /* Input Operands */            \
++                           /* Note: Using "r" above instead of "a" fails */ \
++                           /* when using GCC 3.3.3, and maybe later versions*/\
++                           "c"(thisPtr)                                     \
++                          );                                                \
++
++
++#define CALL_THISCALL_2( resultName, thisPtr, funcOffset, param1, param2 )  \
++    __asm__ __volatile__ ("pushl %1\n\t"                                    \
++                          "pushl %2\n\t"                                    \
++                          "movl (%3), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx)\n\t"                  \
++                          :"=a"(resultName) /* Output Operands */           \
++                          :"r"(param2),     /* Input Operands */            \
++                           "r"(param1),                                     \
++                           "c"(thisPtr)                                     \
++                          );                                                \
++
++
++#define CALL_THISCALL_4( resultName, thisPtr, funcOffset, param1, param2, param3, param4 )\
++    __asm__ __volatile__ ("pushl %1\n\t"                                    \
++                          "pushl %2\n\t"                                    \
++                          "pushl %3\n\t"                                    \
++                          "pushl %4\n\t"                                    \
++                          "movl (%5), %%edx\n\t"                            \
++                          "call *"#funcOffset"(%%edx)\n\t"                  \
++                          :"=a"(resultName) /* Output Operands */           \
++                          :"r"(param4),     /* Input Operands  */           \
++                           "r"(param3),                                     \
++                           "r"(param2),                                     \
++                           "r"(param1),                                     \
++                           "c"(thisPtr)                                     \
++                          );                                                \
++
++#endif /* __GNUC__ > 3 */
++
+ #endif
+ 
+ 
