@@ -41,17 +41,17 @@ LIBSLIMPROTO=lib/libslimproto.a
 SQUEEZESLAVE=bin/squeezeslave
 
 .c.o:
-	${CC} $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
 
 all: $(SUPPORTLIBS) $(SQUEEZESLAVE) 
 
 lib/vorbis/$(OS)/lib/libvorbisidec.a:
-	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
-	cd lib/vorbis/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/$(LIBVORBIS)-version-script.patch
+	cd lib/vorbis/$(OS)/build && $(TAR) --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
+	cd lib/vorbis/$(OS)/build && $(PATCH) -p0 -i ../../../../patches/$(LIBVORBIS)-version-script.patch
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
-	${CP} -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/.libs/libvorbisidec.a lib/vorbis/$(OS)/lib
-	${CP} -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/{ivorbiscodec.h,ivorbisfile.h,config_types.h} lib/vorbis/$(OS)/include/vorbis
+	$(CP) -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/.libs/libvorbisidec.a lib/vorbis/$(OS)/lib
+	$(CP) -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/{ivorbiscodec.h,ivorbisfile.h,config_types.h} lib/vorbis/$(OS)/include/vorbis
 	cd lib/vorbis/$(OS)/include/vorbis; ln -s ivorbisfile.h vorbisfile.h
 
 $(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
@@ -63,7 +63,7 @@ $(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
 	ranlib $(LIBSLIMPROTO)
 			
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBPORTAUDIO) $(SUPPORTLIBS)
-	${CC} -o $(SQUEEZESLAVE) $^ /usr/lib/libmad.a /usr/lib/libFLAC.a $(SUPPORTLIBS) $(LIBS) /usr/lib/libogg.a -lpthread -lm
+	$(CC) -o $(SQUEEZESLAVE) $^ /usr/lib/libmad.a /usr/lib/libFLAC.a $(SUPPORTLIBS) $(LIBS) /usr/lib/libogg.a -lpthread -lm
 
 clean:
 	-@rm -f $(SLIMPROTOFILES:.c=.o)

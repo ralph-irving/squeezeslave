@@ -1,3 +1,12 @@
+2012-05-15 12:12  paddockd
+
+	* [r326] ChangeLog, makefile.linux24-i586-display,
+	  scripts/buildall-lnx24mmx, src/squeezeslave/squeezeslave.c:
+	  Updated i586 makefile to use tremor fixed point ogg decoder by
+	  default.
+	  Updated i586 build script.
+	  Increased revision to 326.
+
 2012-04-14 12:39  paddockd
 
 	* [r325] ChangeLog, makefile.osx-i64-display,
