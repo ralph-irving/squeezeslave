@@ -1,3 +1,13 @@
+2012-05-15 14:06  paddockd
+
+	* [r328] ChangeLog, config/custom-convert.inguzdsp,
+	  patches/build-libmad-mips-remove-constraint.patch,
+	  patches/build-portaudio-alsa-invalidsr.patch,
+	  patches/build-portaudio-asio-gcc4.patch,
+	  src/squeezeslave/squeezeslave.c: Added outstanding patch and
+	  config files.
+	  Increased revision to 328.
+
 2012-05-15 13:28  paddockd
 
 	* [r327] ChangeLog, makefile.linux24-i586-display,
