@@ -21,7 +21,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.1.4
 LIBVORBIS=tremor-r17503
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1608
+LIBPORTAUDIO=portaudio-r1834
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
@@ -47,7 +47,6 @@ all: $(SUPPORTLIBS) $(SQUEEZESLAVE)
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-alsa-badstate.patch
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-oldalsa.patch
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-enable-alsaerrhandler.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --without-jack --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
