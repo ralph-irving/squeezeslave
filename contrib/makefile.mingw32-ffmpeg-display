@@ -24,7 +24,7 @@ INCLUDE=-Ilib/dxsdk/$(OS)/include -Ilib/pthread/$(OS)/include -Ilib/getopt -Ilib
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.2
-LIBVORBIS=libvorbis-1.3.2
+LIBVORBIS=libvorbis-1.3.3
 LIBFLAC=flac-1.2.1
 LIBFFMPEG=ffmpeg-export-2011-01-14
 LIBPTHREAD=pthreads-w32-2-8-0

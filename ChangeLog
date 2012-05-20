@@ -1,3 +1,9 @@
+2012-05-20 19:53  paddockd
+
+	* [r329] ChangeLog, patches/build-portaudio-alsa-invalidsr.patch,
+	  src/squeezeslave/squeezeslave.c: Updated patches.
+	  Increased revision to 329.
+
 2012-05-15 14:06  paddockd
 
 	* [r328] ChangeLog, config/custom-convert.inguzdsp,

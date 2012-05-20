@@ -30,7 +30,7 @@ INCLUDE=-Ilib/getopt -Ilib/libportaudio/$(OS)/include -Ilib/portmixer/px_common 
 
 LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.2
-LIBVORBIS=libvorbis-1.3.2
+LIBVORBIS=libvorbis-1.3.3
 LIBFLAC=flac-1.2.1
 # LIBFFMPEG=ffmpeg-2011-11-05
 LIBFFMPEG=ffmpeg-2011-03-11
