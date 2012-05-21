@@ -19,13 +19,22 @@
  *
  */
 
+#if defined(TREMOR_DECODER) && defined(__BIG_ENDIAN__)
+#error "TREMOR_DECODER not supported on big endian systems."
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
+
+#ifdef TREMOR_DECODER
+#include <vorbis/ivorbisfile.h>
+#else
 #include <vorbis/vorbisfile.h>
+#endif /* TREMOR_DECODER */
 
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
@@ -79,7 +88,7 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 	
 	
 	do {
-#if defined(NO_FPU) /* Use Tremor fixed point vorbis decoder */
+#if defined(TREMOR_DECODER) /* Use Tremor fixed point vorbis decoder, little endian only */
 		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, &current_bitstream);
 #elif defined(__BIG_ENDIAN__)
 		bytes_read = ov_read(&audio->oggvorbis_file, buffer, AUDIO_CHUNK_SIZE, 1, 2, 1, &current_bitstream);

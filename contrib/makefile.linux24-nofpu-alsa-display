@@ -7,7 +7,7 @@ TAR=tar
 CP=cp
 SED=sed
 PATCH=patch
-CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DPORTAUDIO_DEV -DNO_FPU -Wall -O2 -march=i686
+CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DPORTAUDIO_DEV -DTREMOR_DECODER -Wall -O2 -march=i686
 LDFLAGS=-s
 
 # Comment out these two lines to remove display support
@@ -74,7 +74,6 @@ lib/vorbis/$(OS)/lib/libvorbisidec.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
 	${CP} -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/.libs/libvorbisidec.a lib/vorbis/$(OS)/lib
 	${CP} -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/{ivorbiscodec.h,ivorbisfile.h,config_types.h} lib/vorbis/$(OS)/include/vorbis
-	cd lib/vorbis/$(OS)/include/vorbis; ln -s ivorbisfile.h vorbisfile.h
 
 lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
@@ -112,7 +111,7 @@ realclean: clean
 	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
 	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
 	-@rm -f lib/vorbis/$(OS)/lib/libvorbisidec.a
-	-@rm -f lib/vorbis/$(OS)/include/vorbis/{vorbisfile.h,ivorbiscodec.h,ivorbisfile.h,config_types.h}
+	-@rm -f lib/vorbis/$(OS)/include/vorbis/{ivorbiscodec.h,ivorbisfile.h,config_types.h}
 	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
 	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
 	-@rm -f lib/libportaudio/$(OS)/lib/libportaudio.a lib/libportaudio/$(OS)/include/portaudio.h

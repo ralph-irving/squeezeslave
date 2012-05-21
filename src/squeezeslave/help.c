@@ -413,8 +413,8 @@ void print_version(void) {
 #ifdef DAEMONIZE
 	fprintf(stdout, "daemon ");
 #endif
-#ifdef NO_FPU
-	fprintf(stdout, "nofpu ");
+#ifdef TREMOR_DECODER
+	fprintf(stdout, "tremor ");
 #endif
 #ifdef AAC_DECODER
 	fprintf(stdout, "aac ");

@@ -1,3 +1,10 @@
+2012-05-21 14:00  paddockd
+
+	* [r333] ChangeLog, makefile.windows-display,
+	  src/squeezeslave/squeezeslave.c: Moved windows build to fixed
+	  point tremor vorbis decoder.
+	  Increased revision to 333.
+
 2012-05-21 11:39  paddockd
 
 	* [r332] ChangeLog, contrib/makefile.linux24-nofpu-alsa-display,
