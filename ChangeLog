@@ -1,3 +1,18 @@
+2012-05-21 14:27  paddockd
+
+	* [r334] ChangeLog, contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-mipsel-nofpu-oss,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  makefile.linux22-empeg, makefile.linux24-i586-display,
+	  makefile.linux26-armel-alsa-display,
+	  makefile.linux26-armel-display, makefile.windows-display,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Renamed
+	  NO_FPU compile option to TREMOR_DECODER. The fixed point decoder
+	  is not supported on big endian systems.
+	  Increased revision to 334.
+
 2012-05-21 14:00  paddockd
 
 	* [r333] ChangeLog, makefile.windows-display,

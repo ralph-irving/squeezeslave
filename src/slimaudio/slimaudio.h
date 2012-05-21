@@ -32,8 +32,14 @@
 
 #include <mad.h>
 #include <FLAC/stream_decoder.h>
+
 #define OV_EXCLUDE_STATIC_CALLBACKS
+
+#ifdef TREMOR_DECODER
+#include <vorbis/ivorbisfile.h>
+#else
 #include <vorbis/vorbisfile.h>
+#endif /* TREMOR_DECODER */
 
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio_buffer.h"
