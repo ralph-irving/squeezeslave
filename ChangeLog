@@ -1,3 +1,13 @@
+2012-05-21 11:39  paddockd
+
+	* [r332] ChangeLog, contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-mipsel-nofpu-oss,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  makefile.linux22-empeg, src/squeezeslave/squeezeslave.c: Updated
+	  remaining nofpu builds to tremor-r18153 and libogg-1.2.2.
+	  Increased revision to 332.
+
 2012-05-20 21:27  paddockd
 
 	* [r331] contrib/makefile.freebsd-i386,
