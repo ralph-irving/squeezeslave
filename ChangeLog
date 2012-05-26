@@ -1,3 +1,10 @@
+2012-05-21 17:24  paddockd
+
+	* [r336] ChangeLog, contrib/makefile.linux24-gcc43-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-oss-padev,
+	  src/squeezeslave/squeezeslave.c: Add new contrib makefiles.
+	  Increased revision to 336.
+
 2012-05-21 15:30  paddockd
 
 	* [r335] ChangeLog, src/slimaudio/slimaudio.h,
@@ -55,8 +62,8 @@
 	  makefile.windows-display, sources/portaudio-r1834.tar.gz,
 	  src/squeezeslave/squeezeslave.c: Updated libportaudio to r1834 to
 	  fix invalid sample rate error on device open for inexactly
-	  clocked sound cards.
-	  Allows a 1% deviation from 44100Hz rate.
+	  clocked sound cards with up to a 1% deviation from 44100Hz sample
+	  rate.
 	  Removed patch to allow portaudio to compile with older ALSA
 	  versions as r1834 includes the fix.
 	  Increased revision to 331.

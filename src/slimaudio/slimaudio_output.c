@@ -813,8 +813,8 @@ void slimaudio_output_unpause(slimaudio_t *audio) {
 //    frontside bus bandwidth than if we were performing this task as
 //    part of, for example, the buffer copy.  But this would imply
 //    changing audio buffers so they are format-aware.
-static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer,
-				  int nbFrames) {
+static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer, int nbFrames)
+{
 	if (audio->prev_volume == -1.0) {
 		// A value of -1 indicates it's the first time we pass here.
 		// Copy volume into prev_volume to start immediatly at the right
