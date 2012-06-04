@@ -29,6 +29,10 @@ extern "C" {
 #undef	true
 #undef	false
 
+#ifndef _Bool
+#define _Bool signed char
+#endif /* _Bool */
+
 #define	bool	_Bool
 #define	true	1
 #define	false	0

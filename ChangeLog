@@ -1,3 +1,9 @@
+2012-06-04 14:43  paddockd
+
+	* [r339] ChangeLog, src/squeezeslave/squeezeslave.c: Moved
+	  variables to top of main() for gcc 2.95.3 support.
+	  Increased revision to 339.
+
 2012-06-04 14:16  paddockd
 
 	* [r338] lib/portaudio-empeg/pa_common/pa_convert.c,
