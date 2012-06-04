@@ -47,24 +47,28 @@ typedef union {
 	struct {
 		u16_t length;
 		char cmd[4];		
-		u8_t command;			// [1]	's' = start, 'p' = pause, 'u' = unpause, 'q' = stop, 't' = status
-		u8_t autostart;			// [1]	'0' = don't auto-start, '1' = auto-start, '2' = direct streaming
-		u8_t mode;				// [1]	'm' = mpeg bitstream, 'p' = PCM
-		u8_t pcm_sample_size;	// [1]	'0' = 8, '1' = 16, '2' = 24, '3' = 32
-		u8_t pcm_sample_rate;	// [1]	'0' = 11kHz, '1' = 22, '2' = 32, '3' = 44.1, '4' = 48
-		u8_t pcm_channels;		// [1]	'1' = mono, '2' = stereo
-		u8_t pcm_endianness;	// [1]	'0' = big, '1' = little
-		u8_t threshold;			// [1]	Kb of input buffer data before we autostart or notify the server of buffer fullness
-		u8_t spdif_enable;		// [1]  '0' = auto, '1' = on, '2' = off
-		u8_t transition_period;	// [1]	seconds over which transition should happen
-		u8_t transition_type;	// [1]	'0' = none, '1' = crossfade, '2' = fade in, '3' = fade out, '4' fade in & fade out
-		u8_t flags;		// [1]	0x80 - loop infinitely, 0x40 - stream without restarting decoder, 0x01 - polarity inversion left. 0x02 - polarity inversion right 
-		u8_t output_threshold;		// [1]	amount of output buffer data before playback starts, in tenths of second
-		u8_t reserved;			// [1]	reserved
-		u32_t replay_gain;		// [4]	replay gain in 16.16 fixed point, 0 means none
-		u16_t server_port;		// [2]	server's port
-		u32_t server_ip;		// [4]	server's IP		
-		unsigned char http_hdr[1024];	// HTTP headers from here
+		u8_t command;		/* [1]	's' = start, 'p' = pause, 'u' = unpause, 'q' = stop, 't' = status */
+		u8_t autostart;		/* [1]	'0' = don't auto-start, '1' = auto-start, '2' = direct streaming */
+		u8_t mode;		/* [1]	'm' = mpeg bitstream, 'p' = PCM */
+		u8_t pcm_sample_size;	/* [1]	'0' = 8, '1' = 16, '2' = 24, '3' = 32 */
+		u8_t pcm_sample_rate;	/* [1]	'0' = 11kHz, '1' = 22, '2' = 32, '3' = 44.1, '4' = 48 */
+		u8_t pcm_channels;	/* [1]	'1' = mono, '2' = stereo */
+		u8_t pcm_endianness;	/* [1]	'0' = big, '1' = little */
+		u8_t threshold;		/* [1]	Kb of input buffer data before we autostart or */
+	       				/*	notify the server of buffer fullness */
+		u8_t spdif_enable;	/* [1]  '0' = auto, '1' = on, '2' = off */
+		u8_t transition_period;	/* [1]	seconds over which transition should happen */
+		u8_t transition_type;	/* [1]	'0' = none, '1' = crossfade, '2' = fade in, '3' = fade out, */
+	       				/*	'4' fade in & fade out */
+		u8_t flags;		/* [1]	0x80 - loop infinitely, 0x40 - stream without restarting decoder, */
+	       				/*	0x01 - polarity inversion left. 0x02 - polarity inversion right */
+		u8_t output_threshold;	/* [1]	amount of output buffer data before playback starts, */
+					/*	in tenths of second */
+		u8_t reserved;		/* [1]	reserved */
+		u32_t replay_gain;	/* [4]	replay gain in 16.16 fixed point, 0 means none */
+		u16_t server_port;	/* [2]	server's port */
+		u32_t server_ip;	/* [4]	server's IP */
+		unsigned char http_hdr[1024];	/* HTTP headers from here */
 	} strm;
 	
 	struct {
@@ -81,7 +85,7 @@ typedef union {
 	struct {
 		u16_t length;
 		char cmd[4];
-		u32_t version; // Version encoded in 3 bytes.  E.g. 6.5.4 is 0x00060504
+		u32_t version; /* Version encoded in 3 bytes.  E.g. 6.5.4 is 0x00060504 */
 	} vers;
 } slimproto_msg_t;
 
@@ -98,19 +102,19 @@ typedef int (slimproto_connect_callback_t)(slimproto_t *p, bool isConnected, voi
 struct slimproto {
 	slimproto_state_t state;
 	
-	int sockfd; 				// Squeezebox Server socket
-	struct sockaddr_in serv_addr;		// Squeezebox Server address
+	int sockfd; 				/* Squeezebox Server socket */
+	struct sockaddr_in serv_addr;		/* Squeezebox Server address */
 	
 	struct timeval epoch;
 	
-	int num_connect_callbacks;		// cmd callbacks
+	int num_connect_callbacks;		/* cmd callbacks */
 	struct {
 		char *cmd;
 		slimproto_connect_callback_t *callback;
 		void *user_data;
 	} connect_callbacks[20];
 	
-	int num_command_callbacks;		// cmd callbacks
+	int num_command_callbacks;		/* cmd callbacks */
 	struct {
 		char *cmd;
 		slimproto_command_callback_t *callback;
@@ -168,21 +172,23 @@ int slimproto_configure_socket(int sockfd, int socktimeout);
 
 int send_message(int sockfd, unsigned char* msg, size_t msglen, int msgflags);
 
-// This function configures the socket whose fd is passed in, in order
-// to disable the raise of SIGPIPE when writing to a closed socket.
-//
-// Depending on the current platform, this may do nothing, so it is
-// important that the flags passed to 'send' (when used directly) also
-// include the flags returned by slimproto_get_socketsendflags (see
-// below).  Note that for certain platforms there is no other way than
-// to completely ignore SIGPIPE, which causes the whole process to
-// ignore it.
+/* This function configures the socket whose fd is passed in, in order
+** to disable the raise of SIGPIPE when writing to a closed socket.
+**
+** Depending on the current platform, this may do nothing, so it is
+** important that the flags passed to 'send' (when used directly) also
+** include the flags returned by slimproto_get_socketsendflags (see
+** below).  Note that for certain platforms there is no other way than
+** to completely ignore SIGPIPE, which causes the whole process to
+** ignore it.
+*/
 int slimproto_configure_socket_sigpipe(int sockfd);
 
-// This function returns the flags to be passed to the 'send' system
-// call in order to disable the raise of SIGPIPE in case the socket is
-// already closed.  We prefer to receive a EPIPE error, which can be
-// handled like any other error instead of exiting the process.
+/* This function returns the flags to be passed to the 'send' system
+** call in order to disable the raise of SIGPIPE in case the socket is
+** already closed.  We prefer to receive a EPIPE error, which can be
+** handled like any other error instead of exiting the process.
+*/
 int slimproto_get_socketsendflags();
 
 #define SLIMPROTO_MSG_SIZE	4096
@@ -193,4 +199,4 @@ int slimproto_get_socketsendflags();
 #define DSCO_UNREACHABLE 		3
 #define DSCO_TIMEOUT 			4
 
-#endif //_SLIMPROTO_H_
+#endif /*_SLIMPROTO_H_ */

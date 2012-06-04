@@ -54,7 +54,7 @@ static void PaConvert_Float32_Int16_ClipDither(
 	int i;
 	for( i=0; i<numSamples; i++ )
 	{
-    // use smaller scaler to prevent overflow when we add the dither
+    /* use smaller scaler to prevent overflow when we add the dither */
         float dither  = PaConvert_TriangularDither() * PA_DITHER_SCALE;
         float dithered = (*sourceBuffer * (32766.0f)) + dither;
         long samp = (long) dithered;
@@ -74,7 +74,7 @@ static void PaConvert_Float32_Int16_Dither(
 	int i;
 	for( i=0; i<numSamples; i++ )
 	{
-    // use smaller scaler to prevent overflow when we add the dither
+    /* use smaller scaler to prevent overflow when we add the dither */
         float dither  = PaConvert_TriangularDither() * PA_DITHER_SCALE;
         float dithered = (*sourceBuffer * (32766.0f)) + dither;
         *targetBuffer = (short) dithered;
@@ -143,7 +143,7 @@ static void PaConvert_Float32_Int8_ClipDither(
 	int i;
 	for( i=0; i<numSamples; i++ )
 	{
-    // use smaller scaler to prevent overflow when we add the dither
+    /* use smaller scaler to prevent overflow when we add the dither */
         float dither  = PaConvert_TriangularDither() * PA_DITHER_SCALE;
         float dithered = (*sourceBuffer * (126.0f)) + dither;
         long samp = (long) dithered;
@@ -163,8 +163,8 @@ static void PaConvert_Float32_Int8_Dither(
 	int i;
 	for( i=0; i<numSamples; i++ )
 	{
-    // use smaller scaler to prevent overflow when we add the dither
-        float dither  = PaConvert_TriangularDither() * PA_DITHER_SCALE;  //FIXME
+    /* use smaller scaler to prevent overflow when we add the dither */
+        float dither  = PaConvert_TriangularDither() * PA_DITHER_SCALE;  /* FIXME */
         float dithered = (*sourceBuffer * (126.0f)) + dither;
         long samp = (long) dithered;
         *targetBuffer = (char) samp;
@@ -456,7 +456,7 @@ long PaConvert_Process( internalPortAudioStream   *past,
                      past->past_UserData );
 
     /* Advance frame counter for timestamp. */
-    past->past_FrameCount += past->past_FramesPerUserBuffer; // FIXME - should this be in here?
+    past->past_FrameCount += past->past_FramesPerUserBuffer; /* FIXME - should this be in here? */
 
     /* Convert to native format if necessary. */
     if( (past->past_OutputConversionProc != NULL ) && (outputBuffer != NULL) )

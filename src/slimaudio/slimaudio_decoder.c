@@ -191,7 +191,8 @@ static void *decoder_thread(void *ptr) {
 				{
 					decoder_failed = false;
 
-					slimaudio_stat(audio, "STMn", (u32_t) 0); // decoder does not support format
+					/* decoder does not support format */
+					slimaudio_stat(audio, "STMn", (u32_t) 0);
 
 					DEBUGF("decoder_thread: decoder %c failed\n", audio->decoder_mode);
 				}
@@ -204,23 +205,23 @@ static void *decoder_thread(void *ptr) {
 				DEBUGF("decoder_thread: STREAM_PLAYING type %c\n", audio->decoder_mode);
 
 				switch (audio->decoder_mode) {
-				case 'm': // mp3
+				case 'm': /* mp3 */
 					slimaudio_decoder_mad_process(audio);
 					break;
 					
-				case 'f': // flac
+				case 'f': /* flac */
 					slimaudio_decoder_flac_process(audio);
 					break;
 					
-				case 'o': // ogg vorbis
+				case 'o': /* ogg vorbis */
 					slimaudio_decoder_vorbis_process(audio);
 					break;
 
-				case 'p': // wav
+				case 'p': /* wav */
 					slimaudio_decoder_pcm_process(audio);
 					break;
 #ifdef AAC_DECODER					
-				case 'a': // aac
+				case 'a': /* aac */
 					if ( slimaudio_decoder_aac_process(audio) < 0 )
 					{
 						decoder_failed = true ;
@@ -229,7 +230,7 @@ static void *decoder_thread(void *ptr) {
 					break;
 #endif					
 #ifdef WMA_DECODER					
-				case 'w': // wma
+				case 'w': /* wma */
 					if ( slimaudio_decoder_wma_process(audio) < 0 )
 					{
 						decoder_failed = true ;
@@ -239,7 +240,8 @@ static void *decoder_thread(void *ptr) {
 #endif					
 				default:
 					fprintf(stderr, "Cannot decode unknown format: %c\n", audio->decoder_mode);
-					slimaudio_stat(audio, "STMn", (u32_t) 0); // decoder does not support format
+					/* decoder does not support format */
+					slimaudio_stat(audio, "STMn", (u32_t) 0);
 					break;
 				}
 

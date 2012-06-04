@@ -78,4 +78,4 @@ slimaudio_buffer_status slimaudio_buffer_read(slimaudio_buffer_t *buf, char *dat
 
 int slimaudio_buffer_available(slimaudio_buffer_t *buf);
 
-#endif //_SLIMAUDIO_BUFFER_H_
+#endif /*_SLIMAUDIO_BUFFER_H_ */

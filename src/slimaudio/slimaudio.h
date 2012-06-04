@@ -83,12 +83,12 @@ typedef enum { QUIT=0, PLAY, BUFFERING, PLAYING, PAUSE, PAUSED, STOP, STOPPED } 
 typedef enum { VOLUME_NONE, VOLUME_SOFTWARE, VOLUME_DRIVER } slimaudio_volume_t;
 
 typedef struct {
-	slimproto_t *proto;				// slimproto connection
+	slimproto_t *proto;				/* slimproto connection */
 	
-	slimaudio_buffer_t *decoder_buffer;		// decoder buffer
-	slimaudio_buffer_t *output_buffer;		// output buffer
+	slimaudio_buffer_t *decoder_buffer;		/* decoder buffer */
+	slimaudio_buffer_t *output_buffer;		/* output buffer */
 	
-	// http state
+	/* http state */
 	pthread_t http_thread;
 	pthread_mutex_t http_mutex;
 	pthread_cond_t http_cond;
@@ -104,7 +104,7 @@ typedef struct {
 	float replay_gain;
 	float start_replay_gain;
 
-	// decode state
+	/* decode state */
 	pthread_t decoder_thread;
 	pthread_mutex_t decoder_mutex;
 	pthread_cond_t decoder_cond;
@@ -114,7 +114,7 @@ typedef struct {
 	u8_t decoder_endianness;
 	bool decoder_end_of_stream;
 		
-	// output state
+	/* output state */
 	pthread_t output_thread;
 	pthread_mutex_t output_mutex;
 	pthread_cond_t output_cond;
@@ -149,25 +149,25 @@ typedef struct {
 
 	u32_t decode_num_tracks_started;
 
-	// mad decoder
+	/* mad decoder */
 	struct mad_decoder mad_decoder;
 	char *decoder_data;
 	
-	// flac decoder
+	/* flac decoder */
 	FLAC__StreamDecoder *flac_decoder;
 
-	// ogg decoder	
+	/* ogg decoder */
 	OggVorbis_File oggvorbis_file;
 
 #ifdef WMA_DECODER	
-	// WMA decoder
+	/* WMA decoder */
 	u8_t wma_chunking;
 	u8_t wma_playstream;
 	u8_t wma_metadatastream;
 #endif
 
 #ifdef AAC_DECODER
-	// AAC decoder
+	/* AAC decoder */
 	u8_t aac_format;
 #endif
 
@@ -183,21 +183,24 @@ void slimaudio_destroy(slimaudio_t *audio);
 int slimaudio_open(slimaudio_t *audio);
 int slimaudio_close(slimaudio_t *audio);
 int slimaudio_stat(slimaudio_t *, const char *, u32_t);
-// Sets the interval between keepalive signals sent to the server
-// while playback is stopped.  Defaults to -1, which means auto-select
-// based on server version.
+/* Sets the interval between keepalive signals sent to the server
+** while playback is stopped.  Defaults to -1, which means auto-select
+** based on server version.
+*/
 void slimaudio_set_keepalive_interval(slimaudio_t *audio, int seconds);
 
-// Enables/disables volume control from Squeezebox Server.  Off means the
-// volume will not be touched by squeezeslave.  This must be called
-// before alimaudio_open.
+/* Enables/disables volume control from Squeezebox Server.  Off means the
+** volume will not be touched by squeezeslave.  This must be called
+** before alimaudio_open.
+*/
 void slimaudio_set_volume_control(slimaudio_t *audio, slimaudio_volume_t vol);
 
-// Sets an output silence pre-delay to help avoid DACs that are slow
-// to lock to drop the first few audio samples.  The amplitude, if
-// greater than 0, sets the amplitude of a high-frequency tone used
-// as pre-delay filler to wake-up DACS that absolutely require
-// non-silent samples.
+/* Sets an output silence pre-delay to help avoid DACs that are slow
+** to lock to drop the first few audio samples.  The amplitude, if
+** greater than 0, sets the amplitude of a high-frequency tone used
+** as pre-delay filler to wake-up DACS that absolutely require
+** non-silent samples.
+*/
 void slimaudio_set_output_predelay(slimaudio_t *audio, unsigned int msec, unsigned int amplitude);
 
 int slimaudio_http_open(slimaudio_t *a);

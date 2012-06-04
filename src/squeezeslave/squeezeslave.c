@@ -39,12 +39,12 @@
 
 #define INET_FQDNSTRLEN	(256)
 
-// Retry support
+/* Retry support */
 bool retry_connection = false;
 bool output_change = false;
 
 #ifdef PORTAUDIO_DEV
-// User suggested latency
+/* User suggested latency */
 bool modify_latency = false;
 unsigned int user_latency = 0L;
 #endif
@@ -52,7 +52,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 337;
+const int revision = 338;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -91,13 +91,13 @@ int lcd_fd = 0;
 struct sockaddr_in *lcd_addr;
 #endif
 
-// There is not enough support in Windows+mingw to use signals in the
-// implementation of the 'restart' feature.  So we support two implementations:
-// One that is based on signals and is more responsive when a restart is 
-// needed (USE_SIGNALS_FOR_RESTART defined).
-// One that polls the restart flag once in a while: less responsive but
-// portable (USE_SIGNALS_FOR_RESTART not defined).
-
+/* There is not enough support in Windows+mingw to use signals in the
+** implementation of the 'restart' feature.  So we support two implementations:
+** One that is based on signals and is more responsive when a restart is 
+** needed (USE_SIGNALS_FOR_RESTART defined).
+** One that polls the restart flag once in a while: less responsive but
+** portable (USE_SIGNALS_FOR_RESTART not defined).
+*/
 #ifdef USE_SIGNALS_FOR_RESTART
 
 static void install_restart_handler() {
@@ -128,7 +128,7 @@ static void send_restart_signal() {
 
 #ifdef INTERACTIVE
 
-// Used to toggle IR/LCD support on and off
+/* Used to toggle IR/LCD support on and off */
 static void install_toggle_handler() {
 #ifndef __WIN32__
 	signal(SIGUSR2, &toggle_handler);
@@ -136,14 +136,16 @@ static void install_toggle_handler() {
 }
 #endif /* INTERACTIVE */
 
-// Handles a signal coming from outside this process and that is meant to 
-// terminate the program cleanly.
+/* Handles a signal coming from outside this process and that is meant to 
+** terminate the program cleanly.
+*/
 void exit_handler(int signal_number) {
 	signal_exit_flag = true;
 }
 
-// Handles a signal coming from inside this process and that causes a restart
-// of the Squeezebox Server connection.
+/* Handles a signal coming from inside this process and that causes a restart
+** of the Squeezebox Server connection.
+*/
 void restart_handler(int signal_number) {
         if (retry_connection) {
 		signal_restart_flag = true;
@@ -152,7 +154,7 @@ void restart_handler(int signal_number) {
 	}
 }
 
-// Called by the library when the connection is either established or broken.
+/* Called by the library when the connection is either established or broken. */
 int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 #ifdef INTERACTIVE
 	unsigned char msg[SLIMPROTO_MSG_SIZE];
@@ -176,9 +178,10 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 #endif
 	}
 	else {
-		// Send the restart signal, which calls restart_handler to tell
-		// the main thread to go back waiting for Squeezebox Server to be
-		// available.
+		/* Send the restart signal, which calls restart_handler to tell
+		** the main thread to go back waiting for Squeezebox Server to be
+		** available.
+		*/
 		if (!signal_exit_flag)
 		    send_restart_signal();
 	}
@@ -409,21 +412,21 @@ int main(int argc, char *argv[]) {
 #endif
 			break;
 
-// From server/Slim/Networking/Slimproto.pm from 7.5r28596
-// squeezebox(2)
-// softsqueeze(3)
-// squeezebox2(4)
-// transporter(5)
-// softsqueeze3(6)
-// receiver(7)
-// squeezeslave(8)
-// controller(9)
-// boom(10)
-// softboom(11)
-// squeezeplay(12)
-// radio(13)
-// touch(14)
-
+/* From server/Slim/Networking/Slimproto.pm from 7.5r28596
+** squeezebox(2)
+** softsqueeze(3)
+** squeezebox2(4)
+** transporter(5)
+** softsqueeze3(6)
+** receiver(7)
+** squeezeslave(8)
+** controller(9)
+** boom(10)
+** softboom(11)
+** squeezeplay(12)
+** radio(13)
+** touch(14)
+*/
 		case 'e':
 			player_type = strtoul(optarg, NULL, 0);
 			if ( (player_type < 2) || (player_type > 14) )
@@ -649,7 +652,7 @@ int main(int argc, char *argv[]) {
 	install_restart_handler();
 
 #ifdef INTERACTIVE
-	install_toggle_handler();  //SIGUSR2 to toggle IR/LCD on and off
+	install_toggle_handler();  /*SIGUSR2 to toggle IR/LCD on and off */
 #endif
 	if (slimproto_init(&slimproto) < 0) {
 		fprintf(stderr, "Failed to initialize slimproto\n");
@@ -674,7 +677,7 @@ int main(int argc, char *argv[]) {
 	slimproto_add_connect_callback(&slimproto, connect_callback, macaddress);
 
 #ifdef INTERACTIVE
-	// Process VFD (display) commands
+	/* Process VFD (display) commands */
 	if ( using_curses || using_lirc || use_lcdd_menu )
 		slimproto_add_command_callback(&slimproto, "vfdc", vfd_callback, macaddress);
 #endif
@@ -724,8 +727,9 @@ int main(int argc, char *argv[]) {
 		daemonize(logfile);
 	}
 #endif
-	// When retry_connection is true, retry connecting to Squeezebox Server 
-	// until we succeed, unless the signal handler tells us to give up.
+	/* When retry_connection is true, retry connecting to Squeezebox Server 
+	** until we succeed, unless the signal handler tells us to give up.
+	*/
 	do {
 		if (signal_restart_flag) { 
 #ifdef INTERACTIVE

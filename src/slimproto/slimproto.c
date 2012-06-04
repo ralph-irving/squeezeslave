@@ -187,7 +187,7 @@ void slimproto_add_command_callback(slimproto_t *p, const char *cmd, slimproto_c
 
 	i = p->num_command_callbacks;
 	p->command_callbacks[i].cmd = strdup(cmd);
-	p->command_callbacks[i].callback = (void *) callback; // FIXME
+	p->command_callbacks[i].callback = (void *) callback; /* FIXME */
 	p->command_callbacks[i].user_data = user_data;
 	p->num_command_callbacks++;
 
@@ -199,7 +199,7 @@ void slimproto_add_connect_callback(slimproto_t *p, slimproto_connect_callback_t
 	pthread_mutex_lock(&p->slimproto_mutex);				
 
 	i = p->num_connect_callbacks;
-	p->connect_callbacks[i].callback = (void *) callback; // FIXME
+	p->connect_callbacks[i].callback = (void *) callback; /* FIXME */
 	p->connect_callbacks[i].user_data = user_data;
 	p->num_connect_callbacks++;
 
@@ -666,9 +666,10 @@ int slimproto_connect(slimproto_t *p, const char *server_addr, int port) {
 
 	pthread_cond_broadcast(&p->slimproto_cond);
 	
-	// Wait for confirmation that the connection opens correctly.  This
-	// will fail, for example, if Squeezebox Server is not running when the
-	// connection attempt happens.
+	/* Wait for confirmation that the connection opens correctly.  This
+	** will fail, for example, if Squeezebox Server is not running when the
+	** connection attempt happens.
+	*/
 	while (p->state != PROTO_CONNECTED) {
 		pthread_cond_wait(&p->slimproto_cond, &p->slimproto_mutex);
 		if (p->state == PROTO_CLOSED) {
@@ -859,8 +860,9 @@ void slimproto_parse_command(const unsigned char *buf, int buf_len, slimproto_ms
 		memcpy(msg->vers.cmd, buf+2, 4);
 
 		val =  0;
-		// This assumes the version format is a.b.c, where
-		// a, b, c are numbers of at most 2 digits.
+		/* This assumes the version format is a.b.c, where
+		** a, b, c are numbers of at most 2 digits.
+		*/
 		for( i = 6; i <= buf_len; ++i ) {
 			if(buf[i]=='.' || i == buf_len) {
 				msg->vers.version <<= 8;
@@ -1014,15 +1016,15 @@ u16_t error_code;
 	packN4(msg, 19, decoder_buffer_fullness);
 	packN4(msg, 23, rbytes_high );
 	packN4(msg, 27, rbytes_low );
-	packN2(msg, 31, 65534); // signal strength
-	client_timestamp = slimproto_set_jiffies(p, msg, 33); // Keep both values close, not used
+	packN2(msg, 31, 65534); 				/* signal strength */
+	client_timestamp = slimproto_set_jiffies(p, msg, 33);	/* Keep both values close, not used */
 	packN4(msg, 37, output_buffer_size);
 	packN4(msg, 41, output_buffer_fullness);
 	packN4(msg, 45, elapsed_seconds);
-	packN2(msg, 49, 0); // voltage
+	packN2(msg, 49, 0);					/* voltage */
 	packN4(msg, 51, elapsed_milliseconds);
 	packN4(msg, 55, server_timestamp);
-	packN2(msg, 59, 0); // error code
+	packN2(msg, 59, 0);					/* error code */
 
 	DEBUGF("proto_stat: code=%4.4s decoder_buffer_size=%u decoder_buffer_fullness=%u ",
 		code, decoder_buffer_size, decoder_buffer_fullness);
@@ -1106,31 +1108,34 @@ int slimproto_send(slimproto_t *p, unsigned char *msg) {
 
 int slimproto_configure_socket_sigpipe(int fd) {
 #if defined(MSG_NOSIGNAL)
-	// This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
-	// others).  So we'll let the send() call deal with the SIGPIPE
-	// avoidance.
+	/* This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
+	** others).  So we'll let the send() call deal with the SIGPIPE
+	** avoidance.
 	DEBUGF("proto_sigpipe: MSG_NOSIGNAL\n");
 	return 0;
 #elif defined(SO_NOSIGPIPE)
-	// This platform doesn't have MSG_NOSIGNAL but has a similar
-	// configuration option that lets one change the SIGPIPE behavior for
-	// the socket instead of for each send() call.  BSD-based OSes are said
-	// to have this flag, including OSX and Solaris.
+	/* This platform doesn't have MSG_NOSIGNAL but has a similar
+	** configuration option that lets one change the SIGPIPE behavior for
+	** the socket instead of for each send() call.  BSD-based OSes are said
+	** to have this flag, including OSX and Solaris.
+	*/
 	DEBUGF("proto_sigpipe: SO_NOSIGPIPE\n");
 	int enable = 1;
 	return setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, (void*)&enable, 
 			  sizeof(enable));
 #elif !defined(SIGPIPE)
-	// Some platforms, such as win32+mingw, don't even have SIGPIPE, so
-	// there is nothing to deal with in terms of signals here.
+	/* Some platforms, such as win32+mingw, don't even have SIGPIPE, so
+	** there is nothing to deal with in terms of signals here.
+	*/
 	DEBUGF("proto_sigpipe: No SIGPIPE\n");
 	return 0;
 #else
-	// This platform has no mechanism to prevent SIGPIPE from being emitted
-	// when writing to a closed socket.  We have no other way than
-	// installing a no-op signal handler for SIGPIPE.  That's too bad
-	// because the whole process looses the possibility of receiving this
-	// signal, should they wish to.
+	/* This platform has no mechanism to prevent SIGPIPE from being emitted
+	** when writing to a closed socket.  We have no other way than
+	** installing a no-op signal handler for SIGPIPE.  That's too bad
+	** because the whole process looses the possibility of receiving this
+	** signal, should they wish to.
+	*/
 	static bool first_time = true;
 	if (first_time) {
 		first_time = false;
@@ -1144,9 +1149,10 @@ int slimproto_configure_socket_sigpipe(int fd) {
 int slimproto_get_socketsendflags() {
 
 #ifdef MSG_NOSIGNAL
-	// This platorm defines MSG_NOSIGNAL, so we'll give this flag for the
-	// caller to pass to the send() system call, thus avoiding receiving
-	// SIGPIPE if the socket has been closed by the other end.
+	/* This platorm defines MSG_NOSIGNAL, so we'll give this flag for the
+	** caller to pass to the send() system call, thus avoiding receiving
+	** SIGPIPE if the socket has been closed by the other end.
+	*/
 	return MSG_NOSIGNAL;
 #else
 	return 0;

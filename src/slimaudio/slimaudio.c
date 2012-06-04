@@ -94,7 +94,7 @@ int slimaudio_init(slimaudio_t *audio, slimproto_t *proto,
  * Frees slimaudio resources.
  */
 void slimaudio_destroy(slimaudio_t *audio) {
-	// FIXME remove slimproto callback		
+	/* FIXME remove slimproto callback */
 	slimaudio_output_destroy(audio);	
 	slimaudio_buffer_close(audio->output_buffer);
 	slimaudio_buffer_free(audio->output_buffer);
@@ -238,8 +238,9 @@ static int strm_callback(slimproto_t *proto, const unsigned char *buf, int buf_l
 	return 0;
 }
 
-// Called by slimproto when the "vers" command is received from the
-// server to signal the version.
+/* Called by slimproto when the "vers" command is received from the
+** server to signal the version.
+*/
 static int vers_callback(slimproto_t *p, const unsigned char *buf,
 			 int buf_len, void *user_data) {
 	slimproto_msg_t msg;
@@ -247,7 +248,7 @@ static int vers_callback(slimproto_t *p, const unsigned char *buf,
 	slimaudio_t* const audio = (slimaudio_t*)user_data;
 
 	if (audio->keepalive_interval != -1) {
-		// Keepalive interval has been set explicitly, don't overwrite.
+		/* Keepalive interval has been set explicitly, don't overwrite. */
 		DEBUGF("Explicit keepalive interval: %d s.  "
 		       "Will not override.\n", audio->keepalive_interval);
 		return 0;
@@ -257,9 +258,10 @@ static int vers_callback(slimproto_t *p, const unsigned char *buf,
 	DEBUGF("Server version: %x\n", msg.vers.version);
 
 	if ((msg.vers.version >= 0x00060500) && (msg.vers.version < 0x00070200)) {
-		// 6.5.0<->7.2.0 Squeezebox Server needs a player to send
-		// a keepalive message every 10 seconds or so before it declares
-		// it down.
+		/* 6.5.0<->7.2.0 Squeezebox Server needs a player to send
+		** a keepalive message every 10 seconds or so before it declares
+		** it down.
+		*/
 		slimaudio_set_keepalive_interval(audio, 10);
 		DEBUGF("Using 6.5.x default keepalive interval: %d s.\n", 
 		       audio->keepalive_interval);

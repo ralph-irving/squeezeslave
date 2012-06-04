@@ -27,7 +27,7 @@ extern int linelen;
 
 struct lirc_config *lircconfig;
 
-// For curses display
+/* For curses display */
 SCREEN *term = NULL;
 WINDOW *slimwin = NULL;
 WINDOW *errwin = NULL;
@@ -35,18 +35,18 @@ WINDOW *msgwin = NULL;
 
 extern int using_curses;
 
-// For LCDd support
+/* For LCDd support */
 extern int lcd_fd; 
 extern struct sockaddr_in *lcd_addr;
 extern bool use_lcdd_menu;
 extern bool lcdd_compat;
 
-// For lircd support
+/* For lircd support */
 extern bool using_lirc;
 extern int lirc_fd;
 extern char * lircrc;
 
-// Close LCDd connection (if open)
+/* Close LCDd connection (if open) */
 void close_lcd(void) {
    if (use_lcdd_menu) {
       free (lcd_addr);
@@ -55,7 +55,7 @@ void close_lcd(void) {
    }
 }
 
-// Close lircd connection (if open)
+/* Close lircd connection (if open) */
 void close_lirc(void){
    if (using_lirc) {
       lirc_freeconfig(lircconfig);
@@ -64,7 +64,7 @@ void close_lirc(void){
    }
 }
 
-// Set fd to non-blocking mode
+/* Set fd to non-blocking mode */
 int setNonblocking(int fd) {
 #ifdef __WIN32__
     int iretcode;
@@ -86,7 +86,7 @@ int setNonblocking(int fd) {
 #endif
 } 
 
-// Read response from LCDd and update our line length is one is supplied
+/* Read response from LCDd and update our line length is one is supplied */
 bool read_lcd(void) {
   char buf[1024];
   int res;
@@ -95,7 +95,7 @@ bool read_lcd(void) {
 
   res = recv(lcd_fd, buf, 1024, MSG_DONTWAIT);
   if (res>9) {
-     buf[res-1]=0; // Null terminate before calling strstr
+     buf[res-1]=0; /* Null terminate before calling strstr */
      if ((pos= strstr(buf,"wid "))) {
         num=strtol(pos+3,NULL,10);
 	if (num<100 && num>10)
@@ -105,7 +105,7 @@ bool read_lcd(void) {
   return ((res > 0)?true:false);
 }
 
-// Send data to lcdd
+/* Send data to lcdd */
 void send_lcd(char* data, int len) {
   int sent = 0;
   int res;
@@ -119,8 +119,9 @@ void send_lcd(char* data, int len) {
    }
 }
 
-// Try to open a connection to lircd if suppor is enabled
-// if it fails, disable support, print a message and continue
+/* Try to open a connection to lircd if suppor is enabled
+** if it fails, disable support, print a message and continue
+*/
 void init_lirc(void) {
    if (using_lirc) {
       using_lirc = false;
@@ -137,9 +138,10 @@ void init_lirc(void) {
    }
 }
 
-// Try to open a connection to LCDd if support is enabled
-// If it succeeeds configure our screen
-// If it fails, print a message, disable support and continue
+/* Try to open a connection to LCDd if support is enabled
+** If it succeeeds configure our screen
+** If it fails, print a message, disable support and continue
+*/
 void init_lcd (void)
 {
 	if (!use_lcdd_menu) return;
@@ -163,7 +165,7 @@ void init_lcd (void)
 					use_lcdd_menu = true;
 					send_lcd("hello\n",6);
 
-					while(!read_lcd());  // wait for display info
+					while(!read_lcd());  /* wait for display info */
 
 					send_lcd("client_set name {squeeze}\n",26);
 					send_lcd("screen_add main\n",16);
@@ -183,7 +185,7 @@ void init_lcd (void)
 		} 
 	}
 
-	// If connect failed
+	/* If connect failed */
 	if (!use_lcdd_menu)
 	{
 		use_lcdd_menu = true;
@@ -193,8 +195,8 @@ void init_lcd (void)
 	}
 }
 
-// Called by our USR2 signal handler
-// to toggle IR/LCD support on and off
+/* Called by our USR2 signal handler to toggle IR/LCD support on and off
+*/
 void toggle_handler(int signal_number) {
    if (use_lcdd_menu) {
       close_lcd();
@@ -207,7 +209,8 @@ void toggle_handler(int signal_number) {
    }
 }
 
-// Read a key code from lircd
+/* Read a key code from lircd
+*/
 int read_lirc(void) {
   char *code;
   char *c;
@@ -226,7 +229,8 @@ int read_lirc(void) {
   return 0;
 }
 
-// Set up a curses window for our display
+/* Set up a curses window for our display
+*/
 void initcurses(void) {
     if (!using_curses)
        return;
@@ -267,7 +271,8 @@ void initcurses(void) {
     }
 }
 
-// Shut down curses and put our terminal back to normal
+/* Shut down curses and put our terminal back to normal
+*/
 void exitcurses(void) {
     if (using_curses) {
        endwin();
@@ -275,8 +280,8 @@ void exitcurses(void) {
     }
 }
 
-// Translate keys and lirc inputs
-// to squeezecener IR codes
+/* Translate keys and lirc inputs to squeezecener IR codes
+*/
 unsigned long getircode(int key) {
     unsigned long ir = 0;
     
@@ -352,7 +357,8 @@ unsigned long getircode(int key) {
   return (unsigned long)ir;
 }
 
-// Send line to lcdd
+/* Send line to lcdd
+*/
 void set_lcd_line(int lineid, char *text, int len) {
    int total = 27 + len;
    char cmd[total];
@@ -366,22 +372,23 @@ void set_lcd_line(int lineid, char *text, int len) {
    send_lcd(cmd,total);
 }
 
-// Change special LCD chars to something more printable on screen
+/* Change special LCD chars to something more printable on screen
+*/
 unsigned char printable(unsigned char c) {
    switch (c) {
-      case 11:  //block
+      case 11:		/* block */
          return '#';
 	 break;;
-      case 16:  //righarrow
+      case 16:		/* rightarrow */
          return '>';
 	 break;;
-      case 22:  //circle
+      case 22:		/* circle */
          return '@';
 	 break;;
-      case 145: //note
+      case 145:		/* note */
 	 return ' ';
 	 break;;
-      case 152: //bell
+      case 152:		/* bell */
          return 'o';
 	 break;;
       default:
@@ -389,7 +396,8 @@ unsigned char printable(unsigned char c) {
       }
 }
 
-// Replace unprintable symbols in line
+/* Replace unprintable symbols in line
+*/
 void makeprintable(unsigned char * line) {
     int n;
 
@@ -397,7 +405,8 @@ void makeprintable(unsigned char * line) {
        line[n]=printable(line[n]);
 }
 
-// Show the display
+/* Show the display
+*/
 void show_display_buffer(char *ddram) {
     char line1[linelen+1];
     char *line2;
@@ -413,7 +422,7 @@ void show_display_buffer(char *ddram) {
     }
 
     if (using_curses) {
-      // Convert special LCD chars
+      /* Convert special LCD chars */
       makeprintable((unsigned char *)line1);
       makeprintable((unsigned char *)line2);
       mvwaddnstr(slimwin, 1, 1, line1, linelen);
@@ -422,15 +431,16 @@ void show_display_buffer(char *ddram) {
     }
 }
 
-// Check if char is printable, or a valid symbol
+/* Check if char is printable, or a valid symbol
+*/
 bool charisok(unsigned char c) {
 
    switch (c) {
-      case 11:  //block
-      case 16:  //righarrow
-      case 22:  //circle
-      case 145: //note
-      case 152: //bell
+      case 11:		/* block */
+      case 16:		/* rightarrow */
+      case 22:		/* circle */
+      case 145:		/* note */
+      case 152:		/* bell */
          return true;
 	 break;;
       default:
@@ -438,7 +448,8 @@ bool charisok(unsigned char c) {
    }
 }
 
-// Process display data
+/* Process display data
+*/
 void receive_display_data( unsigned short *data, int bytes_read) {
     unsigned short *display_data;
     char ddram[linelen * 2];
@@ -480,7 +491,8 @@ void receive_display_data( unsigned short *data, int bytes_read) {
     show_display_buffer(ddram);
 }
 
-// Called by the library when a vfd command is received.
+/* Called by the library when a vfd command is received.
+*/
 int vfd_callback(slimproto_t *p, const unsigned char * buf, int len , void *user_data) {
         unsigned short disp[len+1];
 	

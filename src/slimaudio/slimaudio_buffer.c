@@ -171,7 +171,7 @@ void slimaudio_buffer_write(slimaudio_buffer_t *buf, char *data, int len) {
 	assert(data);
 
 	if (buf->write_stream == NULL || buf->write_stream->eof) {
-		// stream closed
+		/* stream closed */
 		pthread_mutex_unlock(&buf->buffer_mutex);
 		return;
 	}

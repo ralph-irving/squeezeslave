@@ -54,7 +54,7 @@ PaDriverInfo;
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <malloc.h>
+/* #include <malloc.h> */
 #include <memory.h>
 #include <math.h>
 #include <sys/ioctl.h>

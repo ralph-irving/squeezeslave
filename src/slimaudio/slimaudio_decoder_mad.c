@@ -275,7 +275,7 @@ enum mad_flow mad_error(void *data,
 	/* retcode = MAD_FLOW_BREAK; */
 	break;
     default:
-	RDEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error); //FIXME
+	RDEBUGF("libmad: (mp3) decoding error (0x%04x)\n", stream->error); /* FIXME */
 	break;
   }
 

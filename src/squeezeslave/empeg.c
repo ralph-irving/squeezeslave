@@ -96,16 +96,16 @@ void empeg_vfdbrt(int bright)
 {
    if (bright <= 0)
    {
-      ioctl(vfd_fd, EMPEG_DISPLAY_POWER, 0); // turn LCD and amp remote off
+      ioctl(vfd_fd, EMPEG_DISPLAY_POWER, 0); /* turn LCD and amp remote off */
    }
    else
    {
-      ioctl(vfd_fd, EMPEG_DISPLAY_POWER, 1); // turn LCD and amp remote on
+      ioctl(vfd_fd, EMPEG_DISPLAY_POWER, 1); /* turn LCD and amp remote on */
       ioctl(vfd_fd, EMPEG_DISPLAY_SETBRIGHTNESS, &bright);
    }
 }
 
-// Close LCD connection (if open)
+/* Close LCD connection (if open) */
 void close_lcd(void)
 {
    empeg_vfdbrt(0);
@@ -133,7 +133,7 @@ void empeg_puteq_tofile(void)
    close(io_fd);
 }
 
-// convert from -6dB(32) - 0dB(64) - +6dB(128) to DSP value
+/* convert from -6dB(32) - 0dB(64) - +6dB(128) to DSP value */
 int eq_gain[13] = {32, 36, 40, 44, 50, 56, 64, 72, 82, 90, 102, 114, 128 };
 
 /*void empeg_seteq_section(int channel, int band, int cent_freq, int q, int gaindb)
@@ -167,8 +167,9 @@ void empeg_geteq_fromfile(void)
    close(fd);
 }
 
-// If it succeeeds configure hardware
-// If it fails, print a message, disable support and continue
+/* If it succeeeds configure hardware
+** If it fails, print a message, disable support and continue
+*/
 void empeg_init(void)
 {
    vfd_fd = open(DISPLAY_DEV, O_RDWR);
@@ -184,7 +185,7 @@ void empeg_init(void)
       close(vfd_fd);
       return;
    }
-   memset(vfd_map, 0, 2048); // clear VFD
+   memset(vfd_map, 0, 2048); /* clear VFD */
    ioctl(vfd_fd, EMPEG_DISPLAY_REFRESH);
 
    power_fd = open(POWER_DEV, O_RDWR);
@@ -247,10 +248,10 @@ int empeg_idle(void)
          power_flag = true;
          power_timer = tnow.tv_sec;
          fprintf(stderr, "Power state:0x%X\n", pwr_state);
-         return -1; // pause return code
+         return -1; /* pause return code */
       }
       else if (power_timer + 300 < tnow.tv_sec)
-         return -4; // power down return code
+         return -4; /* power down return code */
       return -2;
    }
    else if (power_flag)
@@ -288,7 +289,7 @@ struct
     long downir;
     long upir;
 } keys[5] = {
-//   {false, 0, IR_TOP_BUTTON_PRESSED, IR_TOP_BUTTON_RELEASED, 0x00010012, 0x00020012 },
+/* {false, 0, IR_TOP_BUTTON_PRESSED, IR_TOP_BUTTON_RELEASED, 0x00010012, 0x00020012 }, */
    {false, 0, IR_TOP_BUTTON_PRESSED, IR_TOP_BUTTON_RELEASED, 0x00010017, 0x00020017 },
    {false, 0, IR_BOTTOM_BUTTON_PRESSED, IR_BOTTOM_BUTTON_RELEASED, 0x0001000D, 0x0002000D },
    {false, 0, IR_RIGHT_BUTTON_PRESSED, IR_RIGHT_BUTTON_RELEASED, 0x00010011, 0x00020011 },
@@ -361,9 +362,9 @@ int empeg_vfd_callback(slimproto_t *p, const unsigned char * buf, int len , void
    int i = 10, j, row, clm;
    char temp;
    unsigned char msg[SLIMPROTO_MSG_SIZE];
-   int offset = buf[6] << 8 | buf[7]; // unpackN2
+   int offset = buf[6] << 8 | buf[7]; /* unpackN2 */
    char transition = buf[8];
-//   char tParam = buf[9];
+   /* char tParam = buf[9]; */
    int width = (len - 9) / 4;
 
    if (width != 128 || offset != 0) return 0;
@@ -385,7 +386,7 @@ int empeg_vfd_callback(slimproto_t *p, const unsigned char * buf, int len , void
              temp = buf[i];
              for (j = 0; j < 8; j ++)
              {
-                vfd_map[((row + j) << 6) + clm] = temp >> 7 ? 0x3 : 0; // Set both bits if pixel on
+                vfd_map[((row + j) << 6) + clm] = temp >> 7 ? 0x3 : 0; /* Set both bits if pixel on */
                 temp <<= 1;
              }
           }

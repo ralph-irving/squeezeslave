@@ -111,7 +111,7 @@ int slimaudio_decoder_vorbis_process(slimaudio_t *audio) {
 			ogg_continue = false ;
 			break ;
 		
-		case 0: // End of file
+		case 0: /* End of file */
 			ogg_continue = false ;
 			break;
 			

@@ -231,15 +231,15 @@ int slimaudio_output_init(slimaudio_t *audio, PaDeviceIndex output_device_id,
 	audio->volume_control = VOLUME_DRIVER;
 	audio->volume = 1.0;
 	audio->vol_adjust = 1.0;
-	audio->prev_volume = -1.0;	// Signals prev = volume.
+	audio->prev_volume = -1.0;		/* Signals prev = volume. */
 	audio->output_predelay_msec = 0;
 	audio->output_predelay_frames = 0;
 	audio->output_predelay_amplitude = 0;
 	audio->keepalive_interval = -1;
 	audio->decode_num_tracks_started = 0L;	
 	audio->stream_samples = 0UL;	
-	audio->replay_gain = -1.0;  	// signals first start
-	audio->start_replay_gain = 1.0;  // none to start
+	audio->replay_gain = -1.0;		/* signals first start */
+	audio->start_replay_gain = 1.0;		/* none to start */
 
 	slimproto_add_command_callback(audio->proto, "audg", &audg_callback, audio);
 	
@@ -254,7 +254,7 @@ void slimaudio_output_destroy(slimaudio_t *audio) {
 	pthread_mutex_destroy(&(audio->output_mutex));
 	pthread_cond_destroy(&(audio->output_cond));
 
-	// FIXME remove slimproto callback
+	/* FIXME remove slimproto callback */
 }
 
 int slimaudio_output_open(slimaudio_t *audio) {
@@ -323,12 +323,13 @@ void slimaudio_output_vol_adjust(slimaudio_t *audio)
 }
 
 
-// Wrapper to call slimaudio_stat from output_thread.  Because the
-// output thread keeps the output mutex locked, this wrapper unlocks
-// the mutex for the duration of the slimaudio_stat call.  The reason
-// is that slimaudio_stat may find that the socket has been closed and
-// will then try to stop the audio output by calling
-// slimaudio_output_disconnect and this requires the mutex to be unlocked.
+/* Wrapper to call slimaudio_stat from output_thread.  Because the
+** output thread keeps the output mutex locked, this wrapper unlocks
+** the mutex for the duration of the slimaudio_stat call.  The reason
+** is that slimaudio_stat may find that the socket has been closed and
+** will then try to stop the audio output by calling
+** slimaudio_output_disconnect and this requires the mutex to be unlocked.
+*/
 static void output_thread_stat(slimaudio_t* audio, char* code) {
 	pthread_mutex_unlock(&audio->output_mutex);
 	slimaudio_stat(audio, code, (u32_t) 0);
@@ -360,21 +361,21 @@ if ( renice )
         DEBUGF("output_thread: PortAudio initialized\n");
 
 #ifndef PORTAUDIO_DEV
-	err = Pa_OpenStream(	&audio->pa_stream,	// stream
-				paNoDevice,		// input device
-				0,			// input channels
-				0,			// input sample format
-				NULL,			// input driver info
-				audio->output_device_id,// output device				
-				2,			// output channels
-				paInt16,		// output sample format
-				NULL,			// output driver info
-				44100.0,		// sample rate
-				1152,			// frames per buffer
-				0,			// number of buffers
-				0,			// stream flags
-				pa_callback,		// callback
-				audio);			// user data
+	err = Pa_OpenStream(	&audio->pa_stream,	/* stream */
+				paNoDevice,		/* input device */
+				0,			/* input channels */
+				0,			/* input sample format */
+				NULL,			/* input driver info */
+				audio->output_device_id,/* output device */
+				2,			/* output channels */
+				paInt16,		/* output sample format */
+				NULL,			/* output driver info */
+				44100.0,		/* sample rate */
+				1152,			/* frames per buffer */
+				0,			/* number of buffers */
+				0,			/* stream flags */
+				pa_callback,		/* callback */
+				audio);			/* user data */
 #else
 	PaStreamParameters outputParameters;
 	const PaDeviceInfo * paDeviceInfo;
@@ -453,14 +454,14 @@ if ( renice )
 	DEBUGF("paDeviceInfo->defaultLowOutputLatency %f\n", (float) paDeviceInfo->defaultLowOutputLatency);
 	DEBUGF("paDeviceInfo->defaultSampleRate %f\n", paDeviceInfo->defaultSampleRate);
 
-	err = Pa_OpenStream (	&audio->pa_stream,				// stream
-				NULL,						// inputParameters
-				&outputParameters,				// outputParameters
-				44100.0,					// sample rate
-				paFramesPerBufferUnspecified,			// framesPerBuffer
-				paPrimeOutputBuffersUsingStreamCallback,	// streamFlags
-				pa_callback,					// streamCallback
-				audio);						// userData
+	err = Pa_OpenStream (	&audio->pa_stream,				/* stream */
+				NULL,						/* inputParameters */
+				&outputParameters,				/* outputParameters */
+				44100.0,					/* sample rate */
+				paFramesPerBufferUnspecified,			/* framesPerBuffer */
+				paPrimeOutputBuffersUsingStreamCallback,	/* streamFlags */
+				pa_callback,					/* streamCallback */
+				audio);						/* userData */
 #endif
 
 #ifdef BSD_THREAD_LOCKING
@@ -513,16 +514,16 @@ if ( renice )
 				slimaudio_buffer_set_readopt(audio->output_buffer, BUFFER_BLOCKING);
 
 			case PAUSED:
-				// We report ourselves to the server every few seconds
-				// as a keep-alive.  This is required for Squeezebox Server
-				// v6.5.x although technically, "stat" is not a valid event 
-				// code for the STAT Client->Server message.  This was 
-				// lifted by observing how a Squeezebox3 reports itself to 
-				// the server using Squeezebox Server's d_slimproto and 
-				// d_slimproto_v tracing services.  Note that Squeezebox3
-			  	// seems to report every 1 second or so, but the server only
-			  	// drops the connection after 15-20 seconds of inactivity.
-
+				/* We report ourselves to the server every few seconds
+				** as a keep-alive.  This is required for Squeezebox Server
+				** v6.5.x although technically, "stat" is not a valid event 
+				** code for the STAT Client->Server message.  This was 
+				** lifted by observing how a Squeezebox3 reports itself to 
+				** the server using Squeezebox Server's d_slimproto and 
+				** d_slimproto_v tracing services.  Note that Squeezebox3
+				** seems to report every 1 second or so, but the server only
+				** drops the connection after 15-20 seconds of inactivity.
+				*/
 				DEBUGF("output_thread PAUSED: %llu\n",audio->pa_streamtime_offset);
 
 			  	if (audio->keepalive_interval <= 0) {
@@ -802,23 +803,25 @@ void slimaudio_output_unpause(slimaudio_t *audio) {
 	pthread_mutex_unlock(&audio->output_mutex);
 }
 
-// Applies software volume to buffers being sent to the output device.  It is
-// important we apply volume changes here rather than, for example, in the 
-// decoder, to avoid latency between volume modification and audible change.
-//
-// FIXME:
-// There are a couple of shortcuts taken in the name of simplicity here.
-// 1. We assume 16-bits stereo.
-// 2. We perform this in a separate loop, which will consume more 
-//    frontside bus bandwidth than if we were performing this task as
-//    part of, for example, the buffer copy.  But this would imply
-//    changing audio buffers so they are format-aware.
+/* Applies software volume to buffers being sent to the output device.  It is
+** important we apply volume changes here rather than, for example, in the 
+** decoder, to avoid latency between volume modification and audible change.
+**
+** FIXME:
+** There are a couple of shortcuts taken in the name of simplicity here.
+** 1. We assume 16-bits stereo.
+** 2. We perform this in a separate loop, which will consume more 
+**    frontside bus bandwidth than if we were performing this task as
+**    part of, for example, the buffer copy.  But this would imply
+**    changing audio buffers so they are format-aware.
+*/
 static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer, int nbFrames)
 {
 	if (audio->prev_volume == -1.0) {
-		// A value of -1 indicates it's the first time we pass here.
-		// Copy volume into prev_volume to start immediatly at the right
-		// volume.
+		/* A value of -1 indicates it's the first time we pass here.
+		** Copy volume into prev_volume to start immediatly at the right
+		** volume.
+		*/
 		audio->prev_volume = audio->volume;
 	}
 
@@ -830,11 +833,12 @@ static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer, 
 		return;
 	}
 
-	// Deglitch volume changes by going from the old to the new value over
-	// the course of the whole buffer being sent to the output device.  We
-	// read 'audio->volume' exactly once (assuming this operation is atomic)
-	// to make sure that volume changes performed while we are here will not
-	// cause any glitches.
+	/* Deglitch volume changes by going from the old to the new value over
+	** the course of the whole buffer being sent to the output device.  We
+	** read 'audio->volume' exactly once (assuming this operation is atomic)
+	** to make sure that volume changes performed while we are here will not
+	** cause any glitches.
+	*/
 	{
 		const float newVolume = audio->volume;
 		float curVolume = audio->prev_volume;
@@ -851,15 +855,16 @@ static void apply_software_volume(slimaudio_t* const audio, void* outputBuffer, 
 	}
 }
 
-// Writes pre-delay sample-frames into the output buffer passed in.
-// Pre-delay will most often be silence but can also be a tone at
-// SamplingFrequency/2 in case the output device needs some non-silent
-// samples to turn on.
+/* Writes pre-delay sample-frames into the output buffer passed in.
+** Pre-delay will most often be silence but can also be a tone at
+** SamplingFrequency/2 in case the output device needs some non-silent
+** samples to turn on.
+*/
 static int produce_predelay_frames(slimaudio_t* audio, void* outputBuffer, unsigned int nbBytes)
 {
 	int i;
 	unsigned int predelayBytes;
-	// FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes)
+	/* FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes) */
 	const int frameSize = 2 * 2;
 	unsigned int predelayFrames = audio->output_predelay_frames;
 	const unsigned int maxFrames = nbBytes / frameSize;
@@ -876,18 +881,20 @@ static int produce_predelay_frames(slimaudio_t* audio, void* outputBuffer, unsig
 		memset((char*)outputBuffer, 0, predelayBytes);
 	}
 	else {
-		// Producing a low-volume high-frequency tone that will wake up
-		// stubborn DACs.  Not very dog-friendly, but some DACs will 
-		// only turn on (too late) at the presence of sound of a certain
-		// level.
-		// FIXME: This code assumes stereo signed 16-bit sample frames.
+		/* Producing a low-volume high-frequency tone that will wake up
+		** stubborn DACs.  Not very dog-friendly, but some DACs will 
+		** only turn on (too late) at the presence of sound of a certain
+		** level.
+		** FIXME: This code assumes stereo signed 16-bit sample frames.
+		*/
 		short* const samples = (short*)outputBuffer;
 		short val = audio->output_predelay_amplitude <= SHRT_MAX ? 
 			audio->output_predelay_amplitude : SHRT_MAX;
 		if ( val & 1 ) {
-			// Make sure we alternate positive and negative values
-			// even if the pre-delay is broken-down over multiple
-			// calls.
+			/* Make sure we alternate positive and negative values
+			** even if the pre-delay is broken-down over multiple
+			** calls.
+			*/
 			val = -val;
 		}
 		for ( i = 0; i < predelayFrames; ++i, val = -val ) {
@@ -913,7 +920,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 	slimaudio_t * const audio = (slimaudio_t *) userData;
 	slimaudio_buffer_status ok = SLIMAUDIO_BUFFER_STREAM_CONTINUE ;
 
-	// FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes)
+	/* FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes) */
 	const int frameSize = 2 * 2;
 	const int len = framesPerBuffer * frameSize; 
 	
@@ -936,16 +943,17 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 		{
 			ok = SLIMAUDIO_BUFFER_STREAM_UNDERRUN;
 			DEBUGF("pa_callback: SLIMAUDIO_BUFFER_STREAM_UNDERRUN\n");
-			break; // Added so playback would be silent on underrun
+			break; /* Added so playback would be silent on underrun */
 		}
 
 		if (ok == SLIMAUDIO_BUFFER_STREAM_END) {
 			/* stream closed */
 			if (slimaudio_buffer_available(audio->output_buffer) == 0) {
-				// Send buffer underrun to Squeezebox Server. During
-				// normal play this indicates the end of the
-				// playlist. During sync this starts the next 
-				// track.
+				/* Send buffer underrun to Squeezebox Server. During
+				** normal play this indicates the end of the
+				** playlist. During sync this starts the next 
+				** track.
+				*/
 				audio->output_STMu = true;
 
 				DEBUGF("pa_callback: STREAM_END:output_STMu:%i\n",audio->output_STMu);
@@ -994,7 +1002,7 @@ static int pa_callback(  const void *inputBuffer, void *outputBuffer,
 #ifdef ZONES	
 	if (audio->output_num_zones > 1)
 	{
-		// FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes)
+		/* FIXME: Asuming 2 channels, 16 bit samples (i.e. 2 bytes) */
 		char frame[2*MAX_ZONES] = {0};
 		int zonedFrameSize = frameSize*audio->output_num_zones;
 		int zonedLen = framesPerBuffer*zonedFrameSize;
