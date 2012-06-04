@@ -1,3 +1,28 @@
+2012-06-04 14:16  paddockd
+
+	* [r338] lib/portaudio-empeg/pa_common/pa_convert.c,
+	  lib/portaudio-empeg/pa_unix_oss/pa_unix.h,
+	  lib/portaudio/pa_common/pa_convert.c,
+	  lib/portaudio/pa_unix_oss/pa_unix.h, src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio.h, src/slimaudio/slimaudio_buffer.c,
+	  src/slimaudio/slimaudio_buffer.h,
+	  src/slimaudio/slimaudio_decoder.c,
+	  src/slimaudio/slimaudio_decoder_mad.c,
+	  src/slimaudio/slimaudio_decoder_vorbis.c,
+	  src/slimaudio/slimaudio_output.c, src/slimproto/slimproto.c,
+	  src/slimproto/slimproto.h, src/squeezeslave/empeg.c,
+	  src/squeezeslave/interactive.c, src/squeezeslave/squeezeslave.c:
+	  Removed all C++ // style comments.
+	  Increased revision to 338.
+
+2012-05-26 19:12  paddockd
+
+	* [r337] ChangeLog, contrib/makefile.osx-lion-i64-display,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added OSX 10.7 64bit makefile to
+	  contrib.
+	  Increased revision to 337.
+
 2012-05-21 17:24  paddockd
 
 	* [r336] ChangeLog, contrib/makefile.linux24-gcc43-alsa-display,

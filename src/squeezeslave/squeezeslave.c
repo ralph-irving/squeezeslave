@@ -52,7 +52,7 @@ unsigned int user_latency = 0L;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 338;
+const int revision = 339;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -230,30 +230,8 @@ int main(int argc, char *argv[]) {
 #endif
 	char slimserver_address[INET_FQDNSTRLEN] = "127.0.0.1";
 
-#ifdef INTERACTIVE
-        fd_set read_fds;
-        fd_set write_fds;
-        int key = 0;
-        unsigned long ir = 0;
-	int maxfd = 0;
-	char *home;
-	struct timeval timeout;
-	timeout.tv_usec = 0;
-
-#ifdef __WIN32__
-	int WSAerrno;
-	int ptw32_processInitialize (void);
-	ptw32_processInitialize();
-#endif
-        // default lircrc file ($HOME/.lircrc)
-	home = getenv("HOME");
-	if (home == NULL) home = "";
-	lircrc = (char *)malloc((strlen(home) + strlen("/.lircrc") + 1) * sizeof(char));
-	strcpy(lircrc,home);
-	strcat(lircrc,"/.lircrc");
-#endif
-
 	char getopt_options[OPTLEN] = "a:FId:Y:e:f:hk:Lm:n:o:P:p:Rr:Vv:";
+
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
 		{"discover",           no_argument,       0, 'F'},
@@ -308,6 +286,30 @@ int main(int argc, char *argv[]) {
 #endif
 		{0, 0, 0, 0}
 	};
+
+#ifdef INTERACTIVE
+        fd_set read_fds;
+        fd_set write_fds;
+        int key = 0;
+        unsigned long ir = 0;
+	int maxfd = 0;
+	char *home;
+	struct timeval timeout;
+	timeout.tv_usec = 0;
+
+#ifdef __WIN32__
+	int WSAerrno;
+	int ptw32_processInitialize (void);
+	ptw32_processInitialize();
+#endif /* __WIN32__ */
+        /* default lircrc file ($HOME/.lircrc) */
+	home = getenv("HOME");
+	if (home == NULL) home = "";
+	lircrc = (char *)malloc((strlen(home) + strlen("/.lircrc") + 1) * sizeof(char));
+	strcpy(lircrc,home);
+	strcat(lircrc,"/.lircrc");
+#endif /* INTERACTIVE */
+
 #ifdef EMPEG
 	strcat (getopt_options, "Qq");
 #endif
