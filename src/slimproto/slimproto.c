@@ -1111,6 +1111,7 @@ int slimproto_configure_socket_sigpipe(int fd) {
 	/* This platform has MSG_NOSIGNAL (Linux has it for sure, not sure about
 	** others).  So we'll let the send() call deal with the SIGPIPE
 	** avoidance.
+	*/
 	DEBUGF("proto_sigpipe: MSG_NOSIGNAL\n");
 	return 0;
 #elif defined(SO_NOSIGPIPE)

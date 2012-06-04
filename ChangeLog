@@ -1,3 +1,12 @@
+2012-06-04 14:47  paddockd
+
+	* [r340] ChangeLog, lib/libmad/s10intel/include/stdbool.h,
+	  lib/libmad/s10sparc/include/stdbool.h,
+	  lib/libmad/s9sparc/include/stdbool.h,
+	  src/squeezeslave/squeezeslave.c: Define _Bool in stdbool.h if not
+	  declared.
+	  Increased revision to 340.
+
 2012-06-04 14:43  paddockd
 
 	* [r339] ChangeLog, src/squeezeslave/squeezeslave.c: Moved

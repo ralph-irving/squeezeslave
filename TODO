@@ -95,6 +95,24 @@ http://somafm.com/wma128/groovesalad.asx
 
 ---
 
+AAC+ stream for testing aacplus plugin.
+http://www.somafm.com/groovesalad48.plsSky
+
+---
+
+Radio Paradise
+
+MP3 192Kbps
+http://www.radioparadise.com/musiclinks/rp_192.m3u
+
+AAC 128Kbps
+http://www.radioparadise.com/musiclinks/rp_128aac.m3u
+
+OGG 192Kbps
+http://stream-tx1.radioparadise.com:9000/rp_192.ogg
+
+---
+
 Investigate why slimaudio_decoder_pcm.c outputs static with Solaris 9 SPARC at end of 01-[Not Again! ].wav on sbs01 7.5.1.  Same code on linux 2.4 does not exhibit the white noise.  Suspect endianness handling.
 
 ---
