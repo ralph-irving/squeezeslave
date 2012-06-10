@@ -1,3 +1,11 @@
+2012-06-10 12:44  paddockd
+
+	* [r343] ChangeLog, makefile.sol10-intel-display,
+	  makefile.sol10-sparc64-display, makefile.sol9-sparc-display,
+	  src/squeezeslave/squeezeslave.c: Removed unused sun math library
+	  from solaris makefile link library.
+	  Increases revision to 343.
+
 2012-06-10 12:39  paddockd
 
 	* [r342] ChangeLog, src/slimproto/slimproto.c,

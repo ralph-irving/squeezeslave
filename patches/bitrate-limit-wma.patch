@@ -1,0 +1,23 @@
+--- Slim/Player/TranscodingHelper.pm.orig	2012-03-19 10:12:43.000000000 -0400
++++ Slim/Player/TranscodingHelper.pm	2012-05-30 13:26:49.000000000 -0400
+@@ -569,10 +569,18 @@
+ 	
+ 	return 0 unless $maxRate;
+ 	
++	my $native = 0;
++	foreach my $format ($client->formats()) {
++		if (defined($type) && $type eq $format) {
++			$native = 1;
++			last;
++		}
++	}
++
+ 	# If the input type is mp3 or wma (bug 9641), we determine whether the 
+-	# input bitrate is under the maximum.
++	# input bitrate is under the maximum, only if the player supports the format natively.
+ 	# We presume that we won't choose an output format that violates the rate limit.
+-	if (defined($type) && ($type eq 'mp3' || $type eq 'wma')) {
++	if (defined($type) && ($type eq 'mp3' || $type eq 'wma') && $native) {
+ 		return 0 if ($maxRate >= ($bitrate || 0)/1000);
+ 	}
+ 	
