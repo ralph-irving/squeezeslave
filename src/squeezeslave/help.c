@@ -367,7 +367,7 @@ void print_version(void) {
 	fprintf(stdout, "osx ");
 #elif defined(__WIN32__)
 	fprintf(stdout, "windows ");
-#elif defined(__SUNPRO_C)
+#elif defined(sun)
 	fprintf(stdout, "solaris ");
 #elif defined(__FreeBSD__)
 	fprintf(stdout, "freebsd ");

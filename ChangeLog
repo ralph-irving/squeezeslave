@@ -1,3 +1,10 @@
+2012-06-04 14:57  paddockd
+
+	* [r341] ChangeLog, TODO, src/slimproto/slimproto.c,
+	  src/squeezeslave/squeezeslave.c: Fixed unclosed comment from the
+	  removal of all C++ // style comments.
+	  Increased revision to 341.
+
 2012-06-04 14:47  paddockd
 
 	* [r340] ChangeLog, lib/libmad/s10intel/include/stdbool.h,

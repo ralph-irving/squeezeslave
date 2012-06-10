@@ -226,7 +226,7 @@ int slimproto_configure_socket(int sockfd, int socktimeout)
 	}
 	else
 	{
-#if !defined(__SUNPRO_C) && !defined(EMPEG)
+#if !defined(sun) && !defined(EMPEG)
 	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (void *)&timeout,  sizeof(timeout)))
 	{
 		perror("Error setting receive socket timeout");
@@ -241,16 +241,16 @@ int slimproto_configure_socket(int sockfd, int socktimeout)
 	}
 	else
 	{
-#endif /* !__SUNPRO_C && !EMPEG */
+#endif /* !sun && !EMPEG */
 	if (slimproto_configure_socket_sigpipe(sockfd) != 0)
 	{
 		fprintf(stderr, "Couldn't configure socket for SIGPIPE.\n");
 		retcode = -1;
 	}
-#if !defined(__SUNPRO_C) && !defined(EMPEG)
+#if !defined(sun) && !defined(EMPEG)
 	}
 	}
-#endif /* !__SUNPRO_C && !EMPEG */
+#endif /* !sun && !EMPEG */
 	}
 
 	return (retcode);
