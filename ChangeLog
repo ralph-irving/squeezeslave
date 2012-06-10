@@ -1,3 +1,13 @@
+2012-06-10 12:39  paddockd
+
+	* [r342] ChangeLog, src/slimproto/slimproto.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c:
+	  Replaced __SUNPRO_C definitions with 'sun' to identify building
+	  on solaris.
+	  Remaining __SUNPRO_C references are Sun Studio specific compile
+	  requirements.
+	  Increased revision to 342.
+
 2012-06-04 14:57  paddockd
 
 	* [r341] ChangeLog, TODO, src/slimproto/slimproto.c,
