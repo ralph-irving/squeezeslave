@@ -371,9 +371,9 @@ if ( renice )
 				paInt16,		/* output sample format */
 				NULL,			/* output driver info */
 				44100.0,		/* sample rate */
-				1152,			/* frames per buffer */
-				0,			/* number of buffers */
-				0,			/* stream flags */
+				6300,			/* frames per buffer (samplerate/7) FIXME */
+				3,			/* number of buffers */
+				paNoFlag,		/* stream flags */
 				pa_callback,		/* callback */
 				audio);			/* user data */
 #else

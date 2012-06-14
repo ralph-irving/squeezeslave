@@ -1,3 +1,11 @@
+2012-06-10 19:27  paddockd
+
+	* [r346] ChangeLog, makefile.sol10-intel-display,
+	  makefile.sol10-sparc64-display, makefile.sol9-sparc-display,
+	  src/squeezeslave/squeezeslave.c: Reverted removal of libsunmath.a
+	  in solaris makefiles.
+	  Increased revision to 346.
+
 2012-06-10 17:49  paddockd
 
 	* [r345] ChangeLog, sources/libogg-1.1.4.tar.bz2,
