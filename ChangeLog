@@ -1,3 +1,11 @@
+2012-06-14 12:05  paddockd
+
+	* [r347] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Changed framesPerBuffer and
+	  numBuffers values for OSS when NOT using PA_DEV.
+	  Increases portaudio buffer size from 78 to 428 msecs.
+	  Increased revision to 347.
+
 2012-06-10 19:27  paddockd
 
 	* [r346] ChangeLog, makefile.sol10-intel-display,

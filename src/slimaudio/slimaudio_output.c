@@ -353,14 +353,18 @@ static void *output_thread(void *ptr) {
                 printf("PortAudio error4: %s Could not open any audio devices.\n", Pa_GetErrorText(err) );
                 exit(-1);
         }
+
 #ifdef RENICE
-if ( renice )
-	if ( renice_thread (-5) ) /* Increase priority */
-		fprintf(stderr, "output_thread: renice failed. Got Root?\n");
+	if ( renice )
+		if ( renice_thread (-5) ) /* Increase priority */
+			fprintf(stderr, "output_thread: renice failed. Got Root?\n");
 #endif
-        DEBUGF("output_thread: PortAudio initialized\n");
 
 #ifndef PORTAUDIO_DEV
+	DEBUGF("output_tread: output_device_id  : %i\n", audio->output_device_id );
+	DEBUGF("output_tread: pa_framesPerBuffer: %lu\n", pa_framesPerBuffer );
+	DEBUGF("output_tread: pa_numberOfBuffers: %lu\n", pa_numberOfBuffers );
+
 	err = Pa_OpenStream(	&audio->pa_stream,	/* stream */
 				paNoDevice,		/* input device */
 				0,			/* input channels */
@@ -371,8 +375,8 @@ if ( renice )
 				paInt16,		/* output sample format */
 				NULL,			/* output driver info */
 				44100.0,		/* sample rate */
-				6300,			/* frames per buffer (samplerate/7) FIXME */
-				3,			/* number of buffers */
+				pa_framesPerBuffer,	/* frames per buffer */
+				pa_numberOfBuffers,	/* number of buffers */
 				paNoFlag,		/* stream flags */
 				pa_callback,		/* callback */
 				audio);			/* user data */

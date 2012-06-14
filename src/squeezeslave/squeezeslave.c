@@ -47,12 +47,15 @@ bool output_change = false;
 /* User suggested latency */
 bool modify_latency = false;
 unsigned int user_latency = 0L;
+#else
+unsigned long pa_framesPerBuffer = PA_FRAMES_PER_BUFFER;
+unsigned long pa_numberOfBuffers = PA_NUM_BUFFERS;
 #endif
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 347;
+const int revision = 348;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -260,6 +263,9 @@ int main(int argc, char *argv[]) {
 #ifdef PORTAUDIO_DEV
 		{"latency",            required_argument, 0, 'y'},
 		{"audiotype",          required_argument, 0, 't'},
+#else
+		{"paframes",           required_argument, 0, 'g'},
+		{"pabuffers",          required_argument, 0, 'j'},
 #endif
 #ifdef DAEMONIZE
 		{"daemonize",          required_argument, 0, 'M'},
@@ -315,6 +321,8 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef PORTAUDIO_DEV
 	strcat (getopt_options, "y:t:");
+#else
+	strcat (getopt_options, "g:j:");
 #endif	
 #ifdef DAEMONIZE	
 	strcat (getopt_options, "M:");
@@ -596,6 +604,29 @@ int main(int argc, char *argv[]) {
 			break;
 		case 't':
 			hostapi_name = optarg;
+			break;
+#else
+		case 'g':
+			pa_framesPerBuffer = strtoul(optarg, NULL, 0);
+
+			if ( (pa_framesPerBuffer > 65536) || (pa_framesPerBuffer < 64) )
+			{
+				fprintf (stderr,
+					"Portaudio frames per buffer invalid, using default (%d).\n",
+					PA_FRAMES_PER_BUFFER);
+				pa_framesPerBuffer = PA_FRAMES_PER_BUFFER ;
+			}
+			break;
+		case 'j':
+			pa_numberOfBuffers = strtoul(optarg, NULL, 0);
+
+			if ( (pa_numberOfBuffers > 64) || (pa_numberOfBuffers < 0) )
+			{
+				fprintf (stderr,
+					"Number of Portaudio buffers invalid, using default (%d).\n",
+					PA_NUM_BUFFERS);
+				pa_numberOfBuffers = PA_NUM_BUFFERS;
+			}
 			break;
 #endif
 #ifdef ZONES

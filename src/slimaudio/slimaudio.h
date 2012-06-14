@@ -54,7 +54,9 @@
 #define PA_DEFAULT_DEVICE	(-1)
 #ifndef PORTAUDIO_DEV
 typedef int	PaDeviceIndex;
-#endif
+extern unsigned long pa_framesPerBuffer;
+extern unsigned long pa_numberOfBuffers;
+#endif /* ! PORTAUDIO_DEV */
 
 #define AUDIO_CHUNK_SIZE 8192
 

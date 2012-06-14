@@ -534,11 +534,17 @@ void print_help(void) {
 "-y, --latency <msec>        Modify the default latency for the audio device.\n"
 "                            Useful if you experience drop outs during playback.\n"
 "                            Values between 80-200 ms are recommended.\n"
+#else
+"-g, --paframes              Set the number of frames per buffer that portaudio\n"
+"                            will use.  Default is %d.\n"
+"-j, --pabuffers             Set the number of internal buffers for portaudio.\n"
+"                            Use 0 to tell portaudio to decide how many buffers.\n"
+"                            Default is %d.\n"
 #endif
 "-o, --output <device_id>    Sets the output device id.\n"
 "                            The output device id can be found with -L.\n"
 "-P, --port <portnumber>     Sets the Squeezebox Server port number.\n"
-"                            The default port is 3483.\n"
+"                            The default port is %d.\n"
 "-p, --predelay <msec>       Sets a delay before any playback is started.  This\n"
 "                            is useful if the DAC used for output is slow to\n"
 "                            wake-up/lock, causing the first few samples to be\n"
@@ -598,6 +604,11 @@ void print_help(void) {
 "                                  slimaudio_http_v\n"
 "                                  slimaudio_output\n"
 "                                  slimaudio_output_v\n",
+#ifndef PORTAUDIO_DEV
+PA_FRAMES_PER_BUFFER,
+PA_NUM_BUFFERS,
+#endif
+SLIMPROTOCOL_PORT,
 RETRY_DEFAULT);
 }
 

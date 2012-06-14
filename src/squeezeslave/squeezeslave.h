@@ -76,9 +76,13 @@
 #ifdef EMPEG
 #define PLAYER_TYPE	13
 #define FIRMWARE_VERSION	1
+#define PA_FRAMES_PER_BUFFER	1152
+#define PA_NUM_BUFFERS		0
 #else
 #define PLAYER_TYPE	8
 #define FIRMWARE_VERSION	8
+#define PA_FRAMES_PER_BUFFER	(44100/7)	/* (samplerate/7) FIXME */
+#define PA_NUM_BUFFERS		3
 #endif
 
 int connect_callback(slimproto_t *, bool, void *);
