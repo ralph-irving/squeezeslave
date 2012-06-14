@@ -1,3 +1,13 @@
+2012-06-14 18:46  paddockd
+
+	* [r348] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c, src/squeezeslave/squeezeslave.h:
+	  Added -g/--paframes and -j/--pabuffers options to configure
+	  portaudio buffers at startup.
+	  Updated -p/--port help section to use SLIMPROTOCOL_PORT define.
+	  Increases revision to 348.
+
 2012-06-14 12:05  paddockd
 
 	* [r347] ChangeLog, src/slimaudio/slimaudio_output.c,

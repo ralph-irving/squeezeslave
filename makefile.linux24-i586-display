@@ -7,7 +7,7 @@ CC=gcc
 TAR=tar
 CP=cp
 PATCH=patch
-CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -Wall -s -march=i586 -mtune=pentium-mmx -O3 -fomit-frame-pointer
+CFLAGS=-DRENICE -DDAEMONIZE -Wall -s -march=i586 -mtune=pentium-mmx -O3 -fomit-frame-pointer
 
 # Comment out these two lines to remove display support
 CFLAGS+=-DINTERACTIVE
@@ -18,12 +18,12 @@ INCLUDE=-Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_comm
 LIBVORBIS=tremor-r18153
 
 # Tremor fixed point ogg decoder
-INCLUDE+=-Ilib/vorbis/$(OS)/include
-CFLAGS+=-DTREMOR_DECODER
-SUPPORTLIBS:=lib/vorbis/$(OS)/lib/libvorbisidec.a
+# INCLUDE+=-Ilib/vorbis/$(OS)/include
+# CFLAGS+=-DTREMOR_DECODER
+# SUPPORTLIBS:=lib/vorbis/$(OS)/lib/libvorbisidec.a
 
 # Vorbis floating point ogg decoder
-# LIBS+=/usr/lib/libvorbisfile.a /usr/lib/libvorbis.a
+LIBS+=/usr/lib/libvorbisfile.a /usr/lib/libvorbis.a
 
 LIBPORTAUDIO=lib/libportaudio.a
 
