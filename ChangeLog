@@ -1,3 +1,12 @@
+2012-06-14 19:05  paddockd
+
+	* [r349] ChangeLog, makefile.linux24-i586-display,
+	  scripts/buildall-lnx24mmx, src/squeezeslave/squeezeslave.c:
+	  Reverted pentium-mmx build to use vorbis decoder instead of
+	  tremor.
+	  Disabled DEBUG for the pentium-mmx build.
+	  Increased revision to 349.
+
 2012-06-14 18:46  paddockd
 
 	* [r348] ChangeLog, src/slimaudio/slimaudio.h,

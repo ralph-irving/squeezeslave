@@ -46,6 +46,8 @@
 
 #define HTTP_HEADER_LENGTH 1024
 
+extern bool threshold_override;
+
 #ifdef SLIMPROTO_DEBUG
   bool slimaudio_http_debug;
   bool slimaudio_http_debug_v;
@@ -349,8 +351,10 @@ static void http_recv(slimaudio_t *audio) {
 	while (slimaudio_buffer_available(audio->output_buffer) < AUDIO_CHUNK_SIZE * 2 &&
 		slimaudio_buffer_available(audio->decoder_buffer) >= AUDIO_CHUNK_SIZE * 8)
 	{
-		DEBUGF("http_recv: output_buffer %i below AUDIO_CHUNK_SIZE * 2\n", slimaudio_buffer_available(audio->output_buffer));
-		DEBUGF("http_recv: output_decoder_available %i\n", slimaudio_buffer_available(audio->decoder_buffer));
+		DEBUGF("http_recv: output_buffer %i below %i\n",
+				slimaudio_buffer_available(audio->output_buffer), AUDIO_CHUNK_SIZE * 2);
+		DEBUGF("http_recv: output_decoder_available %i above %i\n",
+				slimaudio_buffer_available(audio->decoder_buffer), AUDIO_CHUNK_SIZE * 8);
 		sched_yield();
 	}
 
@@ -389,7 +393,8 @@ static void http_recv(slimaudio_t *audio) {
 				{
 					case 'o':
 					case 'm':
-						autostart_threshold = 40000L;
+						if (threshold_override)
+							autostart_threshold = 40000L;
 						break;
 					default:
 						break;
@@ -441,7 +446,7 @@ static void http_recv(slimaudio_t *audio) {
 	else
 	{
 		pthread_mutex_unlock(&audio->http_mutex);
-		pthread_cond_broadcast(&audio->http_cond);				
+		pthread_cond_broadcast(&audio->http_cond);
 	}
 }
 
