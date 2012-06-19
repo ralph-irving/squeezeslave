@@ -1,3 +1,10 @@
+2012-06-17 10:39  paddockd
+
+	* [r350] ChangeLog, src/slimaudio/slimaudio_http.c,
+	  src/squeezeslave/squeezeslave.c: Added -T/--threshold_override
+	  undocumented option to defeat the workaround.
+	  Increased revision to 350.
+
 2012-06-14 19:05  paddockd
 
 	* [r349] ChangeLog, makefile.linux24-i586-display,

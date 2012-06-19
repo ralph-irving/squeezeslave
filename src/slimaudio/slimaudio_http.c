@@ -292,7 +292,17 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	/* XXX FIXME Hard coded sample rate calculation */
 	/* (Sample Rate * Sample Size * Channels / 8 bits/byte) / tenths of a second) */
-	audio->output_threshold = (((44100*16*2)/8)/10) * msg->strm.output_threshold; /* Stored in bytes */
+
+	if ( msg->strm.output_threshold > 0 )
+	{
+		/* Stored in bytes */
+		audio->output_threshold = (((44100*16*2)/8)/10) * msg->strm.output_threshold;
+	}
+	else
+	{
+		/* If the server sends 0 for strm.output_threshold, we use 1.2 seconds, stored in bytes. */
+		audio->output_threshold = 211680; /* 1.2 seconds, 44100Hz, 2 channels, 2 bytes (16bit/sample) */
+	}
 
 	DEBUGF("slimaudio_http_connect: autostart_mode=%c autostart_threshold=%i output_threshold=%i replay_gain=%f\n",
 		audio->autostart_mode, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);
@@ -408,7 +418,7 @@ static void http_recv(slimaudio_t *audio) {
 	VDEBUGF("http_recv: decode_num_tracks_started %u decode_bytes_available %u\n",
 		decode_num_tracks_started, audio->http_stream_bytes );
 
-	if ( !audio->autostart_threshold_reached && ( audio->http_stream_bytes >= autostart_threshold ))
+	if ( ( !audio->autostart_threshold_reached ) && ( audio->http_stream_bytes >= autostart_threshold ) )
 	{
 		audio->autostart_threshold_reached = true;
 

@@ -338,6 +338,7 @@ static void output_thread_stat(slimaudio_t* audio, char* code) {
 
 static void *output_thread(void *ptr) {
 	int err;
+	int output_buffer_size;
 #ifndef PORTAUDIO_DEV
 	int num_mixers, nbVolumes, volumeIdx;
 #endif
@@ -548,29 +549,43 @@ static void *output_thread(void *ptr) {
 				break;
 
 			case PLAY:
-/*
- * TODO I am not sure if it's best to start the stream in the play or buffering
- * state ... which has less latency for sync? If the stream is started in 
- * BUFFERING then pause/unpause breaks.
- */
-		   
 				audio->output_predelay_frames = audio->output_predelay_msec * 44.100;
-				err = Pa_StartStream(audio->pa_stream);
-				if (err != paNoError) {
-					printf("output_thread: PortAudio error2: %s\n", Pa_GetErrorText(err) );	
-					exit(-1);
+
+				DEBUGF("output_thread PLAY: output_predelay_frames: %i\n",
+					audio->output_predelay_frames);
+
+				output_buffer_size = slimaudio_buffer_available(audio->output_buffer);
+
+				DEBUGF("output_thread BUFFERING: output_buffer_size: %i output_threshold: %i\n",
+					output_buffer_size, audio->output_threshold);
+
+				if ( output_buffer_size < audio->output_threshold )
+				{
+					pthread_mutex_unlock(&audio->output_mutex);
+					pthread_cond_broadcast(&audio->output_cond);
+
+					Pa_Sleep(100);
+
+					pthread_mutex_lock(&audio->output_mutex);
+				}
+				else
+				{
+					DEBUGF("output_thread PLAY: start stream: %llu\n",
+						audio->pa_streamtime_offset);
+
+					err = Pa_StartStream(audio->pa_stream);
+					if (err != paNoError)
+					{
+						printf("output_thread: PortAudio error2: %s\n", Pa_GetErrorText(err));
+						exit(-1);
+					}
+
+					audio->output_state = PLAYING;
+
+					pthread_cond_broadcast(&audio->output_cond);
 				}
 
-				DEBUGF("output_thread PLAY: %llu\n",audio->pa_streamtime_offset);
-
-				audio->output_state = PLAYING;
-
-				pthread_cond_broadcast(&audio->output_cond);
-
 				break;
-
-			case BUFFERING:
-				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
 
 			case PLAYING:			
 				gettimeofday(&now, NULL);
