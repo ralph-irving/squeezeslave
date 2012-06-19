@@ -1,3 +1,14 @@
+2012-06-19 23:46  paddockd
+
+	* [r351] ChangeLog, TODO, src/slimaudio/slimaudio_http.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added our own output_threshold
+	  of 1.2 seconds if the server sends 0 in strm message.
+	  Added buffering to PLAY state in slimaudio_output.c using
+	  output_threshold. Fixes dropouts when playing the first track in
+	  a playlist on Solaris.
+	  Increased revision to 151.
+
 2012-06-17 10:39  paddockd
 
 	* [r350] ChangeLog, src/slimaudio/slimaudio_http.c,

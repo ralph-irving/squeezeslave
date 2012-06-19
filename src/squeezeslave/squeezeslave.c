@@ -42,7 +42,7 @@
 /* Retry support */
 bool retry_connection = false;
 bool output_change = false;
-bool threshold_override = true;
+bool threshold_override = false;
 
 #ifdef PORTAUDIO_DEV
 /* User suggested latency */
@@ -56,7 +56,7 @@ unsigned long pa_numberOfBuffers = PA_NUM_BUFFERS;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 351;
+const int revision = 352;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -462,7 +462,7 @@ int main(int argc, char *argv[]) {
 			keepalive_interval = strtoul(optarg, NULL, 0);
 			break;
 		case 'T':
-			threshold_override = false;
+			threshold_override = true;
 			break;
 		case 'm':
 			if (parse_macaddress(macaddress, optarg) != 0) {
