@@ -9,7 +9,7 @@ TAR=gtar
 SED=gsed
 PATCH=gpatch
 SHELL=/bin/bash
-CFLAGS=-DRENICE -D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -s -O3
+CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -s -O3
 LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -27,7 +27,6 @@ PORTMIXERFILES=lib/portmixer/px_none/px_none.c
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
-
 
 SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
 

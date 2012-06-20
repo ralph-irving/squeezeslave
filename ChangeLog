@@ -1,3 +1,11 @@
+2012-06-19 23:57  paddockd
+
+	* [r352] ChangeLog, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Changed default state for
+	  threshold_override to disabled.
+	  Added help description for threshold_override.
+	  Increased revision to 352.
+
 2012-06-19 23:46  paddockd
 
 	* [r351] ChangeLog, TODO, src/slimaudio/slimaudio_http.c,
