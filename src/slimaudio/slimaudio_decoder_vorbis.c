@@ -19,10 +19,6 @@
  *
  */
 
-#if defined(TREMOR_DECODER) && defined(__BIG_ENDIAN__)
-#error "TREMOR_DECODER not supported on big endian systems."
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

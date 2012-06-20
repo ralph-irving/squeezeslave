@@ -1,3 +1,11 @@
+2012-06-20 00:02  paddockd
+
+	* [r353] ChangeLog, contrib/makefile.sol-gcc-sparc-display,
+	  makefile.sol10-intel-display, makefile.sol10-sparc64-display,
+	  makefile.sol9-sparc-display, src/squeezeslave/squeezeslave.c:
+	  Removed RENICE feature from solaris makefiles.
+	  Increased revision to 353.
+
 2012-06-19 23:57  paddockd
 
 	* [r352] ChangeLog, src/squeezeslave/help.c,
