@@ -236,6 +236,7 @@ int slimaudio_output_init(slimaudio_t *audio, PaDeviceIndex output_device_id,
 	audio->output_predelay_frames = 0;
 	audio->output_predelay_amplitude = 0;
 	audio->keepalive_interval = -1;
+	audio->buffering_timeout = BUFFERING_TIMEOUT;
 	audio->decode_num_tracks_started = 0L;	
 	audio->stream_samples = 0UL;	
 	audio->replay_gain = -1.0;		/* signals first start */
@@ -556,10 +557,11 @@ static void *output_thread(void *ptr) {
 
 				output_buffer_size = slimaudio_buffer_available(audio->output_buffer);
 
-				DEBUGF("output_thread BUFFERING: output_buffer_size: %i output_threshold: %i\n",
+				DEBUGF("output_thread BUFFERING: output_buffer_size: %i output_threshold: %i",
 					output_buffer_size, audio->output_threshold);
+				DEBUGF(" buffering_timeout: %i\n", audio->buffering_timeout);
 
-				if ( output_buffer_size < audio->output_threshold )
+				if ( (output_buffer_size < audio->output_threshold) && (audio->buffering_timeout > 0) )
 				{
 					pthread_mutex_unlock(&audio->output_mutex);
 					pthread_cond_broadcast(&audio->output_cond);
@@ -567,11 +569,14 @@ static void *output_thread(void *ptr) {
 					Pa_Sleep(100);
 
 					pthread_mutex_lock(&audio->output_mutex);
+					audio->buffering_timeout--;
 				}
 				else
 				{
 					DEBUGF("output_thread PLAY: start stream: %llu\n",
 						audio->pa_streamtime_offset);
+
+					audio->buffering_timeout = BUFFERING_TIMEOUT;
 
 					err = Pa_StartStream(audio->pa_stream);
 					if (err != paNoError)
@@ -586,6 +591,9 @@ static void *output_thread(void *ptr) {
 				}
 
 				break;
+
+			case BUFFERING:
+				DEBUGF("output_thread BUFFERING: %llu\n",audio->pa_streamtime_offset);
 
 			case PLAYING:			
 				gettimeofday(&now, NULL);

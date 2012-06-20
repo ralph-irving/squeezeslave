@@ -46,6 +46,7 @@
 
 #define DECODER_BUFFER_SIZE	(2048*1024)
 #define OUTPUT_BUFFER_SIZE	(8*2*44100*4)
+#define BUFFERING_TIMEOUT	(12)
 
 #ifdef ZONES
 #define MAX_ZONES		(4)
@@ -146,6 +147,7 @@ typedef struct {
 	volatile bool output_STMu;
 
 	int keepalive_interval;
+	int buffering_timeout;
 	
 	PaDeviceIndex output_device_id;
 

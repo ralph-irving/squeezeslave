@@ -1,5 +1,9 @@
 ---
 
+Apply patches 350-353L to googlecode.  354=350 on googlecode.
+
+---
+
 Add buffering timeout to PLAY: state in slimaudio_output.c
 
 ---
