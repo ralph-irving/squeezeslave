@@ -75,6 +75,10 @@ int slimaudio_init(slimaudio_t *audio, slimproto_t *proto,
 	audio->proto = proto;
 	audio->decoder_buffer = slimaudio_buffer_init(DECODER_BUFFER_SIZE);
 	audio->output_buffer = slimaudio_buffer_init(OUTPUT_BUFFER_SIZE);
+
+	DEBUGF("decoder buffer pointer: %p\n", audio->decoder_buffer);
+	DEBUGF("output buffer pointer: %p\n", audio->output_buffer);
+
 #ifdef ZONES
 	if (output_zone >= output_num_zones)
 		return -1;
