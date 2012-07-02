@@ -1,8 +1,24 @@
+2012-06-21 16:45  paddockd
+
+	* [r356] src/slimaudio/slimaudio.c,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added stream active check to
+	  output STOP case for portaudio v18.
+	  Increased revision to 356.
+
+2012-06-20 21:18  paddockd
+
+	* [r355] ChangeLog, TODO, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added a timeout to the new
+	  buffering loop.
+	  Increased revision to 355.
+
 2012-06-20 17:52  paddockd
 
 	* [r354] ChangeLog, src/slimaudio/slimaudio_decoder_vorbis.c,
 	  src/squeezeslave/squeezeslave.c: Removed TREMOR_DECODER
-	  restriction for __BIG_ENDIAN__ systems.
+	  restriction for big endian systems.
 	  Increased revision to 354.
 
 2012-06-20 00:02  paddockd

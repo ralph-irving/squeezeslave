@@ -5,6 +5,8 @@
  *
  * Copyright (c) 1999-2000 Phil Burk
  *
+ *  Linux-Duplex-'bug' fix Alan Horstmann Series II 4.6.07
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files
  * (the "Software"), to deal in the Software without restriction,
@@ -782,8 +784,8 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
 
     /* ------------------------- OPEN DEVICE -----------------------*/
 
-    /* just output */
-    if (past->past_OutputDeviceID == past->past_InputDeviceID)
+    if (past->past_OutputDeviceID == past->past_InputDeviceID &&
+           past->past_NumOutputChannels == past->past_NumInputChannels)
     {
 
         if ((past->past_NumOutputChannels > 0) && (past->past_NumInputChannels > 0) )
