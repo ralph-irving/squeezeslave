@@ -682,10 +682,23 @@ static void *output_thread(void *ptr) {
 				
 			case PAUSE:
 #ifndef PORTAUDIO_DEV
-				err = Pa_StopStream(audio->pa_stream);
-				if (err != paNoError) {
-					printf("output_thread: PortAudio error10: %s\n", Pa_GetErrorText(err) );	
-					exit(-1);
+				if ( (err = Pa_StreamActive(audio->pa_stream) ) > 0)
+				{
+					err = Pa_StopStream(audio->pa_stream);
+					if (err != paNoError)
+					{
+						printf("output_thread: PortAudio error10: %s\n", Pa_GetErrorText(err));	
+						exit(-1);
+					}
+				}
+				else
+				{
+					if ( err != paNoError)
+					{
+						printf("output_thread: PortAudio error11: %s\n",
+						Pa_GetErrorText(err) );
+						exit(-1);
+					}
 				}
 #else
 				if ( (err = Pa_IsStreamActive(audio->pa_stream)) > 0) {
