@@ -1,3 +1,10 @@
+2012-07-03 21:33  paddockd
+
+	* [r359] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added stream active check to
+	  output PAUSE case for portaudio v18.
+	  Increased revision to 359.
+
 2012-07-03 21:29  paddockd
 
 	* [r358] ChangeLog, lib/portaudio/pa_unix_oss/pa_unix_solaris.c,

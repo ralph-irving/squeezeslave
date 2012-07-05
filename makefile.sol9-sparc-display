@@ -22,7 +22,7 @@ LIBLIRC=lirc-0.8.6
 
 PORTAUDIOFILES=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_solaris.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
 
-PORTMIXERFILES=lib/portmixer/px_none/px_none.c
+PORTMIXERFILES=lib/portmixer/px_solaris/px_solaris.c
 
 GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
 

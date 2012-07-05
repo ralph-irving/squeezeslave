@@ -30,9 +30,6 @@
 #ifdef PADEV_WASAPI
 #include <pa_win_wasapi.h>
 #endif
-#ifndef PORTAUDIO_DEV
-#include <portmixer.h>
-#endif
 
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
@@ -312,9 +309,12 @@ void slimaudio_output_vol_adjust(slimaudio_t *audio)
 
 #ifndef PORTAUDIO_DEV
 	if (audio->px_mixer != NULL) {
-#ifdef EMPEG
+#if defined(EMPEG)
 		Px_SetMasterVolume(audio->px_mixer, (PxVolume)audio->volume);
 		DEBUGF("Master volume %f\n", Px_GetMasterVolume(audio->px_mixer));
+#elif defined(sun)
+		Px_SetOutputVolume(audio->px_mixer, 0, (PxVolume)audio->volume);
+		DEBUGF("Output volume %f\n", Px_GetOutputVolume(audio->px_mixer, 0));
 #else
 		Px_SetPCMOutputVolume(audio->px_mixer, (PxVolume)audio->volume);
 		DEBUGF("pcm volume %f\n", Px_GetPCMOutputVolume(audio->px_mixer));
