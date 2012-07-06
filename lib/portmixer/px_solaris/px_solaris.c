@@ -95,16 +95,14 @@ PxMixer *Px_OpenMixer( void *pa_stream, int i ) {
    }
 
    if (fd < 0) {
-       perror("audio device won't open");
        return NULL;
    }
 
    /* make sure we're an audio devoce */
 
    if (ioctl(fd, AUDIO_GETDEV, &device) < 0) {
-       perror("Bogus audio device");
+       return NULL;
    }
-   fprintf(stderr, "Mixer using audio control device: %s\n", device.name);
 
    info = (PxInfo *)malloc(sizeof(PxInfo));
    info->fd = fd;
@@ -165,7 +163,6 @@ PxVolume Px_GetOutputVolume( PxMixer *mixer, int i ) {
    PxInfo *info = (PxInfo *)mixer;
    PxVolume result = (PxVolume) 0.0;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return result;
    }
    result =  (PxVolume) ((float)audio.play.gain / AUDIO_MAX_GAIN);
@@ -176,11 +173,11 @@ void Px_SetOutputVolume( PxMixer *mixer, int i, PxVolume volume ) {
    struct audio_info audio;
    PxInfo *info = (PxInfo *)mixer;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
    audio.play.gain =  AUDIO_MAX_GAIN * BETWEEN(0.0, (float)volume, 1.0);
    if (ioctl(info->fd,AUDIO_SETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
 }
 
@@ -205,7 +202,6 @@ int Px_GetCurrentInputSource( PxMixer *mixer ) {
    PxInfo *info = (PxInfo *)mixer;
    int port;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return 0;
    }
    port = audio.record.port;
@@ -223,7 +219,6 @@ void Px_SetCurrentInputSource( PxMixer *mixer, int i ) {
    PxInfo *info = (PxInfo *)mixer;
    int port;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return;
    }
    switch (i) {
@@ -231,7 +226,7 @@ void Px_SetCurrentInputSource( PxMixer *mixer, int i ) {
        case 1:	audio.record.port = AUDIO_LINE_IN;
    }
    if (ioctl(info->fd,AUDIO_SETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
 }
 
@@ -244,7 +239,6 @@ PxVolume Px_GetInputVolume( PxMixer *mixer ) {
    PxInfo *info = (PxInfo *)mixer;
    PxVolume result = (PxVolume) 0.0;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return result;
    }
    result =  (PxVolume) ((float)audio.record.gain / AUDIO_MAX_GAIN);
@@ -255,11 +249,11 @@ void Px_SetInputVolume( PxMixer *mixer, PxVolume volume ) {
    struct audio_info audio;
    PxInfo *info = (PxInfo *)mixer;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
    audio.record.gain =  AUDIO_MAX_GAIN * BETWEEN(0.0, (float)volume, 1.0);
    if (ioctl(info->fd,AUDIO_SETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
 }
 
@@ -275,7 +269,6 @@ PxBalance Px_GetOutputBalance( PxMixer *mixer ) {
    PxInfo *info = (PxInfo *)mixer;
    PxBalance result = (PxBalance) 0.0;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return result;
    }
    result =  (PxBalance) ((float)(audio.play.balance-32) / 32.0);
@@ -287,12 +280,11 @@ void Px_SetOutputBalance( PxMixer *mixer, PxBalance balance ) {
    PxInfo *info = (PxInfo *)mixer;
    PxBalance result = (PxBalance) 0.0;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return;
    }
    audio.play.balance = ((float)balance * 32.0) + 32;
    if (ioctl(info->fd,AUDIO_SETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
 }
 
@@ -308,7 +300,6 @@ PxVolume Px_GetPlaythrough( PxMixer *mixer ) {
    PxInfo *info = (PxInfo *)mixer;
    PxVolume result = (PxVolume) 0.0;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
        return result;
    }
    result =  (PxBalance) ((float)audio.monitor_gain /  AUDIO_MAX_GAIN);
@@ -318,11 +309,11 @@ void Px_SetPlaythrough( PxMixer *mixer, PxVolume volume ) {
    struct audio_info audio;
    PxInfo *info = (PxInfo *)mixer;
    if (ioctl(info->fd,AUDIO_GETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
    audio.monitor_gain =  AUDIO_MAX_GAIN * BETWEEN(0.0, (float)volume, 1.0);
    if (ioctl(info->fd,AUDIO_SETINFO,&audio) < 0)  {
-       perror("Bad audio");
+       return;
    }
 }
 

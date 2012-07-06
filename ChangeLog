@@ -1,3 +1,13 @@
+2012-07-05 20:31  paddockd
+
+	* [r360] ChangeLog, contrib/makefile.sol-gcc-sparc-display,
+	  lib/portmixer/px_solaris, lib/portmixer/px_solaris/px_solaris.c,
+	  makefile.sol10-intel-display, makefile.sol10-sparc64-display,
+	  makefile.sol9-sparc-display, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Added solaris portmixer support
+	  from kiax 0.8.51.
+	  Increased revision to 360.
+
 2012-07-03 21:33  paddockd
 
 	* [r359] ChangeLog, src/slimaudio/slimaudio_output.c,
