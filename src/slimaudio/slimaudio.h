@@ -44,9 +44,11 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio_buffer.h"
 
+/* XXX FIXME */
 #define DECODER_BUFFER_SIZE	(2048*1024)
 #define OUTPUT_BUFFER_SIZE	(8*2*44100*4)
 #define BUFFERING_TIMEOUT	(12)
+#define OUTPUT_THRESHOLD        (211680)  /* 1.2 seconds, 44100Hz, 2 channels, 2 bytes (16bit/sample) */
 
 #ifdef ZONES
 #define MAX_ZONES		(4)

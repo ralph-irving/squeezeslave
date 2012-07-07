@@ -467,7 +467,9 @@ void print_help(void) {
 "                            chooses the right value: 10s for a >=6.5.x server\n"
 "                            and 0s for a <6.5.x server, which means no\n"
 "                            keepalive.\n"
-"-T, --threshold_override    Ignore server autostart_threshold for ogg and mp3.\n"
+"-T, --threshold_override    Ignore autostart threshold for ogg and mp3.\n"
+"-O,                         Ignore output threshold when buffering and use\n"
+"--output_threshold <bytes>  specified value in bytes.\n"
 #ifdef __WIN32__
 "-H, --highpriority          Change process priority class to high.\n"
 #ifdef PADEV_WASAPI

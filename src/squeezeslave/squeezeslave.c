@@ -43,6 +43,7 @@
 bool retry_connection = false;
 bool output_change = false;
 bool threshold_override = false;
+unsigned int output_threshold = OUTPUT_THRESHOLD;
 
 #ifdef PORTAUDIO_DEV
 /* User suggested latency */
@@ -56,7 +57,7 @@ unsigned long pa_numberOfBuffers = PA_NUM_BUFFERS;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 361;
+const int revision = 362;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -234,7 +235,7 @@ int main(int argc, char *argv[]) {
 #endif
 	char slimserver_address[INET_FQDNSTRLEN] = "127.0.0.1";
 
-	char getopt_options[OPTLEN] = "a:FId:Y:e:f:hk:Lm:n:o:P:p:Rr:TVv:";
+	char getopt_options[OPTLEN] = "a:FId:Y:e:f:hk:Lm:n:o:P:p:Rr:TO:Vv:";
 
 	static struct option long_options[] = {
 		{"predelay_amplitude", required_argument, 0, 'a'},
@@ -253,6 +254,7 @@ int main(int argc, char *argv[]) {
 		{"port",               required_argument, 0, 'P'},
 		{"predelay",           required_argument, 0, 'p'},
 		{"threshold_override", no_argument,       0, 'T'},
+		{"output_threshold",   required_argument, 0, 'O'},
 #ifdef EMPEG
 		{"puteq",              no_argument,       0, 'Q'},
 		{"geteq",              no_argument,       0, 'q'},
@@ -463,6 +465,15 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'T':
 			threshold_override = true;
+			break;
+		case 'O':
+			output_threshold = strtoul(optarg, NULL, 0);
+			if ( (output_threshold < 0) || (output_threshold > 1000000) )
+			{
+				output_threshold = OUTPUT_THRESHOLD;
+				fprintf(stderr, "%s: Invalid output threshold, using (%d)\n",
+					argv[0], output_threshold);
+			}
 			break;
 		case 'm':
 			if (parse_macaddress(macaddress, optarg) != 0) {

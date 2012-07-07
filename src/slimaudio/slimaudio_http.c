@@ -47,6 +47,7 @@
 #define HTTP_HEADER_LENGTH 1024
 
 extern bool threshold_override;
+extern unsigned int output_threshold;
 
 #ifdef SLIMPROTO_DEBUG
   bool slimaudio_http_debug;
@@ -292,7 +293,7 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 
 	/* XXX FIXME Hard coded sample rate calculation */
 	/* (Sample Rate * Sample Size * Channels / 8 bits/byte) / tenths of a second) */
-
+	/* If the server sends 0 for strm.output_threshold, we use OUTPUT_THRESHOLD, stored in bytes. */
 	if ( msg->strm.output_threshold > 0 )
 	{
 		/* Stored in bytes */
@@ -300,9 +301,12 @@ void slimaudio_http_connect(slimaudio_t *audio, slimproto_msg_t *msg) {
 	}
 	else
 	{
-		/* If the server sends 0 for strm.output_threshold, we use 1.2 seconds, stored in bytes. */
-		audio->output_threshold = 211680; /* 1.2 seconds, 44100Hz, 2 channels, 2 bytes (16bit/sample) */
+		audio->output_threshold = OUTPUT_THRESHOLD;
 	}
+
+	/* Over ride Output threshold */
+	if ( output_threshold != OUTPUT_THRESHOLD )
+		audio->output_threshold = output_threshold;
 
 	DEBUGF("slimaudio_http_connect: autostart_mode=%c autostart_threshold=%i output_threshold=%i replay_gain=%f\n",
 		audio->autostart_mode, audio->autostart_threshold, audio->output_threshold, audio->replay_gain);

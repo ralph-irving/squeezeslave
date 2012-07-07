@@ -1,3 +1,10 @@
+2012-07-06 17:36  paddockd
+
+	* [r361] ChangeLog, lib/portmixer/px_solaris/px_solaris.c,
+	  src/squeezeslave/squeezeslave.c: Removed error reporting from
+	  solaris portmixer module.
+	  Increased revision to 361.
+
 2012-07-05 20:31  paddockd
 
 	* [r360] ChangeLog, contrib/makefile.sol-gcc-sparc-display,
