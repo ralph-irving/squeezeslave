@@ -311,10 +311,10 @@ void slimaudio_output_vol_adjust(slimaudio_t *audio)
 	if (audio->px_mixer != NULL) {
 #if defined(EMPEG)
 		Px_SetMasterVolume(audio->px_mixer, (PxVolume)audio->volume);
-		DEBUGF("Master volume %f\n", Px_GetMasterVolume(audio->px_mixer));
+		DEBUGF("master volume %f\n", Px_GetMasterVolume(audio->px_mixer));
 #elif defined(sun)
 		Px_SetOutputVolume(audio->px_mixer, 0, (PxVolume)audio->volume);
-		DEBUGF("Output volume %f\n", Px_GetOutputVolume(audio->px_mixer, 0));
+		DEBUGF("output volume %f\n", Px_GetOutputVolume(audio->px_mixer, 0));
 #else
 		Px_SetPCMOutputVolume(audio->px_mixer, (PxVolume)audio->volume);
 		DEBUGF("pcm volume %f\n", Px_GetPCMOutputVolume(audio->px_mixer));
@@ -363,9 +363,9 @@ static void *output_thread(void *ptr) {
 #endif
 
 #ifndef PORTAUDIO_DEV
-	DEBUGF("output_tread: output_device_id  : %i\n", audio->output_device_id );
-	DEBUGF("output_tread: pa_framesPerBuffer: %lu\n", pa_framesPerBuffer );
-	DEBUGF("output_tread: pa_numberOfBuffers: %lu\n", pa_numberOfBuffers );
+	DEBUGF("output_thread: output_device_id  : %i\n", audio->output_device_id );
+	DEBUGF("output_thread: pa_framesPerBuffer: %lu\n", pa_framesPerBuffer );
+	DEBUGF("output_thread: pa_numberOfBuffers: %lu\n", pa_numberOfBuffers );
 
 	err = Pa_OpenStream(	&audio->pa_stream,	/* stream */
 				paNoDevice,		/* input device */

@@ -575,7 +575,13 @@ void print_help(void) {
 #endif
 "                            Squeezebox Server during its operation, such as\n"
 "                            when changing the volume through the web interface\n"
-"                            or when applying replay gain.  Defaults to sw.\n"
+"                            or when applying replay gain.  Defaults to "
+#if defined(EMPEG) || defined(sun)
+"on"
+#else
+"sw"
+#endif
+".\n"
 #ifndef PORTAUDIO_DEV
 "                                  on:  volume changes performed on device.\n"
 #endif
