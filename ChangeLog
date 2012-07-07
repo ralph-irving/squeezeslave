@@ -1,3 +1,12 @@
+2012-07-07 12:36  paddockd
+
+	* [r362] ChangeLog, src/slimaudio/slimaudio.h,
+	  src/slimaudio/slimaudio_http.c, src/squeezeslave/help.c,
+	  src/squeezeslave/squeezeslave.c: Added -O/--output_threshold
+	  option to ignore output threshold from server when buffering and
+	  use the specified value in bytes.
+	  Increased revision to 362.
+
 2012-07-06 17:36  paddockd
 
 	* [r361] ChangeLog, lib/portmixer/px_solaris/px_solaris.c,

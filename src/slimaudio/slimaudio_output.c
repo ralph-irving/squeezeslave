@@ -489,12 +489,9 @@ static void *output_thread(void *ptr) {
 		DEBUGF("Opening mixer.\n" );
 		audio->px_mixer = Px_OpenMixer(audio->pa_stream, 0);
 	}
-	else {
-		DEBUGF("Mixer explicitly disabled.\n" );
-	}
-	DEBUGF("Px_mixer = %p\n", audio->px_mixer);
 
 	if (audio->px_mixer != NULL) {
+		DEBUGF("Px_mixer = %p\n", audio->px_mixer);
 		DEBUGF("PCM volume supported: %d.\n", 
 		       Px_SupportsPCMOutputVolume(audio->px_mixer));
 
