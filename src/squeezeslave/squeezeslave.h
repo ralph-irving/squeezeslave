@@ -80,8 +80,8 @@
 #define PA_NUM_BUFFERS		0
 #else
 #define PLAYER_TYPE	8
-#define FIRMWARE_VERSION	8
-#define PA_FRAMES_PER_BUFFER	(44100/7)	/* (samplerate/7) FIXME */
+#define FIRMWARE_VERSION	9
+#define PA_FRAMES_PER_BUFFER	(44100/7)	/* XXX FIXME (samplerate/7) */
 #define PA_NUM_BUFFERS		3
 #endif
 

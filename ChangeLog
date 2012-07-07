@@ -1,3 +1,10 @@
+2012-07-07 15:52  paddockd
+
+	* [r364] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Solaris
+	  now defaults to the device mixer for volume changes.
+	  Increased revision to 364.
+
 2012-07-07 12:48  paddockd
 
 	* [r363] ChangeLog, src/slimaudio/slimaudio_output.c,
@@ -100,7 +107,7 @@
 	  Added buffering to PLAY state in slimaudio_output.c using
 	  output_threshold. Fixes dropouts when playing the first track in
 	  a playlist on Solaris.
-	  Increased revision to 151.
+	  Increased revision to 351.
 
 2012-06-17 10:39  paddockd
 
