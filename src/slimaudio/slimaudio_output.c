@@ -640,7 +640,7 @@ static void *output_thread(void *ptr) {
 #ifndef PORTAUDIO_DEV
 				if ( (err = Pa_StreamActive(audio->pa_stream) ) > 0)
 				{
-					err = Pa_AbortStream(audio->pa_stream);
+					err = Pa_StopStream(audio->pa_stream);
 					if (err != paNoError)
 					{
 						printf("output_thread: PortAudio error3: %s\n", Pa_GetErrorText(err) );	
@@ -658,7 +658,7 @@ static void *output_thread(void *ptr) {
 				}
 #else
 				if ( (err = Pa_IsStreamActive(audio->pa_stream)) > 0) {
-					err = Pa_AbortStream(audio->pa_stream);
+					err = Pa_StopStream(audio->pa_stream);
 					if (err != paNoError) {
 						printf("output_thread[STOP]: PortAudio error3: %s\n",
 									Pa_GetErrorText(err) );
