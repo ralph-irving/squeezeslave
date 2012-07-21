@@ -1,3 +1,11 @@
+2012-07-17 14:23  paddockd
+
+	* [r366] ChangeLog, src/slimaudio/slimaudio_output.c,
+	  src/squeezeslave/squeezeslave.c: Fixed playing audio remaining in
+	  output buffer from the previous track after STOP/PLAY state
+	  change. Exhibited on windows and solaris.
+	  Increased revision to 366.
+
 2012-07-07 19:28  paddockd
 
 	* [r365] ChangeLog, TODO, src/squeezeslave/squeezeslave.c,
