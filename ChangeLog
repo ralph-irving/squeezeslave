@@ -1,3 +1,12 @@
+2012-07-21 18:34  paddockd
+
+	* [r367] ChangeLog, contrib/makefile.linux26-armhf-alsa-display,
+	  src/squeezeslave/squeezeslave.c: Added raspberry pi debian hard
+	  float (armhf) makefile.
+	  Thanks to Thomas Ruehl for providing the raspberry pi build
+	  environment.
+	  Increased revision to 367.
+
 2012-07-17 14:23  paddockd
 
 	* [r366] ChangeLog, src/slimaudio/slimaudio_output.c,
