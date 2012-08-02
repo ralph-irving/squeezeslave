@@ -1,3 +1,20 @@
+2012-08-01 12:02  paddockd
+
+	* [r369] contrib/makefile.oi-gcc-intel-display,
+	  contrib/makefile.sol-gcc-sparc-display,
+	  patches/build-portaudio-oi-pthread.patch,
+	  src/squeezeslave/help.c, src/squeezeslave/squeezeslave.c: Ported
+	  squeezeslave to OpenIndiana intel platform with support for OSS4
+	  and SADA (Sun Audio Device Architecture) devices.
+	  Fixed Solaris hardware mixer support being enabled on unsupported
+	  PORTAUDIO_DEV.
+	  Increased revision to 369.
+
+2012-07-26 18:55  paddockd
+
+	* [r368] ChangeLog, lib/portaudio/Makefile.solaris: Added install
+	  section to portaudio v18.1 solaris makefile.
+
 2012-07-21 18:34  paddockd
 
 	* [r367] ChangeLog, contrib/makefile.linux26-armhf-alsa-display,
