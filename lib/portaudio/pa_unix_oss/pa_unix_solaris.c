@@ -251,6 +251,10 @@ PaError Pa_SetupOutputDeviceFormat( int devHandle, int numChannels, int sampleRa
        * blocksize set. After a minute or so it flips into the
        * correct mode, but obviously this is too late to be + * useful for most apps. grrr.
        */
+    /* AS: And the Solaris man audio pages say you should flush before changing formats
+       anyway.  So there you go. */
+    if (Pa_FlushStream(devHandle) != paNoError)
+      return paHostError;
 
     solaris_info.play.encoding = AUDIO_ENCODING_LINEAR;
     solaris_info.play.sample_rate = sampleRate;
@@ -349,7 +353,7 @@ static PaError Pa_PauseAndFlush(int devHandle)
   audio_info_t solaris_info;
   AUDIO_INITINFO(&solaris_info);
 
-  solaris_info.record.pause = 1;
+  solaris_info.play.pause = solaris_info.record.pause = 1;
 
   if (ioctl(devHandle, AUDIO_SETINFO, &solaris_info) == -1)
     {
@@ -365,7 +369,7 @@ static PaError Pa_PauseAndFlush(int devHandle)
 
       /* Unpause! */
       AUDIO_INITINFO(&solaris_info);
-      solaris_info.record.pause = 0;
+      solaris_info.play.pause = solaris_info.record.pause = 0;
       ioctl(devHandle, AUDIO_SETINFO, &solaris_info);
 
       return paHostError;
@@ -379,7 +383,7 @@ static PaError Pa_PauseAndFlush(int devHandle)
 
       /* Unpause! */
       AUDIO_INITINFO(&solaris_info);
-      solaris_info.record.pause = 0;
+      solaris_info.play.pause = solaris_info.record.pause = 0;
       ioctl(devHandle, AUDIO_SETINFO, &solaris_info);
 
       return paHostError;
@@ -394,7 +398,7 @@ static PaError Pa_Unpause(int devHandle)
   audio_info_t solaris_info;
   AUDIO_INITINFO(&solaris_info);
 
-  solaris_info.record.pause = 0;
+  solaris_info.play.pause = solaris_info.record.pause = 0;
 
   if (ioctl(devHandle, AUDIO_SETINFO, &solaris_info) == -1)
     {
