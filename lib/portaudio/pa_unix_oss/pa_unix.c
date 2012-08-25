@@ -657,9 +657,9 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
         Pa_EndUsageCalculation( past );
         if( result != 0)
         {
-            DBUG(("hmm, Pa_CallConvertInt16() says: %d. i'm bailing.\n",
-                  result));
-            break;
+            DBUG(("hmm, Pa_CallConvertInt16() says: %d. i'm bailing.\n", result));
+
+            past->past_StopSoon = 1;
         }
 
         /* Write data to device. */

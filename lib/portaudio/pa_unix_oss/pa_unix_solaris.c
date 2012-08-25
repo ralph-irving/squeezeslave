@@ -361,7 +361,7 @@ static PaError Pa_PauseAndFlush(int devHandle)
       return paHostError;
     }
 
-#if defined I_FLUSH && defined FLUSHW
+#if defined I_FLUSH && defined FLUSHRW
   /* Flush the audiobuffer */
   if (ioctl(devHandle, I_FLUSH, FLUSHRW) == -1)
     {
