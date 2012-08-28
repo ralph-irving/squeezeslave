@@ -43,6 +43,8 @@
 
 #ifdef __linux__
 #include <linux/soundcard.h>
+#elif defined(HAVE_SYS_SOUNDCARD_H)
+#include <sys/soundcard.h>
 #else
 #include <machine/soundcard.h> /* JH20010905 */
 #endif

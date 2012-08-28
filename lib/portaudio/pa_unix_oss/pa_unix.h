@@ -84,6 +84,8 @@ PaDriverInfo;
 /************************************************* Definitions ********/
 #ifdef __linux__
  #define DEVICE_NAME_BASE            "/dev/dsp"
+#elif defined(HAVE_SYS_SOUNDCARD_H) && !defined(__NetBSD__)
+ #define DEVICE_NAME_BASE            "/dev/dsp"
 #else
  #define DEVICE_NAME_BASE            "/dev/audio"
 #endif

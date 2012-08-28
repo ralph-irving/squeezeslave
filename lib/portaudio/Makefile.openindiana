@@ -1,0 +1,27 @@
+CC=gcc
+CXX=g++
+CPP=cpp
+CFLAGS=-s -O3 -DHAVE_SYS_SOUNDCARD_H=1
+INCLUDE=-Ipa_common -Ipablio
+
+PORTAUDIOFILES=pa_unix_oss/pa_unix.c pa_unix_oss/pa_unix_oss.c pa_common/pa_lib.c pa_common/pa_convert.c pablio/ringbuffer.c
+
+LIBPORTAUDIO=libportaudio.a
+
+.c.o:
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+all : $(PORTAUDIOFILES) $(LIBPORTAUDIO)
+
+$(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
+	ar cru $(LIBPORTAUDIO) $^
+	ranlib $(LIBPORTAUDIO)
+
+install: $(LIBPORTAUDIO)
+	cp -p libportaudio.a $(PREFIX)/lib
+	cp -p pa_common/portaudio.h $(PREFIX)/include
+
+clean:
+	-@rm -f $(PORTAUDIOFILES:.c=.o)
+	-@rm -f $(LIBPORTAUDIO)
+
