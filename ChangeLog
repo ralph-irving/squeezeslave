@@ -1,3 +1,40 @@
+2012-09-01 17:31  paddockd
+
+	* [r374] contrib/makefile.oi-gcc-intel-v18-display,
+	  src/squeezeslave/squeezeslave.c: Added OpenIndian intel portaudio
+	  v18 makefile to contrib.
+	  Increased revision to 374.
+
+2012-08-28 22:48  paddockd
+
+	* [r373] lib/portaudio/Makefile.openindiana,
+	  lib/portaudio/pa_unix_oss/pa_unix.h,
+	  lib/portaudio/pa_unix_oss/pa_unix_oss.c: Added OSS support to
+	  portaudio v18 for OpenIndiana using HAVE_SYS_SOUNDCARD_H define.
+
+2012-08-25 15:29  paddockd
+
+	* [r372] lib/portaudio/pa_unix_oss/pa_unix.c,
+	  lib/portaudio/pa_unix_oss/pa_unix_solaris.c: Changed
+	  Pa_AudioThreadProc behaviour for OSS/Solaris to playout current
+	  buffer if the callback returns non zero, instead of breaking out
+	  of the loop.
+	  Allowing a smooth transistion when closing/opening the device for
+	  a sample rate change.
+
+2012-08-24 21:09  paddockd
+
+	* [r371] lib/portaudio/pa_unix_oss/pa_unix_solaris.c: Revert r358 -
+	  Pause and flush only required when changing record parameters in
+	  Solaris.
+
+2012-08-02 00:49  paddockd
+
+	* [r370] ChangeLog, lib/libportaudio/s10intel,
+	  lib/libportaudio/s10intel/build,
+	  lib/libportaudio/s10intel/include, lib/libportaudio/s10intel/lib:
+	  Add missing OpenIndiana build directories.
+
 2012-08-01 12:02  paddockd
 
 	* [r369] contrib/makefile.oi-gcc-intel-display,
