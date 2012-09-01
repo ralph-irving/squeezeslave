@@ -1,3 +1,8 @@
+2012-09-01 17:33  paddockd
+
+	* [r375] ChangeLog, sources/portaudio-r1857.tar.gz: Added r1857 of
+	  the portaudio support library.
+
 2012-09-01 17:31  paddockd
 
 	* [r374] contrib/makefile.oi-gcc-intel-v18-display,
