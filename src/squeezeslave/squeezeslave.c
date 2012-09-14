@@ -57,7 +57,7 @@ unsigned long pa_numberOfBuffers = PA_NUM_BUFFERS;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.2L";
-const int revision = 376;
+const int revision = 378;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
 	bool geteq = false;
 	long key, ir;
 #endif
-#if defined(EMPEG) || (defined(sun) && !defined(PORTAUDIO_DEV))
+#ifdef EMPEG
 	slimaudio_volume_t volume_control = VOLUME_DRIVER;
 #else
 	slimaudio_volume_t volume_control = VOLUME_SOFTWARE;

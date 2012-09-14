@@ -1,3 +1,10 @@
+2012-09-14 17:57  paddockd
+
+	* [r377] ChangeLog, contrib/makefile.oi-gcc-intel-v18-display,
+	  makefile.oi-intel-oss-display, makefile.oi-intel-sada-display:
+	  Added new OpenIndiana portaudio v18 makefiles.
+	  Deleted old OpenIndiana v18 makefile.
+
 2012-09-01 17:52  paddockd
 
 	* [r376] ChangeLog, src/squeezeslave/squeezeslave.c,
