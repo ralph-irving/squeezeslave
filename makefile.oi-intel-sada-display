@@ -1,4 +1,4 @@
-# OpenIndiana intel portaudio v18 makefile using gcc
+# OpenIndiana intel SADA portaudio v18 makefile using gcc
 # Requires GNU make, GNU tar and GNU sed
 
 OS=s10intel
@@ -9,7 +9,7 @@ TAR=gtar
 SED=gsed
 PATCH=gpatch
 SHELL=/bin/bash
-CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -DHAVE_SYS_SOUNDCARD_H -s -O3
+CFLAGS=-DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -O3
 LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
@@ -78,7 +78,7 @@ lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/lirc/$(OS)/lib/liblirc_client.a:
 	cd lib/lirc/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBLIRC).tar.bz2
 	cd lib/lirc/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/lirc_client.patch
-	cd lib/lirc/$(OS)/build/$(LIBLIRC) && $(SED) -i "s:^#define WEXITSTATUS(w)		(((w) >> 8) & 0xff)::" tools/lirc_client.h
+	# cd lib/lirc/$(OS)/build/$(LIBLIRC) && $(SED) -i "s:^#define WEXITSTATUS(w)		(((w) >> 8) & 0xff)::" tools/lirc_client.h
 	cd lib/lirc/$(OS)/build/$(LIBLIRC)/tools && $(CC) $(CFLAGS) -I.. -I. -c -o lirc_client.o lirc_client.c
 	ar cru lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.o
 	ranlib lib/lirc/$(OS)/lib/liblirc_client.a
