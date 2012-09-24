@@ -1,0 +1,11 @@
+--- configure.orig	2012-09-01 17:11:27.000000000 -0400
++++ configure	2012-09-20 14:27:47.778750000 -0400
+@@ -15866,7 +15866,7 @@
+ 
+         if [ "x$with_wdmks" = "xyes" ]; then
+             DXDIR="$with_dxdir"
+-            add_objects src/hostapi/wdmks/pa_win_wdmks.o src/common/pa_ringbuffer.o src/os/win/pa_win_hostapis.o src/os/win/pa_win_util.o src/os/win/pa_win_wdmks_util.o src/os/win/pa_win_waveformat.o
++            add_objects src/hostapi/wdmks/pa_win_wdmks.o src/os/win/pa_win_hostapis.o src/os/win/pa_win_util.o src/os/win/pa_win_wdmks_utils.o src/common/pa_ringbuffer.o src/os/win/pa_win_waveformat.o
+             LIBS="${LIBS} -lwinmm -lm -luuid -lsetupapi -lole32"
+             DLL_LIBS="${DLL_LIBS} -lwinmm -lm -L$DXDIR/lib -luuid -lsetupapi -lole32"
+             #VC98="\"/c/Program Files/Microsoft Visual Studio/VC98/Include\""
