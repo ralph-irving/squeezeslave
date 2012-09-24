@@ -1,3 +1,12 @@
+2012-09-24 11:57  paddockd
+
+	* [r379] ChangeLog, makefile.windows-display,
+	  patches/build-portaudio-wdmks.patch,
+	  sources/portaudio-r1871.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Added libportaudio r1871 source.
+	  Added WDM-KS portaudio hostapi to windows build.
+	  Increased revision to 379.
+
 2012-09-14 18:08  paddockd
 
 	* [r378] ChangeLog, src/squeezeslave/help.c,

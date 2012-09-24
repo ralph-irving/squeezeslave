@@ -6,14 +6,19 @@ REV=`svnversion`
 make -f makefile.osx-i64-display realclean
 make -f makefile.osx-intel-display realclean
 
+make -f makefile.osx-ppc64-display realclean
+
 make -f makefile.osx-ppc-display realclean
 make -f makefile.osx-ppc-display
 
 mv bin/squeezeslave bin/squeezeslave-ppc-$VER-$REV
 
 make -f makefile.osx-ppc-display realclean
+make -f makefile.osx-ppc64-display
 
-make -f makefile.osx-intel-display realclean
+mv bin/squeezeslave bin/squeezeslave-ppc64-$VER-$REV
+
+make -f makefile.osx-ppc64-display realclean
 make -f makefile.osx-intel-display
 
 mv bin/squeezeslave bin/squeezeslave-intel-$VER-$REV
@@ -25,6 +30,6 @@ make -f makefile.osx-i64-display
 
 mv bin/squeezeslave bin/squeezeslave-i64-$VER-$REV
 
-lipo -create bin/squeezeslave-ppc-$VER-$REV bin/squeezeslave-intel-$VER-$REV bin/squeezeslave-i64-$VER-$REV -output bin/squeezeslave-$VER-$REV
+lipo -create bin/squeezeslave-ppc-$VER-$REV bin/squeezeslave-ppc64-$VER-$REV bin/squeezeslave-intel-$VER-$REV bin/squeezeslave-i64-$VER-$REV -output bin/squeezeslave-$VER-$REV
 
 file bin/squeezeslave-$VER-$REV

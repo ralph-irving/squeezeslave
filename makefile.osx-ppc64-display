@@ -1,20 +1,20 @@
-# Compiles OSX Intel binary with libportaudio development library.
+# Cross compiles OSX PowerPC binary on OSX Intel with libportaudio development library.
 # To run on boot as a system daemon, you can set it up as a launched UserDaemon.
 # put config/squeezeslave.plist in /Library/LaunchDaemons
 # OSX build does not use included getopt library, we use the system provide one instead.
 #
 # cd /usr/bin
-# sudo ln -s i686-apple-darwin10-gcc-4.0.1 i686-apple-darwin10-gcc
-# sudo ln -s i686-apple-darwin10-g++-4.0.1 i686-apple-darwin10-g++
+# sudo ln -s powerpc-apple-darwin10-gcc-4.0.1 powerpc-apple-darwin10-gcc
+# sudo ln -s powerpc-apple-darwin10-g++-4.0.1 powerpc-apple-darwin10-g++
 #
-OS=osxintel
-CC=i686-apple-darwin10-gcc
-CXX=i686-apple-darwin10-g++
+OS=osxppc
+CC=powerpc-apple-darwin10-gcc
+CXX=powerpc-apple-darwin10-gcc
 TAR=tar
 SED=sed
 PATCH=patch
-CFLAGS=-DZONES -DRENICE -s -Wall -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
-LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -mmacosx-version-min=10.4
+CFLAGS=-DZONES -DRENICE -m64 -s -Wall -O2 -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D__BIG_ENDIAN__ -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch ppc64 -mmacosx-version-min=10.3
+LDFLAGS=-m64 -Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk -arch ppc64 -mmacosx-version-min=10.3
 
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
 
@@ -43,24 +43,23 @@ all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:-Werror::" configure
-	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-force-osx10.4u-sdk-i386.patch
+	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-force-osx10.4u-sdk-ppc64.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:$CFLAGS -Werror:$CFLAGS:" configure
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
 
 lib/libmad/$(OS)/lib/libmad.a:
 	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
-	cd lib/libmad/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/libmad-i486.patch
-	cd lib/libmad/$(OS)/build/$(LIBMAD) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no --enable-fpm=intel
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no --enable-fpm=ppc
 	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
 	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
 	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/mad.h lib/libmad/$(OS)/include
 
 lib/vorbis/$(OS)/lib/libogg.a:
 	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
-	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no
 	cd lib/vorbis/$(OS)/build/$(LIBOGG) && make clean && make
 	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/$(OS)/lib
 	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h,config_types.h} lib/vorbis/$(OS)/include/ogg
@@ -69,14 +68,14 @@ lib/vorbis/$(OS)/lib/libvorbisfile.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
-	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no --with-ogg-includes=`pwd`/../../include --with-ogg-libraries=`pwd`/../../lib
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no --with-ogg-includes=`pwd`/../../include --with-ogg-libraries=`pwd`/../../lib
 	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
 	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/$(OS)/lib
 	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/$(OS)/include/vorbis
 
 lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
-	cd lib/flac/$(OS)/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no --disable-oggtest --disable-cpplibs --disable-xmms-plugin --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include --disable-asm-optimizations --enable-sse
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no --disable-oggtest --disable-cpplibs --disable-xmms-plugin --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
 	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
