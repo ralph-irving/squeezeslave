@@ -1,3 +1,17 @@
+2012-09-24 13:22  paddockd
+
+	* [r380] ChangeLog, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display,
+	  makefile.osx-ppc64-display,
+	  patches/build-portaudio-force-osx10.4u-sdk-ppc.patch,
+	  patches/build-portaudio-force-osx10.4u-sdk-ppc64.patch,
+	  scripts/buildall-osx, src/squeezeslave/squeezeslave.c: Added
+	  64-bit G5 powerpc OSX makefile.
+	  Added G3 powerpc support to 32-bit powerpc OSX makefile.
+	  Updated portaudio to r1857 for all OSX makefiles.
+	  Updated OSX Universal Binary build script to include ppc64.
+	  Increased revision to 380.
+
 2012-09-24 11:57  paddockd
 
 	* [r379] ChangeLog, makefile.windows-display,

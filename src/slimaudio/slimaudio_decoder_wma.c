@@ -171,13 +171,21 @@ int slimaudio_decoder_wma_process(slimaudio_t *audio) {
 	else
 	{
 		DEBUGF("wma: probe ok name:%s lname:%s\n", pAVInputFormat->name, pAVInputFormat->long_name);
-		pAVInputFormat->flags |= AVFMT_NOFILE;
 	}
 
-	AVFormatContext* pFormatCtx;
+	AVFormatContext *pFormatCtx;
+
+	pFormatCtx = avformat_alloc_context();
+	if( pFormatCtx == NULL ) {
+		DEBUGF("wma: avformat_alloc_context failed.\n");
+	}
+	else {
+		pFormatCtx->pb = AVIOCtx;
+	}
+
 	AVCodecContext *pCodecCtx;
 
-	iRC = av_open_input_stream(&pFormatCtx, AVIOCtx, "", pAVInputFormat, NULL);
+	iRC = avformat_open_input(&pFormatCtx, "", pAVInputFormat, NULL);
 
 	if (iRC < 0)
 	{

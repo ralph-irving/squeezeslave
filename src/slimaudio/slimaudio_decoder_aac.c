@@ -176,13 +176,21 @@ int slimaudio_decoder_aac_process(slimaudio_t *audio) {
 	else
 	{
 		DEBUGF("aac: probe ok name:%s lname:%s\n", pAVInputFormat->name, pAVInputFormat->long_name);
-		pAVInputFormat->flags |= AVFMT_NOFILE;
 	}
 
-	AVFormatContext* pFormatCtx;
-	AVCodecContext *pCodecCtx;
+	AVFormatContext *pFormatCtx;
 
-	iRC = av_open_input_stream(&pFormatCtx, AVIOCtx, "", pAVInputFormat, NULL);
+	pFormatCtx = avformat_alloc_context();
+	if( pFormatCtx == NULL ) {
+		DEBUGF("aac: avformat_alloc_context failed.\n");
+	}
+	else {
+		pFormatCtx->pb = AVIOCtx;
+	}
+
+	AVCodecContext *pCodecCtx;
+	
+	iRC = avformat_open_input(&pFormatCtx, "", pAVInputFormat, NULL);
 
 	if (iRC < 0)
 	{
@@ -280,8 +288,8 @@ int slimaudio_decoder_aac_process(slimaudio_t *audio) {
 		if (len < 0)
 		{
 			DEBUGF("aac: no audio to decode\n");
-			av_free_packet (&avpkt);
-			break;
+			//av_free_packet (&avpkt);
+			//break;
 		}
 
 		if (out_size > 0)
