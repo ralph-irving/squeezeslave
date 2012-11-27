@@ -1,0 +1,23 @@
+--- portaudio/configure.orig	2012-11-27 08:57:49.000000000 -0500
++++ portaudio/configure	2012-11-27 08:59:07.000000000 -0500
+@@ -15782,17 +15782,11 @@
+               ;;
+ 
+            *)
+-                                                                                    if xcodebuild -version -sdk macosx10.5 Path >/dev/null 2>&1 ; then
+-                 mac_version_min="-mmacosx-version-min=10.3"
+-                 mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.5 Path`"
+-              elif xcodebuild -version -sdk macosx10.6 Path >/dev/null 2>&1 ; then
+-                 mac_version_min="-mmacosx-version-min=10.4"
+-                 mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.6 Path`"
+-              elif xcodebuild -version -sdk macosx10.7 Path >/dev/null 2>&1 ; then
+-                 mac_version_min="-mmacosx-version-min=10.4"
++              if xcodebuild -version -sdk macosx10.7 Path >/dev/null 2>&1 ; then
++                 mac_version_min="-mmacosx-version-min=10.7"
+                  mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.7 Path`"
+               else
+-                 as_fn_error $? "Couldn't find 10.5, 10.6, or 10.7 SDK" "$LINENO" 5
++                 as_fn_error $? "Couldn't find 10.7 SDK" "$LINENO" 5
+               fi
+            esac
+ 
