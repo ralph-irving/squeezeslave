@@ -1,3 +1,10 @@
+2012-12-28 19:17  paddockd
+
+	* [r389] ChangeLog, config/alsapcm2file.c,
+	  contrib/makefile.linux24-xm-display: Added alsapcm capture
+	  program used to record siriusxm.
+	  Added optimized siriusxm linux 2.4 alsa makefile.
+
 2012-12-28 19:05  paddockd
 
 	* [r388] tests/alsacap.c, tests/mmsdecode1.c, tests/mmsdecode2.cpp:
