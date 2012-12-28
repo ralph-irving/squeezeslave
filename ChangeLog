@@ -1,3 +1,33 @@
+2012-12-28 18:16  paddockd
+
+	* [r386] ChangeLog, contrib/makefile.freebsd-i386,
+	  contrib/makefile.freebsd-sparc64,
+	  contrib/makefile.linux24-ffmpeg-alsa-display,
+	  contrib/makefile.linux24-gcc43-alsa-display,
+	  contrib/makefile.linux24-nofpu-alsa-display,
+	  contrib/makefile.linux26-armel-alsa,
+	  contrib/makefile.linux26-armhf-alsa-display,
+	  contrib/makefile.linux26-ffmpeg-alsa-display,
+	  contrib/makefile.linux26-mipsel-nofpu-alsa,
+	  contrib/makefile.linux26-mipsel-nofpu-oss-padev,
+	  contrib/makefile.linux26-nofpu-alsa-display,
+	  contrib/makefile.linux26-ppc-alsa-display,
+	  contrib/makefile.mingw32-ffmpeg-display,
+	  contrib/makefile.oi-gcc-intel-display,
+	  contrib/makefile.osx-lion-i64-display,
+	  deprecated/makefile.mingw32-asio-display,
+	  deprecated/makefile.mingw32-display,
+	  deprecated/makefile.mingw32-wasapi-display,
+	  makefile.linux24-alsa-display, makefile.linux26-alsa-display,
+	  makefile.linux26-armel-alsa-display,
+	  makefile.linux26-i64-alsa-display, makefile.osx-i64-display,
+	  makefile.osx-intel-display, makefile.osx-ppc-display,
+	  makefile.osx-ppc64-display, makefile.windows-display,
+	  sources/portaudio-r1885.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Added portaudio library r1885.
+	  Updated all makefiles to use portaudio r1885.
+	  Increased revision to 386.
+
 2012-12-28 17:39  paddockd
 
 	* [r385] ChangeLog, lib/portaudio/pa_unix_oss/pa_unix.c,
