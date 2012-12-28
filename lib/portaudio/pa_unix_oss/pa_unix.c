@@ -88,9 +88,9 @@ O- handle stereo-only device better ???
 O- what if input and output of a device capabilities differ (e.g. es1371) ???
 */
 
-#ifdef __sun__
+#ifdef sun
 #include <string.h>
-#endif /* __sun__ */
+#endif /* sun */
 #include "pa_unix.h"
 
 typedef void *(*pthread_function_t)(void *);
@@ -618,10 +618,10 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
 #ifdef GNUSTEP
     GSRegisterCurrentThread(); /* SB20010904 */
 #endif
-#ifndef __sun__ /* Raising priority for root doesn't work on Solaris */
+#ifndef sun /* Raising priority for root doesn't work on Solaris */
     result = PaHost_BoostPriority( past );
     if( result < 0 ) goto error;
-#endif
+#endif /* sun */
     past->past_IsActive = 1;
     DBUG(("entering thread.\n"));
 

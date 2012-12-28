@@ -1,3 +1,59 @@
+2012-12-25 17:29  paddockd
+
+	* [r384] lib/portaudio/pa_unix_oss/pa_unix.c: Disabled
+	  PaHost_BoostPriority call for portaudio v18 on Solaris as raising
+	  priority code for root doesn't work.
+	  Moved debug converting message to DBUGX.
+
+2012-11-27 14:06  paddockd
+
+	* [r383] contrib/makefile.osx-lion-i64-display,
+	  patches/build-portaudio-osxlion.patch,
+	  sources/portaudio-r1878.tar.gz, src/squeezeslave/squeezeslave.c:
+	  Added portaudio osx lion build patch.
+	  Added portaudio library r1878.
+	  Increased revision to 383.
+
+2012-11-25 21:57  paddockd
+
+	* [r382] lib/portaudio/Makefile.linux26: Added linux 2.6 kernel
+	  makefile for portaudio v18 library.
+
+2012-10-29 11:45  paddockd
+
+	* [r381] ChangeLog, patches/wma-aac-SqueezeSlave-pm.patch,
+	  src/slimaudio/slimaudio_decoder_aac.c,
+	  src/slimaudio/slimaudio_decoder_wma.c,
+	  src/squeezeslave/squeezeslave.c: Regarding the aac/wma support, i
+	  was getting segfaults which were
+	  caused by how the AVIOCtx was getting discarded by ffmpeg and
+	  wound up
+	  null in later functions.
+	  after spending a while looking into it, i found (part of) the
+	  reason:
+	  https://lists.ffmpeg.org/pipermail/ffmpeg-cvslog/2011-July/038685.html
+	  the fix is use avformat_open_input instead of
+	  av_open_input_stream,
+	  and to preallocate pFormatCtx then set pFormatCtx->pb to AVIOCtx.
+	  also, for aac streaming (eg. shoutcast), i think it starts
+	  midframe
+	  and is isn't decodable, so it exits saying no audio to decode. my
+	  fix
+	  here was to remove the break and let it decode until it finds
+	  complete
+	  data. i think a similar thing could be done for the wma decode,
+	  but i
+	  haven't tested streams there. maybe it would be good to keep
+	  track of
+	  the number of 0 length avpkt encountered then break if a
+	  threshold is
+	  reached.
+	  here are the patches. they seem to work okay with ffmpeg 0.8.12
+	  and 0.10.6.
+	  thanks,
+	  -matt merhar
+	  Increased revision to 381.
+
 2012-09-24 13:22  paddockd
 
 	* [r380] ChangeLog, makefile.osx-i64-display,
