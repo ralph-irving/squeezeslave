@@ -1,0 +1,36 @@
+wma mp3 * *
+        # F:{PATH=%f}R:{PATH=%F}B:{BITRATE=-B %B}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$ | [lame] --silent -q $QUALITY$ $RESAMPLE$ -v $BITRATE$ - -
+
+wmal mp3 * *
+        # F:{PATH=%f}R:{PATH=%F}B:{BITRATE=-B %B}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$ | [lame] --silent -q $QUALITY$ $RESAMPLE$ -v $BITRATE$ - -
+
+wmap mp3 * *
+        # F:{PATH=%f}R:{PATH=%F}B:{BITRATE=-B %B}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$ | [lame] --silent -q $QUALITY$ $RESAMPLE$ -v $BITRATE$ - -
+
+wma pcm * *
+        # F:{PATH=%f}R:{PATH=%F}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$
+
+wmal pcm * *
+        # F:{PATH=%f}R:{PATH=%F}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$
+
+wmap pcm * *
+        # F:{PATH=%f}R:{PATH=%F}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$
+
+wma flc * *
+        # F:{PATH=%f}R:{PATH=%F}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$ | [flac] -cs --totally-silent --compression-level-4 -
+
+wmal flc * *
+        # F:{PATH=%f}R:{PATH=%F}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$ | [flac] -cs --totally-silent --compression-level-4 -
+
+wmap flc * *
+      # F:{PATH=%f}R:{PATH=%F}T:{START=-ss %s}U:{DURATION=-endpos %w}
+        [mplayer.sh] -really-quiet -vc null -vo null $START$ $DURATION$ -cache 128 -ao pcm:file=/dev/fd/3 $PATH$ | [flac] -cs --totally-silent --compression-level-4 -
+

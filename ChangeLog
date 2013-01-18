@@ -1,3 +1,11 @@
+2013-01-18 19:00  paddockd
+
+	* [r392] ChangeLog, makefile.linux26-display,
+	  src/squeezeslave/squeezeslave.h: Fix OSS write device errors for
+	  Sun Ray OSS audio driver emulator by reducing
+	  PA_FRAMES_PER_BUFFER to the maximum write size of 8k.
+	  Enabled AUDIODEV support for portaudio v18.1 OSS linux 2.6.
+
 2013-01-18 18:54  paddockd
 
 	* [r391] ChangeLog, config/squeezelite.plist,
