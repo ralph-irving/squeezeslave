@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>OnDemand</key>
+	<false/>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>Label</key>
+	<string>squeezelite</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+	<key>LD_LIBRARY_PATH</key> <string>/opt/local/lib</string>
+	</dict>
+	<key>StandardOutPath</key> <string>/dev/null</string>
+	<key>StandardErrorPath</key> <string>/dev/null</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/local/bin/squeezelite</string>
+		<string>-a</string>
+		<string>60</string>
+		<string>-m</string>
+		<string>00:00:00:00:00:02</string>
+		<string>192.168.100.34</string>
+<!--
+		<string>-o</string>
+		<string>2</string>
+		<string>-f</string>
+		<string>/var/log/squeezelite.log</string>
+		<string>-d</string>
+		<string>output=debug</string>
+-->
+	</array>
+</dict>
+</plist>
