@@ -80,7 +80,7 @@
 #define PA_NUM_BUFFERS		0
 #else
 #define PLAYER_TYPE	8
-#define FIRMWARE_VERSION	10
+#define FIRMWARE_VERSION	11
 #define PA_FRAMES_PER_BUFFER	8192	/* Sun Ray OSS audio driver emulator (utadem) maximum */
 #define PA_NUM_BUFFERS		4
 #endif

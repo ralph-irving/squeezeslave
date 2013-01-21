@@ -1,3 +1,12 @@
+2013-01-18 19:14  paddockd
+
+	* [r393] ChangeLog, config/custom-convert.conf.wma,
+	  config/mplayer.sh, src/squeezeslave/squeezeslave.c: Capture
+	  working wma custom-convert.conf and mplayer.sh script.
+	  Tested with mplayer-1.0.rc3 which doesn't run at 100% cpu when
+	  streaming wma unlike 1.0rc4 and 1.1.
+	  Increased revision to 393.
+
 2013-01-18 19:00  paddockd
 
 	* [r392] ChangeLog, makefile.linux26-display,

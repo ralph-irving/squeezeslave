@@ -91,7 +91,7 @@ Should not be using pthread_mutex_lock in PA callback nothing more than pthread_
 ---
 
 WMA stream for testing libwma decoder integration.
-http://somafm.com/wma128/groovesalad.asx
+mms://206.223.147.35/canlive
 
 ---
 
