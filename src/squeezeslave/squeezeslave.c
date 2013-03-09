@@ -33,11 +33,12 @@
  *      - Command line options have changed to support the above, see --help
  *      - Fixup USR1 handler to allow graceful quit if retry is not enabled
  *
+ *   Modified 7 March 2013 by Warren Merkel
+ *      - Added -E command line option that allows lcdd to be running on
+ *        a different host than local host.
  */
 
 #include "squeezeslave.h"
-
-#define INET_FQDNSTRLEN	(256)
 
 /* Retry support */
 bool retry_connection = false;
@@ -57,7 +58,7 @@ unsigned long pa_numberOfBuffers = PA_NUM_BUFFERS;
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
 const char* version = "1.4L";
-const int revision = 395;
+const int revision = 396;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
@@ -168,7 +169,7 @@ int connect_callback(slimproto_t *p, bool isConnected, void *user_data) {
 	if (isConnected) {
 		if (slimproto_helo(p, player_type, firmware, (char*) user_data, 0, 0) < 0) {
 			fprintf(stderr, "Could not send helo to Squeezebox Server.\n");
-		        send_restart_signal();
+			send_restart_signal();
 		}
 #ifdef INTERACTIVE
 	if ( using_curses || using_lirc || use_lcdd_menu )
@@ -289,6 +290,7 @@ int main(int argc, char *argv[]) {
 		{"lcdc",               no_argument,       0, 'C'},
 		{"display",            no_argument,       0, 'D'},
 		{"width",              required_argument, 0, 'w'},
+                {"lcddhost",           required_argument, 0, 'E'},
 #endif
 #ifdef RENICE
 		{"renice",             no_argument,       0, 'N'},
@@ -308,7 +310,7 @@ int main(int argc, char *argv[]) {
 	char *home;
 	struct timeval timeout;
 	timeout.tv_usec = 0;
-
+        char lcddserver_address[INET_FQDNSTRLEN] = "127.0.0.1";
 #ifdef __WIN32__
 	int WSAerrno;
 	int ptw32_processInitialize (void);
@@ -334,7 +336,7 @@ int main(int argc, char *argv[]) {
 	strcat (getopt_options, "M:");
 #endif
 #ifdef INTERACTIVE
-	strcat (getopt_options, "c:CDilw:");
+	strcat (getopt_options, "c:CDilw:E:");
 #endif
 #ifdef __WIN32__
 	strcat (getopt_options, "H");
@@ -577,6 +579,12 @@ int main(int argc, char *argv[]) {
 		case 'C':
 			use_lcdd_menu = true;
 			lcdd_compat = true;
+			break;
+		case 'E':
+			if (optind < argc){
+			strncpy(lcddserver_address, argv[optind - 1], sizeof(lcddserver_address));
+			interactive_set_lcdd_ipaddress( lcddserver_address, sizeof(lcddserver_address));
+			}
 			break;
 #endif
 		case 'D':

@@ -40,11 +40,16 @@ extern int lcd_fd;
 extern struct sockaddr_in *lcd_addr;
 extern bool use_lcdd_menu;
 extern bool lcdd_compat;
+char lcddserver_address[INET_FQDNSTRLEN] = "127.0.0.1";
 
 /* For lircd support */
 extern bool using_lirc;
 extern int lirc_fd;
 extern char * lircrc;
+
+void interactive_set_lcdd_ipaddress( char ipaddy[], int ipaddysize ) {
+	strncpy(lcddserver_address, ipaddy, sizeof(lcddserver_address));
+}
 
 /* Close LCDd connection (if open) */
 void close_lcd(void) {
@@ -154,7 +159,8 @@ void init_lcd (void)
 	{
 		lcd_addr = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));
 		lcd_addr->sin_family = AF_INET;
-		if (inet_pton(AF_INET, "127.0.0.1", (void *)(&(lcd_addr->sin_addr.s_addr))) >0)
+
+		if (inet_pton(AF_INET,lcddserver_address, (void *)(&(lcd_addr->sin_addr.s_addr))) >0)
 		{
 			lcd_addr->sin_port = htons(13666);
 			if (connect(lcd_fd, (struct sockaddr *)lcd_addr, sizeof(struct sockaddr)) >= 0)
@@ -190,8 +196,7 @@ void init_lcd (void)
 	{
 		use_lcdd_menu = true;
 		close_lcd();
-
-		fprintf(stderr,"Connect to LCDd failed!\n");
+		fprintf(stderr,"Connect to LCDd Server on %s failed!\n", lcddserver_address);
 	}
 }
 

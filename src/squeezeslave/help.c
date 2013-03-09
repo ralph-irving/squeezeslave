@@ -485,12 +485,18 @@ void print_help(void) {
 #ifdef INTERACTIVE
 #ifndef __WIN32__
 "-l, --lcd                   Enable LCDd (lcdproc) text display.\n"
-"                            Requires LCDd running on local host.\n"
+"                            Requires LCDd running on local host\n"
+"                            unless using -I or -E switches.\n"
 "-C, --lcdc                  Enable old LCDd (lcdproc<0.5.4) text display.\n"
 "-i, --lirc                  Enable lirc remote control support.\n"
-"                            Requires lirc running on local host.\n"
+"                            Requires lirc running on local host\n"
+"                            unless using -I switch.\n"
 "-c, --lircrc <filename>     Location of lirc client configuration file.\n"
 "                            Default: ~/.lircrc\n"
+"-E <lcdproc hostname>       IP address of host running LCDd.\n"
+"                            Allows LCD display to be on a different host\n"
+"                            than squeezeslave is running on.\n"
+"                            Default is connect to LCDd on local host.\n"
 #endif
 "-D, --display               Enable slimp3 style text display and\n"
 "                            keyboard input.\n"

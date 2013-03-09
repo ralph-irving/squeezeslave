@@ -69,6 +69,10 @@
 #include "slimproto/slimproto.h"
 #include "slimaudio/slimaudio.h"
 
+#ifndef INET_FQDNSTRLEN
+#define INET_FQDNSTRLEN (256)
+#endif
+
 #define RETRY_DEFAULT	5
 #define LINE_COUNT	2
 #define OPTLEN		96
@@ -146,6 +150,7 @@ bool read_lcd(void);
 int setNonblocking(int);
 void close_lirc(void);
 void close_lcd(void);
+void interactive_set_lcdd_ipaddress(char ipaddy[], int);
 #ifdef __WIN32__
 int inet_pton (int, const char *, void *);
 #endif
