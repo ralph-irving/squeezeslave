@@ -90,7 +90,7 @@ PaDriverInfo;
  #define DEVICE_NAME_BASE            "/dev/audio"
 #endif
 
-#define MAX_CHARS_DEVNAME           (32)
+#define MAX_CHARS_DEVNAME           (64)
 #define MAX_SAMPLE_RATES            (10)
 typedef struct internalPortAudioDevice
 {
