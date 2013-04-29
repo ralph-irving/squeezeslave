@@ -714,7 +714,7 @@ int Pa_GetMinNumBuffers( int framesPerBuffer, double framesPerSecond )
     char *minLatencyText = getenv(PA_LATENCY_ENV_NAME);
     if( minLatencyText != NULL )
     {
-        PRINT(("PA_MIN_LATENCY_MSEC = %s\n", minLatencyText ));
+        DBUG(("PA_MIN_LATENCY_MSEC = %s\n", minLatencyText ));
         minLatencyMsec = atoi( minLatencyText );
         if( minLatencyMsec < 1 ) minLatencyMsec = 1;
         else if( minLatencyMsec > 5000 ) minLatencyMsec = 5000;

@@ -108,7 +108,8 @@ typedef struct PaHostSoundControl
     int              pahsc_InputHandle;
     int              pahsc_AudioPriority;          /* priority of background audio thread */
     pthread_t        pahsc_AudioThread;            /* background audio thread */
-    int              pahsc_IsAudioThreadValid;     /* Is pahsc_AudioThread valid?*/    pid_t            pahsc_AudioThreadPID;         /* background audio thread */
+    int              pahsc_IsAudioThreadValid;     /* Is pahsc_AudioThread valid?*/
+    pid_t            pahsc_AudioThreadPID;         /* background audio thread */
     pthread_t        pahsc_WatchDogThread;         /* highest priority thread that protects system */
     int              pahsc_IsWatchDogThreadValid;  /* Is pahsc_WatchDogThread valid?*/
     int              pahsc_WatchDogRun;            /* Ask WatchDog to stop. */
