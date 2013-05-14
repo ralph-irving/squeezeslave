@@ -618,7 +618,7 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
 #ifdef GNUSTEP
     GSRegisterCurrentThread(); /* SB20010904 */
 #endif
-#ifndef sun /* Raising priority for root doesn't work on Solaris */
+#ifndef sun /* Raising priority for root doesn't work on Solaris 9 */
     result = PaHost_BoostPriority( past );
     if( result < 0 ) goto error;
 #endif /* sun */
@@ -650,11 +650,17 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
 
         /* Convert 16 bit native data to user data and call user routine. */
         DBUGX(("converting...\n"));
+
+	/* Solaris doesn't use the watchdog thread, so no need to track cpu usage */
+#ifndef sun
         Pa_StartUsageCalculation( past );
+#endif
         result = Pa_CallConvertInt16( past,
                                       pahsc->pahsc_NativeInputBuffer,
                                       pahsc->pahsc_NativeOutputBuffer );
+#ifndef sun
         Pa_EndUsageCalculation( past );
+#endif
         if( result != 0)
         {
             DBUG(("hmm, Pa_CallConvertInt16() says: %d. i'm bailing.\n", result));
@@ -681,7 +687,10 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
             } while( totalwritten < pahsc->pahsc_BytesPerOutputBuffer);
         }
 
+/* Just a stub for Solaris as the SADA driver maintains the stream time */
+#ifndef sun
         Pa_UpdateStreamTime(pahsc);
+#endif /* sun */
     }
     DBUG(("Pa_AudioThreadProc: left audio loop.\n"));
 
