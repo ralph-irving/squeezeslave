@@ -919,6 +919,7 @@ PaError PaHost_StartEngine( internalPortAudioStream *past )
     PaHostSoundControl *pahsc;
     PaError             result = paNoError;
     int                 hres;
+    struct sched_param  param;
 
     pahsc = (PaHostSoundControl *) past->past_DeviceData;
 
@@ -940,6 +941,13 @@ PaError PaHost_StartEngine( internalPortAudioStream *past )
         pahsc->pahsc_IsAudioThreadValid = 0;
         goto error;
     }
+
+#ifdef sun
+    /* Set audio thread to RT scheduler if user has the required rights. */
+    param.sched_priority = 0;
+    pthread_setschedparam(pahsc->pahsc_AudioThread, SCHEDULER_POLICY, &param);
+#endif /* sun */
+
     pahsc->pahsc_IsAudioThreadValid = 1;
 
 error:
