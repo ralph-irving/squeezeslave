@@ -300,7 +300,7 @@ void Pa_SetLatency( int devHandle, int numBuffers, int framesPerBuffer, int chan
     }
 
   /* calculate size of buffers in bytes */
-  bufferSize = framesPerBuffer * channelsPerFrame * sizeof(paInt32); /* FIXME - other sizes? */
+  bufferSize = framesPerBuffer * channelsPerFrame * sizeof(short); /* FIXME - other sizes? */
 
   DBUG(("Pa_SetLatency: numBuffers = %d, framesPerBuffer = %d\n",
 	numBuffers, framesPerBuffer));
