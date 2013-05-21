@@ -679,7 +679,7 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
                     pahsc->pahsc_BytesPerOutputBuffer);
                 if( bytes_written < 0 )
                 {
-                    ERR_RPT(("PortAudio: write interrupted!"));
+                    ERR_RPT(("PortAudio: write: size = %d, errno = %d.\n", pahsc->pahsc_BytesPerOutputBuffer, errno));
                     break;
                 }
 
@@ -790,6 +790,7 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
     DBUG(("past_SampleRate = %g\n", past->past_SampleRate ));
     DBUG(("past_FramesPerUserBuffer = %d\n", past->past_FramesPerUserBuffer ));
     DBUG(("pahsc_InverseMicrosPerBuffer = %g\n", pahsc->pahsc_InverseMicrosPerBuffer ));
+    DBUG(("pahsc_BytesPerOutputBuffer = %d\n", pahsc->pahsc_BytesPerOutputBuffer ));
 
     /* ------------------------- OPEN DEVICE -----------------------*/
 
