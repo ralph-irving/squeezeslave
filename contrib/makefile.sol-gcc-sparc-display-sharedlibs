@@ -1,0 +1,131 @@
+# Solaris 9 SPARC makefile using gcc
+# Requires GNU make, GNU tar and GNU sed
+
+OS=s9sparc
+CC=gcc
+CXX=g++
+CPP=cpp
+TAR=gtar
+SED=gsed
+PATCH=gpatch
+SHELL=/bin/bash
+CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -O3
+LDFLAGS=-s
+
+INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
+
+LIBMAD=libmad-0.15.1b
+LIBOGG=libogg-1.2.2
+LIBVORBIS=libvorbis-1.3.3
+LIBFLAC=flac-1.2.1
+LIBLIRC=lirc-0.8.6
+
+PORTAUDIOFILES=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_solaris.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
+
+PORTMIXERFILES=lib/portmixer/px_solaris/px_solaris.c
+
+GETOPTFILES=lib/getopt/getopt.c lib/getopt/getopt1.c
+
+SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
+
+SQUEEZESLAVEFILES:=src/squeezeslave/squeezeslave.c src/squeezeslave/help.c src/squeezeslave/daemonize.c src/squeezeslave/interactive.c
+
+LIBPORTAUDIO=lib/libportaudio.a
+
+LIBSLIMPROTO=lib/libslimproto.a
+
+LIBGETOPT=lib/libgetopt.a
+
+SUPPORTLIBS=lib/libmad/$(OS)/lib/libmad.a lib/vorbis/$(OS)/lib/libvorbisfile.a lib/vorbis/$(OS)/lib/libvorbis.a lib/vorbis/$(OS)/lib/libvorbisenc.a lib/vorbis/$(OS)/lib/libogg.a lib/flac/$(OS)/lib/libFLAC.a lib/lirc/$(OS)/lib/liblirc_client.a
+
+SQUEEZESLAVE=bin/squeezeslave
+
+.c.o:
+	$(CC) $(CFLAGS) -c $(INCLUDE) $< -o $*.o
+
+all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
+
+lib/libmad/$(OS)/lib/libmad.a:
+	cd lib/libmad/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBMAD).tar.bz2
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=yes --enable-fpm=64bit
+	cd lib/libmad/$(OS)/build/$(LIBMAD) && make clean && make
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad.a lib/libmad/$(OS)/lib
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/.libs/libmad*so* lib/libmad/$(OS)/lib
+	cp -p lib/libmad/$(OS)/build/$(LIBMAD)/mad.h lib/libmad/$(OS)/include
+
+lib/vorbis/$(OS)/lib/libogg.a:
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBOGG).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=yes
+	cd lib/vorbis/$(OS)/build/$(LIBOGG) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg.a lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/src/.libs/libogg*so* lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBOGG)/include/ogg/{ogg.h,os_types.h,config_types.h} lib/vorbis/$(OS)/include/ogg
+
+lib/vorbis/$(OS)/lib/libvorbisfile.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbisenc.a: lib/vorbis/$(OS)/lib/libogg.a
+lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/vorbis/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBVORBIS).tar.bz2
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CC="$(CC)" OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS="-L`pwd`/../../lib -logg" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=yes
+	# cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=yes --with-ogg-includes=`pwd`/../../include --with-ogg-libraries=`pwd`/../../lib
+	cd lib/vorbis/$(OS)/build/$(LIBVORBIS) && make clean && make
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/{libvorbis.a,libvorbisenc.a,libvorbisfile.a} lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/lib/.libs/libvorbis*so* lib/vorbis/$(OS)/lib
+	cp -p lib/vorbis/$(OS)/build/$(LIBVORBIS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h} lib/vorbis/$(OS)/include/vorbis
+
+lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
+	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
+	cd lib/flac/$(OS)/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=yes --disable-oggtest --disable-cpplibs --disable-xmms-plugin --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
+	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC*so* lib/flac/$(OS)/lib
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
+
+lib/lirc/$(OS)/lib/liblirc_client.a:
+	cd lib/lirc/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBLIRC).tar.bz2
+	cd lib/lirc/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/lirc_client.patch
+	cd lib/lirc/$(OS)/build/$(LIBLIRC) && $(SED) -i "s:^#define WEXITSTATUS(w)		(((w) >> 8) & 0xff)::" tools/lirc_client.h
+	cd lib/lirc/$(OS)/build/$(LIBLIRC)/tools && $(CC) $(CFLAGS) -I.. -I. -c -o lirc_client.o lirc_client.c
+	ar cru lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.o
+	ranlib lib/lirc/$(OS)/lib/liblirc_client.a
+	cp -p lib/lirc/$(OS)/build/$(LIBLIRC)/tools/lirc_client.h lib/lirc/$(OS)/include/lirc
+
+$(LIBPORTAUDIO): $(PORTAUDIOFILES:.c=.o)
+	ar cru $(LIBPORTAUDIO) $^
+	ranlib $(LIBPORTAUDIO)
+
+$(LIBSLIMPROTO): $(SLIMPROTOFILES:.c=.o)
+	ar cru $(LIBSLIMPROTO) $^
+	ranlib $(LIBSLIMPROTO)
+
+$(LIBGETOPT): $(GETOPTFILES:.c=.o)
+	ar cru $(LIBGETOPT) $^
+	ranlib $(LIBGETOPT)
+
+$(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBPORTAUDIO) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ -lpthread -lm -lsocket -lnsl -lrt -lcurses
+
+clean:
+	-@rm -f $(PORTAUDIOFILES:.c=.o)
+	-@rm -f $(SLIMPROTOFILES:.c=.o)
+	-@rm -f $(SQUEEZESLAVEFILES:.c=.o)
+	-@rm -f $(PORTMIXERFILES:.c=.o)
+	-@rm -f $(GETOPTFILES:.c=.o)
+	-@rm -f $(LIBPORTAUDIO)
+	-@rm -f $(LIBSLIMPROTO)
+	-@rm -f $(LIBGETOPT)
+	-@rm -f $(SQUEEZESLAVE)
+
+realclean: clean
+	-@rm -rf lib/libmad/$(OS)/build/$(LIBMAD)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBOGG)
+	-@rm -rf lib/vorbis/$(OS)/build/$(LIBVORBIS)
+	-@rm -rf lib/flac/$(OS)/build/$(LIBFLAC)
+	-@rm -rf lib/lirc/$(OS)/build/$(LIBLIRC)
+	-@rm -f lib/libmad/$(OS)/lib/libmad.a lib/libmad/$(OS)/include/mad.h
+	-@rm -f lib/vorbis/$(OS)/lib/libogg.a lib/vorbis/$(OS)/include/ogg/{ogg.h,os_types.h,config_types.h}
+	-@rm -f lib/vorbis/$(OS)/lib/{libvorbis.a,libvorbisenc.a,libvorbisfile.a}
+	-@rm -f lib/vorbis/$(OS)/include/vorbis/{codec.h,vorbisenc.h,vorbisfile.h}
+	-@rm -f lib/flac/$(OS)/lib/libFLAC.a
+	-@rm -f lib/flac/$(OS)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h}
+	-@rm -f lib/lirc/$(OS)/lib/liblirc_client.a lib/lirc/$(OS)/include/lirc/lirc_client.h
+
