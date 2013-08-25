@@ -920,7 +920,9 @@ PaError PaHost_StartEngine( internalPortAudioStream *past )
     PaHostSoundControl *pahsc;
     PaError             result = paNoError;
     int                 hres;
+#ifdef sun
     struct sched_param  param;
+#endif /* sun */
 
     pahsc = (PaHostSoundControl *) past->past_DeviceData;
 
