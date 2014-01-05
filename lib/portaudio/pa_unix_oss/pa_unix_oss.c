@@ -263,14 +263,14 @@ PaError Pa_SetupDeviceFormat( int devHandle, int numChannels, int sampleRate )
     else if( tmp != sampleRate )
     {
         int percentError = abs( (100 * (sampleRate - tmp)) / sampleRate );
-        PRINT(("Pa_SetupDeviceFormat: warning - requested sample rate = %d Hz - closest = %d\n",
-            sampleRate, tmp ));
+
         /* Allow sample rate within 10% off of requested rate. PLB20021018
         * Sometimes OSS uses a funky rate like 44188 instead of 44100.
+        * Reduced to 1% which is still within the 44188-44100 variance (Ralphy 140105)
         */
-        if( percentError > 10 )
+        if( percentError > 1 )
         {
-            ERR_RPT(("Pa_SetupDeviceFormat: HW does not support %d Hz sample rate\n",sampleRate ));
+           DBUG(("Pa_SetupDeviceFormat: HW does not support %d Hz sample rate\n", sampleRate ));
            return paHostError;
         }
     }
