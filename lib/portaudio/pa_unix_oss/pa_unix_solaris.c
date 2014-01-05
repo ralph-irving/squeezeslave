@@ -229,7 +229,7 @@ PaError Pa_SetupInputDeviceFormat( int devHandle, int numChannels, int sampleRat
 
     if (ioctl(devHandle, AUDIO_SETINFO, &solaris_info) == -1)
       {
-        ERR_RPT(("Pa_SetupDeviceFormat: could not set audio info\n" ));
+        DBUG(("Pa_SetupDeviceFormat: could not set audio info\n" ));
         return paHostError;
       }
 
@@ -263,7 +263,7 @@ PaError Pa_SetupOutputDeviceFormat( int devHandle, int numChannels, int sampleRa
 
     if (ioctl(devHandle, AUDIO_SETINFO, &solaris_info) == -1)
       {
-        ERR_RPT(("Pa_SetupDeviceFormat: could not set audio info\n" ));
+        DBUG(("Pa_SetupDeviceFormat: could not set audio info\n" ));
         return paHostError;
       }
 
