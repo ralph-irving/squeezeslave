@@ -57,8 +57,8 @@ unsigned long pa_numberOfBuffers = PA_NUM_BUFFERS;
 
 static volatile bool signal_exit_flag = false;
 static volatile bool signal_restart_flag = false;
-const char* version = "1.4L";
-const int revision = 408;
+const char* version = "1.4";
+const int revision = 409;
 static int port = SLIMPROTOCOL_PORT;
 static int firmware = FIRMWARE_VERSION;
 static int player_type = PLAYER_TYPE;
