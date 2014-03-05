@@ -1,0 +1,27 @@
+--- configure.orig	2012-02-03 17:01:11.000000000 -0500
++++ configure	2013-06-28 16:39:39.264406000 -0400
+@@ -12184,10 +12184,12 @@
+ 		PROFILE="-pg -g -O20 -ffast-math -D_REENTRANT -fsigned-char";;
+ 	sparc-sun-*)
+ 		sparc_cpu=""
+-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc supports -mv8" >&5
+-$as_echo_n "checking if gcc supports -mv8... " >&6; }
++		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc supports -m64" >&5
++$as_echo_n "checking if gcc supports -m64... " >&6; }
+ 		old_cflags="$CFLAGS"
+-		CFLAGS="$CFLAGS -mv8"
++		old_ldflags="$LDFLAGS"
++		CFLAGS="$CFLAGS -m64"
++		LDFLAGS="$LDFLAGS -m64"
+ 		cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -12203,7 +12205,7 @@
+ 
+ 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ $as_echo "yes" >&6; }
+-			sparc_cpu="-mv8"
++			sparc_cpu="-m64"
+ 
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext

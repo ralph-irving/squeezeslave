@@ -1,0 +1,25 @@
+Index: pa_unix.c
+===================================================================
+--- pa_unix.c	(revision 405)
++++ pa_unix.c	(working copy)
+@@ -920,6 +920,7 @@
+     PaHostSoundControl *pahsc;
+     PaError             result = paNoError;
+     int                 hres;
++    int			schederr;
+     struct sched_param  param;
+ 
+     pahsc = (PaHostSoundControl *) past->past_DeviceData;
+@@ -944,9 +945,9 @@
+     }
+ 
+ #ifdef sun
+-    /* Set audio thread to RT scheduler if user has the required rights. */
+-    param.sched_priority = 0;
+-    pthread_setschedparam(pahsc->pahsc_AudioThread, SCHEDULER_POLICY, &param);
++    /* Set audio thread to RT scheduler if user has the required rights, otherwise ignore. */
++    param.sched_priority = (sched_get_priority_max(SCHED_FIFO) - sched_get_priority_min(SCHED_FIFO)) / 2;
++    schederr = pthread_setschedparam(pahsc->pahsc_AudioThread, SCHED_FIFO, &param);
+ #endif /* sun */
+ 
+     pahsc->pahsc_IsAudioThreadValid = 1;
