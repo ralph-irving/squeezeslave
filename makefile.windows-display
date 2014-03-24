@@ -3,7 +3,7 @@
 #
 # Requires Windows June 2010 DirectX SDK.
 # See http://wiki.slimdevices.com/index.php/SqueezeSlave for details  
-# and Steinberg's ASIO 2.2 SDK
+# and Steinberg's ASIO 2.3 SDK
 # http://www.steinberg.net/en/company/3rd_party_developer/sdk_download_portal.html
 #
 OS=mingw32
@@ -23,11 +23,11 @@ LIBVORBIS=tremor-r18153
 LIBFLAC=flac-1.2.1
 LIBPTHREAD=pthreads-w32-2-8-0
 7ZIPSRC=p7zip_4.65
-LIBPORTAUDIO=portaudio-r1885
+LIBPORTAUDIO=portaudio-r1920
 LIBCURSES=PDCurses-3.4
 LIBLIRC=lirc-0.8.6
 DIRECTXSDK=DXSDK_Jun10
-ASIOSDK=asiosdk2.2
+ASIOSDK=asiosdk2.3
 
 PORTMIXERFILES:=lib/portmixer/px_none/px_none.c
 
@@ -77,7 +77,8 @@ lib/libportaudio/$(OS)/lib/libportaudio.a: lib/dxsdk/$(OS)/lib/dsound.lib $(7ZIP
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && ../../../../../$(7ZIP) x -y ../../../../../sources/$(ASIOSDK).zip > /dev/null
 	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p0 -i ../../../../../patches/build-portaudio-wdmks.patch
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -I`pwd`/src/hostapi/wasapi/mingw-include" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --with-host_os=mingw --with-winapi=directx,asio,wdmks,wasapi --with-asiodir=`pwd`/ASIOSDK2 --with-dxdir=`pwd`/../../../../dxsdk/$(OS) --without-jack --enable-shared=no
+	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p0 -i ../../../../../patches/build-portaudio-dsfirst.patch
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -I`pwd`/src/hostapi/wasapi/mingw-include" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --with-host_os=mingw --with-winapi=wmme,directx,asio,wdmks,wasapi --with-asiodir=`pwd`/ASIOSDK2.3 --with-dxdir=`pwd`/../../../../dxsdk/$(OS) --without-jack --enable-shared=no
 	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p0 -i ../../../../../patches/build-portaudio-asio-gcc34.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
