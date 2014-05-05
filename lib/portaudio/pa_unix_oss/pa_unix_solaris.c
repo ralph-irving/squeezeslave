@@ -181,15 +181,18 @@ PaError Pa_QueryDevice( const char *deviceName, internalPortAudioDevice *pad )
 
     pad->pad_Info.numSampleRates = numSampleRates;
     pad->pad_Info.sampleRates = pad->pad_SampleRates;
-
+#if 0
     /* query for the device name instead of using the filesystem-device - MR */
 	if (ioctl(tempDevHandle, AUDIO_GETDEV, &device_info) == -1) {
+#endif
       pad->pad_Info.name = deviceName;
+#if 0
     } else {
       char *pt = (char *)PaHost_AllocateFastMemory(strlen(device_info.name));
       strcpy(pt, device_info.name);
       pad->pad_Info.name = pt;
     }
+#endif
 
     result = paNoError;
 
