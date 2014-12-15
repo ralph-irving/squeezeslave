@@ -22,7 +22,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.2
 LIBVORBIS=libvorbis-1.3.3
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1885
+LIBPORTAUDIO=portaudio-r1934
 LIBLIRC=lirc-0.8.6
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
@@ -77,6 +77,8 @@ lib/vorbis/$(OS)/lib/libvorbis.a: lib/vorbis/$(OS)/lib/libogg.a
 lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
 	cd lib/flac/$(OS)/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --build=i686-apple-darwin10 --host=i686-apple-darwin10 --enable-shared=no --disable-oggtest --disable-cpplibs --disable-xmms-plugin --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include --disable-asm-optimizations --enable-sse
+	cd lib/flac/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/flac-CVE-2014-8962.patch
+	cd lib/flac/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/flac-CVE-2014-9028.patch
 	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
