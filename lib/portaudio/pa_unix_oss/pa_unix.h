@@ -91,7 +91,7 @@ PaDriverInfo;
 #endif
 
 #define MAX_CHARS_DEVNAME           (64)
-#define MAX_SAMPLE_RATES            (10)
+#define MAX_SAMPLE_RATES            (16)
 typedef struct internalPortAudioDevice
 {
     struct internalPortAudioDevice *pad_Next; /* Singly linked list. */

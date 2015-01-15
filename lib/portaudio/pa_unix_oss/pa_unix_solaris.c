@@ -60,7 +60,7 @@ PaError Pa_QueryDevice( const char *deviceName, internalPortAudioDevice *pad )
     int numSampleRates;
     int sampleRate;
     int numRatesToTry;
-    int ratesToTry[9] = {96000, 48000, 44100, 32000, 24000, 22050, 16000, 11025, 8000};
+    int ratesToTry[] = {384000, 352800, 192000, 176400, 96000, 88200, 48000, 44100, 32000, 24000, 22500, 16000, 12000, 11025, 8000};
     int i;
     audio_info_t solaris_info;
     audio_device_t device_info;

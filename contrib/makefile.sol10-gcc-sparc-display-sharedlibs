@@ -2,22 +2,22 @@
 # Requires GNU make, GNU tar and GNU sed
 
 OS=s10sparc
-CC=/opt/gcc/bin/gcc
-CXX=/opt/gcc/bin/g++
-CPP=/opt/gcc/bin/cpp
+CC=gcc
+CXX=g++
+CPP=cpp
 TAR=gtar
 SED=gsed
 PATCH=gpatch
 SHELL=/bin/bash
-CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -O3
+CFLAGS=-D__BIG_ENDIAN__ -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -D_POSIX_PTHREAD_SEMANTICS -s -O3 -Wl,-rpath,/usr/local/lib
 LDFLAGS=-s
 
 INCLUDE=-Ilib/getopt -Ilib/portaudio/pa_common -Ilib/portaudio/pablio -Ilib/portmixer/px_common -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
 
 LIBMAD=libmad-0.15.1b
-LIBOGG=libogg-1.2.2
-LIBVORBIS=libvorbis-1.3.3
-LIBFLAC=flac-1.2.1
+LIBOGG=libogg-1.3.2
+LIBVORBIS=libvorbis-1.3.4
+LIBFLAC=flac-1.3.1.1
 LIBLIRC=lirc-0.8.6
 
 PORTAUDIOFILES=lib/portaudio/pa_unix_oss/pa_unix.c lib/portaudio/pa_unix_oss/pa_unix_solaris.c lib/portaudio/pa_common/pa_lib.c lib/portaudio/pa_common/pa_convert.c lib/portaudio/pablio/ringbuffer.c
@@ -76,7 +76,7 @@ lib/flac/$(OS)/lib/libFLAC.a: lib/vorbis/$(OS)/lib/libogg.a
 	cd lib/flac/$(OS)/build && ${TAR} --bzip -xf ../../../../sources/$(LIBFLAC).tar.bz2
 	cd lib/flac/$(OS)/build/$(LIBFLAC) && OGG_CFLAGS=-I`pwd`/../../include OGG_LIBS=`pwd`/../../lib/libogg.a CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS) ${OGG_LIBS}" ./configure --enable-shared=yes --disable-oggtest --disable-cpplibs --disable-xmms-plugin --with-ogg-libraries=`pwd`/../../../../vorbis/$(OS)/lib --with-ogg-includes=`pwd`/../../../../vorbis/$(OS)/include
 	cd lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC && make clean && make
-	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC.a lib/flac/$(OS)/lib
+	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC-static.a lib/flac/$(OS)/lib/libFLAC.a
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/src/libFLAC/.libs/libFLAC*so* lib/flac/$(OS)/lib
 	cp -p lib/flac/$(OS)/build/$(LIBFLAC)/include/FLAC/{all.h,export.h,ordinals.h,assert.h,format.h,stream_decoder.h,callback.h,metadata.h,stream_encoder.h} lib/flac/$(OS)/include/FLAC
 
