@@ -35,7 +35,7 @@ LIBFLAC=flac-1.2.1
 # LIBFFMPEG=ffmpeg-2011-11-05
 LIBFFMPEG=ffmpeg-2011-03-11
 LIBFAAD2=faad2-2.7
-LIBPORTAUDIO=portaudio-r1885
+LIBPORTAUDIO=portaudio-r1948
 
 PORTMIXERFILES=lib/portmixer/px_none/px_none.c
 
