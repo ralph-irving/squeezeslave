@@ -8,7 +8,7 @@ CP=cp
 SED=sed
 SHELL=/bin/bash
 PATCH=patch
-CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DTREMOR_DECODER -Wall -O3 -s
+CFLAGS=-DRENICE -DSLIMPROTO_DEBUG -DDAEMONIZE -DUSE_SIGNALS_FOR_RESTART -DPORTAUDIO_DEV -DTREMOR_DECODER -Wall -O3 -s -march=armv6 -mfloat-abi=hard -mfpu=vfp
 LDFLAGS=-s
 
 # Comment out these two lines to remove display support
@@ -102,7 +102,7 @@ $(LIBGETOPT): $(GETOPTFILES:.c=.o)
 	ranlib $(LIBGETOPT)
 
 $(SQUEEZESLAVE): $(SQUEEZESLAVEFILES:.c=.o) $(PORTMIXERFILES:.c=.o) $(LIBSLIMPROTO) $(LIBGETOPT) $(SUPPORTLIBS)
-	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ $(LIBS) -lasound
+	$(CC) $(LDFLAGS) -o $(SQUEEZESLAVE) $^ $(LIBS) -lasound -lm -lpthread -lrt
 
 clean:
 	-@rm -f $(SLIMPROTOFILES:.c=.o)
