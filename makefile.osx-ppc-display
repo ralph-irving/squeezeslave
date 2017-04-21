@@ -45,7 +45,7 @@ lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:-Werror::" configure
 	cd lib/libportaudio/$(OS)/build && ${PATCH} -p0 -i ../../../../patches/build-portaudio-force-osx10.4u-sdk-ppc.patch
 	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:$CFLAGS -Werror:$CFLAGS:" configure
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --build=i686-apple-darwin10 --host=powerpc-apple-darwin10 --enable-shared=no --disable-mac-universal --disable-cxx
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
