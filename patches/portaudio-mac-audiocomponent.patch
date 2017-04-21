@@ -1,0 +1,141 @@
+diff --git a/src/hostapi/coreaudio/pa_mac_core.c b/src/hostapi/coreaudio/pa_mac_core.c
+index 257e9de..2921c8b 100644
+--- a/src/hostapi/coreaudio/pa_mac_core.c
++++ b/src/hostapi/coreaudio/pa_mac_core.c
+@@ -299,7 +299,11 @@ static PaError OpenAndSetupOneAudioUnit(
+                                    UInt32 *actualInputFramesPerBuffer,
+                                    UInt32 *actualOutputFramesPerBuffer,
+                                    const PaMacAUHAL *auhalHostApi,
++#ifndef AUDIO_COMPONENT_FIX
+                                    AudioUnit *audioUnit,
++#else
++                                   AudioComponentInstance *audioUnit,
++#endif
+                                    AudioConverterRef *srConverter,
+                                    AudioDeviceID *audioDevice,
+                                    const double sampleRate,
+@@ -314,7 +318,11 @@ static PaError OpenAndSetupOneAudioUnit(
+  */
+ static void startStopCallback(
+    void *               inRefCon,
++#ifndef AUDIO_COMPONENT_FIX
+    AudioUnit            ci,
++#else
++   AudioComponentInstance            ci,
++#endif
+    AudioUnitPropertyID  inID,
+    AudioUnitScope       inScope,
+    AudioUnitElement     inElement )
+@@ -1167,14 +1175,23 @@ static PaError OpenAndSetupOneAudioUnit(
+                                    UInt32 *actualInputFramesPerBuffer,
+                                    UInt32 *actualOutputFramesPerBuffer,
+                                    const PaMacAUHAL *auhalHostApi,
++#ifndef AUDIO_COMPONENT_FIX
+                                    AudioUnit *audioUnit,
++#else
++                                   AudioComponentInstance *audioUnit,
++#endif
+                                    AudioConverterRef *srConverter,
+                                    AudioDeviceID *audioDevice,
+                                    const double sampleRate,
+                                    void *refCon )
+ {
++#ifndef AUDIO_COMPONENT_FIX
+     ComponentDescription desc;
+     Component comp;
++#else
++    AudioComponentDescription desc;
++    AudioComponent comp;
++#endif
+     /*An Apple TN suggests using CAStreamBasicDescription, but that is C++*/
+     AudioStreamBasicDescription desiredFormat;
+     OSStatus result = noErr;
+@@ -1244,8 +1261,13 @@ static PaError OpenAndSetupOneAudioUnit(
+     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
+     desc.componentFlags        = 0;
+     desc.componentFlagsMask    = 0;
++
+     /* -- find the component -- */
++#ifndef AUDIO_COMPONENT_FIX
+     comp = FindNextComponent( NULL, &desc );
++#else
++    comp = AudioComponentFindNext( NULL, &desc );
++#endif
+     if( !comp )
+     {
+        DBUG( ( "AUHAL component not found." ) );
+@@ -1254,7 +1276,11 @@ static PaError OpenAndSetupOneAudioUnit(
+        return paUnanticipatedHostError;
+     }
+     /* -- open it -- */
+-    result = OpenAComponent( comp, audioUnit );
++#ifndef AUDIO_COMPONENT_FIX
++		result = OpenAComponent(comp, audioUnit);
++#else
++		result = AudioComponentInstanceNew(comp, audioUnit);
++#endif
+     if( result )
+     {
+        DBUG( ( "Failed to open AUHAL component." ) );
+@@ -1607,7 +1633,11 @@ static PaError OpenAndSetupOneAudioUnit(
+ #undef ERR_WRAP
+ 
+     error:
++#ifndef AUDIO_COMPONENT_FIX
+        CloseComponent( *audioUnit );
++#else
++       AudioComponentInstanceDispose( *audioUnit );
++#endif
+        *audioUnit = NULL;
+        if( result )
+           return PaMacCore_SetError( result, line, 1 );
+@@ -2645,13 +2675,21 @@ static PaError CloseStream( PaStream* s )
+        }
+        if( stream->outputUnit && stream->outputUnit != stream->inputUnit ) {
+           AudioUnitUninitialize( stream->outputUnit );
++#ifndef AUDIO_COMPONENT_FIX
+           CloseComponent( stream->outputUnit );
++#else
++          AudioComponentInstanceDispose( stream->outputUnit );
++#endif
+        }
+        stream->outputUnit = NULL;
+        if( stream->inputUnit )
+        {
+           AudioUnitUninitialize( stream->inputUnit );
++#ifndef AUDIO_COMPONENT_FIX
+           CloseComponent( stream->inputUnit );
++#else
++          AudioComponentInstanceDispose( stream->inputUnit );
++#endif
+           stream->inputUnit = NULL;
+        }
+        if( stream->inputRingBuffer.buffer )
+diff --git a/src/hostapi/coreaudio/pa_mac_core_internal.h b/src/hostapi/coreaudio/pa_mac_core_internal.h
+index 14e3d07..292b884 100644
+--- a/src/hostapi/coreaudio/pa_mac_core_internal.h
++++ b/src/hostapi/coreaudio/pa_mac_core_internal.h
+@@ -63,6 +63,9 @@
+ 
+ #include <CoreAudio/CoreAudio.h>
+ #include <CoreServices/CoreServices.h>
++#ifdef AUDIO_COMPONENT_FIX
++#include <AudioUnit/AudioComponent.h>
++#endif
+ #include <AudioUnit/AudioUnit.h>
+ #include <AudioToolbox/AudioToolbox.h>
+ 
+@@ -139,8 +142,13 @@ typedef struct PaMacCoreStream
+ 
+     /* implementation specific data goes here */
+     bool bufferProcessorIsInitialized;
++#ifndef AUDIO_COMPONENT_FIX
+     AudioUnit inputUnit;
+     AudioUnit outputUnit;
++#else
++    AudioComponentInstance inputUnit;
++    AudioComponentInstance outputUnit;
++#endif
+     AudioDeviceID inputDevice;
+     AudioDeviceID outputDevice;
+     size_t userInChan;

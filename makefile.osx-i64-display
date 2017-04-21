@@ -1,5 +1,5 @@
 # Compiles OSX Intel x64 binary with libportaudio development library.
-# Requires OSX 10.5/10.6 64-bit Intel based Mac.
+# Requires OSX 10.6+ 64-bit Intel based Mac.
 # To run on boot as a system daemon, you can set it up as a launched UserDaemon.
 # put config/squeezeslave.plist in /Library/LaunchDaemons
 # OSX build does not use included getopt library, we use the system provide one instead.
@@ -10,9 +10,9 @@ CXX=g++
 TAR=tar
 SED=sed
 PATCH=patch
-MACOSX_DEPLOYMENT_TARGET=10.5
-CFLAGS=-DZONES -DRENICE -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -s -Wall -O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch x86_64
-LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk -arch x86_64 -mmacosx-version-min=10.5
+MACOSX_DEPLOYMENT_TARGET=10.6
+CFLAGS=-DZONES -DRENICE -DSLIMPROTO_DEBUG -DINTERACTIVE -DDAEMONIZE -DPORTAUDIO_DEV -DUSE_SIGNALS_FOR_RESTART -s -Wall -O2 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64
+LDFLAGS=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -mmacosx-version-min=10.6
 
 INCLUDE=-Ilib/libportaudio/$(OS)/include -Isrc -Ilib/libmad/$(OS)/include -Ilib/vorbis/$(OS)/include -Ilib/flac/$(OS)/include -Ilib/lirc/$(OS)/include
 
@@ -20,7 +20,7 @@ LIBMAD=libmad-0.15.1b
 LIBOGG=libogg-1.2.2
 LIBVORBIS=libvorbis-1.3.3
 LIBFLAC=flac-1.2.1
-LIBPORTAUDIO=portaudio-r1948
+LIBPORTAUDIO=portaudio-396fe4b
 LIBLIRC=lirc-0.8.6
 
 SLIMPROTOFILES:=src/slimaudio/slimaudio_http.c src/slimaudio/slimaudio_decoder.c src/slimaudio/slimaudio_decoder_flac.c src/slimaudio/slimaudio_decoder_mad.c src/slimaudio/slimaudio_decoder_vorbis.c src/slimaudio/slimaudio_decoder_pcm.c src/slimaudio/slimaudio_output.c src/slimaudio/slimaudio_buffer.c src/slimaudio/slimaudio.c src/slimproto/slimproto.c
@@ -41,7 +41,8 @@ all : $(SUPPORTLIBS) $(SQUEEZESLAVE)
 lib/libportaudio/$(OS)/lib/libportaudio.a:
 	cd lib/libportaudio/$(OS)/build && ${TAR} -xzf ../../../../sources/$(LIBPORTAUDIO).tar.gz
 	cd lib/libportaudio/$(OS)/build/portaudio && $(SED) -i .bak "s:-Werror::" configure
-	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no
+	cd lib/libportaudio/$(OS)/build/portaudio && ${PATCH} -p1 -i ../../../../../patches/portaudio-mac-audiocomponent.patch
+	cd lib/libportaudio/$(OS)/build/portaudio && CC="$(CC)" CFLAGS="$(CFLAGS) -DAUDIO_COMPONENT_FIX=1" CPPFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --enable-shared=no --disable-mac-universal --disable-cxx
 	cd lib/libportaudio/$(OS)/build/portaudio && make lib/libportaudio.la
 	cp -p lib/libportaudio/$(OS)/build/portaudio/lib/.libs/libportaudio.a lib/libportaudio/$(OS)/lib
 	cp -p lib/libportaudio/$(OS)/build/portaudio/include/portaudio.h lib/libportaudio/$(OS)/include
